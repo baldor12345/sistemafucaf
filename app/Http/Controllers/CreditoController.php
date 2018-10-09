@@ -6,6 +6,7 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Credito;
+use App\Persona;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +38,8 @@ class CreditoController extends Controller
         $entidad          = 'Credito';
         $fecha             = Libreria::getParam($request->input('fecha'));
         $estado             = Libreria::getParam($request->input('estado'));
-        $resultado        = Credito::listar($fecha, $estado);
+        $nombreAcreditado             = Libreria::getParam($request->input('nombreAcr'));
+        $resultado        = Credito::listar($nombreAcreditado,$fecha, $estado);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
@@ -119,10 +121,10 @@ class CreditoController extends Controller
             $credito->comision = $request->input('comision');
             $credito->multa = 20;
             //$fecha =Libreria::getParam($request->input('fecha'));
-            $credito->fecha = $request->input('fecha');
+            $credito->fecha = $request->input('fechacred');
             $credito->estado = '0';
-            $credito->persona_id = 1; //$request->input('idpersona');
-            //$credito->socioaval_id = $request->input('socioaval_id');
+            $credito->persona_id = $request->input('idcl'); //$request->input('idpersona');
+            $credito->pers_aval_id = $request->input('idavl');
             $credito->save();
             /*
             for( $i=0; $i< count($credito->cantidad_cuotas); $i++){

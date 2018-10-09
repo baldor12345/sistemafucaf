@@ -17,12 +17,16 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card-box table-responsive">
-
+		
             <div class="row m-b-30">
                 <div class="col-sm-12">
 					{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
+					<div class="form-group">
+						{!! Form::label('nombreAcr', 'Nombre:', array('class' => 'input-sm')) !!}
+						{!! Form::text('nombreAcr', '', array('class' => 'form-control input-sm', 'id' => 'nombreAcr')) !!}
+					</div>
 					<div class="form-group">
 						{!! Form::label('fecha', 'Fecha:', array('class' => 'input-sm')) !!}
 						{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha')) !!}
@@ -61,7 +65,7 @@
 		//$('#fechaf').val(fechaf);
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="nombre"]').keyup(function (e) {
+		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="nombreAcr"]').keyup(function (e) {
 			var key = window.event ? e.keyCode : e.which;
 			if (key == '13') {
 				buscar('{{ $entidad }}');

@@ -20,7 +20,7 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			
-			<td>{{ $value->nombres}} </td>
+			<td>{{ $value->nombres." ".$value->apellidos}} </td>
 			<td>{{ $value->valor_credito }}</td>
 			<td>{{ $value->cantidad_cuotas }}</td>
 			@if ($value->estado === '0')
@@ -28,8 +28,8 @@
 			@else
 			<td>Cancelado</td>
 			@endif
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Detalle', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td idCredito= '{{ $value->id}}'>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Detalle', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning', "idcred"=>$value->id)) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar cuota', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
 		</tr>
 
 		<?php
