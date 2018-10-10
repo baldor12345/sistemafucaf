@@ -33,12 +33,12 @@ class Credito extends Model
     public function scopelistar($query,$nombreAcreditado, $fecha, $estado){
         $results = DB::table('credito')
     ->leftJoin('persona', 'persona.id', '=', 'credito.persona_id')
-    ->where('credito.estado','=',$estado)
-    ->where('credito.fecha','>=',$fecha)
-    ->where('persona.nombres','LIKE', '%'.$nombreAcreditado.'%')
-    ->where('persona.apellidos','LIKE', '%'.$nombreAcreditado.'%')
+    ->orwhere('credito.estado','=',$estado)
+    ->orwhere('credito.fecha','>=',$fecha)
+    ->orwhere('persona.nombres','LIKE', '%'.$nombreAcreditado.'%')
+    ->orwhere('persona.apellidos','LIKE', '%'.$nombreAcreditado.'%')
     ->orderBy('credito.fecha', 'ASC');
-        echo var_dump(json_encode($results));
+        
         return $results;
        
     }
