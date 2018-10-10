@@ -19,9 +19,11 @@ class AccionesController extends Controller
     protected $tituloAdmin     = 'Acciones';
     protected $tituloRegistrar = 'Registrar acciones';
     protected $tituloModificar = 'Modificar acciones';
+    protected $tituloDetalle = 'Detalle de Acciones';
     protected $tituloEliminar  = 'Eliminar acciones';
     protected $rutas           = array('create' => 'acciones.create', 
             'edit'   => 'acciones.edit', 
+            'listacciones' => 'acciones.listacciones',
             'delete' => 'acciones.eliminar',
             'search' => 'acciones.buscar',
             'index'  => 'acciones.index',
@@ -121,7 +123,6 @@ class AccionesController extends Controller
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
             'cadenaAcciones'      => 'required|max:100',
-            'persona_id'         => 'required|max:20|unique:acciones,persona_id,NULL,id,deleted_at,NULL',
             'configuraciones_id'        => 'required|max:100'
             );
         $validacion = Validator::make($request->all(),$reglas);
@@ -173,6 +174,10 @@ class AccionesController extends Controller
         if ($existe !== true) {
             return $existe;
         }
+
+        $listAcciones        = Acciones::listAcciones($id);
+        $listAcc           = $listAcciones->get();
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboEstado        = [''=>'Seleccione']+ array('C'=>'Compra','V'=>'Venta' );
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
@@ -182,7 +187,7 @@ class AccionesController extends Controller
         $formData       = array('acciones.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar', 'cboEstado','cboPersona','cboConfiguraciones'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','listAcc', 'cboEstado','cboPersona','cboConfiguraciones'));
     }
 
     /**
@@ -230,6 +235,27 @@ class AccionesController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
+
+    public function listacciones($persona_id, Request $request)
+    {
+        $listAcciones        = Acciones::listAcciones($persona_id);
+        $lista           = $listAcciones->get();
+
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Cantidad', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
+        
+        $titulo_detalle = $this->tituloDetalle;
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+        if (count($lista) > 0) {
+            return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'cabecera',  'ruta', 'inicio', 'persona_id'));
+        }
+        return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta'));
+    }
+
 
     //listar el objeto persona por dni
     public function getPersona(Request $request, $dni){

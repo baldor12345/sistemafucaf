@@ -66,7 +66,7 @@ function getCadenaAcciones() {
 <div class="form-group">
 	{!! Form::label('dni', 'Dni:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese dni' )) !!}
+		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...' )) !!}
 		<p id="nombresCompletos" class="" ></p>
 		<input type="hidden" id="persona_id", name="persona_id" value="">
 	</div>
@@ -121,22 +121,7 @@ function getCadenaAcciones() {
 			</thead>
 
 			<tbody id="tablaAcciones">
-				@if ($boton == "Modificar")
-					<?php
-					$cont = 1;
-					?>
-					@foreach ($listaDet as $key => $value)
-					
-					<tr>
-						<td >{{$cont}}</td>
-						<td idfacultad='{{ $value->id_facultad }}' idescuela='{{ $value->id_escuela }}' idespecialidad='{{ $value->id_especialidad }}' class='direciones'>{{ $value->nombre_facultad}} {{$value->nombre_escuela}} {{$value->nombre_especialidad }}</td>
-						<td><button class='btn btn-warning btn-xs borrar'><div class='glyphicon  glyphicon-pencil'></div>Editar</button></td>
-					</tr>
-					<?php
-					$cont ++;
-					?>
-					@endforeach
-				@endif
+				
 			</tbody>
 				<input type="hidden" id="cadenaAcciones" name="cadenaAcciones" value="">
 		</table>
@@ -174,7 +159,13 @@ function getCadenaAcciones() {
         	$.get("acciones/"+event.target.value+"",function(response, facultad){
 				console.log("datos de la cantidad acumulada de acciones");
 				console.log(response);
-				var cantAcciones=response[0].cantidad_accion_acumulada;
+				
+				var cantAcciones=0;
+				for(i=0; i<response.length; i++){
+					cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
+				}
+				console.log(cantAcciones);
+				
 				var limite_accionPor= response[0].limite_acciones;
 				var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
 				var result="Estimado usuario, por reglas establecidas de la empresa usted solo puede adquirir el 20% de la "+
