@@ -124,6 +124,7 @@ Route::group(['middleware' => 'auth'], function () {
     /*ACCIONES*/
     Route::post('acciones/buscar', 'AccionesController@buscar')->name('acciones.buscar');
     Route::resource('acciones', 'AccionesController', array('except' => array('show')));
+    Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
 
     
     /*CREDITO*/
