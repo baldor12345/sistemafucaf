@@ -130,6 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
     Route::get('creditos/eliminar/{id}/{listarluego}', 'CreditoController@eliminar')->name('creditos.eliminar');
     Route::resource('creditos', 'CreditoController', array('except' => array('show')));
+    Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
 
 });
 

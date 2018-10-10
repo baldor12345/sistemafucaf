@@ -24,6 +24,8 @@ class CreditoController extends Controller
             'delete'   => 'creditos.eliminar',
             'search'   => 'creditos.buscar',
             'index'    => 'creditos.index',
+            'guardarcredito'    => 'creditos.guardarcredito',
+            
         );
 
     public function __construct()
@@ -71,6 +73,8 @@ class CreditoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     
     public function index()
     {
         $entidad          = 'Credito';
@@ -127,28 +131,36 @@ class CreditoController extends Controller
             $credito->pers_aval_id = $request->input('idavl');
             $credito->save();
             /*
-            for( $i=0; $i< count($credito->cantidad_cuotas); $i++){
+                for( $i=0; $i< count($credito->cantidad_cuotas); $i++){
 
-                $detalle_cuotas  = new Detalle_Cuotas();
-                $detalle_cuotas ->credito_id = (int)$credito->id;
-                $detalle_cuotas->capital = 
-                $detalle_cuotas->interes =
-                $detalle_cuotas->fecha_pago = Date::createFromFormat('d/m/Y', '')->format('Y-m-d');
-                $detalle_cuotas->situacion = '0';
-                $detalle_cuotas->save();
-            $employee->birthdate     = Date::createFromFormat('d/m/Y', $request->input('birthdate'))->format('Y-m-d');
-            
-        }*/
-
-
-
-
+                    $detalle_cuotas  = new Detalle_Cuotas();
+                    $detalle_cuotas ->credito_id = (int)$credito->id;
+                    $detalle_cuotas->capital = 
+                    $detalle_cuotas->interes =
+                    $detalle_cuotas->fecha_pago = Date::createFromFormat('d/m/Y', '')->format('Y-m-d');
+                    $detalle_cuotas->situacion = '0';
+                    $detalle_cuotas->save();
+                $employee->birthdate     = Date::createFromFormat('d/m/Y', $request->input('birthdate'))->format('Y-m-d');
+                
+            }*/
         });
-        
+        return is_null($error) ? "OK" : $error;
+    }
 
-
-
-
+    public function guardarcredito(Request $request){
+        $error = DB::transaction(function() use($request){
+            $credito       = new Credito();
+            $credito->valor_credito = $request->get('valor_credito');
+            $credito->cantidad_cuotas = $request->get('cantidad_cuotas');
+            $credito->comision = $request->get('comision');
+            $credito->multa = 20;
+            $credito->fecha = $request->get('fechacred');
+            $credito->estado = '0';
+            $credito->persona_id = $request->get('idcl'); //$request->input('idpersona');
+            $credito->pers_aval_id = $request->get('idavl');
+            $credito->save();
+     
+        });
         return is_null($error) ? "OK" : $error;
     }
 
@@ -252,4 +264,6 @@ class CreditoController extends Controller
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
+//***************************************************************************************** */
+
 }

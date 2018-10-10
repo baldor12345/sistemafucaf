@@ -48,6 +48,8 @@
 	</div>
 </div>
 {!! Form::close() !!}
+
+
 <script type="text/javascript">
 	$(document).ready(function() {
 
@@ -71,6 +73,7 @@
 				$('#nombrescl').val('');
 				$('#idcl').val('');
 				$('#idavl').val('');
+			//	document.getElementById("nombrescl").innerHTML = response[0].nombres +" "+ response[0].apellidos;
 				if(response.length>0){
 				for(i=0; i<response.length; i++){
 					document.getElementById("nombrescl").innerHTML = response[i].nombres +" "+ response[i].apellidos;

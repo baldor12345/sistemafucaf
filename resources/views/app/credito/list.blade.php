@@ -29,7 +29,6 @@
 			<td>Cancelado</td>
 			@endif
 			<td idCredito= '{{ $value->id}}'>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Detalle', array('class' => 'btn btn-xs btn-warning', "idcred"=>$value->id)) !!}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar cuota', array('onclick' => '', 'class' => 'btn btn-xs btn-warning')) !!}</td>
 		</tr>
 
 		<?php

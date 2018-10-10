@@ -233,6 +233,7 @@ class AccionesController extends Controller
 
     //listar el objeto persona por dni
     public function getPersona(Request $request, $dni){
+        
         if($request->ajax()){
             $personas = Persona::personas($dni);
             return response()->json($personas);
