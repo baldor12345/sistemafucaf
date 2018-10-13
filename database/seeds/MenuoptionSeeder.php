@@ -54,15 +54,16 @@ class MenuoptionSeeder extends Seeder
 					'name' => 'Caja',
 					'link'   => 'caja'
 				),
+				
+				array(
+					'name' => 'Ahorros',
+					'link'   => 'ahorros'
+				),
+				array(
+					'name' => 'Gastos',
+					'link'   => 'gastos'
+				),
 				/*
-				array(
-					'name' => 'Marcas',
-					'link'   => 'mark'
-				),
-				array(
-					'name' => 'Unidades',
-					'link'   => 'unit'
-				),
 				array(
 					'name' => 'Productos',
 					'link'   => 'product'

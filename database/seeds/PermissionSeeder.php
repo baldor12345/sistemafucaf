@@ -45,6 +45,51 @@ class PermissionSeeder extends Seeder
 				'updated_at'     => $now
 				)
 			));
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Caja')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Ahorros')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Acciones')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Configuraciones')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Gastos')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
 		/*	
 		$usertype_id = DB::table('usertype')->where('name', '=', 'EMPLEADO')->first()->id;
 		$list  = DB::table('menuoption')->where('menuoptioncategory_id', '=', 2)->get();
