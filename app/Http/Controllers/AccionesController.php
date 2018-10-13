@@ -131,6 +131,7 @@ class AccionesController extends Controller
         }
         //evaluando los datos que vienen del view
         $error = DB::transaction(function() use($request){
+            
             if($request->input('cadenaAcciones') !==''){
                 $valores = explode(",", $request->input('cadenaAcciones'));
                 for( $i=0; $i< count($valores); $i++){

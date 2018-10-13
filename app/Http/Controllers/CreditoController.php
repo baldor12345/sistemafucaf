@@ -41,6 +41,7 @@ class CreditoController extends Controller
         $fecha             = Libreria::getParam($request->input('fecha'));
         $estado             = Libreria::getParam($request->input('estado'));
         $nombreAcreditado             = Libreria::getParam($request->input('nombreAcr'));
+        $nombreAcreditado = strtoupper($nombreAcreditado);
         $resultado        = Credito::listar($nombreAcreditado,$fecha, $estado);
         $lista            = $resultado->get();
         $cabecera         = array();
