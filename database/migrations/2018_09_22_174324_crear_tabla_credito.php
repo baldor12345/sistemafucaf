@@ -17,8 +17,10 @@ class CrearTablaCredito extends Migration
             $table->increments('id');
             $table->decimal('valor_credito',10,2);
             $table->integer('cantidad_cuotas');
+            $table->integer('cantidad_meses');
+            $table->string('descripcion', 200)->nullable();
             $table->decimal('comision',10,2);//en porcentaje =>interes
-            $table->date('fecha')->nullable();
+            $table->timestamp('fecha')->nullable();
             $table->char('estado',1)->nullable();// C=>cancelado, P=>pendiente
             $table->decimal('multa',10,2);
             $table->integer('persona_id')->unsigned();
