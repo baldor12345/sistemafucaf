@@ -22,13 +22,13 @@
 			
 			<td>{{ $value->nombres." ".$value->apellidos}} </td>
 			<td>{{ $value->valor_credito }}</td>
-			<td>{{ $value->cantidad_cuotas }}</td>
+			<td>{{ $value->cuotas }}</td>
 			@if ($value->estado === '0')
 			<td>Pendiente</td>
 			@else
 			<td>Cancelado</td>
 			@endif
-			<td idCredito= '{{ $value->id}}'>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Detalle', array('class' => 'btn btn-xs btn-warning', "idcred"=>$value->id)) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Detalle', array('class' => 'btn btn-xs btn-warning', "idcred"=>$value->credito_id)) !!}</td>
 		</tr>
 
 		<?php

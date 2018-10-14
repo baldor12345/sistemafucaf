@@ -51,7 +51,7 @@
         </div>
     </div>
 </div>
-
+<!--MODAL MANTENIMIENTO DE CREDITO-->
 <div class="modal fade" id="creditoManModal" tabindex="-1" role="dialog" aria-labelledby="creditoManModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -142,7 +142,7 @@
   </div>
 </div>
 
-
+<!--MODAL CRONOGRAMA DE CUOTAS -->
 <div class="modal fade" id="cronogramaModal" tabindex="-1" role="dialog" aria-labelledby="cronogramaModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -171,21 +171,64 @@
 				<tfoot>
 				</tfoot>
 			</table>
-
 			<div class="form-row">
 				<div class="form-group col-12" >
 					{!! Form::label('', 'Interes total: ', array('id'=>'interesTotal','class' => '')) !!}
 					{!! Form::label('', 'Capital total: ', array('id'=>'capitalTotal','class' => '')) !!}
 				</div>
 			</div>
-
 		</fieldset>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
+    </div>
+  </div>
+</div>
 
+<!--MODAL DETALLE CREDITO -->
+<div class="modal fade" id="detallecreditoModal" tabindex="-1" role="dialog" aria-labelledby="detallecreditoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Detalle Crédito</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+	  	<fieldset class="col-12">
+
+
+
+			<table id="example1" class="table table-bordered table-striped table-condensed table-hover">
+				<thead>
+					<tr>
+						<th style='width: 5%' class='text-center'>#</th>
+						<th style='width: 10%'>INTERES</th>
+						<th style='width: 30%' class='text-center'>PARTE CAPITAL</th>
+						<th style='width: 30%' class='text-center'>MONTO CUOTA</th>
+						<th style='width: 25%' class='text-center'>FECHA DE PAGO</th>
+					</tr>
+				</thead>
+				<tbody id='filascuotascredito'>
+
+				</tbody>
+				<tfoot>
+				</tfoot>
+			</table>
+			<div class="form-row">
+				<div class="form-group col-12" >
+					{!! Form::label('', 'Interes total: ', array('id'=>'interesTotal','class' => '')) !!}
+					{!! Form::label('', 'Capital total: ', array('id'=>'capitalTotal','class' => '')) !!}
+				</div>
+			</div>
+		</fieldset>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -257,9 +300,6 @@
 				}
 			});
     	});
-
-		
-
 	});
 	function guardarcredito(){
 			console.log("datos serialixados 0001: "+$('#formMantCredito').serialize());
