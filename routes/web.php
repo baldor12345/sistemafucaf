@@ -133,6 +133,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('creditos', 'CreditoController', array('except' => array('show')));
     Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
 
+    /*CAJA*/
+    Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
+    Route::resource('caja', 'CajaController', array('except' => array('show')));
+    Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
+    Route::get('caja/updateCaja', 'CajaController@updateCaja')->name('caja.updateCaja');
+
 });
 
 Route::get('personas/{dni?}','AccionesController@getPersona');
