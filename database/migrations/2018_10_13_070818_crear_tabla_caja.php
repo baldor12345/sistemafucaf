@@ -15,14 +15,15 @@ class CrearTablaCaja extends Migration
     {
         Schema::create('caja', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('titulo', 200);
-            $table->string('descripcion', 400);
+            $table->string('titulo', 200)->nullable();
+            $table->string('descripcion', 400)->nullable();
             $table->timestamp('fecha')->nullable();
-            $table->timestamp('hora_apertura')->nullable();
-            $table->timestamp('hora_cierre')->nullable();
+            $table->time('hora_apertura')->nullable();
+            $table->time('hora_cierre')->nullable();
             $table->decimal('monto_iniciado',20,2);
-            $table->decimal('monto_cierre',20,2);
-            $table->decimal('diferencia_monto',20,2);
+            $table->decimal('monto_cierre',20,2)->nullable();
+            $table->decimal('diferencia_monto',20,2)->nullable();
+            $table->char('estado', 1)->nullable();// A=>abierto; C=>cerrado
             $table->integer('persona_id')->unsigned();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
