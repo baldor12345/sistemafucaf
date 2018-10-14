@@ -16,6 +16,7 @@ class CrearTablaAhorros extends Migration
         Schema::create('ahorros', function (Blueprint $table) {
             $table->increments('id');
             $table->decimal('inporte',20,2);
+            $table->integer('periodo');
             $table->timestamp('fecha_inicio')->nullable();
             $table->timestamp('fecha_fin')->nullable();
             $table->decimal('interes',10,2);

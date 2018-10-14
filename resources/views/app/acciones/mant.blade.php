@@ -101,30 +101,30 @@ function getCadenaAcciones() {
 </div>
 
 
-	<div class="form-group ">
-			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-				{!! Form::button('<i class="glyphicon glyphicon-check"></i> ¡Correcto!', array('class' => 'correcto btn btn-success waves-effect waves-light m-l-10 btn-md hidden input-sm', 'onclick' => '#')) !!}
-				{!! Form::button('<i class="glyphicon glyphicon-remove-circle"></i> ¡Incorrecto!', array('class' => 'incorrecto btn btn-danger waves-effect waves-light m-l-10 btn-md hidden input-sm', 'onclick' => '#')) !!}
-				{!! Form::button('<i class="glyphicon glyphicon-plus visualisar"></i>', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md btnAnadir input-sm visualisar','id' => 'btnAgregar')) !!}
-			</div>
-	</div>
+<div class="form-group ">
+		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+			{!! Form::button('<i class="glyphicon glyphicon-check"></i> ¡Correcto!', array('class' => 'correcto btn btn-success waves-effect waves-light m-l-10 btn-md hidden input-sm', 'onclick' => '#')) !!}
+			{!! Form::button('<i class="glyphicon glyphicon-remove-circle"></i> ¡Incorrecto!', array('class' => 'incorrecto btn btn-danger waves-effect waves-light m-l-10 btn-md hidden input-sm', 'onclick' => '#')) !!}
+			{!! Form::button('<i class="glyphicon glyphicon-plus visualisar"></i>', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md btnAnadir input-sm visualisar','id' => 'btnAgregar')) !!}
+		</div>
+</div>
 
-		<table id="tablaDir" class="table table-bordered table-striped table-condensed table-hover">
-			<thead>
-				<tr>
-					<th width='7%'>#</th>
-					<th>CANT</th>
-					<th>ESTADO</th>
-					<th>FECHA</th>
-					<th width='20%'>Operacion</th>
-				</tr>
-			</thead>
+<table id="tablaDir" class="table table-bordered table-striped table-condensed table-hover">
+	<thead>
+		<tr>
+			<th width='7%'>#</th>
+			<th>CANT</th>
+			<th>ESTADO</th>
+			<th>FECHA</th>
+			<th width='20%'>Operacion</th>
+		</tr>
+	</thead>
 
-			<tbody id="tablaAcciones">
-				
-			</tbody>
-				<input type="hidden" id="cadenaAcciones" name="cadenaAcciones" value="">
-		</table>
+	<tbody id="tablaAcciones">
+		
+	</tbody>
+	<input type="hidden" id="cadenaAcciones" name="cadenaAcciones" value="">
+</table>
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
