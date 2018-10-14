@@ -59,8 +59,8 @@ class Acciones extends Model
                     'configuraciones.precio_accion AS precio_accion',
                     DB::raw('count(acciones.estado) as cantidad_accion_comprada')
                     )
-                    ->where('acciones.estado', '=', 'C')
-                    ->groupBy('persona.id','persona.codigo','persona.dni','persona.nombres',
+            ->where('acciones.estado', '=', 'C')
+            ->groupBy('persona.id','persona.codigo','persona.dni','persona.nombres',
                                 'persona.apellidos','configuraciones.codigo','acciones.persona_id',
                                 'acciones.estado','configuraciones.precio_accion');
         return $results;

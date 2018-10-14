@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Credito;
 use App\Persona;
+use App\Detalle_cuotas;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -120,13 +121,16 @@ class CreditoController extends Controller
         */
 
         $error = DB::transaction(function() use($request){
+            echo "resultado: ".$request->input('cantidad_meses');
             $credito       = new Credito();
             $credito->valor_credito = $request->input('valor_credito');
             $credito->cantidad_cuotas = $request->input('cantidad_cuotas');
+            $credito->cantidad_meses = $request->input('cantidad_meses');
             $credito->comision = $request->input('comision');
             $credito->multa = 20;
             //$fecha =Libreria::getParam($request->input('fecha'));
             $credito->fecha = $request->input('fechacred');
+            $credito->descripcion = $request->input('descripcion');
             $credito->estado = '0';
             $credito->persona_id = $request->input('idcl'); //$request->input('idpersona');
             $credito->pers_aval_id = $request->input('idavl');
@@ -148,19 +152,57 @@ class CreditoController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
+    public function rouNumber($numero, $decimales) { 
+        $factor = pow(10, $decimales); 
+        return (round($numero*$factor)/$factor);
+    }
+
+
     public function guardarcredito(Request $request){
         $error = DB::transaction(function() use($request){
             $credito       = new Credito();
             $credito->valor_credito = $request->get('valor_credito');
             $credito->cantidad_cuotas = $request->get('cantidad_cuotas');
+            $credito->cantidad_meses = $request->get('cantidad_meses');
             $credito->comision = $request->get('comision');
             $credito->multa = 20;
             $credito->fecha = $request->get('fechacred');
             $credito->estado = '0';
+            $credito->descripcion = $request->get('descripcion');
             $credito->persona_id = $request->get('idcl'); //$request->input('idpersona');
             $credito->pers_aval_id = $request->get('idavl');
             $credito->save();
-     
+
+            $montocredito =  $credito->valor_credito;
+            $montorestante =  $credito->valor_credito;
+
+            $numcuotas = $credito->cantidad_cuotas;
+            $nummeses = $credito->cantidad_meses;
+            $interes = ($credito->comision)/100;
+
+            $cuota =  ($interes * $montocredito) / (1 - (pow(1/(1+$interes), $numcuotas)));
+            $cuota =  $this->rouNumber($cuota, 2);
+            $fecha_actual = date("Y-m-d");
+            $i = 0;
+            $interesAcumulado = 0.00;
+            for($i=0;$i<$numcuotas; $i++){
+                //sumo 1 mes
+                $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+                $montInteres = $this->rouNumber($interes *$montorestante , 2); 
+                $interesAcumulado +=  $montInteres; 
+
+                $montCapital =$this->rouNumber(($cuota - $montInteres) , 2); 
+                $montorestante = $this->rouNumber(($montorestante - $montCapital) , 2);
+
+                $detalle_cuotas       = new Detalle_cuotas();
+                $detalle_cuotas->capital = $montCapital;
+                $detalle_cuotas->interes = $montInteres;
+                $detalle_cuotas->fecha_pago = $fecha_actual;
+                $detalle_cuotas->situacion = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
+                $detalle_cuotas->credito_id = $credito->id;
+                $detalle_cuotas->save();
+
+            }
         });
         return is_null($error) ? "OK" : $error;
     }
