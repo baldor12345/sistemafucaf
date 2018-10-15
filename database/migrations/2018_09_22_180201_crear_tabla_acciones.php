@@ -15,9 +15,10 @@ class CrearTablaAcciones extends Migration
     {
         Schema::create('acciones', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('cantidad_acciones');
             $table->char('estado',1)->nullable();//C=compra V=venta
-            $table->date('fecha')->nullable();
+            $table->date('fechai')->nullable();
+            $table->date('fechaf')->nullable();
+            $table->string('descripcion', 400)->nullable();
             $table->integer('persona_id')->unsigned();
             $table->integer('configuraciones_id')->unsigned();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');

@@ -97,17 +97,20 @@ textarea {
 		if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 ||
 			fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 ||
 			fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9){
-				var horaAp =fechaActual.getHours()+":0"+fechaActual.getMinutes()+":"+fechaActual.getSeconds();;
+				var horaAp =fechaActual.getHours()+":0"+fechaActual.getMinutes()+":"+fechaActual.getSeconds();
 		}else{
-				var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes()+":"+fechaActual.getSeconds();;
+				var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes()+":"+fechaActual.getSeconds();
+				
 		}
-
+		console.log(horaAp);
 		if($('#fechaTemp').val() !== ""){
 			// DD/MM/YYYY
 			var valoresFecha = $('#fechaTemporal').val().split('/');
 			//yyy/MM/DD
 			var fecha = valoresFecha[2] + "-" + valoresFecha[1] + "-" + valoresFecha[0];
 			$('#fecha').val(fecha);
+			$('#hora_cierre').val($('#horaCierre').val());
+		}else{
 			$('#hora_cierre').val(horaAp);
 		}
 

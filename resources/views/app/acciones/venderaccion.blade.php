@@ -6,24 +6,24 @@ use Illuminate\Support\Facades\DB;
 ?>
 
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::model($acciones, $formData) !!}
+{!! Form::model($acciones, array('class' => 'form-horizontal' , 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-
+{!! Form::hidden('idpropietario', $persona->id, array('id' => 'idpropietario')) !!}
 <div class="form-group">
 <p id="info" class="" ></p>
 </div>
 
 <div class="form-group">
-	{!! Form::label('dni', 'Dni:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('dni', 'DNI del comprador:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
 		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...' )) !!}
 		<p id="nombresCompletos" class="" ></p>
-		<input type="hidden" id="persona_id", name="persona_id" value="">
+		<input type="hidden" id="idcomprador", name="idcomprador" value="">
 	</div>
 </div>
 
 <div class="form-group">
-	{!! Form::label('cantidad_accion', 'Cantidad Accion:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('cantidad_accion', 'Cantidad a vender:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
 		{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs', 'id' => 'cantidad_accion', 'placeholder' => 'Ingrese cantidad')) !!}
 	</div>
@@ -44,6 +44,13 @@ use Illuminate\Support\Facades\DB;
 </div>
 
 <div class="form-group">
+	{!! Form::label('dni', 'Propietario:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	<div class="col-sm-9 col-xs-12">
+		<p id="nombresCompletos" class="" >{{ '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos}}</p>
+	</div>
+</div>
+
+<div class="form-group">
 	{!! Form::label('descripcion', 'Descripcion:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
 		{!! Form::text('descripcion', null, array('class' => 'form-control input-xs', 'id' => 'descripcion', 'placeholder' => 'descripcion')) !!}
@@ -52,7 +59,7 @@ use Illuminate\Support\Facades\DB;
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'realizarventa()')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -73,16 +80,18 @@ use Illuminate\Support\Facades\DB;
 		$('#fechai').val(fechai);
 
 
+
+
 		//funcion para los datos de la persona
 		$("input[name=dni]").change(function(event){
         	$.get("personas/"+event.target.value+"",function(response, facultad){
 				console.log("datos de la persona");
 				console.log(response);
 				$('#nombres').val('');
-				$('#persona_id').val('');
+				$('#idcomprador').val('');
 				for(i=0; i<response.length; i++){
 					document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-					document.getElementById("persona_id").value = response[i].id;
+					document.getElementById("idcomprador").value = response[i].id;
 				}
 			});
     	});
@@ -106,6 +115,28 @@ use Illuminate\Support\Facades\DB;
 			});
     	});
 		
-	}); 
+	});
+	function realizarventa(){
+		route = 'acciones/updateventa';
+		$.ajax({
+			url: route,
+			headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+			type: 'GET',
+			data: $('#formMantenimientoAcciones').serialize(),
+			beforeSend: function(){
+	        },
+	        success: function(res){
+				$('#idcaja').val('');
+				$('#titulo').val('');
+				$('#fecha').val('');
+				$('#monto_iniciado').val('');
+				$('#hora_cierre').val('');
+				$('#monto_cierre').val('');
+				$('#diferencia_monto').val('');
+				$('#descripcion').val('');
+	        }
+		}).fail(function(){
+		});
+	} 
 
 </script>

@@ -33,6 +33,7 @@
 								<td estadoT='{{ $value->acciones_estado }}'>Venta</td>
 								@endif
 								<td fechaT='{{ $value->acciones_fecha }}' >{{ $value->acciones_fecha}}</td>
+								<td estadoT='{{ $value->acciones_descripcion }}'>{{$value->acciones_descripcion}}</td>
 							</tr>
 							<?php
 							$contador = $contador + 1;

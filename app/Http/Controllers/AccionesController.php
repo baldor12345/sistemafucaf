@@ -17,15 +17,18 @@ class AccionesController extends Controller
 {
     protected $folderview      = 'app.acciones';
     protected $tituloAdmin     = 'Acciones';
-    protected $tituloRegistrar = 'Registrar acciones';
+    protected $tituloRegistrar = 'Compra de Acciones';
     protected $tituloModificar = 'Modificar acciones';
     protected $tituloDetalle = 'Detalle de Acciones';
+    protected $tituloVenta = 'Venta de Acciones';
     protected $tituloEliminar  = 'Eliminar acciones';
     protected $rutas           = array('create' => 'acciones.create', 
             'edit'   => 'acciones.edit', 
             'listacciones' => 'acciones.listacciones',
             'delete' => 'acciones.eliminar',
             'search' => 'acciones.buscar',
+            'cargarventa'   => 'acciones.cargarventa',
+            'updateventa'   => 'acciones.updateventa',
             'index'  => 'acciones.index',
         );
 
@@ -60,10 +63,11 @@ class AccionesController extends Controller
         $cabecera[]       = array('valor' => 'NOMBRES', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ACCIONES', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO ACCION', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
+        $titulo_ventaaccion = $this->tituloVenta;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -74,7 +78,7 @@ class AccionesController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'titulo_ventaaccion', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -101,15 +105,14 @@ class AccionesController extends Controller
     public function create(Request $request)
     {
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $cboEstado        = [''=>'Seleccione']+ array('C'=>'Compra','V'=>'Venta' );
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
         $entidad        = 'Acciones';
         $acciones        = null;
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboEstado','cboConfiguraciones'));
+        $boton          = 'Comprar Acciones'; 
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones'));
     }
 
     /**
@@ -122,7 +125,9 @@ class AccionesController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
-            'cadenaAcciones'      => 'required|max:100',
+            'dni'        => 'required|max:100',
+            'cantidad_accion'        => 'required|max:100',
+            'fechai'        => 'required|max:100',
             'configuraciones_id'        => 'required|max:100'
             );
         $validacion = Validator::make($request->all(),$reglas);
@@ -131,23 +136,19 @@ class AccionesController extends Controller
         }
         //evaluando los datos que vienen del view
         $error = DB::transaction(function() use($request){
-            
-            if($request->input('cadenaAcciones') !==''){
-                $valores = explode(",", $request->input('cadenaAcciones'));
-                for( $i=0; $i< count($valores); $i++){
-                    $accion=  explode(":", $valores[$i]);
-                    for( $j=1; $j< $accion[0]+1; $j++){
-                        $acciones               = new Acciones();    
-                        $acciones->cantidad_acciones        =$j;
-                        $acciones->estado        = $accion[1];
-                        $acciones->fecha        = $accion[2];
+            $cantidad_accion= $request->input('cantidad_accion');
+            if($cantidad_accion !== ''){
+                for($i=0; $i< $cantidad_accion; $i++){
+                    $acciones               = new Acciones();    
+                        $acciones->estado        = 'C';
+                        $acciones->fechai        = $request->input('fechai');
+                        $acciones->descripcion        = $request->input('descripcion');
                         $acciones->persona_id        = $request->input('persona_id');
                         $acciones->configuraciones_id        = $request->input('configuraciones_id');
                         $acciones->save();
-                    }
                 }
-    
             }
+            
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -221,7 +222,6 @@ class AccionesController extends Controller
                     $accion=  explode(":", $valores[$i]);
                     for( $j=1; $j< $accion[0]+1; $j++){
                         $acciones                 = Acciones::find($id);  
-                        $acciones->cantidad_acciones        =$j;
                         $acciones->estado        = $accion[1];
                         $acciones->fecha        = $accion[2];
                         $acciones->persona_id        = $request->input('persona_id');
@@ -247,7 +247,7 @@ class AccionesController extends Controller
         $cabecera[]       = array('valor' => 'Cantidad', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
-        
+        $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
         $titulo_detalle = $this->tituloDetalle;
         $ruta             = $this->rutas;
         $inicio           = 0;
@@ -272,5 +272,60 @@ class AccionesController extends Controller
             $CantAcciones = Acciones::cant_acciones_acumuladas($persona_id);
             return response()->json($CantAcciones);
         }
+    }
+
+
+    //venta de acciones
+
+    public function cargarventa($id, Request $request)
+    {
+        $existe = Libreria::verificarExistencia($id, 'persona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $persona = Persona::find($id);
+        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
+        $acciones        = Acciones::find($id);
+        $entidad        = 'Acciones';
+        //$formData       = array('caja.updateCaja', $id);
+        //$formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton          = 'Vender Acciones';
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones'));
+    }
+
+    public function updateventa(Request $request)
+    {
+        $idpropietario= $request->get('idpropietario');
+        $idcomprador=$request->get('idcomprador');
+        echo "id venderor: ".$idpropietario;
+        echo "idcomprador: ".$idcomprador;
+
+        $existe = Libreria::verificarExistencia($idpropietario, 'persona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $reglas = array(
+            'dni'        => 'required|max:100',
+            'cantidad_accion'        => 'required|max:100',
+            'configuraciones_id'        => 'required|max:100'
+            );
+        $validacion = Validator::make($request->all(),$reglas);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        } 
+        $error = DB::transaction(function() use($request, $id){
+
+            
+            $caja                 = Caja::find($id);
+            $caja->descripcion        = $request->get('descripcion');
+            $caja->hora_cierre        = $request->get('hora_cierre');
+            $caja->monto_cierre        = $request->get('monto_cierre');
+            $caja->diferencia_monto        = $request->get('diferencia_monto');
+            $caja->estado        = 'C';//cierre
+            $caja->save();
+            
+        });
+        return is_null($error) ? "OK" : $error;
     }
 }

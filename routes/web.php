@@ -125,6 +125,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('acciones/buscar', 'AccionesController@buscar')->name('acciones.buscar');
     Route::resource('acciones', 'AccionesController', array('except' => array('show')));
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
+    Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
+    Route::get('acciones/updateventa', 'AccionesController@updateventa')->name('acciones.updateventa');
 
     
     /*CREDITO*/

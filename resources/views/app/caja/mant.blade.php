@@ -32,7 +32,7 @@ textarea {
 <?php
 	if($caja != null){
 		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha )->format('d/m/Y')."'>";
-		echo "<input type='hidden' id='horaAp' value='".$caja->hora_apertura."'>";
+		echo "<input type='hidden' id='horaAp' value='".$caja->hora_cierre."'>";
 	}else{
 		echo "<input type='hidden' id='fechaTemp' value=''>";
 	}

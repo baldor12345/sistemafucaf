@@ -11,6 +11,7 @@ use App\Caja;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Jenssegers\Date\Date;
 
 class CajaController extends Controller
 {
