@@ -134,6 +134,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('creditos/eliminar/{id}/{listarluego}', 'CreditoController@eliminar')->name('creditos.eliminar');
     Route::resource('creditos', 'CreditoController', array('except' => array('show')));
     Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
+    Route::get('creditos/detallecredito/{idcredito}/{listarluego}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
 
     /*CAJA*/
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');

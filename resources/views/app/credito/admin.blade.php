@@ -51,7 +51,7 @@
         </div>
     </div>
 </div>
-
+<!--MODAL MANTENIMIENTO DE CREDITO-->
 <div class="modal fade" id="creditoManModal" tabindex="-1" role="dialog" aria-labelledby="creditoManModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -142,7 +142,7 @@
   </div>
 </div>
 
-
+<!--MODAL CRONOGRAMA DE CUOTAS -->
 <div class="modal fade" id="cronogramaModal" tabindex="-1" role="dialog" aria-labelledby="cronogramaModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -171,25 +171,108 @@
 				<tfoot>
 				</tfoot>
 			</table>
-
 			<div class="form-row">
 				<div class="form-group col-12" >
 					{!! Form::label('', 'Interes total: ', array('id'=>'interesTotal','class' => '')) !!}
 					{!! Form::label('', 'Capital total: ', array('id'=>'capitalTotal','class' => '')) !!}
 				</div>
 			</div>
-
 		</fieldset>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
-
     </div>
   </div>
 </div>
 
+<!--MODAL DETALLE CREDITO 
+<div class="modal fade" id="detallecreditoModal" tabindex="-1" role="dialog" aria-labelledby="detallecreditoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Detalle Crédito</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+	  	<fieldset class="col-12">
+		  	<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Cliente: ', array('id'=>'cliente','class' => '')) !!}
+				</div>
+			</div>
+		  	<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Monto S/.: ', array('id'=>'montocredito','class' => '')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Interes mensual (%): ', array('id'=>'interesmes','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Tiempo (Meses): ', array('id'=>'tiempomeses','class' => '')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'N° de cuotas de pago: ', array('id'=>'numcuotaspago','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Fecha de inicio: ', array('id'=>'fechainicio','class' => '')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Fecha de caducidad: ', array('id'=>'fechacaduca','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-12">
+					{!! Form::label('', 'Descripcion: ', array('id'=>'descripcredito','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-12">
+					<h3>Cuotas de pago</h3>
+				</div>
+			</div>
+
+			<table id="example1" class="table table-bordered table-striped table-condensed table-hover">
+				<thead>
+					<tr>
+						<th style='width: 5%' class='text-center'>#</th>
+						<th style=''>INTERES</th>
+						<th style='' class='text-center'>CAPITAL</th>
+						<th style='' class='text-center'>CUOTA s/.</th>
+						<th style='' class='text-center'>FECHA DE PAGO</th>
+						<th style='' class='text-center'>SITUACION</th>
+						<th style='' colspan="2">OPERACIONES</th>
+					</tr>
+				</thead>
+				<tbody id='filascuotascredito'>
+
+				</tbody>
+				<tfoot>
+				</tfoot>
+			</table>
+			<div class="form-row">
+				<div class="form-group col-12" >
+					{!! Form::label('', 'Interes total: ', array('id'=>'interesTotal','class' => '')) !!}
+					{!! Form::label('', 'Capital total: ', array('id'=>'capitalTotal','class' => '')) !!}
+				</div>
+			</div>
+		</fieldset>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+ CODIGO JAVASCRIPT -->
 <script>
 
 	$(document).ready(function () {
@@ -257,9 +340,6 @@
 				}
 			});
     	});
-
-		
-
 	});
 	function guardarcredito(){
 			console.log("datos serialixados 0001: "+$('#formMantCredito').serialize());
@@ -371,5 +451,7 @@
 		}
 	}
 
+	function mostardetalle(){
 
+	}
 </script>

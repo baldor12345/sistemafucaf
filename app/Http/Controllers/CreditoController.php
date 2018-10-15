@@ -8,9 +8,11 @@ use App\Http\Requests;
 use App\Credito;
 use App\Persona;
 use App\Detalle_cuotas;
+use App\Transaccion;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Jenssegers\Date\Date;
 
 class CreditoController extends Controller
 {
@@ -20,11 +22,13 @@ class CreditoController extends Controller
     protected $tituloRegistrar = 'Registrar credito';
     protected $tituloModificar = 'Modificar credito';
     protected $tituloEliminar  = 'Eliminar credito';
+    protected $titulo_detalle  = 'Detalle de crédito';
     protected $rutas           = array('create' => 'creditos.create', 
             'edit'     => 'creditos.edit', 
             'delete'   => 'creditos.eliminar',
             'search'   => 'creditos.buscar',
             'index'    => 'creditos.index',
+            'detallecredito'    => 'creditos.detallecredito',
             'guardarcredito'    => 'creditos.guardarcredito',
             
         );
@@ -65,9 +69,9 @@ class CreditoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_detalle', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('lista', 'entidad','titulo_detalle'));
     }
 
     /**
@@ -112,13 +116,6 @@ class CreditoController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        //$reglas     = array('name' => 'required|max:100');
-        //$mensajes   = array();
-        //$validacion = Validator::make($request->all(), $reglas, $mensajes);
-       /* if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-        }
-        */
 
         $error = DB::transaction(function() use($request){
             echo "resultado: ".$request->input('cantidad_meses');
@@ -135,19 +132,7 @@ class CreditoController extends Controller
             $credito->persona_id = $request->input('idcl'); //$request->input('idpersona');
             $credito->pers_aval_id = $request->input('idavl');
             $credito->save();
-            /*
-                for( $i=0; $i< count($credito->cantidad_cuotas); $i++){
-
-                    $detalle_cuotas  = new Detalle_Cuotas();
-                    $detalle_cuotas ->credito_id = (int)$credito->id;
-                    $detalle_cuotas->capital = 
-                    $detalle_cuotas->interes =
-                    $detalle_cuotas->fecha_pago = Date::createFromFormat('d/m/Y', '')->format('Y-m-d');
-                    $detalle_cuotas->situacion = '0';
-                    $detalle_cuotas->save();
-                $employee->birthdate     = Date::createFromFormat('d/m/Y', $request->input('birthdate'))->format('Y-m-d');
-                
-            }*/
+           
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -155,6 +140,18 @@ class CreditoController extends Controller
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
+    }
+
+    public function detallecredito(Request $request, $idcredito){
+        $resultado = Credito::obtenercredito($idcredito);
+       $credito = $resultado[0];
+        $entidad      = 'Credito';
+       
+        $fechacaducidad = Date::parse($credito->fecha)->format('Y/m/d');
+        
+        $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->cantidad_meses." month"));
+        $lista = Detalle_cuotas::listar($idcredito)->get();
+        return view($this->folderview.'.detallecredito')->with(compact('credito', 'entidad', 'lista','fechacaducidad','titulo_detalle'));
     }
 
 
@@ -203,6 +200,11 @@ class CreditoController extends Controller
                 $detalle_cuotas->save();
 
             }
+            $fechahora_actual = date("Y-m-d H:i:s");
+            $transaccion = new Transaccion();
+            $transaccion->credito_id = $credito->id;
+            $transaccion->fecha = $fechahora_actual;
+            $transaccion->save();
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -252,12 +254,7 @@ class CreditoController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-       /* $reglas     = array('name' => 'required|max:100');
-        $mensajes   = array();
-        $validacion = Validator::make($request->all(), $reglas, $mensajes);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-        } */
+      
         $error = DB::transaction(function() use($request, $id){
             $credito       = Credito::find($id);
             
