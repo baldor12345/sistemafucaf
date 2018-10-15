@@ -186,7 +186,7 @@
   </div>
 </div>
 
-<!--MODAL DETALLE CREDITO -->
+<!--MODAL DETALLE CREDITO 
 <div class="modal fade" id="detallecreditoModal" tabindex="-1" role="dialog" aria-labelledby="detallecreditoModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -199,17 +199,56 @@
 
       <div class="modal-body">
 	  	<fieldset class="col-12">
-
-
+		  	<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Cliente: ', array('id'=>'cliente','class' => '')) !!}
+				</div>
+			</div>
+		  	<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Monto S/.: ', array('id'=>'montocredito','class' => '')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Interes mensual (%): ', array('id'=>'interesmes','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Tiempo (Meses): ', array('id'=>'tiempomeses','class' => '')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'N° de cuotas de pago: ', array('id'=>'numcuotaspago','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Fecha de inicio: ', array('id'=>'fechainicio','class' => '')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6">
+					{!! Form::label('', 'Fecha de caducidad: ', array('id'=>'fechacaduca','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-12">
+					{!! Form::label('', 'Descripcion: ', array('id'=>'descripcredito','class' => '')) !!}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-12">
+					<h3>Cuotas de pago</h3>
+				</div>
+			</div>
 
 			<table id="example1" class="table table-bordered table-striped table-condensed table-hover">
 				<thead>
 					<tr>
 						<th style='width: 5%' class='text-center'>#</th>
-						<th style='width: 10%'>INTERES</th>
-						<th style='width: 30%' class='text-center'>PARTE CAPITAL</th>
-						<th style='width: 30%' class='text-center'>MONTO CUOTA</th>
-						<th style='width: 25%' class='text-center'>FECHA DE PAGO</th>
+						<th style=''>INTERES</th>
+						<th style='' class='text-center'>CAPITAL</th>
+						<th style='' class='text-center'>CUOTA s/.</th>
+						<th style='' class='text-center'>FECHA DE PAGO</th>
+						<th style='' class='text-center'>SITUACION</th>
+						<th style='' colspan="2">OPERACIONES</th>
 					</tr>
 				</thead>
 				<tbody id='filascuotascredito'>
@@ -233,6 +272,7 @@
   </div>
 </div>
 
+ CODIGO JAVASCRIPT -->
 <script>
 
 	$(document).ready(function () {
@@ -411,5 +451,7 @@
 		}
 	}
 
+	function mostardetalle(){
 
+	}
 </script>
