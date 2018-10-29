@@ -17,6 +17,10 @@ class ConfiguracionesSeeder extends Seeder
                 'precio_accion'       => '10',
                 'ganancia_accion'       => '0.01',
                 'limite_acciones'       => '0.2',
+                'tasa_interes_credito'       => '0.025',
+                'tasa_interes_multa'       => '0.01',
+                'tasa_interes_ahorro'       => '0.01',
+
                 'fecha'	=>'2018-09-08',
                 'descripcion'       => 'EL PRECIO DE ACCION ES S/.10 CON GANANCIA DE 1% POR DIA',
 				'created_at'     => $now,

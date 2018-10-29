@@ -16,13 +16,13 @@ class CrearTablaCredito extends Migration
         Schema::create('credito', function (Blueprint $table) {
             $table->increments('id');
             $table->decimal('valor_credito',10,2);
-            $table->integer('cantidad_cuotas');
-            $table->integer('cantidad_meses');
+            $table->integer('periodo');
             $table->string('descripcion', 200)->nullable();
-            $table->decimal('comision',10,2);//en porcentaje =>interes
-            $table->timestamp('fecha')->nullable();
-            $table->char('estado',1)->nullable();// C=>cancelado, P=>pendiente
-            $table->decimal('multa',10,2);
+            $table->decimal('tasa_interes',10,2);//en porcentaje =>interes
+            $table->timestamp('fechai')->nullable();
+            $table->timestamp('fechaf')->nullable();
+            $table->char('estado',1)->nullable();// C=>cancelado, P=>pendiente M=>Mora
+            $table->decimal('tasa_multa',10,2);
             $table->integer('persona_id')->unsigned();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
             //persona que avala al cliente para el prestamo

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 ?>
 
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::model($acciones, array('class' => 'form-horizontal' , 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
+{!! Form::open(array('route' => array('acciones.guardarventa', $persona->id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('idpropietario', $persona->id, array('id' => 'idpropietario')) !!}
 <div class="form-group">
@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\DB;
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'realizarventa()')) !!}
+	{!! Form::button('Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -116,6 +116,11 @@ use Illuminate\Support\Facades\DB;
     	});
 		
 	});
+
+
+
+
+	/*
 	function realizarventa(){
 		route = 'acciones/updateventa';
 		$.ajax({
@@ -137,6 +142,6 @@ use Illuminate\Support\Facades\DB;
 	        }
 		}).fail(function(){
 		});
-	} 
+	}*/ 
 
 </script>

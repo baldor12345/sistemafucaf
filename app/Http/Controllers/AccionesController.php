@@ -8,6 +8,7 @@ use Validator;
 use App\Http\Requests;
 use App\Acciones;
 use App\Persona;
+use App\Transaccion;
 use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -148,6 +149,22 @@ class AccionesController extends Controller
                         $acciones->save();
                 }
             }
+
+            //$resltAcciones = DB::table('caja')->where('estado', "A")->get();
+            $fechahora_actual = date("Y-m-d H:i:s");
+            $resultAcciones = DB::table('acciones')->where('fechai', $request->input('fechai'))->get();
+            echo $resultAcciones[0]->fechai;
+
+            for($j=0; $j< count($resultAcciones); $j++){
+                echo $resultAcciones[$j]->fechai;
+                $transaccion = new Transaccion();
+                $transaccion->acciones_id = $resultAcciones[$j]->id;
+                $transaccion->caja_id = 
+                $transaccion->fecha = $fechahora_actual;
+                $transaccion->save();
+            }
+            
+            
             
         });
         return is_null($error) ? "OK" : $error;
@@ -283,21 +300,23 @@ class AccionesController extends Controller
         if ($existe !== true) {
             return $existe;
         }
+        $listar = "NO";
         $persona = Persona::find($id);
-        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        if (isset($listarParam)) {
+            $listar = $listarParam;
+        }
         $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
         $acciones        = Acciones::find($id);
         $entidad        = 'Acciones';
-        //$formData       = array('caja.updateCaja', $id);
-        //$formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+
         $boton          = 'Vender Acciones';
         return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones'));
     }
 
-    public function updateventa(Request $request)
+    public function guardarventa(Request $request)
     {
-        $idpropietario= $request->get('idpropietario');
-        $idcomprador=$request->get('idcomprador');
+        $idpropietario= $request->input('idpropietario');
+        $idcomprador= $request->input('idcomprador');
         echo "id venderor: ".$idpropietario;
         echo "idcomprador: ".$idcomprador;
 
@@ -313,10 +332,10 @@ class AccionesController extends Controller
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
-        } 
-        $error = DB::transaction(function() use($request, $id){
+       }
 
-            
+        $listar        = Libreria::getParam($request->input('listar'), 'NO');
+        $error         = DB::transaction(function() use ($id, $idopcionmenus, $estados, $cantAux){
             $caja                 = Caja::find($id);
             $caja->descripcion        = $request->get('descripcion');
             $caja->hora_cierre        = $request->get('hora_cierre');
@@ -324,7 +343,6 @@ class AccionesController extends Controller
             $caja->diferencia_monto        = $request->get('diferencia_monto');
             $caja->estado        = 'C';//cierre
             $caja->save();
-            
         });
         return is_null($error) ? "OK" : $error;
     }

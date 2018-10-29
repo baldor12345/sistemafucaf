@@ -222,16 +222,17 @@ class CajaController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-        $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $caja        = Caja::find($id);
+        $listar         = "NO";
         $entidad        = 'Caja';
-        //$formData       = array('caja.updateCaja', $id);
-        //$formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        if (isset($listarParam)) {
+            $listar = $listarParam;
+        }
+        $caja = Caja::find($id);
         $boton          = 'Cerrar Caja';
-        return view($this->folderview.'.cierrecaja')->with(compact('caja', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.cierrecaja')->with(compact('caja','listar','entidad', 'boton'));
     }
 
-    public function updateCaja(Request $request)
+    public function cerrarCaja(Request $request)
     {
         $id= $request->get('idcaja');
         $existe = Libreria::verificarExistencia($id, 'caja');

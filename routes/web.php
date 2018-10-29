@@ -126,8 +126,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('acciones', 'AccionesController', array('except' => array('show')));
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
     Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
-    Route::get('acciones/updateventa', 'AccionesController@updateventa')->name('acciones.updateventa');
-
+    Route::post('acciones/guardarventa/{id}', 'AccionesController@guardarventa')->name('acciones.guardarventa');
     
     /*CREDITO*/
     Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
@@ -140,7 +139,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
     Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
-    Route::get('caja/updateCaja', 'CajaController@updateCaja')->name('caja.updateCaja');
+    Route::post('caja/cerrarCaja/{id}', 'CajaController@cerrarCaja')->name('caja.cerrarCaja');
+   // Route::get('caja/updateCaja', 'CajaController@updateCaja')->name('caja.updateCaja');
 
 });
 

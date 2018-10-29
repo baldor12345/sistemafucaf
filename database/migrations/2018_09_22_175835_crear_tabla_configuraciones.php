@@ -19,6 +19,10 @@ class CrearTablaConfiguraciones extends Migration
             $table->decimal('precio_accion',10,2);
             $table->decimal('ganancia_accion',10,2);//en porcentaje por cada accion comprada
             $table->decimal('limite_acciones');//limite de accines=20% con respecto a la cantidad total de acciones de la empresa
+            //para credito
+            $table->decimal('tasa_interes_credito',10,2);
+            $table->decimal('tasa_interes_multa',10,2);
+            $table->decimal('tasa_interes_ahorro',10,2);
             $table->date('fecha')->nullable();
             $table->string('descripcion', 200)->nullable();
             $table->timestamps();
