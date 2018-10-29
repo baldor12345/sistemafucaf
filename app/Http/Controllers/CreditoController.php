@@ -200,7 +200,7 @@ class CreditoController extends Controller
                 $detalle_cuotas->save();
 
             }
-            $fechahora_actual = date("Y-m-d H:i:s");
+            $fechahora_actual = date("d-m-Y H:i:s");
             $transaccion = new Transaccion();
             $transaccion->credito_id = $credito->id;
             $transaccion->fecha = $fechahora_actual;

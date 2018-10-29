@@ -19,6 +19,10 @@ class Transaccion extends Model
      * @return sql        sql
      */
 
+     public static function obtenerid($idgasto){
+        $results = DB::table('transaccion') ->where('gastos_id','=',$idgasto);
+        return $results->get();
+     }
     public function scopelistar($query,$acciones_id, $detalle_cuotas_id, $ahorros_id, $gastos_id, $credito_id, $caja_id, $fecha){
         $results = DB::table('transaccion')
         ->where('transaccion.acciones_id','=',$acciones_id)

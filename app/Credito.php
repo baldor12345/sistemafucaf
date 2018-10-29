@@ -37,10 +37,11 @@ class Credito extends Model
         'credito.estado as estado',
         'credito.multa as multa'
     )
-    ->where('credito.estado','=',$estado)
-    ->where('credito.fecha','>=',$fecha)
-    ->where('persona.nombres','LIKE', '%'.$nombreAcreditado.'%')
+    ->orwhere('persona.nombres','LIKE', '%'.$nombreAcreditado.'%')
     ->orwhere('persona.apellidos','LIKE', '%'.$nombreAcreditado.'%')
+    ->where('credito.fecha','>=',$fecha)
+    ->where('credito.estado','=',$estado)
+    
     ->orderBy('credito.fecha', 'DSC');
         
         return $results;
