@@ -92,6 +92,11 @@ class MenuoptionSeeder extends Seeder
 				),
 				
 				array(
+					'name' => 'Conceptos',
+					'link'   => 'conceptos'
+				),
+
+				array(
 					'name' => 'Personas',
 					'link'   => 'persona'
 				),

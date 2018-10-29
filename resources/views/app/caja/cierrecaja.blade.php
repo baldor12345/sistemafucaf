@@ -1,21 +1,13 @@
-<style> 
-textarea {
-    width: 100%;
-    height: 50px;
-    padding: 12px 20px;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    font-size: 16px;
-    resize: none;
-}
-</style>
 
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::model($caja, array('class' => 'form-horizontal' , 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off'))  !!}
-{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-{!! Form::hidden('idcaja', $caja->id, array('id' => 'idcaja')) !!}
+{!! Form::open(array('route' => array('caja.cerrarCaja', $caja->id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
+	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
+<div class="form-group border">
+	<div class="accordion" id="accordionExample">
+		
+	{!! Form::hidden('idcaja', $caja->id, array('id' => 'idcaja')) !!}
+
+
 <div class="form-group">
 	{!! Form::label('titulo', 'Titulo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
@@ -26,12 +18,12 @@ textarea {
 <div class="form-group">
 	{!! Form::label('fecha', 'Fecha:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha', 'placeholder' => '', 'disabled')) !!}
+		{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha', 'disabled')) !!}
 	</div>
 </div>
 <?php
 	if($caja != null){
-		echo "<input type='hidden' id='fechaTemporal' value='".Date::parse($caja->fecha )->format('d/m/Y')."'>";
+		echo "<input type='hidden' id='fechaTemporal' value='".Date::parse( $caja->fecha )->format('d/m/Y')."'>";
 		echo "<input type='hidden' id='horaCierre' value='".$caja->hora_cierre."'>";
 	}else{
 		echo "<input type='hidden' id='fechaTemp' value=''>";
@@ -76,21 +68,32 @@ textarea {
 </div>
 
 
-<div class="form-group">
-	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'updateDates();')) !!}
-		&nbsp;
-		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+
+
+
+	
+
+
+
 	</div>
 </div>
+	<div class="form-group text-center">
+		{!! Form::button('Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal((contadorModal - 1));')) !!}
+	</div>
 {!! Form::close() !!}
-<script type="text/javascript">
-	$(document).ready(function() {
-		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('400');
 
-		var fechaActual = new Date();
+<script type="text/javascript">
+$(document).ready(function() {
+		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+		configurarAnchoModal('400');
+		evaluarFecha();
+		
+	}); 
+
+
+
+var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
@@ -127,7 +130,7 @@ textarea {
 		
 	}); 
 	function updateDates(){
-		route = 'caja/updateCaja';
+		route = 'caja/cerrarCaja';
 		$.ajax({
 			url: route,
 			headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -148,4 +151,9 @@ textarea {
 		}).fail(function(){
 		});
 	}
+
+	function cerrarModal(){
+		$('#formMantenimientoCaja').modal('hide');
+	}
+
 </script>
