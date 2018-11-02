@@ -278,22 +278,14 @@ class CreditoController extends Controller
 
 
          $reglas = array(
-            'codigo'         => 'required|max:20|unique:persona,codigo,NULL,id,deleted_at,NULL',
-            'nombres'        => 'required|max:100',
-            'apellidos'      => 'required|max:100',
-            'dni'            => 'required|unique:persona,dni,NULL,id,deleted_at,NULL|regex:/^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$/',
-            'fecha_nacimiento'    => 'required|max:100',
-            'sexo'    => 'required|max:100',
-            'ocupacion'    => 'required|max:100',
-            'tipo'    => 'required|max:5',
-            'direccion'    => 'required|max:100',
-            'ingreso_personal'    => 'required|max:20',
-            'ingreso_familiar'    => 'required|max:20',
-            'telefono_fijo'     => 'required|max:15|regex:/^[0-9]+?-?[0-9]+$/',
+            'valor_credito'         => 'required|max:20',
+            'periodo'        => 'required|max:5',
+            'tasa_interes'      => 'required|max:20',
+            'fechacred'            => 'required',
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
+            return "Asegurese de rellenar todos los campos obligatorios (*)";
         }
 
         $caja = Caja::where("estado","=","A")->get();

@@ -65,8 +65,7 @@
 
       <div class="modal-body">
 		<fieldset>
-		<div id="divMensajeError"></div>
-
+		<div id="divMensajeError" class="alert alert-danger"></div>
 		<form id="formMantCredito" action="">
 			<div class="form-row">
 				<div id='txtcliente' class="form-group col-6 col-md-6 col-sm-6">
@@ -176,7 +175,7 @@
 <script>
 
 	$(document).ready(function () {
-		
+		$('#divMensajeError').hide();
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
@@ -260,10 +259,12 @@
 						$('#creditoManModal').modal('hide');
 					}else{
 						document.getElementById("divMensajeError").innerHTML = res+"";
+						$('#divMensajeError').show();
 					}
 				}
 			}).fail(function(){
 				document.getElementById("divMensajeError").innerHTML = "Ingrese todos los campos obligatorios!";
+				$('#divMensajeError').show();
 			});
 		}
 
@@ -273,12 +274,11 @@
 
 	function limpiar(){
 		$('#valor_credito').val('');
-		$('#cantidad_cuotas').val('');
-		$('#cantidad_meses').val('');
+		$('#periodo').val('');
 		$('#descripcion').val('');
 		$('#dnicl').val('');
 		$('#dniavl').val('');
-		
+		$('#divMensajeError').hide();
 		$('#idcl').val('');
 		$('#idavl').val('');
 	}
