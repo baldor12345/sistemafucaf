@@ -134,6 +134,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('creditos', 'CreditoController', array('except' => array('show')));
     Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
     Route::get('creditos/detallecredito/{idcredito}/{listarluego}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
+    
+    /*AHORROS*/
+    Route::post('ahorros/buscar', 'AhorrosController@buscar')->name('ahorros.buscar');
+    Route::get('ahorros/eliminar/{id}/{listarluego}', 'AhorrosController@eliminar')->name('ahorros.eliminar');
+    Route::resource('ahorros', 'AhorrosController', array('except' => array('show')));
+
+    /*GASTOS*/
+    Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');
+    Route::get('gastos/eliminar/{id}/{listarluego}', 'GastosController@eliminar')->name('gastos.eliminar');
+    Route::resource('gastos', 'GastosController', array('except' => array('show')));
 
     /*CAJA*/
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');

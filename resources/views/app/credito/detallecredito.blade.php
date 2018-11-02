@@ -12,20 +12,20 @@
             {!! Form::label('', 'Monto S/.: '.$credito->valor_credito, array('id'=>'montocredito','class' => '')) !!}
         </div>
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Interes mensual (%): '.$credito->comision, array('id'=>'interesmes','class' => '')) !!}
+            {!! Form::label('', 'Interes mensual (%): '.$credito->tasa_interes, array('id'=>'interesmes','class' => '')) !!}
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Tiempo (Meses): '.$credito->cantidad_meses, array('id'=>'tiempomeses','class' => '')) !!}
+            {!! Form::label('', 'Tiempo (Meses): '.$credito->periodo, array('id'=>'tiempomeses','class' => '')) !!}
         </div>
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'N° de cuotas de pago: '.$credito->cantidad_cuotas, array('id'=>'numcuotaspago','class' => '')) !!}
+            {!! Form::label('', 'N° de cuotas de pago: '.$credito->periodo, array('id'=>'numcuotaspago','class' => '')) !!}
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Fecha de inicio: '.$credito->fecha, array('id'=>'fechainicio','class' => '')) !!}
+            {!! Form::label('', 'Fecha de inicio: '.$credito->fechai, array('id'=>'fechainicio','class' => '')) !!}
         </div>
         <div class="form-group col-6 col-md-6 col-sm-6">
             {!! Form::label('', 'Fecha de caducidad: '.$fechacaducidad, array('id'=>'fechacaduca','class' => '')) !!}
@@ -62,17 +62,16 @@
                 <tr>
                     <td>{{$contador}}</td>
                     <td>{{$value->interes}}</td>
-                    <td>{{$value->capital}}</td>
-                    <td>{{$value->interes + $value->capital}}</td>
-                    <td>{{$value->fecha_pago}}</td>
-                    @if($value->situacion != 0)
+                    <td>{{$value->parte_capital}}</td>
+                    <td>{{$value->interes + $value->parte_capital}}</td>
+                    <td>{{$value->fecha_programada_pago}}</td>
+                    @if($value->estado != 0)
                     <td>Pagado</td>
                     <td><button type="button" class='btn btn-light' idevento='{{$value->id}}'>Cancelado</button></td>
                     @else
                     <td>Pendiente</td>
                     <td><button type="button" class='btnpagar btn btn-danger' idevento='{{$value->id}}'>Pagar</button></td>
                     @endif
-
                 </tr>
                 <?php
                     $contador ++;

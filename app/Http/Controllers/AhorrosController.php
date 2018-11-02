@@ -6,23 +6,23 @@ use Illuminate\Http\Request;
 
 use Validator;
 use App\Http\Requests;
-use App\Persona;
+use App\Ahorros;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-class PersonController extends Controller
+class AhorrosController extends Controller
 {
-    protected $folderview      = 'app.persona';
-    protected $tituloAdmin     = 'Persona';
-    protected $tituloRegistrar = 'Registrar persona';
-    protected $tituloModificar = 'Modificar persona';
-    protected $tituloEliminar  = 'Eliminar persona';
-    protected $rutas           = array('create' => 'persona.create', 
-            'edit'   => 'persona.edit', 
-            'delete' => 'persona.eliminar',
-            'search' => 'persona.buscar',
-            'index'  => 'persona.index',
+    protected $folderview      = 'app.ahorros';
+    protected $tituloAdmin     = 'Ahorros';
+    protected $tituloRegistrar = 'Registrar ahorro';
+    protected $tituloModificar = 'Modificar ahorro';
+    protected $tituloEliminar  = 'Eliminar ahorro';
+    protected $rutas           = array('create' => 'ahorros.create', 
+            'edit'   => 'ahorros.edit', 
+            'delete' => 'ahorros.eliminar',
+            'search' => 'ahorros.buscar',
+            'index'  => 'ahorros.index',
         );
 
     /**
@@ -44,22 +44,18 @@ class PersonController extends Controller
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $entidad          = 'Persona';
-        $codigo             = Libreria::getParam($request->input('codigo'));
+        $entidad          = 'Ahorros';
+        $fecha             = Libreria::getParam($request->input('fecha'));
         $nombres             = Libreria::getParam($request->input('nombres'));
-        $dni             = Libreria::getParam($request->input('dni'));
-        $tipo             = Libreria::getParam($request->input('tipo'));
-        $resultado        = Persona::listar($codigo, $nombres, $dni, $tipo);
+        $resultado        = Ahorros::listar($nombres, $fecha);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Nombres', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha de Ingreso', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Direccion', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Telefono', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Email', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Periodo', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha de Inicio', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha fin', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
@@ -86,14 +82,11 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $entidad          = 'Persona';
+        $entidad          = 'Ahorros';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
-        $cboTipo        = [''=>'Todo']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
-        $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
-        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo');
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta', 'cboTipo', 'cboSexo','cboEstadoCivil'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta'));
     }
 
     /**
@@ -104,15 +97,12 @@ class PersonController extends Controller
     public function create(Request $request)
     {
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $entidad        = 'Persona';
-        $persona        = null;
-        $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
-        $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
-        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo');
-        $formData       = array('persona.store');
+        $entidad        = 'Ahorros';
+        $ahorros        = null;
+        $formData       = array('ahorros.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil'));
+        return view($this->folderview.'.mant')->with(compact('ahorros', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -124,7 +114,7 @@ class PersonController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas = array(
+       /* $reglas = array(
             'codigo'         => 'required|max:20|unique:persona,codigo,NULL,id,deleted_at,NULL',
             'nombres'        => 'required|max:100',
             'apellidos'      => 'required|max:100',
@@ -141,35 +131,26 @@ class PersonController extends Controller
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
-        }
+        }*/
         $error = DB::transaction(function() use($request){
-            $perosna               = new Persona();
-            $perosna->codigo        = $request->input('codigo');
-            $perosna->dni        = $request->input('dni');
-            $perosna->nombres        = $request->input('nombres');
-            $perosna->apellidos        = $request->input('apellidos');
-            $perosna->tipo        = $request->input('tipo');
-            $perosna->fechai        = $request->input('fechai');
-            $perosna->direccion        = $request->input('direccion');
-            $perosna->fecha_nacimiento        = $request->input('fecha_nacimiento');
+            $ahorros               = new Ahorros();
 
-            $perosna->nombres_apoderado        = $request->input('nombres_apoderado');
-            $perosna->dni_apoderado        = $request->input('dni_apoderado');
-            $perosna->telefono_fijo_apoderado        = $request->input('telefono_fijo_apoderado');
-            $perosna->direccion_apoderado        = $request->input('direccion_apoderado');
+            $ahorros->inporte = $request->input('importe');
+            $ahorros->periodo = $request->input('periodo');
+            $ahorros->fecha_inicio = $request->input('fecha_inicio');
+            $ahorros->fecha_fin = $request->input('fecha_fin');
+            $ahorros->interes = $request->input('interes');
+            $ahorros->persona_id = $request->input('persona_id');
 
-            $perosna->sexo        = $request->input('sexo');
-            $perosna->estado_civil        = $request->input('estado_civil');
-            $perosna->ocupacion        = $request->input('ocupacion');
-            $perosna->personas_en_casa        = $request->input('personas_en_casa');
-            $perosna->ingreso_personal        = $request->input('ingreso_personal');
-            $perosna->ingreso_familiar        = $request->input('ingreso_familiar');
-            $perosna->telefono_fijo        = $request->input('telefono_fijo');
-            $perosna->telefono_movil1        = $request->input('telefono_movil1');
-            $perosna->telefono_movil2        = $request->input('telefono_movil2');
-            $perosna->email        = $request->input('email');
-            $perosna->save();
+            $ahorros->save();
+            //Guardar en tabla transacciones **********
+            $fechahora_actual = date("d-m-Y H:i:s");
+            $transaccion = new Transaccion();
+            $transaccion->ahorros_id = $ahorros->id;
+            $transaccion->fecha = $fechahora_actual;
+            $transaccion->save();
         });
+
         return is_null($error) ? "OK" : $error;
     }
 
@@ -197,15 +178,13 @@ class PersonController extends Controller
             return $existe;
         }
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
-        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo');
-        $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
+        
         $persona        = Persona::find($id);
-        $entidad        = 'Persona';
-        $formData       = array('persona.update', $id);
+        $entidad        = 'Ahorros';
+        $formData       = array('ahorros.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','cboSexo','cboEstadoCivil', 'cboTipo'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -217,11 +196,11 @@ class PersonController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $existe = Libreria::verificarExistencia($id, 'persona');
+        $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
             return $existe;
         }
-        $reglas = array(
+      /*  $reglas = array(
             'codigo'       => 'required|max:20|unique:persona,codigo,'.$id.',id,deleted_at,NULL',
             'dni'       => 'required|max:20|unique:persona,dni,'.$id.',id,deleted_at,NULL',
             'nombres'    => 'required|max:100',
@@ -238,34 +217,19 @@ class PersonController extends Controller
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
-        } 
+        } */
         $error = DB::transaction(function() use($request, $id){
-            $perosna                 = Persona::find($id);
-            $perosna->codigo        = $request->input('codigo');
-            $perosna->dni        = $request->input('dni');
-            $perosna->nombres        = $request->input('nombres');
-            $perosna->apellidos        = $request->input('apellidos');
-            $perosna->tipo        = $request->input('tipo');
-            $perosna->fechai        = $request->input('fechai');
-            $perosna->direccion        = $request->input('direccion');
-            $perosna->fecha_nacimiento        = $request->input('fecha_nacimiento');
+            $ahorros                 = Ahorros::find($id);
 
-            $perosna->nombres_apoderado        = $request->input('nombres_apoderado');
-            $perosna->dni_apoderado        = $request->input('dni_apoderado');
-            $perosna->telefono_fijo_apoderado        = $request->input('telefono_fijo_apoderado');
-            $perosna->direccion_apoderado        = $request->input('direccion_apoderado');
+            $ahorros->inporte = $request->input('importe');
+            $ahorros->periodo = $request->input('periodo');
+            $ahorros->fecha_inicio = $request->input('fecha_inicio');
+            $ahorros->fecha_fin = $request->input('fecha_fin');
+            $ahorros->interes = $request->input('interes');
+            $ahorros->persona_id = $request->input('persona_id');
 
-            $perosna->sexo        = $request->input('sexo');
-            $perosna->estado_civil        = $request->input('estado_civil');
-            $perosna->ocupacion        = $request->input('ocupacion');
-            $perosna->personas_en_casa        = $request->input('personas_en_casa');
-            $perosna->ingreso_personal        = $request->input('ingreso_personal');
-            $perosna->ingreso_familiar        = $request->input('ingreso_familiar');
-            $perosna->telefono_fijo        = $request->input('telefono_fijo');
-            $perosna->telefono_movil1        = $request->input('telefono_movil1');
-            $perosna->telefono_movil2        = $request->input('telefono_movil2');
-            $perosna->email        = $request->input('email');
-            $perosna->save();
+            $ahorros->save();
+
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -274,17 +238,17 @@ class PersonController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response 
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $existe = Libreria::verificarExistencia($id, 'persona');
+        $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
             return $existe;
         }
         $error = DB::transaction(function() use($id){
-            $persona = Persona::find($id);
-            $persona->delete();
+            $ahorros = Ahorros::find($id);
+            $ahorros->delete();
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -297,7 +261,7 @@ class PersonController extends Controller
      */
     public function eliminar($id, $listarLuego)
     {
-        $existe = Libreria::verificarExistencia($id, 'persona');
+        $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
             return $existe;
         }
@@ -305,9 +269,9 @@ class PersonController extends Controller
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
-        $modelo   = Persona::find($id);
-        $entidad  = 'Persona';//este  
-        $formData = array('route' => array('persona.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $modelo   = Ahorros::find($id);
+        $entidad  = 'Ahorros';
+        $formData = array('route' => array('ahorros.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }

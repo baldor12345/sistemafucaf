@@ -14,30 +14,20 @@
 	<tbody>
 		<?php
 		$contador = $inicio + 1;
-		
 		?>
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td>{{ $contador }}</td>
-			
-			<td>{{ $value->nombres." ".$value->apellidos}} </td>
-			<td>{{ $value->valor_credito }}</td>
-			<td>{{ $value->periodo }}</td>
-			@if ($value->estado === '0')
-			<td>Pendiente</td>
-			@else
-			<td>Cancelado</td>
-			@endif
-
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver detalle', array('onclick' => 'modal (\''.URL::route($ruta["detallecredito"], array($value->credito_id, 'SI')).'\', \'Detalle de credito\', this);','class' => 'btn btn-xs btn-warning btndetcredito', "idcred"=>$value->credito_id)) !!}</td>
+			<td>{{ $value->monto }}</td>
+			<td>{{ $value->concepto }}</td>
+			<td>{{ date('d/m/Y', strtotime($value->fecha)) }}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
 		</tr>
 
 		<?php
 		$contador = $contador + 1;
 		?>
-
 		@endforeach
 	</tbody>
-</table
-
+</table>
 @endif
