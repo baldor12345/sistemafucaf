@@ -1,5 +1,5 @@
 
-<a href="#" onclick="cargarRutaMenu('http://localhost:8080/fucaf/caja', 'container', '0');">volver</a>
+<a class="glyphicon glyphicon-chevron-left btn btn-warning btn-xs " href="#" onclick="cargarRutaMenu('caja', 'container', '0');">Volver</a>
 <div class="row">
     <div class="col-sm-12">
         <div class="card-box table-responsive">
