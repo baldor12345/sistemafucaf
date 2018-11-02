@@ -118,7 +118,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     /*CONFIGURACIONES*/
     Route::post('configuraciones/buscar', 'ConfiguracionesController@buscar')->name('configuraciones.buscar');
-    Route::get('configuraciones/eliminar/{id}/{listarluego}', 'Configuraciones@eliminar')->name('configuraciones.eliminar');
+    Route::get('configuraciones/eliminar/{id}/{listarluego}', 'ConfiguracionesController@eliminar')->name('configuraciones.eliminar');
     Route::resource('configuraciones', 'ConfiguracionesController', array('except' => array('show')));
 
     /*ACCIONES*/
@@ -140,7 +140,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('caja', 'CajaController', array('except' => array('show')));
     Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
     Route::post('caja/cerrarCaja/{id}', 'CajaController@cerrarCaja')->name('caja.cerrarCaja');
-   // Route::get('caja/updateCaja', 'CajaController@updateCaja')->name('caja.updateCaja');
+    Route::get('caja/redirtransaccion/{id}', 'CajaController@redirtransaccion')->name('caja.redirtransaccion');
+
+   /*CONCEPTO*/
+   Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');
+   Route::get('concepto/eliminar/{id}/{listarluego}', 'ConceptoController@eliminar')->name('concepto.eliminar');
+   Route::resource('concepto', 'ConceptoController', array('except' => array('show')));
+
+   /*TRANSACCIONES*/
+   Route::post('transaccion/buscar', 'TransaccionController@buscar')->name('transaccion.buscar');
+   Route::get('transaccion/eliminar/{id}/{listarluego}', 'TransaccionController@eliminar')->name('transaccion.eliminar');
+   Route::resource('transaccion', 'TransaccionController', array('except' => array('show')));
 
 });
 

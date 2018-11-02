@@ -27,7 +27,7 @@ class CajaController extends Controller
             'search' => 'caja.buscar',
             'index'  => 'caja.index',
             'cargarCaja'   => 'caja.cargarCaja',
-            'updateCaja' => 'caja.updateCaja',
+            'redirtransaccion'   => 'caja.redirtransaccion', 
         );
 
     /**
@@ -63,7 +63,7 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Mont. cie.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Dif. mont.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -260,4 +260,33 @@ class CajaController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
+
+
+    //datos de la redireccion transaccion
+    protected $rutas_transaccion           = array('create' => 'transaccion.create', 
+            'edit'     => 'transaccion.edit', 
+            'delete'   => 'transaccion.eliminar',
+            'search'   => 'transaccion.buscar',
+            'index'    => 'tipousuario.index',
+            'permisos' => 'transaccion.obtenerpermisos',
+            'operaciones' => 'transaccion.obteneroperaciones',
+        );
+
+    public function redirtransaccion($id, Request $request)
+    {
+
+        $existe = Libreria::verificarExistencia($id, 'caja');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        $caja        = Caja::find($id);
+        $entidad          = 'Transaccion';
+        $title            = "";
+        $titulo_registrar = "registrar transaccion";
+        //$ruta             = $this->rutas;
+        $ruta             = $this->rutas_transaccion;
+        return view('app.transaccion.admin')->with(compact('caja', 'title', 'id', 'entidad', 'titulo_registrar','ruta' ,'listar'));
+    }
+
 }
