@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Detalle_cuotas extends Model
+class Cuota extends Model
 {
     use SoftDeletes;
-    protected $table = 'detalle_cuotas';
+    protected $table = 'cuota';
     protected $dates = ['deleted_at'];
     
     /**
@@ -20,9 +20,9 @@ class Detalle_cuotas extends Model
      */
 
     public function scopelistar($query,$idcredito){
-        $results = DB::table('detalle_cuotas')
-        ->where('detalle_cuotas.credito_id','=',$idcredito)
-        ->orderBy('detalle_cuotas.fecha_pago', 'ASC');
+        $results = DB::table('cuota')
+        ->where('cuota.credito_id','=',$idcredito)
+        ->orderBy('cuota.fecha_programada_pago', 'ASC');
         return $results;
     }
 }

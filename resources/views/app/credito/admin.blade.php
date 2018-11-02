@@ -82,45 +82,31 @@
 					<p id="nombresavl" class="" >DNI Aval Vacio</p>
 					<input type="hidden" id="idavl", name="idavl" value="" tipoavl=''>
 				</div>
-			</div>
-
-			<div class="form-row">
 				<div class="form-group col-6 col-md-6 col-sm-6">
 					{!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => '')) !!}
 					{!! Form::text('valor_credito', null, array('class' => 'form-control input-xs input-number', 'id' => 'valor_credito', 'placeholder' => 's/.')) !!}
 				</div>
 				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('comision', 'Interes mensual (%):', array('class' => '')) !!}
-					{!! Form::text('comision', 20, array('class' => 'form-control input-xs', 'id' => 'comision', 'placeholder' => 'Ingrese el interes mensual')) !!}
+					{!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => '')) !!}
+					{!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %')) !!}
 				</div>
-			</div>
-
-			<div class="form-row">
+			
 				<div class="form-group col-6 col-md-6 col-sm-6">
-				{!! Form::label('cantidad_meses', 'Periodo (N° Meses): *', array('class' => '')) !!}
-				{!! Form::text('cantidad_meses', null, array('class' => 'form-control input-xs', 'id' => 'cantidad_meses', 'placeholder' => 'Ingrese Numero de meses')) !!}
+				{!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => '')) !!}
+				{!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses')) !!}
 				</div>
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('cantidad_cuotas', 'N° Cuotas: *', array('class' => '')) !!}
-					{!! Form::text('cantidad_cuotas', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_cuotas', 'placeholder' => 'Ingrese Numero de cuotas', 'maxlength' => '8')) !!}
-				</div>
-			</div>
-
-			<div class="form-row">
+			
 				<div class="form-group col-6 col-md-6 col-sm-6" >
 					{!! Form::label('fechacred', 'Fecha: *', array('class' => '')) !!}
 					{!! Form::date('fechacred', null, array('class' => 'form-control input-xs', 'id' => 'fechacred')) !!}
 				</div>
-				<div class="form-group col-6 col-md-6 col-sm-6" >
-					{!! Form::label('btnCronograma', 'Ver cronograma de pagos: *', array('class' => '')) !!}
-					{!! Form::button('<i class="fa fa-check fa-lg"></i> Cronograma', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
-				</div>
-			</div>
-
-			<div class="form-row">
 				<div class="form-group col-12" >
 					{!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
 					{!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
+				</div>
+				<div class="form-group col-6 col-md-6 col-sm-6" >
+					{!! Form::label('btnCronograma', 'Ver cronograma de pagos: *', array('class' => '')) !!}
+					{!! Form::button('<i class="fa fa-check fa-lg"></i> Cronograma', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
 				</div>
 			</div>
 			<div class="form-group">
@@ -186,93 +172,7 @@
   </div>
 </div>
 
-<!--MODAL DETALLE CREDITO 
-<div class="modal fade" id="detallecreditoModal" tabindex="-1" role="dialog" aria-labelledby="detallecreditoModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel">Detalle Crédito</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <div class="modal-body">
-	  	<fieldset class="col-12">
-		  	<div class="form-row">
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'Cliente: ', array('id'=>'cliente','class' => '')) !!}
-				</div>
-			</div>
-		  	<div class="form-row">
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'Monto S/.: ', array('id'=>'montocredito','class' => '')) !!}
-				</div>
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'Interes mensual (%): ', array('id'=>'interesmes','class' => '')) !!}
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'Tiempo (Meses): ', array('id'=>'tiempomeses','class' => '')) !!}
-				</div>
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'N° de cuotas de pago: ', array('id'=>'numcuotaspago','class' => '')) !!}
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'Fecha de inicio: ', array('id'=>'fechainicio','class' => '')) !!}
-				</div>
-				<div class="form-group col-6 col-md-6 col-sm-6">
-					{!! Form::label('', 'Fecha de caducidad: ', array('id'=>'fechacaduca','class' => '')) !!}
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-group col-12">
-					{!! Form::label('', 'Descripcion: ', array('id'=>'descripcredito','class' => '')) !!}
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-group col-12">
-					<h3>Cuotas de pago</h3>
-				</div>
-			</div>
-
-			<table id="example1" class="table table-bordered table-striped table-condensed table-hover">
-				<thead>
-					<tr>
-						<th style='width: 5%' class='text-center'>#</th>
-						<th style=''>INTERES</th>
-						<th style='' class='text-center'>CAPITAL</th>
-						<th style='' class='text-center'>CUOTA s/.</th>
-						<th style='' class='text-center'>FECHA DE PAGO</th>
-						<th style='' class='text-center'>SITUACION</th>
-						<th style='' colspan="2">OPERACIONES</th>
-					</tr>
-				</thead>
-				<tbody id='filascuotascredito'>
-
-				</tbody>
-				<tfoot>
-				</tfoot>
-			</table>
-			<div class="form-row">
-				<div class="form-group col-12" >
-					{!! Form::label('', 'Interes total: ', array('id'=>'interesTotal','class' => '')) !!}
-					{!! Form::label('', 'Capital total: ', array('id'=>'capitalTotal','class' => '')) !!}
-				</div>
-			</div>
-		</fieldset>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
- CODIGO JAVASCRIPT -->
+ <!--CODIGO JAVASCRIPT -->
 <script>
 
 	$(document).ready(function () {
@@ -352,17 +252,18 @@
 					
 				},
 				success: function(res){
-					
-					buscar('{{ $entidad }}');
-					limpiar();
-					$('#txtaval').hide();
-					$('#creditoManModal').modal('hide');
-					$("#nombrescl").html("DNI Cliente Vacio");
-					$('#nombresavl').html("DNI Aval Vacio");
+					if(res == "OK"){
+						limpiar();
+						buscar('{{ $entidad }}');
+						$("#nombrescl").html("DNI Cliente Vacio");
+						$('#nombresavl').html("DNI Aval Vacio");
+						$('#creditoManModal').modal('hide');
+					}else{
+						document.getElementById("divMensajeError").innerHTML = res+"";
+					}
 				}
 			}).fail(function(){
 				document.getElementById("divMensajeError").innerHTML = "Ingrese todos los campos obligatorios!";
-				
 			});
 		}
 
@@ -392,10 +293,9 @@
 
 	function generarCronograma(){
 		$('#filasTcuotas').empty();
-		var NumMeses= parseInt($('#cantidad_meses').val());
-		var NumCuotas= parseInt($('#cantidad_cuotas').val());
+		var periodo= parseInt($('#periodo').val());
 		var Monto= parseFloat($('#valor_credito').val());
-		var Interes= parseFloat($('#comision').val());
+		var Interes= parseFloat($('#tasa_interes').val());
 		var CapitalInicial= parseFloat($('#valor_credito').val());
 		//var fecha = new Date(año,mes,dia);
 		var montInteres=0.00;
@@ -407,10 +307,10 @@
 		var capitalTotal = 0.00;
 		var fila='';
 		//FORMULA: CUOTA = (Interes * CpitalInicial)/(1-  (1/ (1+InteresMensual)^NumeroCuotas)  );  Math.pow(7, 2);
-		montCuota =RoundDecimal( ((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), NumCuotas))), 2);
+		montCuota =RoundDecimal( ((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo))), 2);
 		var i=0;
 		
-		for(i=0; i<NumCuotas; i++){
+		for(i=0; i<periodo; i++){
 			fechac.setMonth(fechac.getMonth() + 1);
 			var day = ("0" + fechac.getDate()).slice(-2);
 			var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
@@ -451,7 +351,4 @@
 		}
 	}
 
-	function mostardetalle(){
-
-	}
 </script>

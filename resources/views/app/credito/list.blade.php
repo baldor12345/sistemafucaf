@@ -22,7 +22,7 @@
 			
 			<td>{{ $value->nombres." ".$value->apellidos}} </td>
 			<td>{{ $value->valor_credito }}</td>
-			<td>{{ $value->cuotas }}</td>
+			<td>{{ $value->periodo }}</td>
 			@if ($value->estado === '0')
 			<td>Pendiente</td>
 			@else

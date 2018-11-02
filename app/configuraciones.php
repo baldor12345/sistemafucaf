@@ -26,5 +26,6 @@ class configuraciones extends Model
                     })
                     ->orderBy('codigo', 'ASC');
     }
+    
 
 }
