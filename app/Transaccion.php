@@ -39,8 +39,6 @@ class Transaccion extends Model
         return $this->belongsTo('App\Caja', 'caja_id');
     }
 
-
-
     public function scopelistar($query, $fecha, $concepto_id){
         $idCaja = DB::table('caja')->where('estado', "A")->value('id');
         //echo "id de la caja: ".$idCaja;
@@ -64,10 +62,8 @@ class Transaccion extends Model
                     ->orderBy('concepto_id', 'ASC');
         }
 
-    public static function obtenerid($idgasto){
+     public static function obtenerid($idgasto){
         $results = DB::table('transaccion') ->where('gastos_id','=',$idgasto);
         return $results->get();
-     }
-
-
+     }    
 }

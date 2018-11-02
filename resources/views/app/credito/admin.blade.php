@@ -240,6 +240,7 @@
 			});
     	});
 	});
+	
 	function guardarcredito(){
 			console.log("datos serialixados 0001: "+$('#formMantCredito').serialize());
 			$.ajax({

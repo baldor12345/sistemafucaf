@@ -281,7 +281,6 @@ class CreditoController extends Controller
             'valor_credito'         => 'required|max:20',
             'periodo'        => 'required|max:5',
             'tasa_interes'      => 'required|max:20',
-            'fechacred'            => 'required',
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
