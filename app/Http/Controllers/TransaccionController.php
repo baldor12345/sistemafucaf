@@ -55,7 +55,6 @@ class TransaccionController extends Controller
         $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'MONTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'PERSONA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DESCRIPCION', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
@@ -82,12 +81,26 @@ class TransaccionController extends Controller
      */
     public function index()
     {
+        $ingresos =0;
+        $egresos=0;
+        $diferencia =0;
         $entidad          = 'Transaccion';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $cboConcepto = array('' => 'Todo') + Concepto::pluck('titulo', 'id')->all();
+
+        $saldo = Transaccion::getsaldo()->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $diferencia= $ingresos-$egresos;
+
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboConcepto','title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad','saldo' ,'cboConcepto','title', 'titulo_registrar', 'ruta','ingresos','egresos','diferencia'));
     }
 
     /**

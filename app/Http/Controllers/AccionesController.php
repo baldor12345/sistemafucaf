@@ -164,11 +164,14 @@ class AccionesController extends Controller
 
             $idConcepto = DB::table('concepto')->where('titulo', "Compra de acciones")->value('id');
 
+            //datos de la persona
+            $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
+
             $transaccion = new Transaccion();
             $transaccion->fecha = $fechahora_actual;
             $transaccion->monto = $monto_ingreso;
             $transaccion->concepto_id = $idConcepto;
-            $transaccion->descripcion = " compro ".$cant_acciones." acciones";
+            $transaccion->descripcion = $persona_nombre." compro ".$cant_acciones." acciones";
             $transaccion->persona_id = $request->input('persona_id');
             $transaccion->usuario_id =Caja::getIdPersona();;
             $transaccion->caja_id =$idCaja;
@@ -384,31 +387,21 @@ class AccionesController extends Controller
 
             $monto_ingreso = ($cant_acciones*$precio);
 
-            $idConcepto_compra = DB::table('concepto')->where('titulo', "Compra de acciones")->value('id');
+            $idConcepto_compra = DB::table('concepto')->where('titulo', "Venta de acciones")->value('id');
 
+            //datos de la persona
+            $persona_comprador = DB::table('persona')->where('id', $request->input('idcomprador'))->value('nombres');
+            $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
+            
+            //registro de venta en la transaccion
             $transaccion = new Transaccion();
             $transaccion->fecha = date("Y-m-d H:i:s");
-            $transaccion->monto = $monto_ingreso;
+            $transaccion->monto = 0.0;
             $transaccion->concepto_id = $idConcepto_compra;
-            $transaccion->descripcion = " compro ".$cant_acciones." acciones";
-            $transaccion->persona_id = $request->input('idcomprador');
+            $transaccion->descripcion =  "transferencia de:  ".$cant_acciones." acciones de la persona ".$persona_vendedor." a la persona  ".$persona_comprador.".";
             $transaccion->usuario_id =Caja::getIdPersona();;
             $transaccion->caja_id =$idCaja;
             $transaccion->save();
-
-            //registrar la venta del vendedor
-            $venta = ($cantidad_accion*$precio);
-            $idConcepto_venta = DB::table('concepto')->where('titulo', "Venta de acciones")->value('id');
-            $transaccion = new Transaccion();
-            $transaccion->fecha = date("Y-m-d H:i:s");
-            $transaccion->monto = $venta;
-            $transaccion->concepto_id = $idConcepto_venta;
-            $transaccion->descripcion = " vendido ".$cantidad_accion." acciones";
-            $transaccion->persona_id = $request->input('idpropietario');
-            $transaccion->usuario_id =Caja::getIdPersona();;
-            $transaccion->caja_id =$idCaja;
-            $transaccion->save();
-
              
         });
         

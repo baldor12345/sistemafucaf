@@ -21,7 +21,6 @@
 			<td>{{ Date::parse($value->fecha )->format('Y/m/d')  }}</td>
 			<td>{{ $value->monto }}</td>
 			<td>{{ $value->concepto->titulo }}</td>
-			<td>{{ $value->persona->nombres.'  '.$value->persona->apellidos }}</td>
 			<td>{{ $value->descripcion }}</td>
 		</tr>
 		<?php
