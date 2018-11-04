@@ -1,12 +1,13 @@
-
+<?php 
+use App\Persona;
+use App\Acciones;
+use App\Configuraciones;
+use Illuminate\Support\Facades\DB;
+?>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::open(array('route' => array('caja.cerrarCaja', $caja->id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-<div class="form-group border">
-	<div class="accordion" id="accordionExample">
-		
 	{!! Form::hidden('idcaja', $caja->id, array('id' => 'idcaja')) !!}
-
 
 <div class="form-group">
 	{!! Form::label('titulo', 'Titulo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
@@ -67,26 +68,20 @@
 	</div>
 </div>
 
-
-
-
-
-	
-
-
-
+<div class="form-group">
+	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+	{!! Form::button('Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		&nbsp;
+		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
 </div>
-	<div class="form-group text-center">
-		{!! Form::button('Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
-		{!! Form::button('Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal((contadorModal - 1));')) !!}
-	</div>
 {!! Form::close() !!}
 
 <script type="text/javascript">
 $(document).ready(function() {
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-		configurarAnchoModal('400');
+		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
+		configurarAnchoModal('460');
 		evaluarFecha();
 		
 	}); 

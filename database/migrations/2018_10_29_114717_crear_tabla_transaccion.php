@@ -21,7 +21,7 @@ class CrearTablaTransaccion extends Migration
             $table->char('inicial_tabla',2)->nullable();
             $table->integer('concepto_id')->unsigned()->nullable();
             $table->string('descripcion', 400)->nullable();
-            $table->integer('persona_id')->unsigned();
+            $table->integer('persona_id')->unsigned()->nullable();
             $table->integer('usuario_id')->unsigned();
             $table->integer('caja_id')->unsigned();
             $table->foreign('concepto_id')->references('id')->on('concepto')->onDelete('restrict')->onUpdate('restrict');

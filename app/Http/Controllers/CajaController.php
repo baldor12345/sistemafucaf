@@ -224,11 +224,12 @@ class CajaController extends Controller
         }
         $listar         = "NO";
         $entidad        = 'Caja';
+        $caja = Caja::find($id);
+        
         if (isset($listarParam)) {
             $listar = $listarParam;
         }
-        $caja = Caja::find($id);
-        $boton          = 'Cerrar Caja';
+       
         return view($this->folderview.'.cierrecaja')->with(compact('caja','listar','entidad', 'boton'));
     }
 

@@ -16,7 +16,7 @@ class CrearTablaConcepto extends Migration
         Schema::create('concepto', function (Blueprint $table) {
             $table->increments('id');
             $table->string('titulo', 200);
-            $table->char('tipo', 3);
+            $table->char('tipo', 1);
             $table->softDeletes();
             $table->timestamps();
         });

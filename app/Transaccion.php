@@ -60,11 +60,12 @@ class Transaccion extends Model
 		            	}
                     })
                     ->orderBy('concepto_id', 'ASC');
-        }
+    }
 
-     public static function obtenerid($idgasto){
+    public static function obtenerid($idgasto){
         $results = DB::table('transaccion') ->where('gastos_id','=',$idgasto);
         return $results->get();
+
      }  
      
      public static function getTransaccion($id_tabla, $inicial_tabla){
@@ -74,4 +75,20 @@ class Transaccion extends Model
         return $transaccion;
      }
      
+    
+
+    public static function getsaldo(){
+        $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+        $results = DB::table('transaccion')
+            ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+            ->select( 
+                    'concepto.titulo as concepto_titulo',
+                    'concepto.tipo as concepto_tipo',
+                    DB::raw('sum(transaccion.monto) as monto')
+                    )->where('transaccion.caja_id','=',$idCaja)
+                    ->groupBy('concepto.titulo',
+                                'concepto.tipo');
+        return $results;
+    }    
+
 }
