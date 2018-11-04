@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Http\Requests;
 use App\Ahorros;
+use App\Concepto;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -52,11 +53,11 @@ class AhorrosController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Nombres', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Monto', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto S/.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Periodo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Fecha de Inicio', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Fecha fin', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -99,10 +100,12 @@ class AhorrosController extends Controller
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Ahorros';
         $ahorros        = null;
+        $resultado      = Concepto::listar('I');
+        $cboConcepto    = $resultado->get();
         $formData       = array('ahorros.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('ahorros', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('ahorros', 'formData', 'entidad', 'boton', 'listar','cboConcepto'));
     }
 
     /**
@@ -114,41 +117,49 @@ class AhorrosController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-       /* $reglas = array(
-            'codigo'         => 'required|max:20|unique:persona,codigo,NULL,id,deleted_at,NULL',
-            'nombres'        => 'required|max:100',
-            'apellidos'      => 'required|max:100',
-            'dni'            => 'required|unique:persona,dni,NULL,id,deleted_at,NULL|regex:/^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$/',
-            'fecha_nacimiento'    => 'required|max:100',
-            'sexo'    => 'required|max:100',
-            'ocupacion'    => 'required|max:100',
-            'tipo'    => 'required|max:5',
-            'direccion'    => 'required|max:100',
-            'ingreso_personal'    => 'required|max:20',
-            'ingreso_familiar'    => 'required|max:20',
-            'telefono_fijo'     => 'required|max:15|regex:/^[0-9]+?-?[0-9]+$/',
+        $reglas = array(
+            'importe'         => 'required|max:20',
+            'periodo'        => 'required|max:10',
+            'fecha_inicio'      => 'required|max:100',
+            'interes'    => 'required|max:100',
+            'persona_id'    => 'required|max:100',
             );
+
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
-        }*/
+        }
+
         $error = DB::transaction(function() use($request){
             $ahorros               = new Ahorros();
 
-            $ahorros->inporte = $request->input('importe');
+            $ahorros->importe = $request->input('importe');
             $ahorros->periodo = $request->input('periodo');
             $ahorros->fecha_inicio = $request->input('fecha_inicio');
             $ahorros->fecha_fin = $request->input('fecha_fin');
             $ahorros->interes = $request->input('interes');
             $ahorros->persona_id = $request->input('persona_id');
-
+            $ahorros->descripcion = $request->input('descripcion');
             $ahorros->save();
             //Guardar en tabla transacciones **********
-            $fechahora_actual = date("d-m-Y H:i:s");
+            $caja = Caja::where("estado","=","A")->get();
+            $fechahora_actual = date("Y-m-d H:i:s");
+            $idconcepto = $request->input('concepto');
+
             $transaccion = new Transaccion();
-            $transaccion->ahorros_id = $ahorros->id;
-            $transaccion->fecha = $fechahora_actual;
+            $transaccion->fecha = $ahorros->fecha_inicio;
+            $transaccion->monto = $ahorros->importe;
+            $transaccion->id_tabla = $ahorros->id;
+            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = $idconcepto;
+            $transaccion->descripcion = $ahorros->descripcion;
+            $transaccion->persona_id = $ahorros->persona_id;
+            $transaccion->usuario_id = Credito::idUser();
+            $transaccion->caja_id =  $caja[0]->id;
             $transaccion->save();
+
+            
+
         });
 
         return is_null($error) ? "OK" : $error;
@@ -173,18 +184,18 @@ class AhorrosController extends Controller
      */
     public function edit($id, Request $request)
     {
-        $existe = Libreria::verificarExistencia($id, 'persona');
+        $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
             return $existe;
         }
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        
-        $persona        = Persona::find($id);
+        $ahorros        = Ahorros::find($id);
         $entidad        = 'Ahorros';
         $formData       = array('ahorros.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('ahorros', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -200,36 +211,41 @@ class AhorrosController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-      /*  $reglas = array(
-            'codigo'       => 'required|max:20|unique:persona,codigo,'.$id.',id,deleted_at,NULL',
-            'dni'       => 'required|max:20|unique:persona,dni,'.$id.',id,deleted_at,NULL',
-            'nombres'    => 'required|max:100',
-            'apellidos'    => 'required|max:100',
-            'fecha_nacimiento'    => 'required|max:100',
-            'sexo'    => 'required|max:100',
-            'ocupacion'    => 'required|max:100',
-            'tipo'    => 'required|max:5',
-            'direccion'    => 'required|max:100',
-            'ingreso_personal'    => 'required|max:20',
-            'ingreso_familiar'    => 'required|max:20',
-            'telefono_fijo'    => 'required|max:15',
+        $listar     = Libreria::getParam($request->input('listar'), 'NO');
+        $reglas = array(
+            'importe'         => 'required|max:20',
+            'periodo'        => 'required|max:10',
+            'fecha_inicio'      => 'required|max:100',
+            'fecha_fin'            => 'required',
+            'interes'    => 'required|max:100',
+            'persona_id'    => 'required|max:100',
             );
+
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
-        } */
+        }
         $error = DB::transaction(function() use($request, $id){
             $ahorros                 = Ahorros::find($id);
-
-            $ahorros->inporte = $request->input('importe');
+            $ahorros->importe = $request->input('importe');
             $ahorros->periodo = $request->input('periodo');
             $ahorros->fecha_inicio = $request->input('fecha_inicio');
             $ahorros->fecha_fin = $request->input('fecha_fin');
             $ahorros->interes = $request->input('interes');
             $ahorros->persona_id = $request->input('persona_id');
-
+            $ahorros->descripcion = $request->input('descripcion');
             $ahorros->save();
+            /// REGISTRO EN CAJA
+            $idconcepto = $request->input('concepto');
 
+            $transaccion = Transaccion::getTransaccion($ahorros->id,'AH');
+            $transaccion->monto = $ahorros->importe;
+            $transaccion->id_tabla = $ahorros->id;
+            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = $idconcepto;
+            $transaccion->descripcion = $ahorros->descripcion;
+            $transaccion->persona_id = $ahorros->persona_id;
+            $transaccion->save();
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -249,6 +265,8 @@ class AhorrosController extends Controller
         $error = DB::transaction(function() use($id){
             $ahorros = Ahorros::find($id);
             $ahorros->delete();
+            $transaccion = Transaccion::getTransaccion($ahorros->id,'AH');
+            $transaccion->delete();
         });
         return is_null($error) ? "OK" : $error;
     }

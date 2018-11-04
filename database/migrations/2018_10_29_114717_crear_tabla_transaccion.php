@@ -17,6 +17,8 @@ class CrearTablaTransaccion extends Migration
             $table->increments('id');
             $table->timestamp('fecha')->nullable();
             $table->decimal('monto',20,2);
+            $table->integer('id_tabla')->nullable();
+            $table->char('inicial_tabla',2)->nullable();
             $table->integer('concepto_id')->unsigned()->nullable();
             $table->string('descripcion', 400)->nullable();
             $table->integer('persona_id')->unsigned();

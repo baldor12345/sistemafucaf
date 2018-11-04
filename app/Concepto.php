@@ -15,12 +15,12 @@ class Concepto extends Model
     public function scopelistar($query, $tipo)
     {
         return $query->where(function($subquery) use($tipo)
-                    {
-                        if (!is_null($tipo)) {
-                            $subquery->where('tipo', '=', $tipo);
-                        }
-                    })
-                    ->orderBy('titulo', 'ASC');
+            {
+                if (!is_null($tipo)) {
+                    $subquery->where('tipo', '=', $tipo);
+                }
+            })
+            ->orderBy('titulo', 'ASC');
     }
     
 }

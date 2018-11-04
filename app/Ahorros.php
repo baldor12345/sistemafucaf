@@ -39,15 +39,16 @@ class Ahorros extends Model
     ->leftJoin('persona', 'persona.id', '=', 'ahorros.persona_id')
     ->select(
         'persona.id as persona_id',
-        'ahorros.id as ahorros_id',
         'persona.nombres as nombres',
         'persona.apellidos as apellidos',
         'persona.tipo as tipo',
-        'ahorros.inporte as importe',
+        'ahorros.id as ahorros_id',
+        'ahorros.importe as importe',
         'ahorros.periodo as periodo',
         'ahorros.fecha_inicio as fecha_inicio',
         'ahorros.fecha_fin as fecha_fin',
-        'ahorros.interes as interes'
+        'ahorros.interes as interes',
+        'ahorros.descripcion as descripcion'
     )
     ->where('persona.nombres','LIKE', '%'.$nombre.'%')
     ->where('ahorros.fecha_inicio','>=',$fecha)
