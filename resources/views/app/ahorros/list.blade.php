@@ -25,7 +25,9 @@
 			<td>{{ $value->periodo }}</td>
 			<td>{{ $value->fecha_inicio }}</td>
 			<td>{{ $value->fecha_fin }}</td>
-			<!--<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver detalle', array('onclick' => 'modal (\''.URL::route($ruta["detallecredito"], array($value->credito_id, 'SI')).'\', \'Detalle de credito\', this);','class' => 'btn btn-xs btn-warning btndetcredito', "idcred"=>$value->credito_id)) !!}</td>-->
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->ahorro_id, 'SI')).'\', \'.$titulo_modificar.\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->ahorro_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver', array('onclick' => 'modal (\''.URL::route($ruta["verahorro"], array($value->ahorro_id, 'SI')).'\', \'.$titulo_verahorro.\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
 		</tr>
 
 		<?php

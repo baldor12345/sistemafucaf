@@ -65,7 +65,17 @@ class Transaccion extends Model
     public static function obtenerid($idgasto){
         $results = DB::table('transaccion') ->where('gastos_id','=',$idgasto);
         return $results->get();
-    }
+
+     }  
+     
+     public static function getTransaccion($id_tabla, $inicial_tabla){
+        $results = DB::table('transaccion') ->where('id_tabla','=',$id_tabla)->where('inicial_tabla','=',$inicial_tabla);
+        $lista =$results->get();
+        $transaccion = $lista[0];
+        return $transaccion;
+     }
+     
+    
 
     public static function getsaldo(){
         $idCaja = DB::table('caja')->where('estado', "A")->value('id');
@@ -80,4 +90,5 @@ class Transaccion extends Model
                                 'concepto.tipo');
         return $results;
     }    
+
 }

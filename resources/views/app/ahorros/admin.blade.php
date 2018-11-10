@@ -27,6 +27,7 @@
 						{!! Form::label('nombres', 'Nombre:', array('class' => 'input-sm')) !!}
 						{!! Form::text('nombres', '', array('class' => 'form-control input-sm', 'id' => 'nombres')) !!}
 					</div>
+					
 					<div class="form-group">
 						{!! Form::label('fecha', 'Fecha:', array('class' => 'input-sm')) !!}
 						{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha')) !!}
