@@ -56,9 +56,8 @@ class CajaController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Titulo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'H. apert.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'H. cie.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha y hora Apertura', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha y hora Cierre', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Mont. ini.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Mont. cie.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Dif. mont.', 'numero' => '1');
@@ -123,7 +122,7 @@ class CajaController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
-            'fecha'        => 'required|max:100',
+            'fecha_horaApert'        => 'required|max:100',
             'hora_apertura'      => 'required|max:100',
             'monto_iniciado'    => 'required|max:100',
             'titulo'    => 'required|max:200'
@@ -136,8 +135,7 @@ class CajaController extends Controller
             $caja               = new Caja();
             $caja->titulo        = $request->input('titulo');
             $caja->descripcion        = $request->input('descripcion');
-            $caja->fecha        = $request->input('fecha');
-            $caja->hora_apertura        = $request->input('hora_apertura');
+            $caja->fecha_horaApert        = $request->input('fecha_horaApert').":".$request->input('hora_apertura');
             $caja->monto_iniciado        = $request->input('monto_iniciado');
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();
@@ -192,8 +190,7 @@ class CajaController extends Controller
             return $existe;
         }
         $reglas = array(
-            'fecha'        => 'required|max:100',
-            'hora_apertura'      => 'required|max:100',
+            'fecha_horaApert'        => 'required|max:100',
             'monto_iniciado'    => 'required|max:100',
             'titulo'    => 'required|max:200'
             );
@@ -205,8 +202,7 @@ class CajaController extends Controller
             $caja                 = Caja::find($id);
             $caja->titulo        = $request->input('titulo');
             $caja->descripcion        = $request->input('descripcion');
-            $caja->fecha        = $request->input('fecha');
-            $caja->hora_apertura        = $request->input('hora_apertura');
+            $caja->fecha_horaApert        = $request->input('fecha_horaApert').":".$request->input('hora_apertura');
             $caja->monto_iniciado        = $request->input('monto_iniciado');
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();

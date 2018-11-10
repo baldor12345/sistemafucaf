@@ -21,7 +21,7 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			<td>{{ $value->titulo }}</td>	
-			<td>{{ Date::parse($value->fecha )->format('d/m/Y')  }}</td>
+			<td>{{ Date::parse($value->fecha )->format('Y-m-d:H:i')  }}</td>
 			<td>{{ $value->hora_apertura }}</td>
 			<td>{{ $value->hora_cierre }}</td>
 			<td>{{ $value->monto_iniciado }}</td>
@@ -32,7 +32,7 @@
 			@else
 			<td id="cerrado" >Cerrado</td>
 			@endif
-			<td><a class="glyphicon glyphicon-list btn btn-success btn-xs" href="#" onclick="cargarRutaMenu('transaccion', 'container', '6');"> Ver Detalle</a></td>
+			<td><a class="glyphicon glyphicon-list btn btn-success btn-xs" href="#" onclick="cargarRutaMenu('transaccion', 'container', '{{ $value->id }}');"> Ver Detalle</a></td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre de Caja', array('onclick' => 'modal (\''.URL::route($ruta["cargarCaja"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary')) !!}</td>
 		</tr>

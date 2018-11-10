@@ -24,15 +24,15 @@ textarea {
 </div>
 
 <div class="form-group">
-	{!! Form::label('fecha', 'Fecha:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('fecha_horaApert', 'Fecha:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha', 'placeholder' => '')) !!}
+		{!! Form::date('fecha_horaApert', null, array('class' => 'form-control input-xs', 'id' => 'fecha_horaApert', 'placeholder' => '')) !!}
 	</div>
 </div>
 <?php
 	if($caja != null){
-		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha )->format('d/m/Y')."'>";
-		echo "<input type='hidden' id='horaAp' value='".$caja->hora_cierre."'>";
+		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha_horaApert )->format('d/m/Y')."'>";
+		echo "<input type='hidden' id='horaAp' value='".$caja->fecha_horaApert."'>";
 	}else{
 		echo "<input type='hidden' id='fechaTemp' value=''>";
 	}
@@ -77,13 +77,17 @@ textarea {
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
-		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+		var fecha_horaApert = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 		if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 ||
 			fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 ||
-			fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9){
-				var horaAp =fechaActual.getHours()+":0"+fechaActual.getMinutes()+":"+fechaActual.getSeconds();;
+			fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9 ||
+			fechaActual.getHours()===1 || fechaActual.getHours()===2 || fechaActual.getHours()===3 ||
+			fechaActual.getHours()===4 || fechaActual.getHours()===5 || fechaActual.getHours()===6 ||
+			fechaActual.getHours()===7 || fechaActual.getHours()===8 || fechaActual.getHours()===9){
+
+				var horaAp ="0"+fechaActual.getHours()+":0"+fechaActual.getMinutes();
 		}else{
-				var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes()+":"+fechaActual.getSeconds();;
+				var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes();
 		}
 		console.log(horaAp);
 
@@ -93,12 +97,14 @@ textarea {
 			var valoresFecha = $('#fechaTemp').val().split('/');
 			//yyy/MM/DD
 			var fecha = valoresFecha[2] + "-" + valoresFecha[1] + "-" + valoresFecha[0];
-			$('#fecha').val(fecha);
+			$('#fecha_horaApert').val(fecha);
 			$('#hora_apertura').val($('#horaAp').val());
 		}else{
-			$('#fecha').val(fechai);
+			$('#fecha_horaApert').val(fecha_horaApert);
 			$('#hora_apertura').val(horaAp);
 		}
+
+		
 		/*
 		var personas = new Bloodhound({
 			datumTokenizer: function (d) {
