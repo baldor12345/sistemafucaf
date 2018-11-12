@@ -20,7 +20,12 @@ class Ahorros extends Model
     /*public function persona(){
         return $this->belongsTo('App\Persona', 'persona_id');
     } */
-
+    public static function idUser()
+    {
+        // Obtiene el ID del Usuario Autenticado
+        $id = Auth::id();
+        return $id;
+    }
     public static function getIdPersona()
     {
         $persona_id = null;
@@ -48,10 +53,12 @@ class Ahorros extends Model
         'ahorros.fecha_inicio as fecha_inicio',
         'ahorros.fecha_fin as fecha_fin',
         'ahorros.interes as interes',
+        'ahorros.estado as estado',
         'ahorros.descripcion as descripcion'
     )
     ->where('persona.nombres','LIKE', '%'.$nombre.'%')
     ->where('ahorros.fecha_inicio','>=',$fecha)
+    ->where('ahorros.deleted_at','=',null)
     ->orderBy('ahorros.fecha_inicio', 'DSC');
         return $results;
     }

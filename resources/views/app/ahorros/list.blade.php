@@ -22,12 +22,13 @@
 			
 			<td>{{ $value->nombres." ".$value->apellidos}} </td>
 			<td>{{ $value->importe }}</td>
-			<td>{{ $value->periodo }}</td>
-			<td>{{ $value->fecha_inicio }}</td>
-			<td>{{ $value->fecha_fin }}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->ahorro_id, 'SI')).'\', \'.$titulo_modificar.\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->ahorro_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver', array('onclick' => 'modal (\''.URL::route($ruta["verahorro"], array($value->ahorro_id, 'SI')).'\', \'.$titulo_verahorro.\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{{ $value->periodo }} meses</td>
+			<td>{{ date("d/m/Y",strtotime($value->fecha_inicio)) }}</td>
+			<td>{{ date("d/m/Y",strtotime($value->fecha_fin)) }}</td>
+			<td>{{ ($value->estado=='P'?'Pendiente':'Retirado') }}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->ahorros_id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->ahorros_id, 'listar'=>'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver', array('onclick' => 'modal (\''.URL::route($ruta["verahorro"], array($value->ahorros_id, 'listar'=>'SI')).'\', \''.$titulo_verahorro.'\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
 		</tr>
 
 		<?php
@@ -37,5 +38,6 @@
 		@endforeach
 	</tbody>
 </table>
+
 @endif
 

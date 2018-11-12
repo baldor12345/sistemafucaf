@@ -134,12 +134,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('creditos', 'CreditoController', array('except' => array('show')));
     Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
     Route::get('creditos/detallecredito/{idcredito}/{listarluego}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
+    Route::get('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
     
     /*AHORROS*/
     Route::post('ahorros/buscar', 'AhorrosController@buscar')->name('ahorros.buscar');
     Route::get('ahorros/eliminar/{id}/{listarluego}', 'AhorrosController@eliminar')->name('ahorros.eliminar');
     Route::resource('ahorros', 'AhorrosController', array('except' => array('show')));
-
+    Route::get('ahorros/verahorro/{id_ahorro}/{listarluego}', 'AhorrosController@verahorro')->name('ahorros.verahorro');
+    Route::get('ahorros/retirar/{id_ahorro}/{listarluego}', 'AhorrosController@retirar')->name('ahorros.retirar');
+    Route::get('ahorros/retiro', 'AhorrosController@retiro')->name('ahorros.retiro');
     /*GASTOS*/
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');
     Route::get('gastos/eliminar/{id}/{listarluego}', 'GastosController@eliminar')->name('gastos.eliminar');

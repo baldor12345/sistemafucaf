@@ -65,12 +65,12 @@
                     <td>{{$value->parte_capital}}</td>
                     <td>{{$value->interes + $value->parte_capital}}</td>
                     <td>{{$value->fecha_programada_pago}}</td>
-                    @if($value->estado != 0)
+                    @if($value->estado != 0 )
                     <td>Pagado</td>
-                    <td><button type="button" class='btn btn-light' idevento='{{$value->id}}'>Cancelado</button></td>
+                    <td><button type="button" idcuota=0 class='btn btn-light' idevento='{{$value->id}}'>Cancelado</button></td>
                     @else
                     <td>Pendiente</td>
-                    <td><button type="button" class='btnpagar btn btn-danger' idevento='{{$value->id}}'>Pagar</button></td>
+                    <td>{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btncuota','id'=>''.$value->id, "idcuota"=>$value->id)) !!}</td>
                     @endif
                 </tr>
                 <?php
@@ -84,9 +84,8 @@
     </table>
     <div class="form-group">
         <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-            {!! Form::button('<i class="fa fa-check fa-lg"></i> boton', array('class' => 'btn btn-success btn-sm', 'id' => '', 'onclick' => '#')) !!}
             &nbsp;
-            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
         </div>
     </div>
 {!! Form::close() !!}
@@ -96,5 +95,31 @@
 	$(document).ready(function() {
 		configurarAnchoModal('650');
     });
+    $('.btncuota').each(function (){
+            var idbt = $(this).attr('id');
+			 $(this).click(function (){
+                if($('#'+idbt).attr("idcuota") != 0){
+                $.ajax({
+                    url: 'creditos/pagarcuota',
+                    headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    type: 'GET',
+                    data: 'id_cuota='+$(this).attr('idcuota')+"&id_cliente={{$credito->persona_id}}",
+                    beforeSend: function(){
+                        
+                    },
+                    success: function(res){
+                        
+                        buscar('{{ $entidad }}');
+                        $('#'+idbt).html("Cancelado");
+                        $('#'+idbt).attr("idcuota", 0);
+                        $('#'+idbt).removeClass("btn-danger btncuota");
+                        $('#'+idbt).addClass( "btn-light" );
+                    }
+                }).fail(function(){
+                    
+                });
+            }
+			 });
+         });
 
 </script>
