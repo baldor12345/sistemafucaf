@@ -43,6 +43,12 @@ class caja extends Model
                     })
                     ->orderBy('titulo', 'ASC');
     }
+    
+    //para evaluar el estado de la caja 
+    public static function listCaja(){
+        $results = DB::table('caja')->where('estado','=','A')->count();
+        return $results;
+    }
 
 
 }

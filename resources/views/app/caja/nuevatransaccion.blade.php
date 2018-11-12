@@ -1,3 +1,10 @@
+<?php 
+use App\Persona;
+use App\Acciones;
+use App\Configuraciones;
+use Illuminate\Support\Facades\DB;
+?>
+
 <style> 
 textarea {
     width: 100%;
@@ -17,40 +24,39 @@ textarea {
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
 <div class="form-group">
-	{!! Form::label('titulo', 'Titulo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+<p id="info" class="" ></p>
+</div>
+
+<div class="form-group">
+	{!! Form::label('dni', 'Dni:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('titulo', null, array('class' => 'form-control input-xs', 'id' => 'titulo', 'placeholder' => 'Ingrese titulo')) !!}
+		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...' )) !!}
+		<p id="nombresCompletos" class="" ></p>
+		<input type="hidden" id="persona_id", name="persona_id" value="">
 	</div>
 </div>
 
 <div class="form-group">
-	{!! Form::label('fecha_horaApert', 'Fecha:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('concepto_id', 'Precio de accion:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::date('fecha_horaApert', null, array('class' => 'form-control input-xs', 'id' => 'fecha_horaApert', 'placeholder' => '')) !!}
-	</div>
-</div>
-<?php
-	if($caja != null){
-		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha_horaApert )->format('d/m/Y')."'>";
-		echo "<input type='hidden' id='horaAp' value='".$caja->fecha_horaApert."'>";
-	}else{
-		echo "<input type='hidden' id='fechaTemp' value=''>";
-	}
-?>
-
-<div class="form-group">
-	{!! Form::label('hora_apertura', 'Hora Apertura:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
-	<div class="col-sm-9 col-xs-12">
-		{!! Form::time('hora_apertura', null, array('class' => 'form-control input-xs', 'id' => 'hora_apertura', 'placeholder' => '')) !!}
+		{!! Form::select('concepto_id', $cboConfiguraciones, null, array('class' => 'form-control input-xs', 'id' => 'concepto_id')) !!}
 	</div>
 </div>
 
 <div class="form-group">
-	{!! Form::label('monto_iniciado', 'Monto Inicio(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('fecha', 'Fecha:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('monto_iniciado', $ingresos, array('class' => 'form-control input-xs', 'id' => 'monto_iniciado', 'placeholder' => 'S/.')) !!}
+		{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha', 'placeholder' => '')) !!}
 	</div>
 </div>
+
+<div class="form-group">
+	{!! Form::label('monto', 'Monto(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	<div class="col-sm-9 col-xs-12">
+		{!! Form::text('monto', null, array('class' => 'form-control input-xs', 'id' => 'monto', 'placeholder' => 'S/.')) !!}
+	</div>
+</div>
+
 
 <div class="form-group">
 	{!! Form::label('descripcion', 'Descripcion:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
@@ -105,6 +111,32 @@ textarea {
 		}
 
 		
-		
+		/*
+		var personas = new Bloodhound({
+			datumTokenizer: function (d) {
+				return Bloodhound.tokenizers.whitespace(d.value);
+			},
+			queryTokenizer: Bloodhound.tokenizers.whitespace,
+			remote: {
+				url: 'person/employeesautocompleting/%QUERY',
+				filter: function (personas) {
+					return $.map(personas, function (movie) {
+						return {
+							value: movie.value,
+							id: movie.id
+						};
+					});
+				}
+			}
+		});
+		personas.initialize();
+		$('#nombrepersona').typeahead(null,{
+			displayKey: 'value',
+			source: personas.ttAdapter()
+		}).on('typeahead:selected', function (object, datum) {
+			$('#person_id').val(datum.id);
+		});
+		, campos de texto=>'disabled' => 'disabled'			
+		*/
 	}); 
 </script>
