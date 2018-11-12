@@ -8,6 +8,8 @@ use Validator;
 use App\Http\Requests;
 use App\Persona;
 use App\Caja;
+use App\Transaccion;
+use App\Concepto;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +22,8 @@ class CajaController extends Controller
     protected $tituloRegistrar = 'Apertura Caja';
     protected $tituloModificar = 'Modificar Caja';
     protected $tituloCerrarCaja = 'Cerrar Caja';
+    protected $titulo_transaccion = 'Transacciones Realizadas';
+    protected $tituloNuevaTransaccion = 'Nueva Transaccion';
     protected $tituloEliminar  = 'Eliminar persona';
     protected $rutas           = array('create' => 'caja.create', 
             'edit'   => 'caja.edit', 
@@ -27,7 +31,8 @@ class CajaController extends Controller
             'search' => 'caja.buscar',
             'index'  => 'caja.index',
             'cargarCaja'   => 'caja.cargarCaja',
-            'redirtransaccion'   => 'caja.redirtransaccion', 
+            'nuevatransaccion'   => 'caja.nuevatransaccion',
+            'detalle'   => 'caja.detalle'
         );
 
     /**
@@ -56,9 +61,8 @@ class CajaController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Titulo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'H. apert.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'H. cie.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha y hora Apertura', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha y hora Cierre', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Mont. ini.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Mont. cie.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Dif. mont.', 'numero' => '1');
@@ -68,6 +72,7 @@ class CajaController extends Controller
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
         $titulo_cerrarCaja = $this->tituloCerrarCaja;
+        $titulo_transaccion = $this->titulo_transaccion;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -78,7 +83,7 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja' ,'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_transaccion' ,'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -90,11 +95,13 @@ class CajaController extends Controller
      */
     public function index()
     {
+        
         $entidad          = 'Caja';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta'));
+        $listCaja = Caja::listCaja();
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','listCaja'));
     }
 
     /**
@@ -104,13 +111,16 @@ class CajaController extends Controller
      */
     public function create(Request $request)
     {
+        $datosCaja = Caja::orderby('created_at','DESC')->take(1)->get();
+        $ingresos = $datosCaja[0]->monto_cierre;
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Caja';
         $caja        = null;
         $formData       = array('caja.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos'));
     }
 
     /**
@@ -123,7 +133,7 @@ class CajaController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
-            'fecha'        => 'required|max:100',
+            'fecha_horaApert'        => 'required|max:100',
             'hora_apertura'      => 'required|max:100',
             'monto_iniciado'    => 'required|max:100',
             'titulo'    => 'required|max:200'
@@ -136,8 +146,7 @@ class CajaController extends Controller
             $caja               = new Caja();
             $caja->titulo        = $request->input('titulo');
             $caja->descripcion        = $request->input('descripcion');
-            $caja->fecha        = $request->input('fecha');
-            $caja->hora_apertura        = $request->input('hora_apertura');
+            $caja->fecha_horaApert        = $request->input('fecha_horaApert').":".$request->input('hora_apertura');
             $caja->monto_iniciado        = $request->input('monto_iniciado');
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();
@@ -192,8 +201,7 @@ class CajaController extends Controller
             return $existe;
         }
         $reglas = array(
-            'fecha'        => 'required|max:100',
-            'hora_apertura'      => 'required|max:100',
+            'fecha_horaApert'        => 'required|max:100',
             'monto_iniciado'    => 'required|max:100',
             'titulo'    => 'required|max:200'
             );
@@ -205,8 +213,7 @@ class CajaController extends Controller
             $caja                 = Caja::find($id);
             $caja->titulo        = $request->input('titulo');
             $caja->descripcion        = $request->input('descripcion');
-            $caja->fecha        = $request->input('fecha');
-            $caja->hora_apertura        = $request->input('hora_apertura');
+            $caja->fecha_horaApert        = $request->input('fecha_horaApert').":".$request->input('hora_apertura');
             $caja->monto_iniciado        = $request->input('monto_iniciado');
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();
@@ -218,6 +225,21 @@ class CajaController extends Controller
 
     public function cargarCaja($id, Request $request)
     {
+        $result = DB::table('caja')->where('id', $id)->first();
+        //calculos
+        $ingresos =$result->monto_iniciado;
+        $egresos=0;
+        $diferencia =0;
+        $saldo = Transaccion::getsaldo($id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $diferencia= $ingresos-$egresos;
+
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true) {
             return $existe;
@@ -230,19 +252,16 @@ class CajaController extends Controller
             $listar = $listarParam;
         }
        
-        return view($this->folderview.'.cierrecaja')->with(compact('caja','listar','entidad', 'boton'));
+        return view($this->folderview.'.cierrecaja')->with(compact('caja','listar','entidad', 'boton','diferencia'));
     }
 
-    public function cerrarCaja(Request $request)
-    {
-        $id= $request->get('idcaja');
+    public function cerrarcaja(Request $request, $id)
+    {        
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true) {
             return $existe;
         }
         $reglas = array(
-            'hora_cierre'      => 'required|max:100',
-            'monto_cierre'    => 'required|max:100',
             'diferencia_monto'    => 'required|max:200'
             );
         $validacion = Validator::make($request->all(),$reglas);
@@ -252,7 +271,7 @@ class CajaController extends Controller
         $error = DB::transaction(function() use($request, $id){
             $caja                 = Caja::find($id);
             $caja->descripcion        = $request->get('descripcion');
-            $caja->hora_cierre        = $request->get('hora_cierre');
+            $caja->fecha_horaCierre        = $request->input('fecha_horaApert').":".$request->input('hora_cierre');
             $caja->monto_cierre        = $request->get('monto_cierre');
             $caja->diferencia_monto        = $request->get('diferencia_monto');
             $caja->estado        = 'C';//cierre
@@ -262,32 +281,55 @@ class CajaController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
+    //CONTROL DETALLE DE LA CAJA
 
-    //datos de la redireccion transaccion
-    protected $rutas_transaccion           = array('create' => 'transaccion.create', 
-            'edit'     => 'transaccion.edit', 
-            'delete'   => 'transaccion.eliminar',
-            'search'   => 'transaccion.buscar',
-            'index'    => 'tipousuario.index',
-            'permisos' => 'transaccion.obtenerpermisos',
-            'operaciones' => 'transaccion.obteneroperaciones',
-        );
-
-    public function redirtransaccion($id, Request $request)
+    public function detalle($id, Request $request)
     {
-
-        $existe = Libreria::verificarExistencia($id, 'caja');
-        if ($existe !== true) {
-            return $existe;
+        $result = DB::table('caja')->where('id', $id)->first();
+        //calculos
+        $ingresos =$result->monto_iniciado;
+        $egresos=0;
+        $diferencia =0;
+        $saldo = Transaccion::getsaldo($id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
         }
-        $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $caja        = Caja::find($id);
-        $entidad          = 'Transaccion';
-        $title            = "";
-        $titulo_registrar = "registrar transaccion";
-        //$ruta             = $this->rutas;
-        $ruta             = $this->rutas_transaccion;
-        return view('app.transaccion.admin')->with(compact('caja', 'title', 'id', 'entidad', 'titulo_registrar','ruta' ,'listar'));
+        $diferencia= $ingresos-$egresos;
+        $cboConcepto = array('' => 'Todo') + Concepto::pluck('titulo', 'id')->all();
+
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $fecha             = Libreria::getParam('');
+        $concepto_id             = Libreria::getParam(-1);
+        $resultado        = Transaccion::listar($fecha, $concepto_id , $id);
+        $lista            = $resultado->get();
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'MONTO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DESCRIPCION', 'numero' => '1');
+
+        $tituloNuevaTransaccion = $this->tituloNuevaTransaccion;
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+        $entidad ='Transaccion';
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, 1, 7, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate(7);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.transaccion')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
+        }
+        return view($this->folderview.'.transaccion')->with(compact('lista', 'entidad', 'id', 'ruta','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
     }
 
 }

@@ -152,13 +152,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
     Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
-    Route::post('caja/cerrarCaja/{id}', 'CajaController@cerrarCaja')->name('caja.cerrarCaja');
-    Route::get('caja/redirtransaccion/{id}', 'CajaController@redirtransaccion')->name('caja.redirtransaccion');
+    Route::post('caja/cerrarcaja/{id}', 'CajaController@cerrarcaja')->name('caja.cerrarcaja');
+    
+    Route::get('caja/detalle/{id}', 'CajaController@detalle')->name('caja.detalle');
+
 
    /*CONCEPTO*/
    Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');
    Route::get('concepto/eliminar/{id}/{listarluego}', 'ConceptoController@eliminar')->name('concepto.eliminar');
    Route::resource('concepto', 'ConceptoController', array('except' => array('show')));
+
+
 
    /*TRANSACCIONES*/
    Route::post('transaccion/buscar', 'TransaccionController@buscar')->name('transaccion.buscar');

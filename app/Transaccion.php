@@ -39,7 +39,7 @@ class Transaccion extends Model
         return $this->belongsTo('App\Caja', 'caja_id');
     }
 
-    public function scopelistar($query, $fecha, $concepto_id){
+    public function sopelistar($query, $fecha, $concepto_id){
         $idCaja = DB::table('caja')->where('estado', "A")->value('id');
         //echo "id de la caja: ".$idCaja;
 
@@ -62,6 +62,26 @@ class Transaccion extends Model
                     ->orderBy('concepto_id', 'ASC');
     }
 
+    public static function scopelistar($query, $fecha, $concepto_id, $caja_id){
+        $query = DB::table('transaccion')
+            ->join('persona', 'transaccion.persona_id', '=', 'persona.id')
+            ->join('concepto', 'transaccion.concepto_id', '=', 'concepto.id')
+            ->select( 
+                    'persona.id as persona_id',
+                    'persona.codigo AS persona_codigo',
+                    'persona.dni as persona_dni',
+                    'persona.nombres as persona_nombres',
+                    'persona.apellidos as persona_apellidos',
+                    'concepto.titulo AS concepto_titulo',
+                    'transaccion.fecha as transaccion_fecha',
+                    'transaccion.monto as transaccion_monto',
+                    'transaccion.descripcion as transaccion_descripcion'
+                    )
+            ->where('transaccion.caja_id', '=', $caja_id);
+        return $query;
+    }
+
+
     public static function obtenerid($idgasto){
         $results = DB::table('transaccion') ->where('gastos_id','=',$idgasto);
         return $results->get();
@@ -76,15 +96,14 @@ class Transaccion extends Model
      
     
 
-    public static function getsaldo(){
-        $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+    public static function getsaldo($id){
         $results = DB::table('transaccion')
             ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
             ->select( 
                     'concepto.titulo as concepto_titulo',
                     'concepto.tipo as concepto_tipo',
                     DB::raw('sum(transaccion.monto) as monto')
-                    )->where('transaccion.caja_id','=',$idCaja)
+                    )->where('transaccion.caja_id','=',$id)
                     ->groupBy('concepto.titulo',
                                 'concepto.tipo');
         return $results;
