@@ -31,17 +31,19 @@
 			<td>{{ $value->monto_cierre or '-' }}</td>
 			<td>{{ $value->diferencia_monto  or '-'}}</td>
 			@if ($value->estado === 'A')
-			<td id="abierto" >Abierto</td>
+			<td style="color:green;font-weight: bold;" >Abierto</td>
 			@else
-			<td id="cerrado" >Cerrado</td>
+			<td style="color:red;font-weight: bold;" >Cerrado</td>
 			@endif
 			<td>{!! Form::button('<div class="glyphicon  glyphicon-list"></div> Transacciones', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_transaccion.'\', this);', 'class' => 'btn  btn-xs btn-success')) !!}</td>
 			@if ($value->estado === 'C')
-			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning','disabled')) !!}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre de Caja', array('onclick' => 'modal (\''.URL::route($ruta["cargarCaja"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary','disabled')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning','disabled' )) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon  glyphicon-plus"></div> Nuevo', array('onclick' => 'modal (\''.URL::route($ruta["nuevomovimiento"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_nuevomovimiento.'\', this);', 'class' => 'btn  btn-xs btn-info','disabled' )) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["cargarCaja"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary','disabled' )) !!}</td>
 			@else
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
-			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre de Caja', array('onclick' => 'modal (\''.URL::route($ruta["cargarCaja"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon  glyphicon-plus"></div> Nuevo', array('onclick' => 'modal (\''.URL::route($ruta["nuevomovimiento"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_nuevomovimiento.'\', this);', 'class' => 'btn  btn-xs btn-info')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["cargarCaja"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary')) !!}</td>
 			@endif
 			
 		</tr>
