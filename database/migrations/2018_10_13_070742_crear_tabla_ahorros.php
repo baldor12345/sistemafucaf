@@ -20,6 +20,7 @@ class CrearTablaAhorros extends Migration
             $table->timestamp('fecha_inicio')->nullable();
             $table->timestamp('fecha_fin')->nullable();
             $table->decimal('interes',10,2);
+            $table->char('estado', 1);
             $table->string('descripcion', 200)->nullable();
             $table->integer('persona_id')->unsigned();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');

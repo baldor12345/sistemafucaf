@@ -30,6 +30,7 @@ class CreditoController extends Controller
             'delete'   => 'creditos.eliminar',
             'search'   => 'creditos.buscar',
             'index'    => 'creditos.index',
+            'pagarcuota'    => 'creditos.pagarcuota',
             'detallecredito'    => 'creditos.detallecredito',
             'guardarcredito'    => 'creditos.guardarcredito',
             
@@ -460,5 +461,27 @@ class CreditoController extends Controller
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
 //***************************************************************************************** */
+    public static function pagarcuota(Request $request){
+        $id_cuota = $request->get('id_cuota');
+        $error = DB::transaction(function() use($request, $id_cuota){
+            $cuota       = Cuota::find($id_cuota);
+            $cuota->estado = 1;
+            $cuota->save();
+            
+            $caja = Caja::where("estado","=","A")->get();
+            $fechahora_actual = date('Y-m-d H:i:s');
+            $transaccion = new Transaccion();
+            $transaccion->fecha = $fechahora_actual;
+            $transaccion->monto = $cuota->parte_capital + $cuota->interes;
+            $transaccion->concepto_id = 4;//$request->input('concepto');
+            $transaccion->descripcion = " Pago de cuota de S/. ".$transaccion->monto;
+            $transaccion->persona_id = $request->get('id_cliente');
+            $transaccion->usuario_id = Credito::idUser();
+            $transaccion->caja_id = $caja[0]->id;
+            $transaccion->save();
 
+
+        });
+        return is_null($error) ? "OK" : $error;
+    }
 }

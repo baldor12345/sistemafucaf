@@ -91,8 +91,7 @@ class Transaccion extends Model
      public static function getTransaccion($id_tabla, $inicial_tabla){
         $results = DB::table('transaccion') ->where('id_tabla','=',$id_tabla)->where('inicial_tabla','=',$inicial_tabla);
         $lista =$results->get();
-        $transaccion = $lista[0];
-        return $transaccion;
+        return $lista;
      }
      
     
