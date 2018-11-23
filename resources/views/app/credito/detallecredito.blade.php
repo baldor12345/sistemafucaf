@@ -42,35 +42,36 @@
         </div>
     </div>
 
-    <table id="example1" class="table table-bordered table-striped table-condensed table-hover">
-        <thead>
-            <tr>
-                <th style='width: 5%' class='text-center'>#</th>
-                <th style=''>INTERES</th>
-                <th class='text-center'>CAPITAL</th>
-                <th class='text-center'>CUOTA S/.</th>
-                <th class='text-center'>FECHA DE PAGO</th>
-                <th class='text-center'>SITUACION</th>
-                <th colspan="1">OPERACIONES</th>
+    <table id="example1" class="table table-striped table-bordered table-sm table-fixed">
+        <thead style="width: 99%; display: block;">
+            <tr style="width: 99%; display: block;">
+                <th style='width: 15%;;' class='text-center'>#</th>
+                <th style='width: 15%;'>INTERES</th>
+                <th style='width: 15%;' class='text-center'>CAPITAL</th>
+                <th style='width: 15%;' class='text-center'>CUOTA S/.</th>
+                <th style='width: 15%;' class='text-center'>FECHA DE PAGO</th>
+                <th style='width: 15%;' class='text-center'>SITUACION</th>
+                <th style='width: 10%;' colspan="1">OPERACIONES</th>
             </tr>
         </thead>
-        <tbody>
+    
+        <tbody  style="width: 100%; height: 200px; overflow-y: scroll; display: block;">
             <?php
                 $contador = 1;
             ?>
             @foreach ($lista as $key => $value)
                 <tr>
-                    <td>{{$contador}}</td>
-                    <td>{{$value->interes}}</td>
-                    <td>{{$value->parte_capital}}</td>
-                    <td>{{$value->interes + $value->parte_capital}}</td>
-                    <td>{{$value->fecha_programada_pago}}</td>
+                    <td style='width: 15%;'>{{$contador}}</td>
+                    <td style='width: 15%;'>{{$value->interes}}</td>
+                    <td style='width: 15%;'>{{$value->parte_capital}}</td>
+                    <td style='width: 15%;'>{{$value->interes + $value->parte_capital}}</td>
+                    <td style='width: 15%;'>{{$value->fecha_programada_pago}}</td>
                     @if($value->estado != 0 )
-                    <td>Pagado</td>
-                    <td><button type="button" idcuota=0 class='btn btn-light' idevento='{{$value->id}}'>Cancelado</button></td>
+                    <td style='width: 15%;'>Pagado</td>
+                    <td style='width: 10%;'><button type="button" idcuota=0 class='btn btn-light' idevento='{{$value->id}}'>Cancelado</button></td>
                     @else
-                    <td>Pendiente</td>
-                    <td>{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btncuota','id'=>''.$value->id, "idcuota"=>$value->id)) !!}</td>
+                    <td style='width: 15%;'>Pendiente</td>
+                    <td style='width: 10%;'>{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btncuota','id'=>''.$value->id, "idcuota"=>$value->id)) !!}</td>
                     @endif
                 </tr>
                 <?php
@@ -78,6 +79,7 @@
                 ?>
             @endforeach
         </tbody>
+        
         <tfoot>
             
         </tfoot>
@@ -85,19 +87,23 @@
     <div class="form-group">
         <div class="col-lg-12 col-md-12 col-sm-12 text-right">
             &nbsp;
-            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
         </div>
     </div>
 {!! Form::close() !!}
+<style type="text/css">
 
+</style>
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		configurarAnchoModal('650');
+		configurarAnchoModal('750');
     });
     $('.btncuota').each(function (){
             var idbt = $(this).attr('id');
 			 $(this).click(function (){
+                var array_tr =  this.parentElement.parentElement.children;
+                console.log("fila: "+array_tr[3].innerText);
                 if($('#'+idbt).attr("idcuota") != 0){
                 $.ajax({
                     url: 'creditos/pagarcuota',
@@ -108,7 +114,7 @@
                         
                     },
                     success: function(res){
-                        
+                        array_tr[5].innerHTML = 'Pagado';
                         buscar('{{ $entidad }}');
                         $('#'+idbt).html("Cancelado");
                         $('#'+idbt).attr("idcuota", 0);
