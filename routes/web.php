@@ -156,6 +156,10 @@ Route::group(['middleware' => 'auth'], function () {
     
     Route::get('caja/detalle/{id}', 'CajaController@detalle')->name('caja.detalle');
 
+    Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
+    Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');
+    Route::get('caja/cargarselect/{idselect}', 'CajaController@cargarselect')->name('caja.cargarselect');
+
 
    /*CONCEPTO*/
    Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');

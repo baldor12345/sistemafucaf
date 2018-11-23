@@ -10,6 +10,7 @@ use App\Persona;
 use App\Caja;
 use App\Transaccion;
 use App\Concepto;
+use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class CajaController extends Controller
     protected $tituloAdmin     = 'Caja';
     protected $tituloRegistrar = 'Apertura Caja';
     protected $tituloModificar = 'Modificar Caja';
+    protected $titulo_nuevomovimiento = 'Nuevo Movimiento';
     protected $tituloCerrarCaja = 'Cerrar Caja';
     protected $titulo_transaccion = 'Transacciones Realizadas';
     protected $tituloNuevaTransaccion = 'Nueva Transaccion';
@@ -32,7 +34,9 @@ class CajaController extends Controller
             'index'  => 'caja.index',
             'cargarCaja'   => 'caja.cargarCaja',
             'nuevatransaccion'   => 'caja.nuevatransaccion',
-            'detalle'   => 'caja.detalle'
+            'detalle'   => 'caja.detalle',
+            'nuevomovimiento'   => 'caja.nuevomovimiento',
+            'cargarselect' => 'encuesta.cargarselect'
         );
 
     /**
@@ -60,19 +64,20 @@ class CajaController extends Controller
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Titulo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha y hora Apertura', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha y hora Cierre', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Mont. ini.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Mont. cie.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Dif. mont.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Nombre', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha-hora Apertura', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha-hora Cierre', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto I.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto C.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto D.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '4');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
         $titulo_cerrarCaja = $this->tituloCerrarCaja;
         $titulo_transaccion = $this->titulo_transaccion;
+        $titulo_nuevomovimiento = $this->titulo_nuevomovimiento;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -83,7 +88,7 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_transaccion' ,'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -99,9 +104,10 @@ class CajaController extends Controller
         $entidad          = 'Caja';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
+        $titulo_nuevomovimiento = $this->titulo_nuevomovimiento;
         $ruta             = $this->rutas;
         $listCaja = Caja::listCaja();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','listCaja'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja'));
     }
 
     /**
@@ -181,6 +187,7 @@ class CajaController extends Controller
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $caja        = Caja::find($id);
         $entidad        = 'Caja';
+
         $formData       = array('caja.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
@@ -330,6 +337,75 @@ class CajaController extends Controller
             return view($this->folderview.'.transaccion')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
         }
         return view($this->folderview.'.transaccion')->with(compact('lista', 'entidad', 'id', 'ruta','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
+    }
+
+    public function nuevomovimiento($id, Request $request)
+    {
+        $existe = Libreria::verificarExistencia($id, 'caja');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar = "NO";
+        $caja = Caja::find($id);
+
+        if (isset($listarParam)) {
+            $listar = $listarParam;
+        }
+
+        $entidad        = 'Transaccion';
+        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
+        $cboConceptos        = [''=>'Seleccione'];
+        $boton          = 'Registrar Movimiento';
+        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos'));
+    }
+
+
+
+    public function registrarmovimiento(Request $request, $id)
+    {
+
+        $existe = Libreria::verificarExistencia($id, 'caja');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $reglas = array(
+            'dni'        => 'required|max:100'
+            );
+        $validacion = Validator::make($request->all(),$reglas);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+       }
+
+        $listar        = Libreria::getParam($request->input('listar'), 'NO');
+
+        return is_null($error) ? "OK" : $error;
+    }
+
+    //para seleccionar concepto
+    public function cargarselect($idselect, Request $request)
+    {
+        echo $idselect;
+        $entidad = $request->get('entidad');
+        $t = '';
+        $tt = '';
+
+        if($request->get('t') == ''){
+            $t = '_';
+            $tt = '2';
+        }
+
+        $retorno = '<select class="form-control input-sm" id="' . $t . $entidad . '_id" name="';
+        $cbo = Concepto::select('id', 'titulo')
+            ->where('tipo', '=', $idselect)
+            ->get();
+        $retorno .= '><option value="" selected="selected">Seleccione</option>';
+
+        foreach ($cbo as $row) {
+            $retorno .= '<option value="' . $row['id'] .  '">' . $row['titulo'] . '</option>';
+        }
+        $retorno .= '</select></div>';
+
+        echo $retorno;
     }
 
 }
