@@ -1,16 +1,4 @@
-<style> 
-textarea {
-    width: 100%;
-    height: 50px;
-    padding: 12px 20px;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    font-size: 16px;
-    resize: none;
-}
-</style>
+
 
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($caja, $formData) !!}
@@ -32,9 +20,10 @@ textarea {
 <?php
 	if($caja != null){
 		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha_horaApert )->format('d/m/Y')."'>";
-		echo "<input type='hidden' id='horaAp' value='".$caja->fecha_horaApert."'>";
+		echo "<input type='hidden' id='horaAp' value='".Date::parse($caja->fecha_horaApert )->format('H:m')."'>";
 	}else{
 		echo "<input type='hidden' id='fechaTemp' value=''>";
+		echo "<input type='hidden' id='horaAp' value=''>";
 	}
 ?>
 
@@ -78,17 +67,18 @@ textarea {
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fecha_horaApert = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-		if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 ||
-			fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 ||
-			fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9 ||
-			fechaActual.getHours()===1 || fechaActual.getHours()===2 || fechaActual.getHours()===3 ||
-			fechaActual.getHours()===4 || fechaActual.getHours()===5 || fechaActual.getHours()===6 ||
-			fechaActual.getHours()===7 || fechaActual.getHours()===8 || fechaActual.getHours()===9){
-
-				var horaAp ="0"+fechaActual.getHours()+":0"+fechaActual.getMinutes();
+		if(fechaActual.getHours()===1 || fechaActual.getHours()===2 || fechaActual.getHours()===3 ||fechaActual.getHours()===4 || fechaActual.getHours()===5 || fechaActual.getHours()===6 || fechaActual.getHours()===7 || fechaActual.getHours()===8 || fechaActual.getHours()===9){
+					var horaAp ="0"+fechaActual.getHours()+":"+fechaActual.getMinutes();
+				if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 || fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 || fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9){
+						var horaAp ="0"+fechaActual.getHours()+":0"+fechaActual.getMinutes();
+				}
+		}else if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 || fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 || fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9){
+			var horaAp = fechaActual.getHours()+":0"+fechaActual.getMinutes();
 		}else{
-				var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes();
+			var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes();
 		}
+		
+		
 		console.log(horaAp);
 
 
@@ -97,8 +87,10 @@ textarea {
 			var valoresFecha = $('#fechaTemp').val().split('/');
 			//yyy/MM/DD
 			var fecha = valoresFecha[2] + "-" + valoresFecha[1] + "-" + valoresFecha[0];
+			console.log("fecha recibida: "+fecha);
 			$('#fecha_horaApert').val(fecha);
 			$('#hora_apertura').val($('#horaAp').val());
+			console.log("hora apertura: "+$('#horaAp').val() );
 		}else{
 			$('#fecha_horaApert').val(fecha_horaApert);
 			$('#hora_apertura').val(horaAp);

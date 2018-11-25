@@ -184,6 +184,9 @@ class CajaController extends Controller
         if ($existe !== true) {
             return $existe;
         }
+        $datosCaja = Caja::orderby('created_at','DESC')->take(1)->get();
+        $ingresos = $datosCaja[0]->monto_cierre;
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $caja        = Caja::find($id);
         $entidad        = 'Caja';
@@ -191,7 +194,7 @@ class CajaController extends Controller
         $formData       = array('caja.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos'));
     }
 
     /**
@@ -339,6 +342,7 @@ class CajaController extends Controller
         return view($this->folderview.'.transaccion')->with(compact('lista', 'entidad', 'id', 'ruta','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
     }
 
+    //PARA REGISTRAR NUEVO MOVIMIENTO PARA GASTOS, AHORROS DESDE LA CAJA
     public function nuevomovimiento($id, Request $request)
     {
         $existe = Libreria::verificarExistencia($id, 'caja');

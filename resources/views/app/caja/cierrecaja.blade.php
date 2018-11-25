@@ -81,6 +81,17 @@ use Illuminate\Support\Facades\DB;
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+		if(fechaActual.getHours()===1 || fechaActual.getHours()===2 || fechaActual.getHours()===3 ||fechaActual.getHours()===4 || fechaActual.getHours()===5 || fechaActual.getHours()===6 || fechaActual.getHours()===7 || fechaActual.getHours()===8 || fechaActual.getHours()===9){
+					var horaC ="0"+fechaActual.getHours()+":"+fechaActual.getMinutes();
+				if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 || fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 || fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9){
+						var horaC ="0"+fechaActual.getHours()+":0"+fechaActual.getMinutes();
+				}
+		}else if(fechaActual.getMinutes()===1 || fechaActual.getMinutes()===2 || fechaActual.getMinutes()===3 || fechaActual.getMinutes()===4 || fechaActual.getMinutes()===5 || fechaActual.getMinutes()===6 || fechaActual.getMinutes()===7 || fechaActual.getMinutes()===8 || fechaActual.getMinutes()===9){
+			var horaC = fechaActual.getHours()+":0"+fechaActual.getMinutes();
+		}else{
+			var horaC =fechaActual.getHours()+":"+fechaActual.getMinutes();
+		}
+		$('#hora_cierre').val(horaC);
 		$('#fecha_horaApert').val(fechai);
 		
 	});
