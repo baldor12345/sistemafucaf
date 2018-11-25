@@ -1,30 +1,32 @@
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($ahorros, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-	<div class="form-group">
-		<div class="row">
-			<div id='txtcliente' class="form-group col-6 col-md-6 col-sm-6">
-				{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => '')) !!}
+	<div class="row">
+		<div id='txtcliente' class="form-group col-6 col-md-6 col-sm-6">
+			{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => '')) !!}
 
-				@if($ahorros = null)
-				{!! Form::text('dnicl', null, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
-				@else
-				{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
-				@endif
-				<p id="nombrescl" class="" >DNI Cliente Vacio</p>
-				<input type="hidden" id="persona_id" name="persona_id" value="" >
-			</div>
-			<div class="form-group col-6 col-md-6 col-sm-6" >
-				{!! Form::label('importe', 'Importe S/.: *', array('class' => '')) !!}
-				{!! Form::text('importe', null, array('class' => 'form-control input-xs', 'id' => 'importe', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
-			</div>
+			@if($ahorros = null)
+			{!! Form::text('dnicl', null, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
+			@else
+			{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
+			@endif
+			<p id="nombrescl" class="" >DNI Cliente Vacio</p>
+			<input type="hidden" id="persona_id" name="persona_id" value="" >
 		</div>
+		
+		<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 25px;">
+			{!! Form::label('importe', 'Importe S/.: *', array('class' => '')) !!}
+			{!! Form::text('importe', null, array('class' => 'form-control input-xs', 'id' => 'importe', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
+		</div>
+	</div>
+	
 		<div class="form-group">
 			<div class="form-group col-6 col-md-6 col-sm-6">
 				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
 				{!! Form::text('interes', null, array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual')) !!}
 			</div>
-			<div class="form-group col-6 col-md-6 col-sm-6">
+			
+			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 25px;">
 				{!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => '')) !!}
 				{!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses')) !!}
 			</div>
@@ -34,7 +36,8 @@
 				{!! Form::label('fecha_inicio', 'Fecha de inicio: *', array('class' => '')) !!}
 				{!! Form::date('fecha_inicio', null, array('class' => 'form-control input-xs', 'id' => 'fecha_inicio')) !!}
 			</div>
-			<div class="form-group col-6 col-md-6 col-sm-6">
+			
+			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 25px;">
 				{!! Form::label('concepto', 'Concepto:', array('class' => '')) !!}
 				{!! Form::select('concepto', $cboConcepto, $idopcion, array('class' => 'form-control input-sm', 'id' => 'concepto')) !!}
 			</div>
@@ -46,13 +49,11 @@
 
 		<div class="form-group">
 			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar','data-dismiss'=>'modal', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 				&nbsp;
-				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 			</div>
 		</div>
-	</div>
-	
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {

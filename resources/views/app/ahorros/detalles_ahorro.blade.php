@@ -50,7 +50,7 @@
             </div>
             @endif
             &nbsp;
-            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Close', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Close', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
         </div>
     </div>
 {!! Form::close() !!}
