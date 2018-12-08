@@ -15,6 +15,7 @@ use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class AccionesController extends Controller
 {
@@ -144,7 +145,7 @@ class AccionesController extends Controller
                 for($i=0; $i< $cantidad_accion; $i++){
                     $acciones               = new Acciones();    
                     $acciones->estado        = 'C';
-                    $acciones->fechai        = $request->input('fechai');
+                    $acciones->fechai        = $request->input('fechai').date(" H:i:s");
                     $acciones->descripcion        = $request->input('descripcion');
                     $acciones->persona_id        = $request->input('persona_id');
                     $acciones->configuraciones_id        = $request->input('configuraciones_id');
@@ -154,13 +155,14 @@ class AccionesController extends Controller
 
             $fechahora_actual = date("Y-m-d H:i:s");
 
+            $cantidad_accion = $request->input('cantidad_accion');
+
             $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-            $cant_acciones = DB::table('acciones')->where('fechai', $request->input('fechai'))->where('persona_id', $request->input('persona_id'))->count();
             $configuracion= Configuraciones::all();
             $result= $configuracion->last();
             $precio = $result->precio_accion;
 
-            $monto_ingreso = ($cant_acciones*$precio);
+            $monto_ingreso = ($cantidad_accion*$precio);
 
             $idConcepto = DB::table('concepto')->where('titulo', "Compra de acciones")->value('id');
 
@@ -171,7 +173,7 @@ class AccionesController extends Controller
             $transaccion->fecha = $fechahora_actual;
             $transaccion->monto = $monto_ingreso;
             $transaccion->concepto_id = $idConcepto;
-            $transaccion->descripcion = $persona_nombre." compro ".$cant_acciones." acciones";
+            $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
             $transaccion->persona_id = $request->input('persona_id');
             $transaccion->usuario_id =Caja::getIdPersona();;
             $transaccion->caja_id =$idCaja;
@@ -276,6 +278,7 @@ class AccionesController extends Controller
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Voucher', 'numero' => '1');
         $titulo_detalle = $this->tituloDetalle;
         $ruta             = $this->rutas;
         $inicio           = 0;
@@ -348,7 +351,9 @@ class AccionesController extends Controller
         
         $acciones_por_persona = DB::table('acciones')->where('persona_id', $id)->where('estado', "C")->get();
         $descripcion_venta=$request->input('descripcion');
+
         $cantidad_accion= $request->input('cantidad_accion');
+        
         if($cantidad_accion !== ''){            
             for($i=0; $i< $cantidad_accion; $i++){
                 $idaccion= $acciones_por_persona[$i]->id;
@@ -369,7 +374,7 @@ class AccionesController extends Controller
                     $acciones               = new Acciones();    
                     $acciones->estado        = 'C';
                     $acciones->fechai        = date("Y-m-d H:i:s");
-                    $acciones->descripcion        = "comprado de la persona: ";
+                    $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
                     $acciones->persona_id        = $request->input('idcomprador');
                     $acciones->configuraciones_id        = $request->input('configuraciones_id');
                     $acciones->save();
@@ -380,12 +385,8 @@ class AccionesController extends Controller
 
             //registrar compra de de la persona que compra 
             $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-            $cant_acciones = DB::table('acciones')->where('fechai', $request->input('fechai'))->where('persona_id',$request->input('idcomprador'))->count();
-            $configuracion= Configuraciones::all();
-            $result= $configuracion->last();
-            $precio = $result->precio_accion;
 
-            $monto_ingreso = ($cant_acciones*$precio);
+            $cant_tranferencia= $request->input('cantidad_accion');
 
             $idConcepto_compra = DB::table('concepto')->where('titulo', "Venta de acciones")->value('id');
 
@@ -398,13 +399,35 @@ class AccionesController extends Controller
             $transaccion->fecha = date("Y-m-d H:i:s");
             $transaccion->monto = 0.0;
             $transaccion->concepto_id = $idConcepto_compra;
-            $transaccion->descripcion =  "transferencia de:  ".$cant_acciones." acciones de la persona ".$persona_vendedor." a la persona  ".$persona_comprador.".";
-            $transaccion->usuario_id =Caja::getIdPersona();;
+            $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
+            $transaccion->usuario_id =Caja::getIdPersona();
             $transaccion->caja_id =$idCaja;
             $transaccion->save();
              
         });
         
         return is_null($error) ? "OK" : $error;
+    }
+
+    //metodo para generar voucher en pdf
+    public function generarvoucheraccionPDF($id, $cant, $fecha, Request $request)
+    {    
+        $detalle        = Acciones::listAcciones($id);
+        $lista           = $detalle->get();
+        $persona = DB::table('persona')->where('id', $id)->first();
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+        $titulo = $persona->nombres.$cant;
+        $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(20);
+        PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+ 
+        PDF::Output($titulo.'.pdf', 'D');
     }
 }

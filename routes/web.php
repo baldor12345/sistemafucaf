@@ -127,6 +127,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
     Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
     Route::post('acciones/guardarventa/{id}', 'AccionesController@guardarventa')->name('acciones.guardarventa');
+    Route::get('/generarvoucheraccionPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionPDF')->name('generarvoucheraccionPDF');
     
     /*CREDITO*/
     Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
@@ -152,9 +153,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
     Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
-    Route::post('caja/cerrarcaja/{id}', 'CajaController@cerrarcaja')->name('caja.cerrarcaja');
+    //Route::post('caja/cerrarcaja/{id}', 'CajaController@cerrarcaja')->name('caja.cerrarcaja');
     
     Route::get('caja/detalle/{id}', 'CajaController@detalle')->name('caja.detalle');
+    //Route::post('caja/detalle', 'CajaController@detalle')->name('caja.detalle');
 
     Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
     Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');

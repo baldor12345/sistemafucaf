@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 ?>
 
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::open(array('route' => array('caja.cerrarcaja', $caja->id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
+{!! Form::model($caja, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
 <div class="form-group">
@@ -95,7 +95,7 @@ use Illuminate\Support\Facades\DB;
 		$('#fecha_horaApert').val(fechai);
 		
 	});
-
+	
 
 
 

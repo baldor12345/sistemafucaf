@@ -16,8 +16,8 @@ class CrearTablaAcciones extends Migration
         Schema::create('acciones', function (Blueprint $table) {
             $table->increments('id');
             $table->char('estado',1)->nullable();//C=compra V=venta
-            $table->date('fechai')->nullable();
-            $table->date('fechaf')->nullable();
+            $table->timestamp('fechai')->nullable();
+            $table->timestamp('fechaf')->nullable();
             $table->string('descripcion', 400)->nullable();
             $table->integer('persona_id')->unsigned();
             $table->integer('configuraciones_id')->unsigned();

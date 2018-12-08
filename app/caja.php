@@ -41,7 +41,7 @@ class caja extends Model
                             $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
                         }
                     })
-                    ->orderBy('titulo', 'ASC');
+                    ->orderBy('titulo', 'DSC');
     }
     
     //para evaluar el estado de la caja 

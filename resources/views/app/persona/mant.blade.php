@@ -88,12 +88,12 @@
 <div class="form-row">
     <div class="form-group col-md-6 col-sm-6">
 		{!! Form::label('ingreso_personal', 'Ingreso personal:', array('class' => '')) !!}
-		{!! Form::text('ingreso_personal', null, array('class' => 'form-control input-xs', 'id' => 'ingreso_personal', 'placeholder' => '')) !!}
+		{!! Form::text('ingreso_personal', null, array('class' => 'form-control input-xs input-number', 'id' => 'ingreso_personal', 'placeholder' => '')) !!}
 
     </div>
     <div class="form-group col-md-6 col-sm-6" style="margin-left: 25px;">
 		{!! Form::label('ingreso_familiar', 'Ingreso familiar:', array('class' => '')) !!}
-		{!! Form::text('ingreso_familiar', null, array('class' => 'form-control input-xs', 'id' => 'ingreso_familiar', 'placeholder' => '')) !!}
+		{!! Form::text('ingreso_familiar', null, array('class' => 'form-control input-xs input-number', 'id' => 'ingreso_familiar', 'placeholder' => '')) !!}
     </div>
 </div>
 
