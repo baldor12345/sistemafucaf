@@ -7,7 +7,7 @@
 	<thead>
 		<tr>
 			@foreach($cabecera as $key => $value)
-				<th @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
+				<th @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif >{!! $value['valor'] !!}</th>
 			@endforeach
 		</tr>
 	</thead>
@@ -19,7 +19,7 @@
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td>{{ $contador }}</td>
-			
+			<td>{{ $value->codigo }}</td>
 			<td>{{ $value->nombres." ".$value->apellidos}} </td>
 			<td>{{ $value->valor_credito }}</td>
 			<td>{{ $value->periodo }}</td>
@@ -39,5 +39,4 @@
 		@endforeach
 	</tbody>
 </table
-
 @endif

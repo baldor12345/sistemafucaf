@@ -135,6 +135,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
     Route::get('creditos/detallecredito/{idcredito}/{listarluego}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
     Route::get('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
+    Route::get('creditos/buscarcuota', 'CreditoController@buscarcuota')->name('creditos.buscarcuota');
+
     
     /*AHORROS*/
     Route::post('ahorros/buscar', 'AhorrosController@buscar')->name('ahorros.buscar');

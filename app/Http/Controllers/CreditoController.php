@@ -29,6 +29,7 @@ class CreditoController extends Controller
             'edit'     => 'creditos.edit', 
             'delete'   => 'creditos.eliminar',
             'search'   => 'creditos.buscar',
+            'buscarcuota'   => 'creditos.buscarcuota',
             'index'    => 'creditos.index',
             'pagarcuota'    => 'creditos.pagarcuota',
             'detallecredito'    => 'creditos.detallecredito',
@@ -54,7 +55,8 @@ class CreditoController extends Controller
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Nombre Acreditado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CODIGO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Nombre Cliente', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto crédito S/.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Periodo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
@@ -77,6 +79,58 @@ class CreditoController extends Controller
         return view($this->folderview.'.list')->with(compact('lista', 'entidad','titulo_detalle'));
     }
 
+    /** Par listar las cuotas */
+    public function buscarcuota(Request $request)
+    {
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $entidad          = 'Cuota';
+        $entidad1         = 'Credito';
+        $idcredito        = Libreria::getParam($request->input('idcredito'));
+        
+
+        $resultado = Cuota::listar($idcredito);
+        $lista = $resultado->get();
+
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => 'Fech. Pag', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Num. Cuota', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto Cuota S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Capital S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Interes', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fech. Real Pag', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Interes Mora', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Mont. Real Cuota s/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Saldo s/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
+
+        
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+        $configuraciones = configuraciones::all()->last();
+        $resultado1 = Credito::obtenercredito($idcredito);
+        $credito = $resultado1[0];
+       
+        $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
+        $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
+        $ruta           = $this->rutas;
+
+        
+        
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.listdet')->with(compact('lista','credito', 'paginacion', 'inicio', 'fin', 'entidad','entidad1', 'cabecera','titulo_detalle','idcredito','ruta','caja','idcaja'));
+        }
+        return view($this->folderview.'.listdet')->with(compact('lista','credito', 'paginacion', 'inicio', 'fin', 'entidad','entidad1', 'cabecera','titulo_detalle','idcredito','ruta','caja','idcaja'));
+       }
     /**
      * Display a listing of the resource.
      *
@@ -160,22 +214,25 @@ class CreditoController extends Controller
                     $interes = $credito->tasa_interes/100;
 
                     $valor_cuota =  ($interes * $montocredito) / (1 - (pow(1/(1+$interes), $periodo)));
-                    $valor_cuota =  $this->rouNumber($valor_cuota, 2);
+                    $valor_cuota =  $valor_cuota;
                     $fecha_actual = $credito->fechai;
                     $i = 0;
                     $interesAcumulado = 0.00;
                     for($i=0;$i< (int)$request->get('periodo'); $i++){
                         //sumo 1 mes
                         $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
-                        $montInteres = $this->rouNumber($interes *$montorestante , 2); 
+                        $montInteres = $interes *$montorestante; 
                         $interesAcumulado +=  $montInteres; 
 
-                        $montCapital = $this->rouNumber(($valor_cuota - $montInteres) , 2); 
-                        $montorestante = $this->rouNumber(($montorestante - $montCapital) , 2);
+                        $montCapital = $valor_cuota - $montInteres; 
+                        $montorestante = $montorestante - $montCapital;
 
                         $cuota       = new Cuota();
-                        $cuota->parte_capital = $montCapital;
-                        $cuota->interes = $montInteres;
+                        $cuota->parte_capital =$this->rouNumber($montCapital,2);
+                        $cuota->interes = $this->rouNumber($montInteres,2);
+                        $cuota->interes_mora = 0;
+                        $cuota->saldo_restante = $this->rouNumber($montorestante,2);
+                        $cuota->numero_cuota = $i + 1;
                         $cuota->fecha_programada_pago = $fecha_actual;
                         $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
                         $cuota->credito_id = $credito->id;
@@ -266,13 +323,13 @@ class CreditoController extends Controller
 
         $resultado = Credito::obtenercredito($idcredito);
         $credito = $resultado[0];
-        $entidad      = 'Credito';
+        $entidad      = 'Cuota';
+        $entidad1 = 'Credito';
        
         $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
-        
         $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
-        $lista = Cuota::listar($idcredito)->get();
-        return view($this->folderview.'.detallecredito')->with(compact('credito', 'entidad', 'lista','fechacaducidad','titulo_detalle','idcaja','configuraciones'));
+        $ruta             = $this->rutas;
+        return view($this->folderview.'.detallecredito')->with(compact('credito','idcredito', 'entidad','entidad1', 'lista','fechacaducidad','titulo_detalle','idcaja','configuraciones', 'ruta'));
     }
 
     public function guardarcredito(Request $request){
@@ -320,22 +377,25 @@ class CreditoController extends Controller
                     $interes = $credito->tasa_interes/100;
 
                     $valor_cuota =  ($interes * $montocredito) / (1 - (pow(1/(1+$interes), $periodo)));
-                    $valor_cuota =  $this->rouNumber($valor_cuota, 2);
+                    $valor_cuota =  $this->rouNumber($valor_cuota, 1);
                     $fecha_actual = $credito->fechai;
                     $i = 0;
                     $interesAcumulado = 0.00;
                     for($i=0;$i< (int)$request->get('periodo'); $i++){
                         //sumo 1 mes
                         $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
-                        $montInteres = $this->rouNumber($interes *$montorestante , 2); 
+                        $montInteres = $this->rouNumber($interes *$montorestante , 1); 
                         $interesAcumulado +=  $montInteres; 
 
-                        $montCapital = $this->rouNumber(($valor_cuota - $montInteres) , 2); 
-                        $montorestante = $this->rouNumber(($montorestante - $montCapital) , 2);
+                        $montCapital = $this->rouNumber(($valor_cuota - $montInteres) , 1); 
+                        $montorestante = $this->rouNumber(($montorestante - $montCapital) , 1);
 
                         $cuota       = new Cuota();
                         $cuota->parte_capital = $montCapital;
                         $cuota->interes = $montInteres;
+                        $cuota->interes_mora = 0.00;
+                        $cuota->saldo_restante = $montorestante;
+                        $cuota->numero_cuota = $i + 1;
                         $cuota->fecha_programada_pago = $fecha_actual;
                         $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
                         $cuota->credito_id = $credito->id;
@@ -463,25 +523,29 @@ class CreditoController extends Controller
 //***************************************************************************************** */
     public static function pagarcuota(Request $request){
         $id_cuota = $request->get('id_cuota');
-        $error = DB::transaction(function() use($request, $id_cuota){
-            $cuota       = Cuota::find($id_cuota);
-            $cuota->estado = 1;
-            $cuota->save();
-            
-            $caja = Caja::where("estado","=","A")->get();
-            $fechahora_actual = date('Y-m-d H:i:s');
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $fechahora_actual;
-            $transaccion->monto = $cuota->parte_capital + $cuota->interes;
-            $transaccion->concepto_id = 4;//$request->input('concepto');
-            $transaccion->descripcion = " Pago de cuota de S/. ".$transaccion->monto;
-            $transaccion->persona_id = $request->get('id_cliente');
-            $transaccion->usuario_id = Credito::idUser();
-            $transaccion->caja_id = $caja[0]->id;
-            $transaccion->save();
-
-
-        });
-        return is_null($error) ? "OK" : $error;
+        $caja = Caja::where("estado","=","A")->get();
+        $res = null;
+        if(count($caja) > 0){
+            $error = DB::transaction(function() use($request, $id_cuota){
+                $fechahora_actual = date('Y-m-d H:i:s');
+                $cuota       = Cuota::find($id_cuota);
+                $cuota->estado = 1;
+                $cuota->fecha_pago = $fechahora_actual;
+                $cuota->save();
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $fechahora_actual;
+                $transaccion->monto = $cuota->parte_capital + $cuota->interes;
+                $transaccion->concepto_id = 4;//$request->input('concepto');
+                $transaccion->descripcion = " Pago de cuota de S/. ".$transaccion->monto;
+                $transaccion->persona_id = $request->get('id_cliente');
+                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->caja_id = $request->get('id_caja');
+                $transaccion->save();
+            });
+            $res = $error;
+        }else{
+            $res = "No hay una caja aperturada, por favor aperture una caja ...!";
+        }
+        return is_null($res) ? "OK" : $res;
     }
 }

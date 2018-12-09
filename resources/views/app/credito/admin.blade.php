@@ -41,7 +41,7 @@
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Credito', array('data-toggle'=>'modal', 'data-target'=>'#creditoManModal','class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => '#')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Credito', array('data-toggle'=>'modal', 'data-target'=>'#'.($idcaja == 0?'modal_validador':'creditoManModal'),'class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => '#')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -52,19 +52,18 @@
     </div>
 </div>
 <!--MODAL MANTENIMIENTO DE CREDITO-->
-<div class="modal fade" id="creditoManModal" tabindex="-1" role="dialog" aria-labelledby="creditoManModal" aria-hidden="true">
+<div class="modal fade" id="creditoManModal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="creditoManModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-
       <div class="modal-header">
-	  	<h5 class="modal-title" id="exampleModalLabel">Nuevo credito</h5>
+	  	<h5 class="modal-title" id="exampleModalLabel">NUEVO CREDITO</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-
       <div class="modal-body">
 		<fieldset>
+		<div class="card-box table-responsive">
 		<div id="divMensajeError" class="alert alert-danger"></div>
 		<form id="formMantCredito" action="">
 			<div class="form-row">
@@ -99,13 +98,8 @@
 					{!! Form::label('fechacred', 'Fecha: *', array('class' => '')) !!}
 					{!! Form::date('fechacred', null, array('class' => 'form-control input-xs', 'id' => 'fechacred')) !!}
 				</div>
-				<div class="form-group col-12" >
-					{!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
-					{!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
-				</div>
 				<div class="form-group col-6 col-md-6 col-sm-6" >
-					{!! Form::label('btnCronograma', 'Ver cronograma de pagos: *', array('class' => '')) !!}
-					{!! Form::button('<i class="fa fa-check fa-lg"></i> Cronograma', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
+					{!! Form::button('<i class="fa fa-check fa-lg"></i>Ver Cronograma', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
 				</div>
 			</div>
 			<div class="form-group">
@@ -116,13 +110,9 @@
 				</div>
 			</div>
 		</form>
-
+		<div>
 		</fieldset>
       </div>
-
-      <div class="modal-footer">
-      </div>
-
     </div>
   </div>
 </div>
@@ -137,7 +127,6 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-
       <div class="modal-body">
 	  	<fieldset class="col-12">
 			<table id="example1" class="table table-bordered table-striped table-condensed table-hover">
@@ -171,6 +160,26 @@
   </div>
 </div>
 
+<!-- MODAL VALIDACION CAJA APERTURADA-->
+<div class="modal fade" id="modal_validador" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	  <div class="alert alert-danger">
+		<strong>¡Error!</strong> No hay una caja aperturada, porfavor aperture primero.
+	  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
  <!--CODIGO JAVASCRIPT -->
 <script>
 
@@ -201,8 +210,6 @@
 
 		$("input[name=dnicl]").keyup(function(event){
         	$.get("personas/"+event.target.value+"",function(response, facultad){
-				//console.log("datos de la persona");
-				//console.log(response);
 				$('#nombrescl').val('');
 				$('#idcl').val('');
 				$('#idavl').val('');
@@ -212,9 +219,11 @@
 					$("#idcl").val(response[0].id);
 					console.log(response[0].tipo);
 					if( response[0].tipo.trim() == 'S'){
+						$("#idcl").attr('tipocl','s');
 						$("#dniavl").prop('disabled', true);
 						$("#lblavl").html('DNI del Aval:');
 					}else{
+						$("#idcl").attr('tipocl','c');
 						$("#dniavl").prop('disabled', false);
 						$("#lblavl").html('DNI del Aval: *');
 					}
@@ -225,7 +234,7 @@
 					$("#nombrescl").html("El DNI ingresado no existe");
 				}
 			});
-    	});
+		});
 
 		$("input[name=dniavl]").keyup(function(event){
         	$.get("personas/"+event.target.value+"",function(response, facultad){
@@ -242,14 +251,13 @@
 	});
 	
 	function guardarcredito(){
-			console.log("datos serialixados 0001: "+$('#formMantCredito').serialize());
+		if(validarcamposman()){
 			$.ajax({
 				url: 'creditos/guardarcredito',
 				headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
 				type: 'GET',
 				data: $('#formMantCredito').serialize(),
 				beforeSend: function(){
-					
 				},
 				success: function(res){
 					if(res == "OK"){
@@ -267,16 +275,30 @@
 				document.getElementById("divMensajeError").innerHTML = "Ingrese todos los campos obligatorios!";
 				$('#divMensajeError').show();
 			});
+		}else{
+			document.getElementById("divMensajeError").innerHTML = "Asegurese de rellenar todos los campos obligatorios correctamente!";
+			$('#divMensajeError').show();
 		}
+	}
 
 	function cerrarModal(){
 		$('#creditoManModal').modal('hide');
 	}
-
+	function validarcamposman(){
+		var res = true;
+		if($('#periodo').val() == "" || $('#idcl').val() == ""|| $('#valor_credito').val() == "" || $('#tasa_interes').val() == ""){
+			res = false;
+		}
+		if($("#idcl").attr('tipocl') == 'c'){
+			if($('#idavl').val() == ''){
+				res = false;
+			}
+		}
+		return res;
+	}
 	function limpiar(){
 		$('#valor_credito').val('');
 		$('#periodo').val('');
-		$('#descripcion').val('');
 		$('#dnicl').val('');
 		$('#dniavl').val('');
 		$('#divMensajeError').hide();
@@ -306,40 +328,39 @@
 		fechac.setDate(fechac.getDate() + 1);
 		var interesAcumulado=0.00;
 		var capitalTotal = 0.00;
+		var sumacuotas = 0.00;
 		var fila='';
 		//FORMULA: CUOTA = (Interes * CpitalInicial)/(1-  (1/ (1+InteresMensual)^NumeroCuotas)  );  Math.pow(7, 2);
-		montCuota =RoundDecimal( ((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo))), 2);
+		montCuota =((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo)));
 		var i=0;
 		
 		for(i=0; i<periodo; i++){
 			fechac.setMonth(fechac.getMonth() + 1);
 			var day = ("0" + fechac.getDate()).slice(-2);
 			var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
-			// day = ("0" + fecha.getDate()).slice(-2);
-			// month = ("0" + (fecha.getMonth() + 1)).slice(-2);
-			montInteres = RoundDecimal( (Interes/100)*CapitalInicial, 2);
+			montInteres =  (Interes/100)*CapitalInicial;
 			interesAcumulado = montInteres + interesAcumulado;
-			montCapital= RoundDecimal( montCuota - montInteres, 2);
-			CapitalInicial = RoundDecimal( CapitalInicial - montCapital, 2);
-
+			montCapital= montCuota - montInteres;
+			CapitalInicial = CapitalInicial - montCapital;
+			capitalTotal += montCapital;
+			sumacuotas += montCuota;
 			fila = fila + "<tr>"
 					+"<td>"+(i+1)+"</td>"
-					+"<td>"+montInteres+"</td>"
-					+"<td>"+montCapital+"</td>"
-					+"<td>"+montCuota+"</td>"
+					+"<td>"+RoundDecimal(montInteres,2)+"</td>"
+					+"<td>"+RoundDecimal(montCapital,2)+"</td>"
+					+"<td>"+RoundDecimal(montCuota,2)+"</td>"
 					+"<td>"+fechac.getDate()+"/"+(fechac.getMonth()+1)+"/"+(fechac.getFullYear())+"</td>"
 					+"</tr>";
 		}
-
-		interesAcumulado = RoundDecimal(interesAcumulado, 1);
-		capitalTotal =  RoundDecimal(interesAcumulado + Monto , 2);
-
+		
+		interesAcumulado = interesAcumulado;
+		fila += "<tr><td>TOTAL</td><td>"+RoundDecimal(interesAcumulado,2)+"</td><td>"+RoundDecimal(capitalTotal,2)+"</td><td>"+RoundDecimal(sumacuotas,2)+"</td></tr>";
 		$("#filasTcuotas").append(fila);
 		$('#cronogramaModal').modal('show');
 		$('#interesToal').empty();
 		$('#capitalTotal').empty();
-		$('#interesTotal').text("Interes total: " +interesAcumulado);
-		$('#capitalTotal').text("Total al finalizar: " + capitalTotal);
+		$('#interesTotal').text("Interes total: " +RoundDecimal(interesAcumulado,1));
+		$('#capitalTotal').text("Total al finalizar: " + RoundDecimal(capitalTotal,1));
 
 	}
 

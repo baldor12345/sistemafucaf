@@ -34,6 +34,7 @@ class Credito extends Model
         'persona.nombres as nombres',
         'persona.apellidos as apellidos',
         'persona.tipo as tipo',
+        'persona.codigo as codigo',
         'credito.id as credito_id',
         'credito.valor_credito as valor_credito',
         'credito.periodo as periodo',
@@ -50,9 +51,7 @@ class Credito extends Model
     ->where('credito.estado','=',$estado)
     
     ->orderBy('credito.fechai', 'DSC');
-        
         return $results;
-       
     }
 
     public static function obtenercredito($idcredito){
