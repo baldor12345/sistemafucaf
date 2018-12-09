@@ -70,26 +70,21 @@ class Acciones extends Model
     public static function listAcciones($persona_id){
         $results = DB::table('acciones')
             ->join('persona', 'acciones.persona_id', '=', 'persona.id')
-            ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
             ->select( 
+                    'acciones.estado as acciones_estado',
+                    'acciones.fechai as acciones_fecha',
+                    'acciones.descripcion as acciones_descripcion',
+                    'acciones.persona_id as acciones_persona_id',
+                    'persona.id',
                     'persona.codigo AS persona_codigo',
                     'persona.dni as persona_dni',
                     'persona.nombres as persona_nombres',
                     'persona.apellidos as persona_apellidos',
-                    'configuraciones.codigo AS configuraciones_codigo',
-                    'acciones.persona_id',
-                    'acciones.estado as acciones_estado',
-                    'acciones.descripcion as acciones_descripcion',
-                    'acciones.fechai as acciones_fecha',
-                    'configuraciones.precio_accion AS precio_accion',
                     DB::raw('count(acciones.estado) as cantidad_accion_comprada')
                     )
                     ->where('acciones.persona_id', '=', $persona_id)
-                    ->where('acciones.estado', '=', 'C')
-                    ->orWhere('acciones.estado', '=', 'V')
-                    ->groupBy('persona.codigo','persona.dni','persona.nombres',
-                                'persona.apellidos','configuraciones.codigo','acciones.persona_id',
-                                'acciones.estado','configuraciones.precio_accion','acciones.fechai','acciones.descripcion');
+                    ->groupBy('acciones.estado','acciones.fechai', 'acciones.descripcion', 'acciones.persona_id',
+                                'persona.id');
         return $results;
         			
     }
@@ -111,19 +106,6 @@ class Acciones extends Model
                             ->groupBy('configuraciones.limite_acciones','persona.dni','persona.nombres','acciones.persona_id')->get();
     }
 
-    /*
-    public function scopeCantidaAcciones($persona_id){
-        $results = DB::table('acciones')
-            ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
-            ->select( 
-                    'configuraciones.limite_acciones as limite_acciones',
-                    DB::raw('count(acciones.estado) as cantidad_accion_acumulada')
-                    )
-                    ->where('acciones.persona_id', '!=', $persona_id)
-                    ->groupBy('configuraciones.limite_acciones');
-        return $results;
-        			
-    }
-    */
+    
 
 }

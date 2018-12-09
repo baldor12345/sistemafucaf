@@ -1,11 +1,6 @@
-
-<div class="modal-header">
-        <h4 class="modal-title">Detalle de acciones</h4>
-</div>
-
+<h4 class="modal-title">Detalle de acciones</h4>
 <div class="modal-body">
 	<div class="row">
-		<div class="col-sm-12">
 			<div class="card-box table-responsive">
 				<div id="tabla">
 					@if(count($lista) == 0)
@@ -32,8 +27,9 @@
 								@else
 								<td estadoT='{{ $value->acciones_estado }}'>Venta</td>
 								@endif
-								<td fechaT='{{ $value->acciones_fecha }}' >{{ $value->acciones_fecha}}</td>
+								<td fechaT='{{ $value->acciones_fecha }}' > {{ Date::parse($value->acciones_fecha)->format('d/m/y') }} </td>
 								<td estadoT='{{ $value->acciones_descripcion }}'>{{$value->acciones_descripcion}}</td>
+								<td><a href="{{ route('generarvoucheraccionPDF', array('id' => $value->acciones_persona_id, 'cant' => $value->cantidad_accion_comprada, 'fecha' => $value->acciones_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs"><i class="glyphicon glyphicon-download-alt"></i> descargar</a></td>
 							</tr>
 							<?php
 							$contador = $contador + 1;
@@ -43,13 +39,12 @@
 						
 					</table>
 					@endif
+					<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					</div>
 				</div>
 			</div>
-		</div>
 	</div>
+</div>
 
-</div>
-<div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-</div>
 

@@ -61,18 +61,9 @@ function cargarselect2(entidad){
 </div>
 
 <div class="form-group">
-	{!! Form::label('dni', 'Dni:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
-	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...' )) !!}
-		<p id="nombresCompletos" class="" ></p>
-		<input type="hidden" id="persona_id", name="persona_id" value="">
-	</div>
-</div>
-
-<div class="form-group">
 	{!! Form::label('total', 'Total(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('total', null, array('class' => 'form-control input-xs', 'id' => 'total', 'placeholder' => 'S/.')) !!}
+		{!! Form::text('total', null, array('class' => 'form-control input-xs input-number', 'id' => 'total', 'placeholder' => 'S/.')) !!}
 	</div>
 </div>
 
@@ -105,19 +96,8 @@ function cargarselect2(entidad){
 		var fecha = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 		$('#fecha').val(fecha);
 
-
-		$("input[name=dni]").change(function(event){
-        	$.get("personas/"+event.target.value+"",function(response, facultad){
-				console.log("datos de la persona");
-				console.log(response);
-				$('#nombres').val('');
-				$('#persona_id').val('');
-				for(i=0; i<response.length; i++){
-					document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-					document.getElementById("persona_id").value = response[i].id;
-				}
-			});
-    	});
-
 	}); 
+	$('.input-number').on('input', function () { 
+    	this.value = this.value.replace(/[^0-9]/g,'');
+	});
 </script>
