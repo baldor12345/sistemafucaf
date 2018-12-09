@@ -33,12 +33,12 @@
                     <td>{{$value->saldo_restante}}</td>
                     @if($value->estado != 0 )
                     <td >P</td>
-                    <td ><button type="button" idcuota=0 class='btn btn-light btn-xs' idevento='{{$value->id}}'>Pagado</button></td>
-                    <td ><button type="button" id='rec{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-success btn-xs btnrecibo' idevento='{{$value->id}}'>Recibo</button></td>
+                    <td ><button type="button" idcuota=0 class='btn btn-light btn-xs'>Pagado</button></td>
+                    <td ><button type="button" id='rec{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-success btn-xs btnrecibo'>Recibo</button></td>
                     @else
                     <td ></td>
-                    <td >{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btn-xs btncuota','id'=>''.$value->id, "idcuota"=>$value->id)) !!}</td>
-                    <td ><button type="button" id='rec{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-light btn-xs' idevento='{{$value->id}}'>. . . . . .</button></td>
+                    <td >{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btn-xs btncuota','id'=>'btnct'.$value->id, "idcuota"=>''.$value->id)) !!}</td>
+                    <td ><button type="button" id='rec{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-light btn-xs'>. . . . . .</button></td>
                     @endif
                 </tr>
                 <?php
@@ -166,6 +166,7 @@ function abrirmodal(accion, msrecibo){
                     textbtnOk = "---";
                     textbtnCancel = "Ok";
                 }
+                var idcuota = $(this).attr("idcuota");
                 if($('#'+idbt).attr("idcuota") != 0){
                     bootbox.confirm({
                         title: "Pago de cuota",
@@ -184,26 +185,29 @@ function abrirmodal(accion, msrecibo){
                                     url: 'creditos/pagarcuota',
                                     headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                                     type: 'GET',
-                                    data: 'id_cuota='+idbt+'&id_cliente={{$credito->persona_id}}&id_caja={{$idcaja}}',
+                                    data: 'id_cuota='+idcuota+'&id_cliente={{$credito->persona_id}}&id_caja={{$idcaja}}',
                                     beforeSend: function(){
                                         
                                     },
                                     success: function(res){
+                                        console.log("respuesta: "+res);
                                        if(res == "OK"){
                                             array_tr[9].innerHTML = 'P';
                                             array_tr[5].innerHTML = '{{date('d/m/Y')}}';
                                             buscar('{{ $entidad1 }}');
+                                            console.log("idbt: "+idbt);
+                                            $('#'+idbt).html("Pagado");
+                                            $('#'+idbt).addClass( "btn-light" );
                                             $('#rec'+idbt).html("Recibo");
+                                            $('#'+idbt).attr("idcuota", 0);
+                                            $('#'+idbt).removeClass("btn-danger btncuota");
                                             $('#rec'+idbt).addClass( "btnrecibo btn-success" );
                                             $('#rec'+idbt).click(function(){
                                                 var array_tr =  this.parentElement.parentElement.children;
                                                 var msrecibo = generar_recibo('{{$credito->nombres}}','fucaf001','direccion','fechafin','fechaini','nuemroucota','partecap','interes','interesmora','saldorest','cuotasprox','Diciembre-18');
                                                 abrirmodal("show", msrecibo);
                                             });
-                                            $('#'+idbt).html("Pagado");
-                                            $('#'+idbt).attr("idcuota", 0);
-                                            $('#'+idbt).removeClass("btn-danger btncuota");
-                                            $('#'+idbt).addClass( "btn-light" );
+                                            
                                         }else{
                                             mostrarMensaje(res, 'ERROR');
                                         }
