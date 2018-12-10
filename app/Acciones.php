@@ -31,6 +31,10 @@ class Acciones extends Model
     {
         return $this->belongsTo('App\Persona', 'persona_id');
     }
+    public function caja()
+    {
+        return $this->belongsTo('App\Caja', 'caja_id');
+    }
 
     public function configuraciones()
     {

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 <div class="form-group">
 	{!! Form::label('dni', 'DNI del comprador:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...' )) !!}
+		{!! Form::text('dni', null, array('class' => 'form-control input-xs input-number', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...', 'maxlength' => '8')) !!}
 		<p id="nombresCompletos" class="" ></p>
 		<input type="hidden" id="idcomprador", name="idcomprador" value="">
 	</div>
@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 <div class="form-group">
 	{!! Form::label('cantidad_accion', 'Cantidad a vender:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs', 'id' => 'cantidad_accion', 'placeholder' => 'Ingrese cantidad')) !!}
+		{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_accion', 'placeholder' => 'Ingrese cantidad')) !!}
 	</div>
 </div>
 
@@ -117,7 +117,9 @@ use Illuminate\Support\Facades\DB;
 		
 	});
 
-
+	$('.input-number').on('input', function () { 
+    	this.value = this.value.replace(/[^0-9]/g,'');
+	});
 
 
 	/*

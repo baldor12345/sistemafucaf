@@ -58,17 +58,7 @@ class MenuoptionSeeder extends Seeder
 				array(
 					'name' => 'Ahorros',
 					'link'   => 'ahorros'
-				),
-				array(
-					'name' => 'Gastos',
-					'link'   => 'gastos'
-				),
-				/*
-				array(
-					'name' => 'Productos',
-					'link'   => 'product'
 				)
-				*/
 			);
 
 		for ($i=0; $i < count($datos); $i++) { 

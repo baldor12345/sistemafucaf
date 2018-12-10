@@ -16,6 +16,7 @@ use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
+use PDF;
 
 class CajaController extends Controller
 {
@@ -72,7 +73,7 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Monto C.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto D.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '4');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -286,12 +287,12 @@ class CajaController extends Controller
         $entidad ='Transaccion';
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
-            $paramPaginacion = $clsLibreria->generarPaginacion($lista, 1, 10, $entidad);
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, 1, 30, $entidad);
             $paginacion      = $paramPaginacion['cadenapaginacion'];
             $inicio          = $paramPaginacion['inicio'];
             $fin             = $paramPaginacion['fin'];
             $paginaactual    = $paramPaginacion['nuevapagina'];
-            $lista           = $resultado->paginate(8);
+            $lista           = $resultado->paginate(30);
             $request->replace(array('page' => $paginaactual));
             return view($this->folderview.'.transaccion')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
         }
@@ -388,6 +389,44 @@ class CajaController extends Controller
         $retorno .= '</select></div>';
 
         echo $retorno;
+    }
+
+    //metodo para generar voucher en pdf
+    public function reportecajaPDF($id, Request $request)
+    {    
+        $caja = DB::table('caja')->where('id', $id)->first();
+        //calculos
+        $ingresos =$caja->monto_iniciado;
+        $egresos=0;
+        $diferencia =0;
+        $saldo = Transaccion::getsaldo($id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $diferencia= $ingresos-$egresos;
+
+        $concepto_id             = Libreria::getParam(-1);
+        $resultado        = Transaccion::listar($concepto_id , $id);
+        $lista            = $resultado->get();
+        $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+
+        $titulo = "reporte ".$caja->titulo;
+        $view = \View::make('app.caja.reportecajaPDF')->with(compact('lista', 'id', 'caja','diferencia', 'result','persona','ingresos','egresos'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L','A4',0);
+        PDF::SetTopMargin(5);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+ 
+        PDF::Output($titulo.'.pdf', 'D');
     }
 
 }

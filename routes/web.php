@@ -155,6 +155,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
     Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
+    Route::get('/reportecajaPDF/{id}', 'CajaController@reportecajaPDF')->name('reportecajaPDF');
     //Route::post('caja/cerrarcaja/{id}', 'CajaController@cerrarcaja')->name('caja.cerrarcaja');
     
     Route::get('caja/detalle/{id}', 'CajaController@detalle')->name('caja.detalle');

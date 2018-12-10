@@ -76,7 +76,7 @@
 				<td align="left" style="font-size: 10px" colspan="1">
 					<b> {{ $cant*10 }}</b>
 				</td>
-				<td rowspan="2" align="center" >Ahorro Total: ----</td>
+				<td rowspan="2" align="center" >Ahorro Total: <br><b> {{ $monto_ahorro }}</b></td>
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="1">
