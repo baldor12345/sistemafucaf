@@ -143,8 +143,6 @@ class CreditoController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
         $configuraciones = configuraciones::all()->last();
-        echo("comfiguracion: ".$configuraciones->tasa_interes_credito);
-       
         $entidad          = 'Credito';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
@@ -185,9 +183,9 @@ class CreditoController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $acreditado = Persona::find($request->get('idcl'));
         $configuraciones = configuraciones::all()->last();
-        $r = $this->validaAcreditado($acreditado, $request->get('valor_credito'),$configuraciones->precio_accion);
+        $r = $this->validaAcreditado($acreditado, $request->get('valor_credito'),$configuraciones->precio_accion,$request->input('periodo'));
         $res = "OK";
-       if(count($caja) > 0){
+       if(count($caja) > 0){//validamos si existe caja aperturada
            if($r == ""){
                 $error = DB::transaction(function() use($request){
                     $credito       = new Credito();
@@ -267,7 +265,10 @@ class CreditoController extends Controller
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
     }
-    public function validaAcreditado($acreditado, $valorCredito, $precioaccion){
+    /**
+     * Metodo para validar Cliente acreditado
+     */
+    public function validaAcreditado($acreditado, $valorCredito, $precioaccion, $periodo){
         
         $respuesta = "";
         if(trim($acreditado->tipo) == "S"){
@@ -277,40 +278,39 @@ class CreditoController extends Controller
             ->select(DB::raw('count(*) as numero_acciones'))
             ->get();
 
-            $capital_actual = $acreditado->ingreso_personal + $acreditado->ingreso_familiar + $acciones[0]->numero_acciones * $precioaccion;
-            
-
-            if( $valorCredito <= 0.2 * $capital_actual){
+            $capital_actual = $acreditado->ingreso_personal + $acreditado->ingreso_familiar;
+            if( $valorCredito <= (0.2 * $capital_actual + $acciones[0]->numero_acciones * $precioaccion)){// verifica si el valor de credito solicitado no supere el 20% del capital social + valor de acciones
                 $credito = DB::table('credito')
                 ->where('persona_id',"=", $acreditado->id)
                 ->where('estado',"=", '0')//0 = credito no cancelado aun
                 ->select(DB::raw('count(*) as numcreditos'))
                 ->get();
-
+                if($credito[0]->numcreditos >= 1 & $periodo > 1){
+                    $respuesta = "El Socio cuenta con un credito activo, por lo que solo se permite uno mas con periodo de 1 mes !";
+                }
                 if($credito[0]->numcreditos >= 2){
-                    $respuesta = "El socio supera el numero de creditos ...!";
+                    $respuesta = "El Socio ya cuenta con 2 creditos, no se permite mas de 2 !";
                 }
             }else{
-                $respuesta = "El valor de credito que desea solicitar supera el maximo admitido ...!";
+                $respuesta = "El Socio solo puede obtener un credito con un monto máximo de s/. ".($capital_actual+ $acciones[0]->numero_acciones * $precioaccion)." !";
             }
             
         }else{
-            
             $capital_actual = $acreditado->ingreso_personal + $acreditado->ingreso_familiar ;
-           
             if( $valorCredito<= 0.2 * $capital_actual){
-               
                 $credito = DB::table('credito')
                 ->where('persona_id',"=", $acreditado->id)
                 ->where('estado',"=", '0')//0 = credito no cancelado aun
                 ->select(DB::raw('count(*) as numcreditos'))
                 ->get();
-
+                if($credito[0]->numcreditos >= 1 & $periodo > 1){
+                    $respuesta = "El Cliente cuenta con un credito activo, por lo que solo se permite uno mas con periodo de 1 mes !";
+                }
                 if($credito[0]->numcreditos >= 2){
-                    $respuesta = "El cliente supera el numero de creditos ...!";
+                    $respuesta = "El Cliente ya cuenta con 2 creditos, no se permite mas de 2 !";
                 }
             }else{
-                $respuesta = "El valor de credito que desea solicitar supera el maximo admitido ...!";
+                $respuesta = "El Cliente solo puede obtener un credito con un monto máximo de s/. ".$capital_actual." !";
             }
         }
         return $respuesta;
@@ -348,7 +348,7 @@ class CreditoController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $acreditado = Persona::find($request->get('idcl'));
         $configuraciones = configuraciones::all()->last();
-        $r = $this->validaAcreditado($acreditado, $request->get('valor_credito'),$configuraciones->precio_accion);
+        $r = $this->validaAcreditado($acreditado, $request->get('valor_credito'),$configuraciones->precio_accion, $request->input('periodo'));
         $res = "OK";
        if(count($caja) > 0){
            if($r == ""){
@@ -525,9 +525,10 @@ class CreditoController extends Controller
         $id_cuota = $request->get('id_cuota');
         $caja = Caja::where("estado","=","A")->get();
         $res = null;
-        if(count($caja) > 0){
+        if(count($caja) > 0){// VALIDA SI CAJA ESTA APERTURADA
             $error = DB::transaction(function() use($request, $id_cuota){
                 $fechahora_actual = date('Y-m-d H:i:s');
+                $credito = Credito::find($request->get('id_cliente'));
                 $cuota       = Cuota::find($id_cuota);
                 $cuota->estado = 1;
                 $cuota->fecha_pago = $fechahora_actual;
@@ -536,11 +537,17 @@ class CreditoController extends Controller
                 $transaccion->fecha = $fechahora_actual;
                 $transaccion->monto = $cuota->parte_capital + $cuota->interes;
                 $transaccion->concepto_id = 4;//$request->input('concepto');
-                $transaccion->descripcion = " Pago de cuota de S/. ".$transaccion->monto;
+                $transaccion->descripcion = " Pago de cuota N° ".$cuota->numero_cuota."/".$credito->periodo." de S/. ".$transaccion->monto;
                 $transaccion->persona_id = $request->get('id_cliente');
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $request->get('id_caja');
                 $transaccion->save();
+                
+                if($credito->periodo == $cuota->numero_cuota){// valida si se cancela totalmente todas las cuotas y modifica el estado del credito
+                    $credito->estado = 1;// estado : 1 = Cancelado totalmente
+                    $credito->save();
+                }
+
             });
             $res = $error;
         }else{

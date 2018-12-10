@@ -106,7 +106,7 @@
 				<div class="col-lg-12 col-md-12 col-sm-12 text-right">
 					{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarcredito();')) !!}
 					&nbsp;
-					{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+					{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModalmancred();')) !!}
 				</div>
 			</div>
 		</form>
@@ -217,7 +217,6 @@
 				
 					$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
 					$("#idcl").val(response[0].id);
-					console.log(response[0].tipo);
 					if( response[0].tipo.trim() == 'S'){
 						$("#idcl").attr('tipocl','s');
 						$("#dniavl").prop('disabled', true);
@@ -281,7 +280,7 @@
 		}
 	}
 
-	function cerrarModal(){
+	function cerrarModalmancred(){
 		$('#creditoManModal').modal('hide');
 	}
 	function validarcamposman(){
