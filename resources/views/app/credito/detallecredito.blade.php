@@ -1,131 +1,80 @@
 
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::model($credito, array('class' => 'form-horizontal' , 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
-
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
+<div class="card-box table-responsive crbox">
+    <div class="form-row lbldatos">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Cliente: '.$credito->nombres.' '.$credito->apellidos, array('id'=>'cliente','class' => '')) !!}
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
+    <div class="form-row lbldatos">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Monto S/.: '.$credito->valor_credito, array('id'=>'montocredito','class' => '')) !!}
         </div>
-        <div class="form-group col-6 col-md-6 col-sm-6">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Interes mensual (%): '.$credito->tasa_interes, array('id'=>'interesmes','class' => '')) !!}
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
+    <div class="form-row lbldatos">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Tiempo (Meses): '.$credito->periodo, array('id'=>'tiempomeses','class' => '')) !!}
         </div>
-        <div class="form-group col-6 col-md-6 col-sm-6">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'N° de cuotas de pago: '.$credito->periodo, array('id'=>'numcuotaspago','class' => '')) !!}
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
+    <div class="form-row lbldatos">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Fecha de inicio: '.$credito->fechai, array('id'=>'fechainicio','class' => '')) !!}
         </div>
-        <div class="form-group col-6 col-md-6 col-sm-6">
+        <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Fecha de caducidad: '.$fechacaducidad, array('id'=>'fechacaduca','class' => '')) !!}
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-12">
+    <div class="form-row lbldatos">
+        <div class="form-group col-12 lbldatos">
             {!! Form::label('', 'Descripcion: '.$credito->descripcion, array('id'=>'descripcredito','class' => '')) !!}
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-12">
-            <h3>Cuotas de pago</h3>
-        </div>
-    </div>
-
-    <table id="example1" class="table table-striped table-bordered table-sm table-fixed">
-        <thead style="width: 99%; display: block;">
-            <tr style="width: 99%; display: block;">
-                <th style='width: 15%;;' class='text-center'>#</th>
-                <th style='width: 15%;'>INTERES</th>
-                <th style='width: 15%;' class='text-center'>CAPITAL</th>
-                <th style='width: 15%;' class='text-center'>CUOTA S/.</th>
-                <th style='width: 15%;' class='text-center'>FECHA DE PAGO</th>
-                <th style='width: 15%;' class='text-center'>SITUACION</th>
-                <th style='width: 10%;' colspan="1">OPERACIONES</th>
-            </tr>
-        </thead>
     
-        <tbody  style="width: 100%; height: 200px; overflow-y: scroll; display: block;">
-            <?php
-                $contador = 1;
-            ?>
-            @foreach ($lista as $key => $value)
-                <tr>
-                    <td style='width: 15%;'>{{$contador}}</td>
-                    <td style='width: 15%;'>{{$value->interes}}</td>
-                    <td style='width: 15%;'>{{$value->parte_capital}}</td>
-                    <td style='width: 15%;'>{{$value->interes + $value->parte_capital}}</td>
-                    <td style='width: 15%;'>{{$value->fecha_programada_pago}}</td>
-                    @if($value->estado != 0 )
-                    <td style='width: 15%;'>Pagado</td>
-                    <td style='width: 10%;'><button type="button" idcuota=0 class='btn btn-light' idevento='{{$value->id}}'>Cancelado</button></td>
-                    @else
-                    <td style='width: 15%;'>Pendiente</td>
-                    <td style='width: 10%;'>{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btncuota','id'=>''.$value->id, "idcuota"=>$value->id)) !!}</td>
-                    @endif
-                </tr>
-                <?php
-                    $contador ++;
-                ?>
-            @endforeach
-        </tbody>
-        
-        <tfoot>
+</div>
+<div class="row" >
+    <div class="col-sm-12">
+        <div class="card-box table-responsive crbox">
+            <div class="row m-b-30" id="selectfilas">
+                <div class="col-sm-12">
+					{!! Form::open(['route' => $ruta["buscarcuota"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusquedaCuota']) !!}
+					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
+					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
+                    {!! Form::hidden('idcredito', $idcredito, array('id' => 'idcredito')) !!}
+					<div class="form-group" >
+						{!! Form::label('filas', 'Filas a mostrar:')!!}
+						{!! Form::selectRange('filas', 1, 30, 5, array('class' => 'form-control input-xs d-none d-sm-block', 'onchange' => 'buscar(\''.'Cuota'.'\')')) !!}
+					</div>
+					{!! Form::close() !!}
+                </div>
+            </div>
+            <div class="form-group col-12" style="height: 15px">
+                <h4>CUOTAS DE PAGO: </h4>
+            </div>
+			<div id="listado{{ $entidad }}"></div>
             
-        </tfoot>
-    </table>
-    <div class="form-group">
-        <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-            &nbsp;
-            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+            <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
+                &nbsp;
+                {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+            </div>
         </div>
     </div>
-{!! Form::close() !!}
-<style type="text/css">
-
-</style>
-
+</div>
 <script type="text/javascript">
 	$(document).ready(function() {
-		configurarAnchoModal('750');
+        configurarAnchoModal('1000');
+        $('#selectfilas').hide();
+        $('#selectfilas').css({'height':'0px'});
+        $('.lbldatos').css({'padding':'0px','margin':'2px 0px'});
+        $('.crbox').css({'padding':'0px 15px 0px 15px','margin':'10px 0px 0px 10px'});
+        $('.contbtn').css({'padding': '10px 0'});
+        buscar('{{ $entidad }}');
+		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
     });
-    $('.btncuota').each(function (){
-            var idbt = $(this).attr('id');
-			 $(this).click(function (){
-                var array_tr =  this.parentElement.parentElement.children;
-                console.log("fila: "+array_tr[3].innerText);
-                if($('#'+idbt).attr("idcuota") != 0){
-                $.ajax({
-                    url: 'creditos/pagarcuota',
-                    headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    type: 'GET',
-                    data: 'id_cuota='+$(this).attr('idcuota')+"&id_cliente={{$credito->persona_id}}",
-                    beforeSend: function(){
-                        
-                    },
-                    success: function(res){
-                        array_tr[5].innerHTML = 'Pagado';
-                        buscar('{{ $entidad }}');
-                        $('#'+idbt).html("Cancelado");
-                        $('#'+idbt).attr("idcuota", 0);
-                        $('#'+idbt).removeClass("btn-danger btncuota");
-                        $('#'+idbt).addClass( "btn-light" );
-                    }
-                }).fail(function(){
-                    
-                });
-            }
-			 });
-         });
 
 </script>

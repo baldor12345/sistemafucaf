@@ -17,8 +17,11 @@ class CrearTablaCuota extends Migration
             $table->increments('id');
             $table->decimal('parte_capital',10,2);
             $table->decimal('interes',10,2);
-            $table->date('fecha_programada_pago')->nullable();
-            $table->date('fecha_pago')->nullable();
+            $table->decimal('interes_mora',10,2);
+            $table->decimal('saldo_restante',10,2);
+            $table->timestamp('fecha_programada_pago')->nullable();
+            $table->integer('numero_cuota');
+            $table->timestamp('fecha_pago')->nullable();
             $table->char('estado',1)->nullable();//C=>cancelado P=pendiente
             $table->integer('credito_id')->unsigned();
             $table->foreign('credito_id')->references('id')->on('credito')->onDelete('restrict')->onUpdate('restrict');
