@@ -41,6 +41,13 @@
 			{!! Form::select('estado_civil', $cboEstadoCivil, null, array('class' => 'form-control input-xs', 'id' => 'estado_civil')) !!}
     </div>
 </div>
+<?php
+	if($persona != null){
+		echo "<input type='hidden' id='fechaTempNac' value='".Date::parse($persona->fecha_nacimiento )->format('d/m/Y')."'>";
+	}else{
+		echo "<input type='hidden' id='fechaTempNac' value=''>";
+	}
+?>
 
 </div>
 
@@ -51,7 +58,7 @@
 <div class="form-row">
     <div class="form-group col-md-6 col-sm-6">
 			{!! Form::label('personas_en_casa', 'Personas en casa:', array('class' => '')) !!}
-			{!! Form::number('personas_en_casa', null, array('class' => 'form-control input-xs', 'id' => 'personas_en_casa', 'placeholder' => '')) !!}
+			{!! Form::number('personas_en_casa', null, array('class' => 'form-control input-xs input-number', 'id' => 'personas_en_casa', 'placeholder' => '')) !!}
     </div>
     <div class="form-group col-md-6 col-sm-6" style="margin-left: 25px;">
 			{!! Form::label('direccion', 'Direccion:', array('class' => '')) !!}
@@ -106,6 +113,14 @@
 			{!! Form::label('fechai', 'Fecha de Inicio:', array('class' => '')) !!}
 			{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
     </div>
+
+<?php
+	if($persona != null){
+		echo "<input type='hidden' id='fechaTempIni' value='".Date::parse($persona->fechai )->format('d/m/Y')."'>";
+	}else{
+		echo "<input type='hidden' id='fechaTempIni' value=''>";
+	}
+?>
 </div>
 
 
@@ -158,8 +173,6 @@
 		var fechaActual = new Date();
 		var añoActual = fechaActual.getFullYear();
 		var mesActual = fechaActual.getMonth();
-
-
 		//fecha obtenida del formulario
 		var valoresFechaSel = $('#fecha_nacimiento').val().split('-');
 		if((añoActual-valoresFechaSel[0])<=18 ){
@@ -172,19 +185,28 @@
 			);
 			
 		}
-		/*
-		else{
-			$('#datosApoderado').toggle( 
-				function(e){ 
-					$('#oculto').slideUp();
-					$(this).text('Fecha de Nacimiento:');
-					e.preventDefault();
-				}	// Separamos las dos funciones con una coma
-			);
-		}
-		*/
 
 	}
+
+		var fechaActual = new Date();
+		var day = ("0" + fechaActual.getDate()).slice(-2);
+		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
+		var fecha_nac = "1980" +"-"+month+"-"+day+"";
+		var fecha_In = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+
+		if($('#fechaTempNac').val() !== ""){
+			// DD/MM/YYYY
+			var valoresFechaNac = $('#fechaTempNac').val().split('/');
+			var valoresFechaIni = $('#fechaTempIni').val().split('/');
+			//yyy/MM/DD
+			var fechaNac = valoresFechaNac[2] + "-" + valoresFecha[1] + "-" + valoresFecha[0];
+			var fechaIni = valoresFechaNac[2] + "-" + valoresFecha[1] + "-" + valoresFecha[0];
+			$('#fecha_nacimiento').val(fechaNac);
+			$('#fechai').val(fechaIni);
+		}else{
+			$('#fecha_nacimiento').val(fecha_nac);
+			$('#fechai').val(fecha_In);
+		}
 	
 	
 

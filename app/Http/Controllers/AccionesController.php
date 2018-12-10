@@ -140,6 +140,7 @@ class AccionesController extends Controller
         }
         //evaluando los datos que vienen del view
         $error = DB::transaction(function() use($request){
+            $idCaja = DB::table('caja')->where('estado', "A")->value('id');
             $cantidad_accion= $request->input('cantidad_accion');
             if($cantidad_accion !== ''){
                 for($i=0; $i< $cantidad_accion; $i++){
@@ -149,6 +150,7 @@ class AccionesController extends Controller
                     $acciones->descripcion        = $request->input('descripcion');
                     $acciones->persona_id        = $request->input('persona_id');
                     $acciones->configuraciones_id        = $request->input('configuraciones_id');
+                    $acciones->caja_id = $idCaja;
                     $acciones->save();
                 }
             }
@@ -353,7 +355,7 @@ class AccionesController extends Controller
         $descripcion_venta=$request->input('descripcion');
 
         $cantidad_accion= $request->input('cantidad_accion');
-        
+
         if($cantidad_accion !== ''){            
             for($i=0; $i< $cantidad_accion; $i++){
                 $idaccion= $acciones_por_persona[$i]->id;
@@ -368,6 +370,7 @@ class AccionesController extends Controller
         }
         //funcion para registrar las acciones del comprador
         $error = DB::transaction(function() use($request){
+            $idCaja = DB::table('caja')->where('estado', "A")->value('id');
             $cantidad_accion= $request->input('cantidad_accion');
             if($cantidad_accion !== ''){
                 for($i=0; $i< $cantidad_accion; $i++){
@@ -377,6 +380,7 @@ class AccionesController extends Controller
                     $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
                     $acciones->persona_id        = $request->input('idcomprador');
                     $acciones->configuraciones_id        = $request->input('configuraciones_id');
+                    $acciones->caja_id =$idCaja;
                     $acciones->save();
                 }
             }
@@ -415,9 +419,10 @@ class AccionesController extends Controller
         $detalle        = Acciones::listAcciones($id);
         $lista           = $detalle->get();
         $persona = DB::table('persona')->where('id', $id)->first();
+        $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('importe');
         $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
         $titulo = $persona->nombres.$cant;
-        $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones'));
+        $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);

@@ -89,7 +89,6 @@ class CreditoController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
         $configuraciones = configuraciones::all()->last();
-        echo("comfiguracion: ".$configuraciones->tasa_interes_credito);
        
         $entidad          = 'Credito';
         $title            = $this->tituloAdmin;
