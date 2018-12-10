@@ -171,7 +171,7 @@
       </div>
       <div class="modal-body">
 	  <div class="alert alert-danger">
-		<strong>¡Error!</strong> No hay una caja aperturada, porfavor aperture primero.
+		<strong>¡Error!</strong> Caja no aperturada, porfavor aperture primero. !
 	  </div>
       </div>
       <div class="modal-footer">

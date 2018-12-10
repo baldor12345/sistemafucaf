@@ -528,7 +528,7 @@ class CreditoController extends Controller
         if(count($caja) > 0){// VALIDA SI CAJA ESTA APERTURADA
             $error = DB::transaction(function() use($request, $id_cuota){
                 $fechahora_actual = date('Y-m-d H:i:s');
-                $credito = Credito::find($request->get('id_cliente'));
+                $credito = Credito::find((int)$request->get('id_crd'));
                 $cuota       = Cuota::find($id_cuota);
                 $cuota->estado = 1;
                 $cuota->fecha_pago = $fechahora_actual;

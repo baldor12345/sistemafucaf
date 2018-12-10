@@ -34,11 +34,11 @@
                     @if($value->estado != 0 )
                     <td >P</td>
                     <td ><button type="button" idcuota=0 class='btn btn-light btn-xs'>Pagado</button></td>
-                    <td ><button type="button" id='rec{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-success btn-xs btnrecibo'>Recibo</button></td>
+                    <td ><button type="button" id='recbtnct{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-success btn-xs btnrecibo'>Recibo</button></td>
                     @else
                     <td ></td>
                     <td >{!! Form::button('Pagar ', array('class' => 'btn  btn-danger btn-xs btncuota','id'=>'btnct'.$value->id, "idcuota"=>''.$value->id)) !!}</td>
-                    <td ><button type="button" id='rec{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-light btn-xs'>. . . . . .</button></td>
+                    <td ><button type="button" id='recbtnct{{$value->id}}' idcuota='{{$value->id}}' class='btn btn-light btn-xs'>. . . . . .</button></td>
                     @endif
                 </tr>
                 <?php
@@ -158,7 +158,7 @@ function abrirmodal(accion, msrecibo){
                 console.log("fila: "+array_tr[3].innerText);
                 var msje ="", textbtnOk="",textbtnCancel="";;
                 if({{$idcaja}} !=0){
-                    msje = "<div class='alert alert-success'><strong>¡Error!</strong> ¿Esta seguro de realizar el pago?</div>";
+                    msje = "<div class='alert alert-success'> ¿Esta seguro de realizar el pago?</div>";
                     textbtnOk = "<i class='fa fa-times'></i> Cancelar";
                     textbtnCancel = "<i class='fa fa-check'></i>Confirmar";
                 }else{
@@ -185,7 +185,7 @@ function abrirmodal(accion, msrecibo){
                                     url: 'creditos/pagarcuota',
                                     headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                                     type: 'GET',
-                                    data: 'id_cuota='+idcuota+'&id_cliente={{$credito->persona_id}}&id_caja={{$idcaja}}',
+                                    data: 'id_cuota='+idcuota+'&id_cliente={{$credito->persona_id}}&id_caja={{$idcaja}}&id_crd={{$idcredito}}',
                                     beforeSend: function(){
                                         
                                     },
