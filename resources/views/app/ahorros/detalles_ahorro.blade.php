@@ -17,18 +17,15 @@
     </div>
     <div class="form-row">
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Periodo: '.$ahorros->periodo.' meses', array('id'=>'periodo','class' => '')) !!}
-        </div>
-        <div class="form-group col-6 col-md-6 col-sm-6">
             {!! Form::label('', 'Monto final: '.$montofinal, array('id'=>'montofinal','class' => '')) !!}
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Fecha de inicio: '.$ahorros->fecha_inicio, array('id'=>'fecha_inicio','class' => '')) !!}
+            {!! Form::label('', 'Fecha de deposito: '.$ahorros->fecha_deposito, array('id'=>'fecha_deposito','class' => '')) !!}
         </div>
         <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Fecha de retiro: '.$ahorros->fecha_fin, array('id'=>'fecha_final','class' => '')) !!}
+            {!! Form::label('', 'Fecha de retiro: '.$ahorros->fecha_retiro, array('id'=>'fecha_retiro','class' => '')) !!}
         </div>
     </div>
     <div class="form-row">
@@ -56,7 +53,6 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 	$(document).ready(function() {
-        console.log("Ide de la ventana: "+$(this).attr("id"));
 		configurarAnchoModal('650');
     });
 
@@ -71,7 +67,6 @@
                 
             },
             success: function(res){
-                console.log("Ingreso-..s");
                 $('#estado').text("Estado: Retirado");
                 $('btnRetiro').hide();
             }

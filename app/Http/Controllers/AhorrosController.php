@@ -11,6 +11,7 @@ use App\Caja;
 use App\Persona;
 use App\Transaccion;
 use App\Credito;
+use App\configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +50,7 @@ class AhorrosController extends Controller
      * 
      * @return Response 
      */
+    
     public function buscar(Request $request)
     {
         $pagina           = $request->input('page');
@@ -60,11 +62,10 @@ class AhorrosController extends Controller
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Nombres', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Cliente', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto S/.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Periodo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha de Inicio', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha fin', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha de deposito', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha de retiro', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
         
@@ -92,12 +93,17 @@ class AhorrosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+    
     {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+        $configuraciones = configuraciones::all()->last();
+
         $entidad          = 'Ahorros';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad','idcaja','configuraciones', 'title', 'titulo_registrar', 'ruta'));
     }
 
     /**
@@ -107,6 +113,10 @@ class AhorrosController extends Controller
      */
     public function create(Request $request)
     {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+        $configuraciones = configuraciones::all()->last();
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Ahorros';
         $ahorros        =  null;
@@ -114,11 +124,11 @@ class AhorrosController extends Controller
         $idopcion = null;
         $ruta             = $this->rutas;
         $resultado      = Concepto::listar('I');
-        $cboConcepto  = Concepto::pluck('titulo', 'id')->all();
+        $cboConcepto  =array(5=>'Deposito de ahorros');// Concepto::pluck('titulo', 'id')->all();
         $formData       = array('ahorros.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('ahorros','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto'));
+        return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto'));
     }
 
     /**
@@ -129,52 +139,55 @@ class AhorrosController extends Controller
      */
     public function store(Request $request)
     {
-        $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas = array(
-            'importe'         => 'required|max:20',
-            'periodo'        => 'required|max:10',
-            'fecha_inicio'      => 'required|max:100',
-            'interes'    => 'required|max:100',
-            'persona_id'    => 'required|max:100',
-            );
+        $caja = Caja::where("estado","=","A")->get();
+        $msjeah = null;
+        if(count($caja) >0){
+            $listar     = Libreria::getParam($request->input('listar'), 'NO');
+            $reglas = array(
+                'importe'         => 'required|max:20',
+                'fecha_deposito'      => 'required|max:100',
+                'interes'    => 'required|max:100',
+                'persona_id'    => 'required|max:100',
+                );
 
-        $validacion = Validator::make($request->all(),$reglas);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
+            $validacion = Validator::make($request->all(),$reglas);
+            if ($validacion->fails()) {
+                return $validacion->messages()->toJson();
+            }
+
+            $error = DB::transaction(function() use($request){
+                $ahorros = new Ahorros();
+
+                $ahorros->importe = $request->input('importe');
+                $ahorros->fecha_deposito = $request->input('fecha_deposito');
+            // $fecha_fin = date("Y-m-d",strtotime($ahorros->fecha_inicio."+ ".$ahorros->periodo." month"));
+                $ahorros->interes = $request->input('interes');
+                $ahorros->persona_id = $request->input('persona_id');
+                $ahorros->descripcion = $request->input('descripcion');
+                $ahorros->estado = 'P';
+                $ahorros->save();
+                //Guardar en tabla transacciones **********
+                $caja = Caja::where("estado","=","A")->get();
+                $fechahora_actual = date("Y-m-d H:i:s");
+                $idconcepto = $request->input('concepto');
+
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $ahorros->fecha_deposito;
+                $transaccion->monto = $ahorros->importe;
+                $transaccion->id_tabla = $ahorros->id;
+                $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                $transaccion->concepto_id = $idconcepto;
+                $transaccion->descripcion = $ahorros->descripcion;
+                $transaccion->persona_id = $ahorros->persona_id;
+                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->caja_id =  $caja[0]->id;
+                $transaccion->save();
+            });
+            $msjeah = $error;
+        }else{
+            $msjeah = "Caja no aperturada, aperture primero. !";
         }
-
-        $error = DB::transaction(function() use($request){
-            $ahorros = new Ahorros();
-
-            $ahorros->importe = $request->input('importe');
-            $ahorros->periodo = $request->input('periodo');
-            $ahorros->fecha_inicio = $request->input('fecha_inicio');
-            $fecha_fin = date("Y-m-d",strtotime($ahorros->fecha_inicio."+ ".$ahorros->periodo." month"));
-            $ahorros->fecha_fin = $fecha_fin;
-            $ahorros->interes = $request->input('interes');
-            $ahorros->persona_id = $request->input('persona_id');
-            $ahorros->descripcion = $request->input('descripcion');
-            $ahorros->estado = 'P';
-            $ahorros->save();
-            //Guardar en tabla transacciones **********
-            $caja = Caja::where("estado","=","A")->get();
-            $fechahora_actual = date("Y-m-d H:i:s");
-            $idconcepto = $request->input('concepto');
-
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $ahorros->fecha_inicio;
-            $transaccion->monto = $ahorros->importe;
-            $transaccion->id_tabla = $ahorros->id;
-            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-            $transaccion->concepto_id = $idconcepto;
-            $transaccion->descripcion = $ahorros->descripcion;
-            $transaccion->persona_id = $ahorros->persona_id;
-            $transaccion->usuario_id = Credito::idUser();
-            $transaccion->caja_id =  $caja[0]->id;
-            $transaccion->save();
-        });
-
-        return is_null($error) ? "OK" : $error;
+            return is_null($msjeah) ? "OK" : $msjeah;
     }
 
     /**
@@ -203,7 +216,7 @@ class AhorrosController extends Controller
 
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $ahorros        = Ahorros::find($id);
-        $ahorros->fecha_inicio = date("Y-m-d", strtotime($ahorros->fecha_inicio));
+        $ahorros->fecha_deposito = date("Y-m-d", strtotime($ahorros->fecha_deposito));
         $persona = Persona::find($ahorros->persona_id);
         $transaccion = Transaccion::getTransaccion($ahorros->id,'AH');
         $dni = $persona->dni;
@@ -226,48 +239,53 @@ class AhorrosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $existe = Libreria::verificarExistencia($id, 'ahorros');
-        if ($existe !== true) {
-            return $existe;
-        }
-        $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas = array(
-            'importe'         => 'required|max:20',
-            'periodo'        => 'required|max:10',
-            'fecha_inicio'      => 'required|max:100',
-            'interes'    => 'required|max:100',
-            'persona_id'    => 'required|max:100',
-            );
+        $caja = Caja::where("estado","=","A")->get();
+        $msjeah = null;
+        if(count($caja) >0){
+            $existe = Libreria::verificarExistencia($id, 'ahorros');
+            if ($existe !== true) {
+                return $existe;
+            }
+            $listar     = Libreria::getParam($request->input('listar'), 'NO');
+            $reglas = array(
+                'importe'         => 'required|max:20',
+                'fecha_deposito'      => 'required|max:100',
+                'interes'    => 'required|max:100',
+                'persona_id'    => 'required|max:100',
+                );
 
-        $validacion = Validator::make($request->all(),$reglas);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-        }
-        $error = DB::transaction(function() use($request, $id){
-            $ahorros  = Ahorros::find($id);
-            $ahorros->importe = $request->input('importe');
-            $ahorros->periodo = $request->input('periodo');
-            $ahorros->fecha_inicio = $request->input('fecha_inicio');
-            $fecha_fin = date("Y-m-d",strtotime($ahorros->fecha_inicio."+ ".$ahorros->periodo." month"));
-            $ahorros->fecha_fin = $fecha_fin;
-            $ahorros->interes = $request->input('interes');
-            $ahorros->persona_id = $request->input('persona_id');
-            $ahorros->descripcion = $request->input('descripcion');
-            $ahorros->save();
-            /// REGISTRO EN CAJA
-            $idconcepto = $request->input('concepto');
+            $validacion = Validator::make($request->all(),$reglas);
+            if ($validacion->fails()) {
+                return $validacion->messages()->toJson();
+            }
+            $error = DB::transaction(function() use($request, $id){
+                $ahorros  = Ahorros::find($id);
+                $ahorros->importe = $request->input('importe');
+                $ahorros->fecha_deposito = $request->input('fecha_deposito');
+                //$fecha_fin = date("Y-m-d",strtotime($ahorros->fecha_inicio."+ ".$ahorros->periodo." month"));
+            // $ahorros->fecha_fin = $fecha_fin;
+                $ahorros->interes = $request->input('interes');
+                $ahorros->persona_id = $request->input('persona_id');
+                $ahorros->descripcion = $request->input('descripcion');
+                $ahorros->save();
+                /// REGISTRO EN CAJA
+                $idconcepto = $request->input('concepto');
 
-            $list = Transaccion::getTransaccion($id,'AH');
-            $transaccion = Transaccion::find($list[0]->id);
-            $transaccion->monto = $ahorros->importe;
-            $transaccion->id_tabla = $ahorros->id;
-            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-            $transaccion->concepto_id = $idconcepto;
-            $transaccion->descripcion = $ahorros->descripcion;
-            $transaccion->persona_id = $ahorros->persona_id;
-            $transaccion->save();
-        });
-        return is_null($error) ? "OK" : $error;
+                $list = Transaccion::getTransaccion($id,'AH');
+                $transaccion = Transaccion::find($list[0]->id);
+                $transaccion->monto = $ahorros->importe;
+                $transaccion->id_tabla = $ahorros->id;
+                $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                $transaccion->concepto_id = $idconcepto;
+                $transaccion->descripcion = $ahorros->descripcion;
+                $transaccion->persona_id = $ahorros->persona_id;
+                $transaccion->save();
+            });
+            $msjeah  = $error;
+        }else{
+            $msjeah  = "Caja no aperturada, aperture primero. !";
+        }
+        return is_null($msjeah) ? "OK" : $msjeah;
     }
 
     /**
@@ -347,8 +365,8 @@ class AhorrosController extends Controller
             $idconcepto = 6;
             $interes_mes = $ahorros->interes;
             $monto_inicial = $ahorros->monto;
-            $periodo = $ahorros->periodo;
-            $monto_retiro = pow((100+$interes_mes)/100,$periodo)*$monto_inicial;
+            //$periodo = $ahorros->periodo;
+           // $monto_retiro = pow((100+$interes_mes)/100,$periodo)*$monto_inicial;
 
             $transaccion = new Transaccion();
             $transaccion->fecha = $fechahora_actual;
@@ -377,16 +395,14 @@ class AhorrosController extends Controller
         $ruta             = $this->rutas;
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $ahorros        = Ahorros::find($id);
-        $ahorros->fecha_inicio = date("Y-m-d", strtotime($ahorros->fecha_inicio));
+        $ahorros->fecha_deposito = date("Y-m-d", strtotime($ahorros->fecha_deposito));
         $persona = Persona::find($ahorros->persona_id);
         $titulo_retirar = $this->titulo_retirar;
         $entidad        = 'Ahorros';
             $interes_mes = $ahorros->interes;
             $monto_inicial = $ahorros->importe;
-            $periodo = $ahorros->periodo;
-            echo("interes: ".$interes_mes."  monto: ".$monto_inicial."  Periodo: ".$periodo);
-        $montofinal =  pow((100+$interes_mes)/100,$periodo)*$monto_inicial;
-        $montofinal = $this->rouNumber($montofinal,2);
+        //$montofinal =  pow((100+$interes_mes)/100,$periodo)*$monto_inicial;
+        $montofinal =0;// $this->rouNumber($montofinal,2);
         $formData       = array('ahorros.retirar', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Retirar';

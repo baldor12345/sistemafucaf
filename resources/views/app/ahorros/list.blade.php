@@ -22,9 +22,8 @@
 			
 			<td>{{ $value->nombres." ".$value->apellidos}} </td>
 			<td>{{ $value->importe }}</td>
-			<td>{{ $value->periodo }} meses</td>
-			<td>{{ date("d/m/Y",strtotime($value->fecha_inicio)) }}</td>
-			<td>{{ date("d/m/Y",strtotime($value->fecha_fin)) }}</td>
+			<td>{{ date("d/m/Y",strtotime($value->fecha_deposito)) }}</td>
+			<td>{{ ($value->fecha_retiro != "")?date("d/m/Y",strtotime($value->fecha_retiro)):""}}</td>
 			<td>{{ ($value->estado=='P'?'Pendiente':'Retirado') }}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->ahorros_id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->ahorros_id, 'listar'=>'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>

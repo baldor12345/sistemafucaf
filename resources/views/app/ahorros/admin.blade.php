@@ -33,13 +33,13 @@
 						{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha')) !!}
 					</div>
 
-
+					{!! Form::label('idcajaa', $idcaja)!!}
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modalValidadorCaja(\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\');')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -68,5 +68,14 @@
 				buscar('{{ $entidad }}');
 			}
 		});
+
+		
 	});
+	function modalValidadorCaja(ruta,titulo){
+		if({{$idcaja}}==0){
+			bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Caja no aperturada, porfavor aperture primero. !</div>");
+		}else{
+			modal(ruta, titulo);
+		}
+	}
 </script>

@@ -49,17 +49,16 @@ class Ahorros extends Model
         'persona.tipo as tipo',
         'ahorros.id as ahorros_id',
         'ahorros.importe as importe',
-        'ahorros.periodo as periodo',
-        'ahorros.fecha_inicio as fecha_inicio',
-        'ahorros.fecha_fin as fecha_fin',
+        'ahorros.fecha_deposito as fecha_deposito',
+        'ahorros.fecha_retiro as fecha_retiro',
         'ahorros.interes as interes',
         'ahorros.estado as estado',
         'ahorros.descripcion as descripcion'
     )
     ->where('persona.nombres','LIKE', '%'.$nombre.'%')
-    ->where('ahorros.fecha_inicio','>=',$fecha)
+    ->where('ahorros.fecha_deposito','>=',$fecha)
     ->where('ahorros.deleted_at','=',null)
-    ->orderBy('ahorros.fecha_inicio', 'DSC');
+    ->orderBy('ahorros.fecha_deposito', 'DSC');
         return $results;
     }
 

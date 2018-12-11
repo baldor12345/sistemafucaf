@@ -2,49 +2,40 @@
 {!! Form::model($ahorros, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	<div class="row">
-		<div id='txtcliente' class="form-group col-6 col-md-6 col-sm-6">
-			{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => '')) !!}
-
-			@if($ahorros = null)
-			{!! Form::text('dnicl', null, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
-			@else
-			{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
-			@endif
-			<p id="nombrescl" class="" >DNI Cliente Vacio</p>
-			<input type="hidden" id="persona_id" name="persona_id" value="" >
-		</div>
-		
-		<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 25px;">
-			{!! Form::label('importe', 'Importe S/.: *', array('class' => '')) !!}
-			{!! Form::text('importe', null, array('class' => 'form-control input-xs', 'id' => 'importe', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
-		</div>
-	</div>
-	
+	<div class="card-box table-responsive crbox">
 		<div class="form-group">
 			<div class="form-group col-6 col-md-6 col-sm-6">
-				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
-				{!! Form::text('interes', null, array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual')) !!}
+				{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => 'control-label')) !!}
+				@if($ahorros = null)
+				{!! Form::text('dnicl', null, array('class' => 'form-control input-xs input-number', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
+				@else
+				{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
+				@endif
+				<p id="nombrescl" class="" >DNI Cliente Vacio</p>
+				<input type="hidden" id="persona_id" name="persona_id" value="" >
 			</div>
-			
-			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 25px;">
-				{!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => '')) !!}
-				{!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses')) !!}
+			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px">
+				{!! Form::label('importe', 'Importe S/.: *', array('class' => '')) !!}
+				{!! Form::text('importe', null, array('class' => 'form-control input-xs', 'id' => 'importe', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
 			</div>
 		</div>
-		<div class="form-group ">
-			<div class="form-group col-6 col-md-6 col-sm-6" >
-				{!! Form::label('fecha_inicio', 'Fecha de inicio: *', array('class' => '')) !!}
-				{!! Form::date('fecha_inicio', null, array('class' => 'form-control input-xs', 'id' => 'fecha_inicio')) !!}
+		<div class = "form-group">
+			<div class="form-group col-6 col-md-6 col-sm-6">
+				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
+				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual')) !!}
 			</div>
-			
-			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 25px;">
-				{!! Form::label('concepto', 'Concepto:', array('class' => '')) !!}
-				{!! Form::select('concepto', $cboConcepto, $idopcion, array('class' => 'form-control input-sm', 'id' => 'concepto')) !!}
+			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
+				{!! Form::label('fecha_deposito', 'Fecha de deposito: *', array('class' => '')) !!}
+				{!! Form::date('fecha_deposito', null, array('class' => 'form-control input-xs', 'id' => 'fecha_deposito')) !!}
 			</div>
+		</div>
+		<div class="form-group col-12 col-md-12 col-sm-12" >
+			{!! Form::label('concepto', 'Concepto:', array('class' => '')) !!}
+			{!! Form::select('concepto', $cboConcepto, $idopcion, array('class' => 'form-control input-xs', 'id' => 'concepto')) !!}
 		</div>
 		<div class="form-group col-12" >
 			{!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
-			{!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
+			{!! Form::textarea('descripcion', null, array('class' => 'form-control input-xs','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
 		</div>
 
 		<div class="form-group">
@@ -54,10 +45,11 @@
 				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 			</div>
 		</div>
+		</div>
+	</div>
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	console.log("dni: "+$('#dnicl').val());
 	if($('#dnicl').val() != ''){
 		$.get("personas/"+$('#dnicl').val()+"",function(response, facultad){
 			if(response.length>0){
@@ -80,8 +72,6 @@ $(document).ready(function() {
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 	$("input[name=dnicl]").keyup(function(event){
         	$.get("personas/"+event.target.value+"",function(response, facultad){
-				//console.log("datos de la persona");
-				//console.log(response);
 				$('#nombrescl').val('');
 				$('#persona_id').val('');
 				if(response.length>0){
@@ -92,7 +82,6 @@ $(document).ready(function() {
 				}
 			});
     	});
-
 }); 
 
 </script>
