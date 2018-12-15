@@ -91,7 +91,7 @@ class PersonController extends Controller
         $titulo_registrar = $this->tituloRegistrar;
         $cboTipo        = [''=>'Todo']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
-        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo');
+        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo','D'=>'Conviviente');
         $ruta             = $this->rutas;
         return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta', 'cboTipo', 'cboSexo','cboEstadoCivil'));
     }
@@ -108,7 +108,7 @@ class PersonController extends Controller
         $persona        = null;
         $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
-        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo');
+        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo','D'=>'Conviviente');
         $formData       = array('persona.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
@@ -198,7 +198,7 @@ class PersonController extends Controller
         }
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
-        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo');
+        $cboEstadoCivil        = [''=>'Seleccione']+ array('S'=>'Soltero','C' => 'Casado', 'V' => 'Viudo','D'=>'Conviviente');
         $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
         $persona        = Persona::find($id);
         $entidad        = 'Persona';
