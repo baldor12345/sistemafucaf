@@ -213,7 +213,7 @@ class AhorrosController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-
+        $configuraciones = configuraciones::all()->last();
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $ahorros        = Ahorros::find($id);
         $ahorros->fecha_deposito = date("Y-m-d", strtotime($ahorros->fecha_deposito));
@@ -227,7 +227,7 @@ class AhorrosController extends Controller
         $formData       = array('ahorros.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('ahorros','dni','idopcion', 'formData', 'entidad', 'boton', 'listar', 'cboConcepto'));
+        return view($this->folderview.'.mant')->with(compact('ahorros','dni','idopcion', 'formData', 'entidad', 'boton', 'listar', 'cboConcepto','configuraciones'));
     }
 
     /**
