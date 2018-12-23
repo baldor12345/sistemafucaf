@@ -44,6 +44,7 @@
                 <div class="col-sm-12">
 					{!! Form::open(['route' => $ruta["buscarcuota"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusquedaCuota']) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
+                    
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
                     {!! Form::hidden('idcredito', $idcredito, array('id' => 'idcredito')) !!}
 					<div class="form-group" >

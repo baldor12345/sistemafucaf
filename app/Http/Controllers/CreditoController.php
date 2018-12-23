@@ -328,7 +328,7 @@ class CreditoController extends Controller
        
         $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
         $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
-        $ruta             = $this->rutas;
+        $ruta           = $this->rutas;
         return view($this->folderview.'.detallecredito')->with(compact('credito','idcredito', 'entidad','entidad1', 'lista','fechacaducidad','titulo_detalle','idcaja','configuraciones', 'ruta'));
     }
 

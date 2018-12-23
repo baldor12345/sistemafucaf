@@ -93,7 +93,6 @@ class AhorrosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    
     {
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
@@ -213,7 +212,7 @@ class AhorrosController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-
+        $configuraciones = configuraciones::all()->last();
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $ahorros        = Ahorros::find($id);
         $ahorros->fecha_deposito = date("Y-m-d", strtotime($ahorros->fecha_deposito));
@@ -227,7 +226,7 @@ class AhorrosController extends Controller
         $formData       = array('ahorros.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('ahorros','dni','idopcion', 'formData', 'entidad', 'boton', 'listar', 'cboConcepto'));
+        return view($this->folderview.'.mant')->with(compact('ahorros','dni','idopcion', 'formData', 'entidad', 'boton', 'listar', 'cboConcepto','configuraciones'));
     }
 
     /**
@@ -365,9 +364,6 @@ class AhorrosController extends Controller
             $idconcepto = 6;
             $interes_mes = $ahorros->interes;
             $monto_inicial = $ahorros->monto;
-            //$periodo = $ahorros->periodo;
-           // $monto_retiro = pow((100+$interes_mes)/100,$periodo)*$monto_inicial;
-
             $transaccion = new Transaccion();
             $transaccion->fecha = $fechahora_actual;
             $transaccion->monto = $monto_retiro;
@@ -379,6 +375,25 @@ class AhorrosController extends Controller
             $transaccion->usuario_id = Ahorros::idUser();
             $transaccion->caja_id =  $caja[0]->id;
             $transaccion->save();
+
+            
+           
+            $idconcepto = 8;
+            $interes_mes = $ahorros->interes;
+            $monto_inicial = $ahorros->monto;
+            $transaccion = new Transaccion();
+            $transaccion->fecha = $fechahora_actual;
+            $transaccion->monto = $monto_retiro;
+            $transaccion->id_tabla = $ahorros->id;
+            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = $idconcepto;
+            $transaccion->descripcion = "Retiro de S/. ".$monto_retiro." de ahorros";
+            $transaccion->persona_id = $ahorros->persona_id;
+            $transaccion->usuario_id = Ahorros::idUser();
+            $transaccion->caja_id =  $caja[0]->id;
+            $transaccion->save();
+
+
 
         });
         return is_null($error) ? "OK" : $error;
@@ -409,4 +424,26 @@ class AhorrosController extends Controller
         return view($this->folderview.'.detalles_ahorro')->with(compact('ahorros','ruta','montofinal','persona', 'formData', 'entidad', 'boton', 'listar','titulo_retirar'));
     
     }
+
+ //metodo para generar voucher en pdf
+ public function generareciboahorroPDF($id, $cant, $fecha, Request $request)
+ {    
+     $detalle        = Acciones::listAcciones($id);
+     $lista           = $detalle->get();
+     $persona = DB::table('persona')->where('id', $id)->first();
+     $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('importe');
+     $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+     $titulo = $persona->nombres.$cant;
+     $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+     $html_content = $view->render();      
+
+     PDF::SetTitle($titulo);
+     PDF::AddPage('P', 'A4', 'es');
+     PDF::SetTopMargin(20);
+     PDF::SetLeftMargin(40);
+     PDF::SetRightMargin(40);
+     PDF::SetDisplayMode('fullpage');
+     PDF::writeHTML($html_content, true, false, true, false, '');
+     PDF::Output($titulo.'.pdf', 'D');
+ }
 }

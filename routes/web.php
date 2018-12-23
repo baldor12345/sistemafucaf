@@ -164,7 +164,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
     Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');
     Route::get('caja/cargarselect/{idselect}', 'CajaController@cargarselect')->name('caja.cargarselect');
-
+    Route::get('caja/buscartransaccion', 'CajaController@buscartransaccion')->name('caja.buscartransaccion');
 
    /*CONCEPTO*/
    Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');
@@ -177,6 +177,7 @@ Route::group(['middleware' => 'auth'], function () {
    Route::post('transaccion/buscar', 'TransaccionController@buscar')->name('transaccion.buscar');
    Route::get('transaccion/eliminar/{id}/{listarluego}', 'TransaccionController@eliminar')->name('transaccion.eliminar');
    Route::resource('transaccion', 'TransaccionController', array('except' => array('show')));
+  
 
 });
 
