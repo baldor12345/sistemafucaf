@@ -38,7 +38,8 @@ class CajaController extends Controller
             'detalle'   => 'caja.detalle',
             'search1' => 'caja.detalle',
             'nuevomovimiento'   => 'caja.nuevomovimiento',
-            'cargarselect' => 'encuesta.cargarselect'
+            'cargarselect' => 'encuesta.cargarselect',
+            'buscartransaccion'=> 'caja.buscartransaccion'
         );
 
     /**
@@ -266,12 +267,26 @@ class CajaController extends Controller
         }
         $diferencia= $ingresos-$egresos;
         $cboConcepto = array('' => 'Todo') + Concepto::pluck('titulo', 'id')->all();
+        $concepto_id             = Libreria::getParam(-1);
+        $tituloNuevaTransaccion = $this->tituloNuevaTransaccion;
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+        $entidad ='Transaccion';
+        return view($this->folderview.'.transaccion')->with(compact('concepto_id','entidad', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
+    }
+    ///************** NUevo metodo */
 
+    public function buscartransaccion(Request $request){
+    
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $concepto_id             = Libreria::getParam(-1);
-        $resultado        = Transaccion::listar($concepto_id , $id);
+        $entidad ='Transaccion';
+        $idcaja  = Libreria::getParam($request->input('idcaja'));
+        $concepto_id      = Libreria::getParam(-1);
+        $resultado        = Transaccion::listar( $idcaja);
         $lista            = $resultado->get();
+     
+
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
@@ -280,24 +295,25 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'TIPO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'USUARIO/CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DESCRIPCION', 'numero' => '1');
-
-        $tituloNuevaTransaccion = $this->tituloNuevaTransaccion;
+      
         $ruta             = $this->rutas;
         $inicio           = 0;
-        $entidad ='Transaccion';
+        
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
-            $paramPaginacion = $clsLibreria->generarPaginacion($lista, 1, 30, $entidad);
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
             $paginacion      = $paramPaginacion['cadenapaginacion'];
             $inicio          = $paramPaginacion['inicio'];
             $fin             = $paramPaginacion['fin'];
             $paginaactual    = $paramPaginacion['nuevapagina'];
-            $lista           = $resultado->paginate(30);
+            $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.transaccion')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
+            return view($this->folderview.'.listTransac')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'idcaja'));
         }
-        return view($this->folderview.'.transaccion')->with(compact('lista', 'entidad', 'id', 'ruta','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
+        return view($this->folderview.'.listTransac')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'idcaja'));
+    
     }
+
 
     //PARA REGISTRAR NUEVO MOVIMIENTO PARA GASTOS, AHORROS DESDE LA CAJA
     public function nuevomovimiento($id, Request $request)

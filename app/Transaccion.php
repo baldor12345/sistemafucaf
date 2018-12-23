@@ -39,7 +39,7 @@ class Transaccion extends Model
         return $this->belongsTo('App\Caja', 'caja_id');
     }
 
-    public function scopelistar($query, $concepto_id, $caja_id){
+    public function scopelistar($query, $caja_id){
         return $query->where(function($subquery) use($caja_id)
 		            {
 		            	if (!is_null($caja_id)) {
@@ -48,6 +48,7 @@ class Transaccion extends Model
 		            })
                     ->orderBy('concepto_id', 'ASC');
     }
+ 
 
 /*
     public static function scopelistar($query, $concepto_id, $caja_id){
