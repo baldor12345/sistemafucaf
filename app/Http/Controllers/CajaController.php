@@ -426,7 +426,7 @@ class CajaController extends Controller
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
  
-        PDF::Output($titulo.'.pdf', 'D');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 
 }

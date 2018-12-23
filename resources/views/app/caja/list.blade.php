@@ -36,7 +36,7 @@
 			<td style="color:red;font-weight: bold;" >Cerrado</td>
 			@endif
 			<td>{!! Form::button('<div class="glyphicon  glyphicon-list"></div> Transacciones', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_transaccion.'\', this);', 'class' => 'btn  btn-xs btn-success')) !!}</td>
-			<td><a href="{{ route('reportecajaPDF', array('id' => $value->id) ) }}" class="btn btn-info waves-effect waves-light btn-xs"><i class="glyphicon glyphicon-download-alt"></i> Reporte PDF</a></td>
+			<td><a target="_blank" href="{{ route('reportecajaPDF', array('id' => $value->id) ) }}" class="btn btn-info waves-effect waves-light btn-xs"><i class="glyphicon glyphicon-download-alt"></i> Reporte PDF</a></td>
 			@if ($value->estado === 'C')
 			<td>{!! Form::button('<div class="glyphicon  glyphicon-plus"></div> Gasto', array('onclick' => 'modal (\''.URL::route($ruta["nuevomovimiento"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_nuevomovimiento.'\', this);', 'class' => 'btn  btn-xs btn-info','disabled' )) !!}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary','disabled' )) !!}</td>

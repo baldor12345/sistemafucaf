@@ -23,7 +23,11 @@
 			<td>{{ $value->cantidad_accion_comprada }}</td>
 			<td>{{ $value->precio_accion }}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-list"></div> ver detalle', array('onclick' => 'modal(\''.URL::route($ruta["listacciones"], $value->persona_id).'\');', 'class' => 'btn btn-success btn-xs')) !!}</td>
+			@if($idcaja == 0)
+			<td>{!! Form::button('<div class="glyphicon  glyphicon-transfer"></div> vender acciones', array('onclick' => 'modal (\''.URL::route($ruta["cargarventa"], array($value->persona_id, 'listar'=>'SI')).'\', \''.$titulo_ventaaccion.'\', this);', 'class' => 'btn  btn-xs btn-info', 'disabled' =>'true')) !!}</td>
+			@else
 			<td>{!! Form::button('<div class="glyphicon  glyphicon-transfer"></div> vender acciones', array('onclick' => 'modal (\''.URL::route($ruta["cargarventa"], array($value->persona_id, 'listar'=>'SI')).'\', \''.$titulo_ventaaccion.'\', this);', 'class' => 'btn  btn-xs btn-info')) !!}</td>
+			@endif
 		</tr>
 		<?php
 		$contador = $contador + 1;
