@@ -28,13 +28,10 @@
 	<div class="contenedor">
 		<table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
 			<tr >
-				<td align="left" style="font-size: 10px" colspan="2">FUCAF</td><td rowspan="4" align="center" ><img src="assets/images/users/fucaf.png" width="60" height="80" /></td>
+				<td align="left" style="font-size: 10px" colspan="2">FUCAF</td><td rowspan="3" align="center" ><img src="assets/images/users/fucaf.png" width="60" height="60" /></td>
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="2">LAS BRISAS-CHICLAYO</td>
-			</tr>
-			<tr>
-				<td align="left" style="font-size: 10px" colspan="2"></td>
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="2"></td>
@@ -48,16 +45,16 @@
 				</td>
 			</tr>
 			<tr>
-				<td align="left" style="font-size: 10px" colspan="2">
+				<td align="left" style="font-size: 10px" colspan="1">
 					<b>N° OPE.:</b>  <br>
 				</td>
-				<td align="left" style="font-size: 10px" colspan="2">
+				<td align="left" style="font-size: 10px" colspan="3">
 					<b>COD. CLI:</b> {{ $persona->codigo }} <br>
 				</td>
 			</tr>
 			<tr>
 				<td align="center" style="font-size: 15px" colspan="4">
-				--------------------COMPRA DE ACCION-------------------
+				COMPRA DE ACCION
 				</td>
 			</tr>
 			<tr>
@@ -66,7 +63,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td align="center" style="font-size: 15px" colspan="2">TOTAL DE ACCIONES</td>
+				<td align="center" style="font-size: 15px" colspan="2">TOTAL DE ACCIONES </td>
 				<td align="center" style="font-size: 15px" colspan="2">{{ $CantAcciones }}</td>
 			</tr>
 			<tr>
