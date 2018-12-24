@@ -36,7 +36,7 @@
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Comprar accion', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Comprar accion', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modalabriraccion (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', \''.$idcaja.'\');')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -60,4 +60,31 @@
 			}
 		});
 	});
+
+	
+	function modalabriraccion(controlador, titulo, idcaja){
+		if(idcaja !=0){
+			modal(controlador, titulo);
+		}else{
+			bootbox.confirm({
+				title: "Mensaje de eeror",
+				message: "Caja no aperturada",
+				buttons: {
+					cancel: {
+						label: 'Cancelar'
+					},
+					confirm: {
+						label: 'Aceptar'
+					}
+				},
+				callback: function (result) {
+					if(result){
+						
+					}
+				}
+			});
+
+		}
+		
+	}
 </script>

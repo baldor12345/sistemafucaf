@@ -53,6 +53,7 @@
 
 <script>
 	$(document).ready(function () {
+
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
 		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="login"]').keyup(function (e) {
@@ -62,4 +63,5 @@
 			}
 		});
 	});
+	
 </script>

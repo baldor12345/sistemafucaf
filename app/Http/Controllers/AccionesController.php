@@ -53,6 +53,9 @@ class AccionesController extends Controller
      */
     public function buscar(Request $request)
     {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Acciones';
@@ -82,9 +85,9 @@ class AccionesController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'titulo_ventaaccion', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'titulo_ventaaccion', 'ruta','idcaja'));
         }
-        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('lista', 'entidad','idcaja'));
     }
 
     /**
@@ -94,11 +97,14 @@ class AccionesController extends Controller
      */
     public function index()
     {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+
         $entidad          = 'Acciones';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','idcaja'));
     }
 
     /**
