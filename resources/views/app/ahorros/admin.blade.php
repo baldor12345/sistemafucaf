@@ -68,9 +68,8 @@
 				buscar('{{ $entidad }}');
 			}
 		});
-
-		
 	});
+	
 	function modalValidadorCaja(ruta,titulo){
 		if({{$idcaja}}==0){
 			bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Caja no aperturada, porfavor aperture primero. !</div>");

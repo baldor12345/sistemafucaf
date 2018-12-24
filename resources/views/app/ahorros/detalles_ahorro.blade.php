@@ -28,11 +28,7 @@
             {!! Form::label('', 'Fecha de retiro: '.$ahorros->fecha_retiro, array('id'=>'fecha_retiro','class' => '')) !!}
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-12">
-            {!! Form::label('', 'Descripcion: '.$ahorros->descripcion, array('id'=>'descripcion','class' => '')) !!}
-        </div>
-    </div>
+    
     <div class="form-row">
         <div class="form-group col-12">
             {!! Form::label('', 'Estado: '.($ahorros->estado == 'P'?'Pendiente':'Retirado').'', array('id'=>'estado','class' => '')) !!}

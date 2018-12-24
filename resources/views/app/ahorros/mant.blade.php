@@ -33,11 +33,6 @@
 			{!! Form::label('concepto', 'Concepto:', array('class' => '')) !!}
 			{!! Form::select('concepto', $cboConcepto, $idopcion, array('class' => 'form-control input-xs', 'id' => 'concepto')) !!}
 		</div>
-		<div class="form-group col-12" >
-			{!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
-			{!! Form::textarea('descripcion', null, array('class' => 'form-control input-xs','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
-		</div>
-
 		<div class="form-group">
 			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
 				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar','data-dismiss'=>'modal', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
