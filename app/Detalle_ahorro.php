@@ -64,10 +64,8 @@ DB::raw('extract( year from detalle_ahorro.fecha_capitalizacion) as anio')
         )
         ->where('persona.id','=',''.$cliente_id)
         ->whereBetween('detalle_ahorro.fecha_capitalizacion', [$inicioanio, $finalanio])
-        ->groupBy('mes')
-        ->orderBy('mes', 'ASC');
+        ->groupBy(DB::raw('extract( month from detalle_ahorro.fecha_capitalizacion)'))
+        ->orderBy(DB::raw('extract( month from detalle_ahorro.fecha_capitalizacion)'), 'ASC');
         return $results;
     }
-
-    
 }

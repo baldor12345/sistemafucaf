@@ -33,8 +33,8 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			<td>{{ $value->capital_mensual }}</td>
-			<td>{{ $value->interes_mensuals}} </td>
-			<td>{{ $meses[$mes]}}</td>
+			<td>{{ $value->interes_mensual}} </td>
+			<td>{{ $meses[$value->mes]}}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;
