@@ -56,10 +56,6 @@ class AccionesController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 89e07316e454d44a63a76281a5c848f7952a9302
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Acciones';
@@ -103,10 +99,6 @@ class AccionesController extends Controller
     {
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
-<<<<<<< HEAD
-
-=======
->>>>>>> 89e07316e454d44a63a76281a5c848f7952a9302
         $entidad          = 'Acciones';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
@@ -173,18 +165,14 @@ class AccionesController extends Controller
                 }
 
                 $fechahora_actual = date("Y-m-d H:i:s");
-
                 $cantidad_accion = $request->input('cantidad_accion');
-
                 $idCaja = DB::table('caja')->where('estado', "A")->value('id');
                 $configuracion= Configuraciones::all();
                 $result= $configuracion->last();
                 $precio = $result->precio_accion;
-
                 $monto_ingreso = ($cantidad_accion*$precio);
                 //datos de la persona
                 $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
-
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fechahora_actual;
                 $transaccion->monto = $monto_ingreso;
@@ -202,7 +190,6 @@ class AccionesController extends Controller
         }
         return $res;
     }
-
     /**
      * Display the specified resource.
      *
@@ -211,7 +198,6 @@ class AccionesController extends Controller
      */
     public function show($id)
     {
-        //
     }
 
     /**
@@ -280,9 +266,7 @@ class AccionesController extends Controller
                         $acciones->save();
                     }
                 }
-    
             }
-            
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -307,8 +291,6 @@ class AccionesController extends Controller
         }
         return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta'));
     }
-
-
     //listar el objeto persona por dni
     public function getPersona(Request $request, $dni){
         
@@ -317,6 +299,7 @@ class AccionesController extends Controller
             return response()->json($personas);
         }
     }
+
     //listar la cantidad de acciones acumuladas 
     public function getListCantAcciones(Request $request, $persona_id){
         if($request->ajax()){
@@ -324,10 +307,7 @@ class AccionesController extends Controller
             return response()->json($CantAcciones);
         }
     }
-
-
     //venta de acciones
-
     public function cargarventa($id, Request $request)
     {
         $existe = Libreria::verificarExistencia($id, 'persona');
@@ -368,13 +348,9 @@ class AccionesController extends Controller
        }
 
         $listar        = Libreria::getParam($request->input('listar'), 'NO');
-
-        
         $acciones_por_persona = DB::table('acciones')->where('persona_id', $id)->where('estado', "C")->get();
         $descripcion_venta=$request->input('descripcion');
-
         $cantidad_accion= $request->input('cantidad_accion');
-
         if($cantidad_accion !== ''){            
             for($i=0; $i< $cantidad_accion; $i++){
                 $idaccion= $acciones_por_persona[$i]->id;
@@ -405,16 +381,12 @@ class AccionesController extends Controller
             }
 
             $fechahora_actual = date("Y-m-d H:i:s");
-
             //registrar compra de de la persona que compra 
             $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-
             $cant_tranferencia= $request->input('cantidad_accion');
-
             //datos de la persona
             $persona_comprador = DB::table('persona')->where('id', $request->input('idcomprador'))->value('nombres');
             $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
-            
             //registro de venta en la transaccion
             $transaccion = new Transaccion();
             $transaccion->fecha = date("Y-m-d H:i:s");
@@ -424,9 +396,7 @@ class AccionesController extends Controller
             $transaccion->usuario_id =Caja::getIdPersona();
             $transaccion->caja_id =$idCaja;
             $transaccion->save();
-             
         });
-        
         return is_null($error) ? "OK" : $error;
     }
 
@@ -449,7 +419,6 @@ class AccionesController extends Controller
         PDF::SetRightMargin(110);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
- 
         PDF::Output($titulo.'.pdf', 'I');
     }
 }

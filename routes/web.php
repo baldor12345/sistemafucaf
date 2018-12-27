@@ -146,6 +146,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/verahorro/{id_ahorro}/{listarluego}', 'AhorrosController@verahorro')->name('ahorros.verahorro');
     Route::get('ahorros/retirar/{id_ahorro}/{listarluego}', 'AhorrosController@retirar')->name('ahorros.retirar');
     Route::get('ahorros/retiro', 'AhorrosController@retiro')->name('ahorros.retiro');
+    Route::get('ahorros/verdetalleahorro/{persona_id}/{listarluego}', 'AhorrosController@verdetalleahorro')->name('ahorros.verdetalleahorro');
+    Route::get('ahorros/buscarahorro', 'AhorrosController@buscarahorro')->name('ahorros.buscarahorro');
+    Route::get('ahorros/actualizarecapitalizacion', 'AhorrosController@actualizarecapitalizacion')->name('ahorros.actualizarecapitalizacion');
+    Route::get('ahorros/vercapitalizacion/{persona_id}/{listarluego}', 'AhorrosController@vercapitalizacion')->name('ahorros.vercapitalizacion');
+    Route::get('ahorros/listarcapitalizacion', 'AhorrosController@listarcapitalizacion')->name('ahorros.listarcapitalizacion');
+    
     /*GASTOS*/
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');
     Route::get('gastos/eliminar/{id}/{listarluego}', 'GastosController@eliminar')->name('gastos.eliminar');

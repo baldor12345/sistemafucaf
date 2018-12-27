@@ -40,6 +40,7 @@
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modalValidadorCaja(\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\');')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Actualizar capitalizacion', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnactualizar', 'onclick' => 'actualizardatos();')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -69,7 +70,21 @@
 			}
 		});
 	});
-	
+	function actualizardatos(){
+		$.ajax({
+				url: 'ahorros/actualizarecapitalizacion',
+				headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+				type: 'GET',
+				data: null,
+				beforeSend: function(){
+				},
+				success: function(res){
+					mostrarMensaje (res, "OK");
+				}
+			}).fail(function(){
+				mostrarMensaje ("Error de consulta..", "ERROR");
+			});
+	}
 	function modalValidadorCaja(ruta,titulo){
 		if({{$idcaja}}==0){
 			bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Caja no aperturada, porfavor aperture primero. !</div>");
@@ -77,4 +92,5 @@
 			modal(ruta, titulo);
 		}
 	}
+
 </script>

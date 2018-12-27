@@ -1,74 +1,42 @@
 
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::model($ahorros, array('class' => 'form-horizontal' , 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
-
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Cliente: '.$persona->nombres.' '.$persona->apellidos, array('id'=>'cliente','class' => '')) !!}
-        </div>
-    </div>
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Monto Inicial S/.: '.$ahorros->importe, array('id'=>'montoahorros','class' => '')) !!}
-        </div>
-        <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Interes mensual (%): '.$ahorros->interes, array('id'=>'interesmes','class' => '')) !!}
-        </div>
-    </div>
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Monto final: '.$montofinal, array('id'=>'montofinal','class' => '')) !!}
-        </div>
-    </div>
-    <div class="form-row">
-        <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Fecha de deposito: '.$ahorros->fecha_deposito, array('id'=>'fecha_deposito','class' => '')) !!}
-        </div>
-        <div class="form-group col-6 col-md-6 col-sm-6">
-            {!! Form::label('', 'Fecha de retiro: '.$ahorros->fecha_retiro, array('id'=>'fecha_retiro','class' => '')) !!}
-        </div>
-    </div>
-    
-    <div class="form-row">
-        <div class="form-group col-12">
-            {!! Form::label('', 'Estado: '.($ahorros->estado == 'P'?'Pendiente':'Retirado').'', array('id'=>'estado','class' => '')) !!}
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-            @if($ahorros->estado == 'P')
-            <div id="btnRetiro">
-            {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Retirar ', array('class' => 'btn btn-danger btn-sm', 'id' => 'btnRetirar', 'onclick' => 'retirar(\''.$ahorros->id.'\')')) !!}
+<div class="card-box table-responsive crbox">
+    <div class="row m-b-30" id="selectfilas">
+        <div class="col-sm-12">
+            {!! Form::open(['route' => $ruta["buscarahorro"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusquedaDetalleahorro']) !!}
+            {!! Form::hidden('page', 1, array('id' => 'page')) !!}
+            
+            {!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
+            {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
+            <div class="form-group" >
+                {!! Form::label('filas', 'Filas a mostrar:')!!}
+                {!! Form::selectRange('filas', 1, 30, 5, array('class' => 'form-control input-xs d-none d-sm-block', 'onchange' => 'buscar(\''.'Detalleahorro'.'\')')) !!}
             </div>
-            @endif
-            &nbsp;
-            {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Close', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+            <div class="form-group" >
+            {!! Form::label('estado', 'Estado:')!!}
+            {!! Form::select('estado', $cboestado, 'P', array('class' => 'form-control input-xs', 'id' => 'estado','onchange' => 'buscar(\''.'Detalleahorro'.'\')')) !!}
+            </div>
+            {!! Form::close() !!}
         </div>
     </div>
-{!! Form::close() !!}
+
+    <div class="form-group col-12" style="height: 15px">
+        <h4>Depositos de ahorros: </h4>
+    </div>
+    <div id="listado{{ $entidad1 }}"></div>
+    
+    <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
+        &nbsp;
+        {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad1, 'onclick' => 'cerrarModal();')) !!}
+    </div>
+</div>
+
 <script type="text/javascript">
 	$(document).ready(function() {
-		configurarAnchoModal('650');
+		configurarAnchoModal('850');
+        buscar("{{ $entidad1 }}");
     });
 
-    function retirar(id){
-        
-        $.ajax({
-            url: 'ahorros/retiro',
-            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            type: 'GET',
-            data: 'id_ahorro='+id,
-            beforeSend: function(){
-                
-            },
-            success: function(res){
-                $('#estado').text("Estado: Retirado");
-                $('btnRetiro').hide();
-            }
-        }).fail(function(){
-            
-        });
-    }
+    
 
 </script>

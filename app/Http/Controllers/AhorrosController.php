@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Validator;
+use DateTime;
 use App\Http\Requests;
 use App\Ahorros;
+use App\Detalle_ahorro;
 use App\Concepto;
 use App\Caja;
 use App\Persona;
@@ -24,6 +26,8 @@ class AhorrosController extends Controller
     protected $tituloModificar = 'Modificar ahorro';
     protected $tituloEliminar  = 'Eliminar ahorro';
     protected $titulo_verahorro  = 'Detalles de ahorro';
+    protected $titulo_verdetalleahorro = 'Detalle de ahorros';
+    protected $titulo_capitalizacion = 'Capitalizacion de ahorro';
     protected $titulo_retirar  = 'Retirar ahorro';
     protected $rutas           = array('create' => 'ahorros.create', 
             'edit'   => 'ahorros.edit', 
@@ -32,7 +36,12 @@ class AhorrosController extends Controller
             'index'  => 'ahorros.index',
             'verahorro' => 'ahorros.verahorro',
             'retirar' =>'ahorros.retirar',
-            'retiro' => 'ahorros.retiro'
+            'retiro' => 'ahorros.retiro',
+            'buscarahorro' => 'ahorros.buscarahorro',
+            'verdetalleahorro'=> 'ahorros.verdetalleahorro',
+            'vercapitalizacion' => 'ahorros.vercapitalizacion',
+            'listarcapitalizacion' => 'ahorros.listarcapitalizacion',
+            'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion'
         );
 
     /**
@@ -50,7 +59,7 @@ class AhorrosController extends Controller
      * 
      * @return Response 
      */
-    
+    /*
     public function buscar(Request $request)
     {
         $pagina           = $request->input('page');
@@ -85,6 +94,82 @@ class AhorrosController extends Controller
             return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta', 'titulo_verahorro'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+    }*/
+
+    public function buscar(Request $request)
+    {
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $entidad          = 'Ahorros';
+        $fecha             = Libreria::getParam($request->input('fecha'));
+        $nombres             = Libreria::getParam($request->input('nombres'));
+        $resultado        = Ahorros::listar($nombres, $fecha);
+        $lista            = $resultado->get();
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'COD. CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'NOMBRE CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DEPOSITO TOTAL S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
+        
+        $titulo_modificar = $this->tituloModificar;
+        $titulo_eliminar  = $this->tituloEliminar;
+        $titulo_verahorro = $this->titulo_verahorro;
+        $titulo_verdetalleahorro = $this->titulo_verdetalleahorro;
+        $titulo_capitalizacion = $this->titulo_capitalizacion;
+        $ruta             = $this->rutas;
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta', 'titulo_verahorro','titulo_verdetalleahorro','titulo_capitalizacion'));
+        }
+        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+    }
+
+    public function buscarahorro(Request $request)
+    {
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $estado = Libreria::getParam($request->input('estado'));
+        $persona_id = Libreria::getParam($request->input('persona_id'));
+        $entidad          = 'Ahorros';
+        $entidad1 = "Detalleahorro";
+        $resultado        = Ahorros::listardetalle($estado,$persona_id);
+        $lista            = $resultado->get();
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA DEP.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'MONTO DEP. S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'INTERES GANADO S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'TOTAL S/.', 'numero' => '1');
+        if($estado != 'P'){
+            $cabecera[]       = array('valor' => 'FECHA RETIRO', 'numero' => '1');
+        }
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '3');
+        
+        $titulo_modificar = $this->tituloModificar;
+        $titulo_eliminar  = $this->tituloEliminar;
+        $titulo_verahorro = $this->titulo_verahorro;
+        $titulo_retirar = $this->titulo_retirar;
+        $ruta             = $this->rutas;
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad1);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.listdetahorro')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad','entidad1', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta', 'titulo_verahorro','titulo_retirar','estado'));
+        }
+        return view($this->folderview.'.listdetahorro')->with(compact('lista', 'entidad'));
     }
 
     /**
@@ -92,11 +177,44 @@ class AhorrosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function getNombreMes($NumeroMes){
+        $meses = array(
+            1 => "Enero",
+            2 => "Febrero",
+            3 => "Marzo",
+            4 => "Abril",
+            5 => "Mayo",
+            6 => "Junio",
+            7 => "Julio",
+            8 => "Agosto",
+            9 => "Septiembre",
+            10 => "Octubre",
+            11 => "Noviembre",
+            12 => "Diciembre",
+        );
+        return $meses[$NumeroMes];
+
+    }
+
     public function index()
     {
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
         $configuraciones = configuraciones::all()->last();
+        /*
+        $capitales = Detalle_ahorro::listarhistorico(3,2018)->get();
+
+        echo("<table>");
+        echo("<thead><tr><th>Capital</th><th>Interes</th><th>Mes</th></tr></thead>");
+        echo("<tbody>");
+        echo($capitales);
+        foreach ($capitales as $key => $value) {
+            echo("<tr><td>".$value->capital_mensual."</td><td>".$value->interes_mensual."</td><td>".$value->mes."</td></tr>");
+        }
+        
+        echo("</tbody>");
+        echo("</table>");
+        */
 
         $entidad          = 'Ahorros';
         $title            = $this->tituloAdmin;
@@ -162,7 +280,6 @@ class AhorrosController extends Controller
             // $fecha_fin = date("Y-m-d",strtotime($ahorros->fecha_inicio."+ ".$ahorros->periodo." month"));
                 $ahorros->interes = $request->input('interes');
                 $ahorros->persona_id = $request->input('persona_id');
-                $ahorros->descripcion = $request->input('descripcion');
                 $ahorros->estado = 'P';
                 $ahorros->save();
                 //Guardar en tabla transacciones **********
@@ -176,7 +293,7 @@ class AhorrosController extends Controller
                 $transaccion->id_tabla = $ahorros->id;
                 $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccion->concepto_id = $idconcepto;
-                $transaccion->descripcion = $ahorros->descripcion;
+                $transaccion->descripcion = "";
                 $transaccion->persona_id = $ahorros->persona_id;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id =  $caja[0]->id;
@@ -265,7 +382,6 @@ class AhorrosController extends Controller
             // $ahorros->fecha_fin = $fecha_fin;
                 $ahorros->interes = $request->input('interes');
                 $ahorros->persona_id = $request->input('persona_id');
-                $ahorros->descripcion = $request->input('descripcion');
                 $ahorros->save();
                 /// REGISTRO EN CAJA
                 $idconcepto = $request->input('concepto');
@@ -276,7 +392,7 @@ class AhorrosController extends Controller
                 $transaccion->id_tabla = $ahorros->id;
                 $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccion->concepto_id = $idconcepto;
-                $transaccion->descripcion = $ahorros->descripcion;
+                $transaccion->descripcion = "";
                 $transaccion->persona_id = $ahorros->persona_id;
                 $transaccion->save();
             });
@@ -331,6 +447,7 @@ class AhorrosController extends Controller
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
+
     public function retirar($id, $listarLuego){
         $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
@@ -340,30 +457,46 @@ class AhorrosController extends Controller
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
-        $modelo   = Ahorros::find($id);
+        $ahorro   = Ahorros::find($id);
         $entidad  = 'Ahorros';
-        $formData = array('route' => array('ahorros.retiro', $id), 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton    = 'Retirar';
-        return view('app.confirmarRetirar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        $entidad1 = "Detalleahorro";
+        $ruta             = $this->rutas;
 
+
+        $fecha_actual = date('Y-m-d'); 
+        $fecha_dep = date("Y-m-d", strtotime($ahorro->fecha_deposito));
+        $datosfac = explode("-", $fecha_actual);
+        $datofdep = explode("-", $fecha_dep); 
+        $fechadeposito = new DateTime (''.$datofdep[0].'-'.$datofdep[1].'-'.$datofdep[2]);
+        $fechafinal =  new DateTime (''.$datosfac[0].'-'.$datosfac[1].'-'.$datosfac[2]);
+        $diferencia = $fechadeposito-> diff($fechafinal);
+        $cantmeses = ($diferencia->y * 12) + $diferencia->m;
+        $interesganado =($cantmeses >= 1)? $ahorro->importe * pow((101/100),(int)$cantmeses):$ahorro->importe;
+        $interesganado -= $ahorro->importe;
+        $interesMostrar= round(  $interesganado , 2, PHP_ROUND_HALF_UP);
+        $totalretiro = $interesMostrar + $ahorro->importe;
+
+        //$formData = array('route' => array('ahorros.retiro', $id), 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        //$boton    = 'Retirar';
+        return view($this->folderview.'.detretirar')->with(compact('ahorro','entidad','entidad1', 'listar','ruta','interesMostrar','totalretiro'));
     }
     public function retiro(Request $request){
         $id = $request->get('id_ahorro');
+        $monto_retiro = $request->get('montototal');
         $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
             return $existe;
         }
-        $error = DB::transaction(function() use($id){
+        $error = DB::transaction(function() use($id,$monto_retiro){
+            $fechahora_actual = date("Y-m-d H:i:s");
             $ahorros = Ahorros::find($id);
             $ahorros->estado = 'R';
+            $ahorros->fecha_retiro = $fechahora_actual;
             $ahorros->save();
 
             //Guardar en tabla transacciones **********
             $caja = Caja::where("estado","=","A")->get();
-            $fechahora_actual = date("Y-m-d H:i:s");
             $idconcepto = 6;
-            $interes_mes = $ahorros->interes;
-            $monto_inicial = $ahorros->monto;
             $transaccion = new Transaccion();
             $transaccion->fecha = $fechahora_actual;
             $transaccion->monto = $monto_retiro;
@@ -375,33 +508,15 @@ class AhorrosController extends Controller
             $transaccion->usuario_id = Ahorros::idUser();
             $transaccion->caja_id =  $caja[0]->id;
             $transaccion->save();
-
-            
-           
-            $idconcepto = 8;
-            $interes_mes = $ahorros->interes;
-            $monto_inicial = $ahorros->monto;
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $fechahora_actual;
-            $transaccion->monto = $monto_retiro;
-            $transaccion->id_tabla = $ahorros->id;
-            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-            $transaccion->concepto_id = $idconcepto;
-            $transaccion->descripcion = "Retiro de S/. ".$monto_retiro." de ahorros";
-            $transaccion->persona_id = $ahorros->persona_id;
-            $transaccion->usuario_id = Ahorros::idUser();
-            $transaccion->caja_id =  $caja[0]->id;
-            $transaccion->save();
-
-
-
         });
         return is_null($error) ? "OK" : $error;
     }
+
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
     }
+
     public function verahorro($id, Request $request){
         $existe = Libreria::verificarExistencia($id, 'ahorros');
         if ($existe !== true) {
@@ -423,6 +538,103 @@ class AhorrosController extends Controller
         $boton          = 'Retirar';
         return view($this->folderview.'.detalles_ahorro')->with(compact('ahorros','ruta','montofinal','persona', 'formData', 'entidad', 'boton', 'listar','titulo_retirar'));
     
+    }
+
+    public function verdetalleahorro($persona_id, Request $request){
+        $existe = Libreria::verificarExistencia($persona_id, 'persona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $ruta             = $this->rutas;
+        $persona = Persona::find($persona_id);
+        $cboestado = array('P'=>'Depositos activos','R'=>'Depositos retirados');
+        $entidad = "Ahorros";
+        $entidad1 = "Detalleahorro";
+        $boton          = 'Retirar';
+        return view($this->folderview.'.detalles_ahorro')->with(compact('ruta','persona', 'entidad','entidad1', 'boton','cboestado'));
+    }
+
+    public function actualizarecapitalizacion(){
+        $listaahorros = Ahorros::where('estado','P')->get();
+        foreach ($listaahorros as $ahorro) {
+            $fecha_actual1 = date('Y-m-d'); 
+            $fecha_dep1 = date("Y-m-d", strtotime($ahorro->fecha_deposito));
+            $datosfac1 = explode("-", $fecha_actual1);
+            $datofdep1 = explode("-", $fecha_dep1); 
+            echo("anio: ".$datofdep1[0]);
+            
+            $fechadeposito1 = new DateTime (''.$datofdep1[0].'-'.$datofdep1[1].'-'.$datofdep1[2]);
+            $fechafinal1 = new DateTime (''.$datosfac1[0].'-'.$datosfac1[1].'-'.$datosfac1[2]);
+            
+            $diferencia1 = $fechadeposito1-> diff($fechafinal1);
+            $cantmeses1 = ($diferencia1->y * 12) + $diferencia1->m;
+
+            $capital = $ahorro->importe;
+            $interes = 0;
+            $fechacapt = $ahorro->fecha_deposito;
+            $ahorro_id = $ahorro->id;
+            $interesAh = $ahorro->interes;
+            for($i=0;$i<$cantmeses1; $i++){
+                
+                $interes =  $interesAh/100 * $capital;
+                $capital += $interes;
+                $fechacapt = date("Y-m-d",strtotime($fechacapt."+ 1 month"));
+                $listDet = Detalle_ahorro::where('fecha_capitalizacion','=',$fechacapt )->where('ahorros_id','=', $ahorro_id)->get();
+                if(count($listDet)<1){
+                    $resp = Detalle_ahorro::updateOrCreate(
+                        ['capital' => $capital, 'interes' =>round( $interes , 2, PHP_ROUND_HALF_UP) ,  'fecha_capitalizacion' => $fechacapt, 'ahorros_id' => $ahorro_id]
+                    );
+                }
+                
+            }
+        }
+        return "Datos actualizados";
+    }
+
+    public function vercapitalizacion ($pers_id, Request $request){
+        $ruta             = $this->rutas;
+        $fecha_actual = date('Y-m-d'); 
+        $datosfac = explode("-", $fecha_actual);
+        $anioactual = $datosfac[0];
+        $cboanio = array(''.$anioactual=>''.$anioactual,
+        ''.($anioactual-1)=>''.($anioactual-1),
+        ''.($anioactual-2)=>''.($anioactual-2),
+        ''.($anioactual-3)=>''.($anioactual-3),
+        ''.($anioactual-4)=>''.($anioactual-4),
+        ''.($anioactual-5)=>''.($anioactual-5),);
+        $titulo_capitalizacion = $this->titulo_capitalizacion;
+        $entidad = "Detcapitalizacion";
+        return view($this->folderview.'.det_capitalizacion')->with(compact('ruta','pers_id', 'entidad','cboanio','titulo_capitalizacion'));
+    }
+    public function listarcapitalizacion (Request $request){
+
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $persona_id = Libreria::getParam($request->input('pers_id'));
+        $anio = Libreria::getParam($request->input('cboanio'));
+        $entidad = "Detcapitalizacion";
+        $resultado = Detalle_ahorro::listarhistorico($persona_id,$anio);
+        echo($resultado->get());
+        $lista            = $resultado->get();
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CAPITAL S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'INTERES S/.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'MES', 'numero' => '1');
+        $ruta             = $this->rutas;
+
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.listcapitalizacion')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta'));
+        }
+        return view($this->folderview.'.listcapitalizacion')->with(compact('lista', 'entidad'));
     }
 
  //metodo para generar voucher en pdf
@@ -447,3 +659,4 @@ class AhorrosController extends Controller
      PDF::Output($titulo.'.pdf', 'D');
  }
 }
+?>
