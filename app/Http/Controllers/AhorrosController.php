@@ -146,9 +146,6 @@ class AhorrosController extends Controller
         $msjeah = null;
         $p_id = $request->input('persona_id');
         $t_id = null;
-
-        
-
         if(count($caja) >0){
             $listar     = Libreria::getParam($request->input('listar'), 'NO');
             $reglas = array(

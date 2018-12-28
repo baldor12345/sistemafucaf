@@ -249,6 +249,7 @@ class CreditoController extends Controller
                     $transaccion->persona_id = $request->get('idcl');
                     $transaccion->usuario_id = Credito::idUser();
                     $transaccion->caja_id = $caja[0]->id;
+                    $transaccion->monto_credito = $credito->valor_credito;
                     $transaccion->save();
                 });
                 $res = is_null($error) ? "OK" : $error;
@@ -414,6 +415,8 @@ class CreditoController extends Controller
                     $transaccion->persona_id = $request->get('idcl');
                     $transaccion->usuario_id = Credito::idUser();
                     $transaccion->caja_id = $caja[0]->id;
+                    $transaccion->monto_credito = $credito->valor_credito;
+                    
                     $transaccion->save();
                 });
                 $res = is_null($error) ? "OK" : $error;
@@ -535,12 +538,16 @@ class CreditoController extends Controller
                 $cuota->save();
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fechahora_actual;
-                $transaccion->monto = $cuota->parte_capital + $cuota->interes;
+                $transaccion->monto = $cuota->parte_capital + $cuota->interes+ $cuota->interes_mora;
                 $transaccion->concepto_id = 4;//$request->input('concepto');
                 $transaccion->descripcion = " Pago de cuota N° ".$cuota->numero_cuota."/".$credito->periodo." de S/. ".$transaccion->monto;
                 $transaccion->persona_id = $request->get('id_cliente');
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $request->get('id_caja');
+                $transaccion->cuota_parte_capital = $cuota->parte_capital;
+                $transaccion->cuota_interes = $cuota->interes;
+                $transaccion->cuota_mora = $cuota->interes_mora;
+
                 $transaccion->save();
                 
                 if($credito->periodo == $cuota->numero_cuota){// valida si se cancela totalmente todas las cuotas y modifica el estado del credito
