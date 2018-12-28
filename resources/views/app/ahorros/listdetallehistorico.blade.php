@@ -1,9 +1,8 @@
 @if(count($lista) == 0)
 <h3 class="text-warning">No se encontraron resultados.</h3>
 @else
-
+{!! $paginacion or '' !!}
 <table id="example1" class="table table-bordered table-striped table-condensed table-hover">
-
 	<thead>
 		<tr>
 			@foreach($cabecera as $key => $value)
@@ -32,14 +31,13 @@
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td>{{ $contador }}</td>
-			<td>{{ $value->capital_mensual }}</td>
-			<td>{{ $value->interes_mensual}} </td>
+			<td>{{ $value->capital }}</td>
+			<td>{{ $value->interes}} </td>
 			<td>{{ $meses[$value->mes]}}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;
 		?>
-
 		@endforeach
         
 	</tbody>

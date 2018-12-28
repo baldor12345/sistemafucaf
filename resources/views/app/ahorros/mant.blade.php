@@ -15,8 +15,8 @@
 				<input type="hidden" id="persona_id" name="persona_id" value="" >
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px">
-				{!! Form::label('importe', 'Importe S/.: *', array('class' => '')) !!}
-				{!! Form::text('importe', null, array('class' => 'form-control input-xs', 'id' => 'importe', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
+				{!! Form::label('capital', 'Importe S/.: *', array('class' => '')) !!}
+				{!! Form::text('capital', null, array('class' => 'form-control input-xs', 'id' => 'capital', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -25,8 +25,8 @@
 				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual')) !!}
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
-				{!! Form::label('fecha_deposito', 'Fecha de deposito: *', array('class' => '')) !!}
-				{!! Form::date('fecha_deposito', null, array('class' => 'form-control input-xs', 'id' => 'fecha_deposito')) !!}
+				{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
+				{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai')) !!}
 			</div>
 		</div>
 		<div class="form-group col-12 col-md-12 col-sm-12" >

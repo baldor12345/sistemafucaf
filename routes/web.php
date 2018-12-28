@@ -144,13 +144,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/eliminar/{id}/{listarluego}', 'AhorrosController@eliminar')->name('ahorros.eliminar');
     Route::resource('ahorros', 'AhorrosController', array('except' => array('show')));
     Route::get('ahorros/verahorro/{id_ahorro}/{listarluego}', 'AhorrosController@verahorro')->name('ahorros.verahorro');
-    Route::get('ahorros/retirar/{id_ahorro}/{listarluego}', 'AhorrosController@retirar')->name('ahorros.retirar');
+    Route::get('ahorros/vistaretiro/{persona_id}/{listarluego}', 'AhorrosController@vistaretiro')->name('ahorros.vistaretiro');
     Route::get('ahorros/retiro', 'AhorrosController@retiro')->name('ahorros.retiro');
-    Route::get('ahorros/verdetalleahorro/{persona_id}/{listarluego}', 'AhorrosController@verdetalleahorro')->name('ahorros.verdetalleahorro');
-    Route::get('ahorros/buscarahorro', 'AhorrosController@buscarahorro')->name('ahorros.buscarahorro');
+    Route::get('ahorros/vistadetalleahorro/{persona_id}/{listarluego}', 'AhorrosController@vistadetalleahorro')->name('ahorros.vistadetalleahorro');
+    Route::get('ahorros/listardetalleahorro', 'AhorrosController@listardetalleahorro')->name('ahorros.listardetalleahorro');
     Route::get('ahorros/actualizarecapitalizacion', 'AhorrosController@actualizarecapitalizacion')->name('ahorros.actualizarecapitalizacion');
-    Route::get('ahorros/vercapitalizacion/{persona_id}/{listarluego}', 'AhorrosController@vercapitalizacion')->name('ahorros.vercapitalizacion');
-    Route::get('ahorros/listarcapitalizacion', 'AhorrosController@listarcapitalizacion')->name('ahorros.listarcapitalizacion');
+    Route::get('ahorros/vistahistoricoahorro/{persona_id}/{listarluego}', 'AhorrosController@vistahistoricoahorro')->name('ahorros.vistahistoricoahorro');
+    Route::get('ahorros/listarhistorico', 'AhorrosController@listarhistorico')->name('ahorros.listarhistorico');
     
     /*GASTOS*/
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');
