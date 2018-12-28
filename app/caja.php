@@ -50,5 +50,53 @@ class caja extends Model
         return $results;
     }
 
+    public static function listIngresos($fechai, $fechaf)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones")
+                    )
+                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->groupBy('persona.id');
+        return $results;
+    }
 
+    public static function listEgresos($fechai, $fechaf)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('persona', 'transaccion.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones")
+                    )
+                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
+/*
+SELECT 	
+				persona.nombres as persona_nombres,
+				persona.apellidos as persona_apellidos,
+				sum(transaccion.interes_ahorro) as interes_ahorro,
+				sum(transaccion.cuota_parte_capital) as cuota_capital,
+				sum(transaccion.cuota_interes) as cuota_interes,
+				sum(transaccion.cuota_mora) as cuota_mora,
+				sum(transaccion.acciones_soles) as acciones_soles
+FROM persona LEFT JOIN  transaccion ON (persona.id = transaccion.persona_id)
+WHERE transaccion.fecha BETWEEN '2018-12-01' AND '2018-12-30'
+GROUP BY (persona.id);
+*/
 }
