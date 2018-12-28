@@ -176,6 +176,7 @@ class AccionesController extends Controller
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fechahora_actual;
                 $transaccion->monto = $monto_ingreso;
+                $transaccion->acciones_soles = $monto_ingreso;
                 $transaccion->concepto_id = $request->input('concepto_id');
                 $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
                 $transaccion->persona_id = $request->input('persona_id');
