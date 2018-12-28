@@ -1,15 +1,14 @@
-<div id="divMensajeError{!! $entidad !!}"></div>
 <div class="card-box table-responsive crbox">
     <div class="row m-b-30" id="selectfilas">
         <div class="col-sm-12">
-            {!! Form::open(['route' => $ruta["listarcapitalizacion"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
+            {!! Form::open(['route' => $ruta["listarhistorico"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
             {!! Form::hidden('page', 1, array('id' => 'page')) !!}
             
             {!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
-            {!! Form::hidden('pers_id', $pers_id, array('id' => 'pers_id')) !!}
+            {!! Form::hidden('persona_id', $persona_id, array('id' => 'persona_id')) !!}
             <div class="form-group" >
                 {!! Form::label('filas', 'Filas a mostrar:')!!}
-                {!! Form::selectRange('filas', 1, 30, 6, array('class' => 'form-control input-xs d-none d-sm-block', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+                {!! Form::selectRange('filas', 1, 30, 5, array('class' => 'form-control input-xs d-none d-sm-block', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
             </div>
             <div class="form-group" >
             {!! Form::label('cboanio', 'Año:')!!}
