@@ -151,6 +151,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/actualizarecapitalizacion', 'AhorrosController@actualizarecapitalizacion')->name('ahorros.actualizarecapitalizacion');
     Route::get('ahorros/vistahistoricoahorro/{persona_id}/{listarluego}', 'AhorrosController@vistahistoricoahorro')->name('ahorros.vistahistoricoahorro');
     Route::get('ahorros/listarhistorico', 'AhorrosController@listarhistorico')->name('ahorros.listarhistorico');
+    Route::get('/generareciboahorroPDF', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF');
+    
     
     /*GASTOS*/
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');

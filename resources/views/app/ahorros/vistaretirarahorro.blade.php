@@ -7,54 +7,86 @@
             
             <div class="form-group col-12 col-md-12 col-sm-12" >
                 {!! Form::label('cliente', 'Cliente: '.$persona->nombres.' '.$persona->apellidos)!!}
+            </div>
+             <div class="form-group col-12 col-md-12 col-sm-12" >
                 {!! Form::label('maxretiro', 'Máximo a retirar: '.$ahorro->capital)!!}
                 {!! Form::hidden('ahorro_id', $ahorro->id, array('id' => 'ahorro_id')) !!}
                 {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
             </div>
             <div class="form-group col-12 col-md-12 col-sm-12">
-                {!! Form::label('montoretiro', 'Importe S/.: *', array('class' => '')) !!}
-                {!! Form::text('montoretiro', null, array('class' => 'form-control input-xs', 'id' => 'montoretiro', 'placeholder' => 'Monto a retirar S/.')) !!}
+                {!! Form::label('montoretiro1', 'Monto a retirar S/.: *', array('class' => '')) !!}
+                &nbsp;
+                {!! Form::text('montoretiro', null, array('class' => 'form-control input-md input-number', 'id' => 'montoretiro', 'placeholder' => 'Monto a retirar S/.')) !!}
             </div>
-            
+            <div class="form-group col-12 col-md-12 col-sm-12">
+            {!! Form::label('comision', 'Comision por voucher S/.: 0.10')!!}
+            </div>
+           
+            <div class="form-group col-12 col-md-12 col-sm-12">
+            {!! Form::label('totalretirar', 'Total a retirar S/.: ',array('id' => 'totalretirar'))!!}
+            </div>
             {!! Form::close() !!}
         </div>
     </div>
+    
     <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
+     {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Nueva ventana ', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnventana', 'onclick' => "nuevaVentana('https://www.w3schools.com','_blank')")) !!}
+        
+        {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Retirar ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'retirar(\''.$persona->id.'\')')) !!}
         &nbsp;
-        {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Retirar ', array('class' => 'btn btn-danger btn-sm', 'id' => 'btnRetirar', 'onclick' => 'retirar(\''.$persona->id.'\')')) !!}
-        {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+        {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
     </div>
 </div>
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		configurarAnchoModal('650');
-     
+		configurarAnchoModal('450');
+        $("input[name=montoretiro]").keyup(function(event){
+            var monto = $('#montoretiro').val();
+            console.log("monto: "+monto);
+            if(monto != ''){
+                console.log("monto paso: "+monto);
+			    $('#totalretirar').html('Total a retirar S/.: '+(monto - 0.10));
+            }
+    	});
     });
     function retirar(id){
-        if($('#montoretiro').val() <= {{ $ahorro->capital }}){
-            $.ajax({
-                url: 'ahorros/retiro',
-                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                type: 'GET',
-                data: $('#formRetiro').serialize(),
-                beforeSend: function(){
-                    
-                },
-                success: function(res){
-                    
-                    mostrarMensaje ("Retiro exitoso", "OK");
-                    buscar("{{$entidad}}");
-                    cerrarModal();
+        
+            if($('#montoretiro').val() != ''){
+                if(isNaN($('#montoretiro').val()) == false){
+                    if($('#montoretiro').val() <= {{ $ahorro->capital }}){
+                        $.ajax({
+                        url: 'ahorros/retiro',
+                        headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        type: 'GET',
+                        data: $('#formRetiro').serialize(),
+                        beforeSend: function(){
+                            
+                        },
+                        success: function(res){
+                            
+                            mostrarMensaje ("Retiro exitoso", "OK");
+                            buscar("{{$entidad}}");
+                            cerrarModal();
+                        }
+                        }).fail(function(){
+                            mostrarMensaje ("Error de servidor", "ERROR")
+                            cerrarModal();
+                        });
+                    }else{
+                        var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>El monto que desea retirar supera el valor máximo.!</strong></div>';
+                        $('#divMensajeErrorRetiro').html(mensaje);
+                    }
+                }else{
+                    var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de monto no válido.!</strong></div>';
+                    $('#divMensajeErrorRetiro').html(mensaje);
                 }
-            }).fail(function(){
-                mostrarMensaje ("Error de servidor", "ERROR")
-                cerrarModal();
-            });
-        }else{
-            var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>El monto que desea retirar supera el valor máximo.!</strong></div>';
-            $('#divMensajeErrorRetiro').html(mensaje);
-        }
+            }else{
+                var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Campo monto vacio.!</strong></div>';
+                $('#divMensajeErrorRetiro').html(mensaje);
+            }
+            
+        
     }
 
 </script>

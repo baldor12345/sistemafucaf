@@ -17,6 +17,7 @@ use App\configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class AhorrosController extends Controller
 {
@@ -37,6 +38,7 @@ class AhorrosController extends Controller
             'listardetalleahorro' => 'ahorros.listardetalleahorro',
             'vistahistoricoahorro' => 'ahorros.vistahistoricoahorro',
             'listarhistorico' => 'ahorros.listarhistorico',
+            'generareciboahorroPDF' => 'ahorros.generareciboahorroPDF',
             'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion'
         );
 
@@ -131,8 +133,6 @@ class AhorrosController extends Controller
         $boton          = 'Registrar'; 
         return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto'));
     }
-
-   
    /**
      * Store a newly created resource in storage.
      *
@@ -144,6 +144,11 @@ class AhorrosController extends Controller
     {
         $caja = Caja::where("estado","=","A")->get();
         $msjeah = null;
+        $p_id = $request->input('persona_id');
+        $t_id = null;
+
+        
+
         if(count($caja) >0){
             $listar     = Libreria::getParam($request->input('listar'), 'NO');
             $reglas = array(
@@ -157,9 +162,9 @@ class AhorrosController extends Controller
                 return $validacion->messages()->toJson();
             }
 
-            $error = DB::transaction(function() use($request, $caja){
-                $ahorro = Ahorros::getahorropersona($request->input('persona_id'));
-                echo("Ahorro: ".$ahorro);
+            $error = DB::transaction(function() use($request, $caja, $t_id){
+                $resultado = Ahorros::getahorropersona($request->input('persona_id'));
+                $ahorro = $resultado[0];
                 if(count($ahorro) >0){
                     $capital = $ahorro->capital + $request->input('capital');
                     $ahorro->capital = $capital;
@@ -188,13 +193,26 @@ class AhorrosController extends Controller
                 $transaccion->usuario_id = Ahorros::idUser();
                 $transaccion->caja_id =  $caja[0]->id;
                 $transaccion->save();
-
+                $t_id = $transaccion->id;
+                //Guarda el valor de comision voucher en caja
+                $transaccion1 = new Transaccion();
+                $transaccion1->fecha = $fechahora_actual;
+                $transaccion1->monto = 0.10;
+                //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                $transaccion1->concepto_id = 9;//id de concepto comision voucher
+                $transaccion1->descripcion = "Impresion de voucher deposito ahorros";
+                $transaccion1->persona_id = $ahorro->persona_id;
+                $transaccion1->usuario_id = Ahorros::idUser();
+                $transaccion1->caja_id =  $caja[0]->id;
+                $transaccion1->save();
             });
+
             $msjeah = $error;
         }else{
             $msjeah = "Caja no aperturada, asegurese de aperturar caja primero !";
         }
-            return is_null($msjeah) ? "OK" : $msjeah;
+        $respuesta=array(is_null($msjeah) ? "OK" : $msjeah, $p_id, $t_id);
+        return $respuesta;
     }
 /**********************************Fin registro deposito************************************** */
 
@@ -246,7 +264,7 @@ class AhorrosController extends Controller
        return view($this->folderview.'.listdetahorro')->with(compact('lista', 'entidad'));
    }
 
-/**********************************Fin mostar detalle************************************** */
+/**********************************Fin mostrar detalle************************************** */
 
 /**********************************MOSTRAR HISTORICO CAPITAL E INTERES MENSAL EN UN AÑO************************************** */
    //Metodo para abrir Modal historico de capital + interes 
@@ -327,7 +345,7 @@ class AhorrosController extends Controller
             //Guardar en tabla transacciones **********
             $caja = Caja::where("estado","=","A")->get();
             $idconcepto = 6;
-
+            //Guarda el valor de retiro en caja
             $transaccion = new Transaccion();
             $transaccion->fecha = $fechahora_actual;
             $transaccion->monto = $monto_retiro;
@@ -339,12 +357,22 @@ class AhorrosController extends Controller
             $transaccion->usuario_id = Ahorros::idUser();
             $transaccion->caja_id =  $caja[0]->id;
             $transaccion->save();
+
+            //Guarda el valor de comision voucher en caja
+            $transaccion = new Transaccion();
+            $transaccion->fecha = $fechahora_actual;
+            $transaccion->monto = 0.10;
+            //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = 9;//id de concepto comision voucher
+            $transaccion->descripcion = "Impresion de voucher retiro ahorros";
+            $transaccion->persona_id = $persona_id;
+            $transaccion->usuario_id = Ahorros::idUser();
+            $transaccion->caja_id =  $caja[0]->id;
+            $transaccion->save();
         });
         return is_null($error) ? "OK" : $error;
     }
 /**********************************Fin retirar************************************** */
-
-   
     //Metodo para redondear numero decimal
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
@@ -363,17 +391,14 @@ class AhorrosController extends Controller
             
             $fechadeposito1 = new DateTime (''.$datofdep1[0].'-'.$datofdep1[1].'-'.$datofdep1[2]);
             $fechafinal1 = new DateTime (''.$datosfac1[0].'-'.$datosfac1[1].'-'.$datosfac1[2]);
-            
             $diferencia1 = $fechadeposito1-> diff($fechafinal1);
             $cantmeses1 = ($diferencia1->y * 12) + $diferencia1->m;
-
             $capital = $ahorro->importe;
             $interes = 0;
             $fechacapt = $ahorro->fecha_deposito;
             $ahorro_id = $ahorro->id;
             $interesAh = $ahorro->interes;
             for($i=0;$i<$cantmeses1; $i++){
-                
                 $interes =  $interesAh/100 * $capital;
                 $capital += $interes;
                 $fechacapt = date("Y-m-d",strtotime($fechacapt."+ 1 month"));
@@ -383,23 +408,26 @@ class AhorrosController extends Controller
                         ['capital' => $capital, 'interes' =>round( $interes , 2, PHP_ROUND_HALF_UP) ,  'fecha_capitalizacion' => $fechacapt, 'ahorros_id' => $ahorro_id]
                     );
                 }
-                
             }
         }
         return "Datos actualizados";
     }
 
-    //metodo para generar voucher en pdf
-    public function generareciboahorroPDF($id, $cant, $fecha, Request $request)
+    //metodo para generar voucher ahorro en pdf
+    public function generareciboahorroPDF($persona_id, $transaccion_id)
     {    
-        $detalle        = Acciones::listAcciones($id);
-        $lista           = $detalle->get();
-        $persona = DB::table('persona')->where('id', $id)->first();
-        $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('importe');
-        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
-        $titulo = $persona->nombres.$cant;
-        $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
-        $html_content = $view->render();      
+        $transaccion = Transaccion::find($transaccion_id);
+        $persona = Persona::find($persona_id);
+
+        $fechaahorro = $transaccion->fecha;
+        $numoperacion = 01;
+        $codcliente = $persona->codigo;
+        $nombrecliente = $persona->nombres.' '.$persona->apellidos; 
+        $montoahorrado = $transaccion->monto;
+        $ahorroactual = DB::table('ahorros')->where('persona_id', $persona_id)->where('fechaf','=',null)->value('capital');
+        $titulo ='Voucher-ahorro-'.$persona->codigo;
+        $view = \View::make('app.ahorros.reciboahorro')->with(compact('fechaahorro', 'numoperacion', 'codcliente','nombrecliente', 'montoahorrado','ahorroactual'));
+        $html_content = $view->render();
 
         PDF::SetTitle($titulo);
         PDF::AddPage('P', 'A4', 'es');
@@ -408,23 +436,23 @@ class AhorrosController extends Controller
         PDF::SetRightMargin(40);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
-        PDF::Output($titulo.'.pdf', 'D');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 /***============================================================================================================================****/
 /***============================================================================================================================****/
-/***======               =====   ==========   ====             ======                =========               ===================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======               =====   ==========   ====   ================   ==========   =========               ===================****/
-/***======   =================   ==========   ====   ================                =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   =================   ==========   ====   ================   ==========   =========   ===============================****/
-/***======   ==================              =====              =====   ==========   =========   ===============================****/
-/***======   ======================     =============================   ==========   =========   ===============================****/
+/***======\\\\\\\\\\\\\\\=====///==========///====\\\\\\\\\\\\\======\\\\\\\\\\\\\\\\=========\\\\\\\\\\\\\\\===================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======\\\\\\\\\\\\\\\=====///==========///====///================///==========///=========\\\\\\\\\\\\\\\===================****/
+/***======///=================///==========///====///================\\\\\\\\\\\\\\\\=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///=================///==========///====///================///==========///=========///===============================****/
+/***======///==================\\\\\\\\\\\\\\=====\\\\\\\\\\\\\\=====///==========///=========///===============================****/
+/***======///======================\\\\\=============================///==========///=========///===============================****/
 /***============================================================================================================================****/
 /***============================================================================================================================****/
 

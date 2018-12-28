@@ -71,9 +71,9 @@
 			</tr>
             <tr >
                 <td style="font-size: 15px" >FECHA: </td>
-                <td style="font-size: 15px" >{{$fechaahorro}}</td>
+                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('d/m/y') }}</td>
                 <td style="font-size: 15px" >HORA: </td>
-                <td style="font-size: 15px" >{{$horaahorro}} </td>
+                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('H:i:s') }} </td>
 			</tr>
             <tr >
                 <td style="font-size: 15px" >N° OPE.: </td>
@@ -100,7 +100,7 @@
             <tr >
                 <td style="font-size: 15px" colspan="2">MONTO AHORRADO S/.</td>
                 <td style="font-size: 15px">{{$montoahorrado}}</td>
-                <td style="font-size: 15px">{{$ahorroactual}}</td>
+                <td style="font-size: 15px">{{ $ahorroactual }}</td>
 			</tr>
             <tr >
                 <td style="font-size: 15px" colspan="2">A CUANTOS MESES</td>

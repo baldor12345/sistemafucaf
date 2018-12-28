@@ -9,7 +9,7 @@
             {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
             <div class="form-group" >
                 {!! Form::label('fechainicio', 'Desde:')!!}
-                {!! Form::date('fechainicio', null, array('class' => 'form-control input-xs', 'id' => 'fechainicio')) !!}
+                {!! Form::date('fechainicio', null, array('class' => 'form-control input-xs', 'id' => 'fechainicio',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
              </div>		
             <div class="form-group" >
                 {!! Form::label('filas', 'Filas a mostrar:')!!}
@@ -39,7 +39,4 @@
 		$('#fechainicio').val(fechai);
         buscar("{{ $entidad }}");
     });
-
-    
-
 </script>
