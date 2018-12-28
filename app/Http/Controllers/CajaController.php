@@ -74,7 +74,7 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Monto C.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto D.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '4');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '6');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -426,7 +426,7 @@ class CajaController extends Controller
         $diferencia= $ingresos-$egresos;
 
         $concepto_id             = Libreria::getParam(-1);
-        $resultado        = Transaccion::listar($concepto_id , $id);
+        $resultado        = Transaccion::listar($id);
         $lista            = $resultado->get();
         $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
@@ -442,6 +442,324 @@ class CajaController extends Controller
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
  
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
+    //---------------------------------------------------------------------------METODO PARA GENERAR REPORTE DE INGRESOS
+    public function reporteingresosPDF($id, Request $request)
+    {    
+        $caja = DB::table('caja')->where('id', $id)->first();
+        $fechai = $caja->fecha_horaApert;
+        $fechaf = $caja->fecha_horaCierre;
+
+        $day = Date::parse($caja->fecha_horaApert)->format('d');
+        $month = Date::parse($caja->fecha_horaApert)->format('m');
+        $year = Date::parse($caja->fecha_horaApert)->format('y');
+        $anio = "20".$year;
+
+        //evaluar mes 
+        $mes="";
+        $mesItm="";
+        switch($month){
+            case '1':
+                $mes = "ENERO";
+                $mesItm = "Ene";
+                break;
+            case '2':
+                $mes = "FEBRERO";
+                $mesItm = "Feb";
+                break;
+            case '3':
+                $mes = "MARZO";
+                $mesItm = "Mar";
+                break;
+            case '4':
+                $mes = "ABRIL";
+                $mesItm = "Abr";
+                break;
+            case '5':
+                $mes = "MAYO";
+                $mesItm = "May";
+                break;
+            case '6':
+                $mes = "JUNIO";
+                $mesItm = "Jun";
+                break;
+            case '7':
+                $mes = "JULIO";
+                $mesItm = "Jul";
+                break;
+            case '8':
+                $mes = "AGOSTO";
+                $mesItm = "Ago";
+                break;
+            case '9':
+                $mes = "SETIEMBRE";
+                $mesItm = "Set";
+                break;
+            case '10':
+                $mes = "OCTUBRE";
+                $mesItm = "Oct";
+                break;
+            case '11':
+                $mes = "NOVIEMBRE";
+                $mesItm = "Nov";
+                break;
+            default :
+                $mes = "DICIEMBRE";
+                $mesItm = "Dic";
+                break;
+        }
+
+        $lista = Caja::listIngresos($fechai,$fechaf)->get();
+
+        //calculo del total de ingresos del mes
+        $sum_deposito_ahorros_mes_actual=0;
+        $sum_pagos_de_capital_mes_actual=0;
+        $sum_interese_recibidos_mes_actual=0;
+        $sum_acciones_mes_actual=0;
+        $sum_otros_mes_actual=0;
+        $sum_ingresos_totales_mes_actual=0;
+        if(count($lista) >0 ){
+            for($i=0; $i<count($lista); $i++){
+                $sum_deposito_ahorros_mes_actual += $lista[$i]->deposito_ahorros;
+                $sum_pagos_de_capital_mes_actual += $lista[$i]->pagos_de_capital;
+                $sum_interese_recibidos_mes_actual += $lista[$i]->intereces_recibidos;
+                $sum_acciones_mes_actual += $lista[$i]->acciones;
+                $sum_otros_mes_actual += $lista[$i]->cuota_mora;
+            }
+            $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
+        }else{
+            $sum_deposito_ahorros_mes_actual=0;
+            $sum_pagos_de_capital_mes_actual=0;
+            $sum_interese_recibidos_mes_actual=0;
+            $sum_acciones_mes_actual=0;
+            $sum_otros_mes_actual=0;
+            $sum_ingresos_totales_mes_actual=0;
+        }
+
+        //calculo del total de ingresos acumulados al mes anterior
+        $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
+        $fechai = $caja->fecha_horaApert;
+        $fechai_caja_first = $caja_asta_mes_anterior[0]->fecha_horaApert;
+        $lista_mes_anterior = Caja::listIngresos($fechai_caja_first,$fechai)->get();
+
+        $sum_deposito_ahorros_asta_mes_anterior=0;
+        $sum_pagos_de_capital_asta_mes_anterior=0;
+        $sum_interese_recibidos_asta_mes_anterior=0;
+        $sum_acciones_asta_mes_anterior=0;
+        $sum_otros_asta_mes_anterior=0;
+        $sum_ingresos_totales_asta_mes_anterior=0;
+        if(count($lista_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_mes_anterior); $i++){
+                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterior[$i]->deposito_ahorros;
+                $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterior[$i]->pagos_de_capital;
+                $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterior[$i]->intereces_recibidos;
+                $sum_acciones_asta_mes_anterior += $lista_mes_anterior[$i]->acciones;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->cuota_mora;
+            }
+            $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
+        }else{
+            $sum_deposito_ahorros_asta_mes_anterior=0;
+            $sum_pagos_de_capital_asta_mes_anterior=0;
+            $sum_interese_recibidos_asta_mes_anterior=0;
+            $sum_acciones_asta_mes_anterior=0;
+            $sum_otros_asta_mes_anterior=0;
+            $sum_ingresos_totales_asta_mes_anterior=0;
+        }
+
+        //calculo de ingresos acumulados asta la fecha
+        $sum_deposito_ahorros_acumulados=0;
+        $sum_pagos_de_capital_acumulados=0;
+        $sum_interese_recibidos_acumulados=0;
+        $sum_acciones_acumulados=0;
+        $sum_otros_acumulados=0;
+        $sum_ingresos_totales_acumulados=0;
+
+        //-------suma
+        $sum_deposito_ahorros_acumulados=($sum_deposito_ahorros_mes_actual+$sum_deposito_ahorros_asta_mes_anterior);
+        $sum_pagos_de_capital_acumulados=($sum_pagos_de_capital_mes_actual+$sum_pagos_de_capital_asta_mes_anterior);
+        $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
+        $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
+        $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
+        $sum_ingresos_totales_acumulados=($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
+
+
+        $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+
+        $titulo = "reporte ".$caja->titulo."_Ingresos";
+        $view = \View::make('app.reportes.reporteIngresoPDF')->with(compact('lista', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_deposito_ahorros_mes_actual',
+                                                                            'sum_pagos_de_capital_mes_actual','sum_interese_recibidos_mes_actual','sum_acciones_mes_actual','sum_otros_mes_actual','sum_ingresos_totales_mes_actual',
+                                                                        'sum_deposito_ahorros_asta_mes_anterior','sum_pagos_de_capital_asta_mes_anterior','sum_interese_recibidos_asta_mes_anterior','sum_acciones_asta_mes_anterior','sum_otros_asta_mes_anterior','sum_ingresos_totales_asta_mes_anterior',
+                                                                    'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L','A4',0);
+        PDF::SetTopMargin(5);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
+    //---------------------------------------------------------------------------METODO PARA GENERAR REPORTE DE EGRESOS
+    public function reporteegresosPDF($id, Request $request)
+    {    
+        $caja = DB::table('caja')->where('id', $id)->first();
+        $fechai = $caja->fecha_horaApert;
+        $fechaf = $caja->fecha_horaCierre;
+
+        $day = Date::parse($caja->fecha_horaApert)->format('d');
+        $month = Date::parse($caja->fecha_horaApert)->format('m');
+        $year = Date::parse($caja->fecha_horaApert)->format('y');
+        $anio = "20".$year;
+
+        //evaluar mes 
+        $mes="";
+        $mesItm="";
+        switch($month){
+            case '1':
+                $mes = "ENERO";
+                $mesItm = "Ene";
+                break;
+            case '2':
+                $mes = "FEBRERO";
+                $mesItm = "Feb";
+                break;
+            case '3':
+                $mes = "MARZO";
+                $mesItm = "Mar";
+                break;
+            case '4':
+                $mes = "ABRIL";
+                $mesItm = "Abr";
+                break;
+            case '5':
+                $mes = "MAYO";
+                $mesItm = "May";
+                break;
+            case '6':
+                $mes = "JUNIO";
+                $mesItm = "Jun";
+                break;
+            case '7':
+                $mes = "JULIO";
+                $mesItm = "Jul";
+                break;
+            case '8':
+                $mes = "AGOSTO";
+                $mesItm = "Ago";
+                break;
+            case '9':
+                $mes = "SETIEMBRE";
+                $mesItm = "Set";
+                break;
+            case '10':
+                $mes = "OCTUBRE";
+                $mesItm = "Oct";
+                break;
+            case '11':
+                $mes = "NOVIEMBRE";
+                $mesItm = "Nov";
+                break;
+            default :
+                $mes = "DICIEMBRE";
+                $mesItm = "Dic";
+                break;
+        }
+
+        $lista = Caja::listIngresos($fechai,$fechaf)->get();
+
+        //calculo del total de ingresos del mes
+        $sum_deposito_ahorros_mes_actual=0;
+        $sum_pagos_de_capital_mes_actual=0;
+        $sum_interese_recibidos_mes_actual=0;
+        $sum_acciones_mes_actual=0;
+        $sum_otros_mes_actual=0;
+        $sum_ingresos_totales_mes_actual=0;
+        if(count($lista) >0 ){
+            for($i=0; $i<count($lista); $i++){
+                $sum_deposito_ahorros_mes_actual += $lista[$i]->deposito_ahorros;
+                $sum_pagos_de_capital_mes_actual += $lista[$i]->pagos_de_capital;
+                $sum_interese_recibidos_mes_actual += $lista[$i]->intereces_recibidos;
+                $sum_acciones_mes_actual += $lista[$i]->acciones;
+                $sum_otros_mes_actual += $lista[$i]->cuota_mora;
+            }
+            $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
+        }else{
+            $sum_deposito_ahorros_mes_actual=0;
+            $sum_pagos_de_capital_mes_actual=0;
+            $sum_interese_recibidos_mes_actual=0;
+            $sum_acciones_mes_actual=0;
+            $sum_otros_mes_actual=0;
+            $sum_ingresos_totales_mes_actual=0;
+        }
+
+        //calculo del total de ingresos acumulados al mes anterior
+        $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
+        $fechai = $caja->fecha_horaApert;
+        $fechai_caja_first = $caja_asta_mes_anterior[0]->fecha_horaApert;
+        $lista_mes_anterior = Caja::listIngresos($fechai_caja_first,$fechai)->get();
+
+        $sum_deposito_ahorros_asta_mes_anterior=0;
+        $sum_pagos_de_capital_asta_mes_anterior=0;
+        $sum_interese_recibidos_asta_mes_anterior=0;
+        $sum_acciones_asta_mes_anterior=0;
+        $sum_otros_asta_mes_anterior=0;
+        $sum_ingresos_totales_asta_mes_anterior=0;
+        if(count($lista_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_mes_anterior); $i++){
+                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterior[$i]->deposito_ahorros;
+                $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterior[$i]->pagos_de_capital;
+                $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterior[$i]->intereces_recibidos;
+                $sum_acciones_asta_mes_anterior += $lista_mes_anterior[$i]->acciones;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->cuota_mora;
+            }
+            $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
+        }else{
+            $sum_deposito_ahorros_asta_mes_anterior=0;
+            $sum_pagos_de_capital_asta_mes_anterior=0;
+            $sum_interese_recibidos_asta_mes_anterior=0;
+            $sum_acciones_asta_mes_anterior=0;
+            $sum_otros_asta_mes_anterior=0;
+            $sum_ingresos_totales_asta_mes_anterior=0;
+        }
+
+        //calculo de ingresos acumulados asta la fecha
+        $sum_deposito_ahorros_acumulados=0;
+        $sum_pagos_de_capital_acumulados=0;
+        $sum_interese_recibidos_acumulados=0;
+        $sum_acciones_acumulados=0;
+        $sum_otros_acumulados=0;
+        $sum_ingresos_totales_acumulados=0;
+
+        //-------suma
+        $sum_deposito_ahorros_acumulados=($sum_deposito_ahorros_mes_actual+$sum_deposito_ahorros_asta_mes_anterior);
+        $sum_pagos_de_capital_acumulados=($sum_pagos_de_capital_mes_actual+$sum_pagos_de_capital_asta_mes_anterior);
+        $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
+        $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
+        $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
+        $sum_ingresos_totales_acumulados=($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
+
+
+        $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+
+        $titulo = "reporte ".$caja->titulo."_Ingresos";
+        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_deposito_ahorros_mes_actual',
+                                                                            'sum_pagos_de_capital_mes_actual','sum_interese_recibidos_mes_actual','sum_acciones_mes_actual','sum_otros_mes_actual','sum_ingresos_totales_mes_actual',
+                                                                        'sum_deposito_ahorros_asta_mes_anterior','sum_pagos_de_capital_asta_mes_anterior','sum_interese_recibidos_asta_mes_anterior','sum_acciones_asta_mes_anterior','sum_otros_asta_mes_anterior','sum_ingresos_totales_asta_mes_anterior',
+                                                                    'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L','A4',0);
+        PDF::SetTopMargin(5);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
 

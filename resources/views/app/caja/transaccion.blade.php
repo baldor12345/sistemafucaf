@@ -13,7 +13,7 @@
                         </div>
 						<div class="form-group">
                             {!! Form::label('filas', 'Filas a mostrar:')!!}
-                            {!! Form::selectRange('filas', 1, 30, 1, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+                            {!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
                         </div>
 										
 						{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
