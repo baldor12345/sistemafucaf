@@ -129,9 +129,27 @@
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_ingresos_totales_acumulados }}</strong></td>
 			</tr>
 
-    </table>
-
+	</table>
 	
+	<br/>
+	<br/>
+	<br/>
+	<div class="contenedor">
+		<table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
+			<tr>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">TESORERO------------------------------------</td>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">PRESIDENTE----------------------------------</td>
+			</tr>
+			<tr>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">Rocio Castillo Rojas</td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">Harold Lopez Osorio</td>
+			</tr>
+		</table>
+	</div>
 
 </body>
 </html>

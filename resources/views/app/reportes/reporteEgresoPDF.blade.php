@@ -156,7 +156,71 @@
 
     </table>
 
+	<br/>
+	<br/>
+	<br/>
 	
+	<table width="100%" class="tabla3">
+		<tr>
+			<td cellspacing="4" width="25%" align="left" class="fondo"><strong></strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>S/.</strong></td>
+		</tr>
+		<tr>
+			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Saldo del mes anterior</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ $saldo_del_mes_anterior}}</strong></td>
+		</tr>
+		<tr>
+			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>INGRESOS del mes</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ $ingresos_del_mes }}</strong></td>
+		</tr>
+		<tr>
+			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Total de INGRESOS del mes</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ $total_ingresos_del_mes }}</strong></td>
+		</tr>
+		<tr>
+			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Egresos del mes</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ $egresos_del_mes }}</strong></td>
+		</tr>
+		<tr>
+			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Saldo</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ $saldo }}</strong></td>
+		</tr>
+	</table>
+	
+	<br/>
+	<br/>
+	
+	<table width="100%" class="tabla3">
+		<tr>
+			<td cellspacing="6" width="60%" align="left" class="fondo"><strong>TOTAL DE INGRESOS ACUMULADOS A LA FECHA (*) S/.</strong></td>
+			<td  width="15%" align="center"class="fondo"><strong>{{ $sum_ingresos_totales_acumulados }}</strong></td>
+		</tr>
+		<tr>
+			<td cellspacing="6" width="60%" align="left" class="fondo"><strong>TOTAL DE EGRESOS ACUMULADOS A LA FECHA (*) S/.</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ $sum_egresos_totales_acumulados }}</strong></td>
+		</tr>
+    </table>
+
+
+	<br/>
+	<br/>
+	<br/>
+	<div class="contenedor">
+		<table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
+			<tr>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">TESORERO------------------------------------</td>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">PRESIDENTE----------------------------------</td>
+			</tr>
+			<tr>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">Rocio Castillo Rojas</td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">Harold Lopez Osorio</td>
+			</tr>
+		</table>
+	</div>
 
 </body>
 </html>

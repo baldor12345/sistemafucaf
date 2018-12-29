@@ -653,6 +653,7 @@ public function actualizardatosahorros(Request $request){
         $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
         $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
         $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
+
         $sum_ingresos_totales_acumulados=($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
 
 
@@ -830,13 +831,112 @@ public function actualizardatosahorros(Request $request){
 
 
 
+        //calculo de los ingresos y egresos y saldo-----------------------------------------------------------
+
+        $listaingreso = Caja::listIngresos($fechai,$fechaf)->get();
+
+        //calculo del total de ingresos del mes
+        $sum_deposito_ahorros_mes_actual=0;
+        $sum_pagos_de_capital_mes_actual=0;
+        $sum_interese_recibidos_mes_actual=0;
+        $sum_acciones_mes_actual=0;
+        $sum_otros_mes_actual=0;
+        $sum_ingresos_totales_mes_actual=0;
+        if(count($listaingreso) >0 ){
+            for($i=0; $i<count($listaingreso); $i++){
+                $sum_deposito_ahorros_mes_actual += $listaingreso[$i]->deposito_ahorros;
+                $sum_pagos_de_capital_mes_actual += $listaingreso[$i]->pagos_de_capital;
+                $sum_interese_recibidos_mes_actual += $listaingreso[$i]->intereces_recibidos;
+                $sum_acciones_mes_actual += $listaingreso[$i]->acciones;
+                $sum_otros_mes_actual += $listaingreso[$i]->cuota_mora;
+            }
+            $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
+        }else{
+            $sum_deposito_ahorros_mes_actual=0;
+            $sum_pagos_de_capital_mes_actual=0;
+            $sum_interese_recibidos_mes_actual=0;
+            $sum_acciones_mes_actual=0;
+            $sum_otros_mes_actual=0;
+            $sum_ingresos_totales_mes_actual=0;
+        }
+
+        //calculo del total de ingresos acumulados al mes anterior
+        $caja_asta_mes_anterioringreso = DB::table('caja')->orderBy('id', 'asc')->get();
+        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
+        $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterioringreso[0]->fecha_horaApert."- 1 days"));
+        $lista_mes_anterioringreso = Caja::listIngresos($fechai_caja_first,$fechai)->get();
+
+        $sum_deposito_ahorros_asta_mes_anterior=0;
+        $sum_pagos_de_capital_asta_mes_anterior=0;
+        $sum_interese_recibidos_asta_mes_anterior=0;
+        $sum_acciones_asta_mes_anterior=0;
+        $sum_otros_asta_mes_anterior=0;
+        $sum_ingresos_totales_asta_mes_anterior=0;
+        if(count($lista_mes_anterioringreso) >0 ){
+            for($i=0; $i<count($lista_mes_anterioringreso); $i++){
+                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->deposito_ahorros;
+                $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterioringreso[$i]->pagos_de_capital;
+                $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterioringreso[$i]->intereces_recibidos;
+                $sum_acciones_asta_mes_anterior += $lista_mes_anterioringreso[$i]->acciones;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->cuota_mora;
+            }
+            $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
+        }else{
+            $sum_deposito_ahorros_asta_mes_anterior=0;
+            $sum_pagos_de_capital_asta_mes_anterior=0;
+            $sum_interese_recibidos_asta_mes_anterior=0;
+            $sum_acciones_asta_mes_anterior=0;
+            $sum_otros_asta_mes_anterior=0;
+            $sum_ingresos_totales_asta_mes_anterior=0;
+        }
+
+        //calculo de ingresos acumulados asta la fecha
+        $sum_deposito_ahorros_acumulados=0;
+        $sum_pagos_de_capital_acumulados=0;
+        $sum_interese_recibidos_acumulados=0;
+        $sum_acciones_acumulados=0;
+        $sum_otros_acumulados=0;
+        $sum_ingresos_totales_acumulados=0;
+
+        //-------suma
+        $sum_deposito_ahorros_acumulados=($sum_deposito_ahorros_mes_actual+$sum_deposito_ahorros_asta_mes_anterior);
+        $sum_pagos_de_capital_acumulados=($sum_pagos_de_capital_mes_actual+$sum_pagos_de_capital_asta_mes_anterior);
+        $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
+        $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
+        $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
+        
+        $sum_ingresos_totales_acumulados= ($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
+
+        //------------------------
+        //inicializar variables
+        $saldo_del_mes_anterior =0;
+        $ingresos_del_mes=0;
+        $total_ingresos_del_mes=0;
+        $egresos_del_mes=0;
+        $saldo=0;
+
+        $saldo_del_mes_anterior =($sum_ingresos_totales_asta_mes_anterior- $sum_egresos_totales_mes_anterior);
+        $ingresos_del_mes =  $sum_ingresos_totales_mes_actual;
+        $total_ingresos_del_mes= ($saldo_del_mes_anterior + $ingresos_del_mes);  
+        $egresos_del_mes=   $sum_egresos_totales_acumulados;
+        $saldo =    ($total_ingresos_del_mes-$egresos_del_mes);
+
+
+
+        //saldo del mes anterior
+        $saldo_del_mes_anterior =0;
+
+
+
+        //-------------------------------------------
         $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
-        $titulo = "reporte ".$caja->titulo."_Ingresos";
+        $titulo = "reporte ".$caja->titulo."_Egresos";
         $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
                                                                             'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual',
                                                                         'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior',
-                                                                    'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado'));
+                                                                    'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado', 
+                                                                    'saldo_del_mes_anterior','ingresos_del_mes','total_ingresos_del_mes','egresos_del_mes','saldo','sum_ingresos_totales_acumulados'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
