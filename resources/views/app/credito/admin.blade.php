@@ -209,7 +209,7 @@
 		});
 
 		$("input[name=dnicl]").keyup(function(event){
-			
+
         	$.get("personas/"+event.target.value+"",function(response, facultad){
 				$('#nombrescl').val('');
 				$('#idcl').val('');
@@ -292,6 +292,7 @@
 		if($('#periodo').val() == "" || $('#idcl').val() == ""|| $('#valor_credito').val() == "" || $('#tasa_interes').val() == ""){
 			res = false;
 		}
+		
 		if($("#idcl").attr('tipocl') == 'c'){
 			if($('#idavl').val() == ''){
 				res = false;
