@@ -155,7 +155,7 @@ class CajaController extends Controller
             $caja               = new Caja();
             $caja->titulo        = $request->input('titulo');
             $caja->descripcion        = $request->input('descripcion');
-            $caja->fecha_horaApert        = $request->input('fecha_horaApert').":".$request->input('hora_apertura');
+            $caja->fecha_horaApert        = $request->input('fecha_horaApert').date(" H:i:s");
             $caja->monto_iniciado        = $request->input('monto_iniciado');
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();
@@ -237,7 +237,7 @@ class CajaController extends Controller
         $error = DB::transaction(function() use($request, $id){
             $caja                 = Caja::find($id);
             $caja->descripcion        = $request->get('descripcion');
-            $caja->fecha_horaCierre        = $request->input('fecha_horaApert').":".$request->input('hora_cierre');
+            $caja->fecha_horaCierre        = $request->input('fecha_horaApert').date(" H:i:s");
             $caja->monto_cierre        = $request->get('monto_cierre');
             $caja->diferencia_monto        = $request->get('diferencia_monto');
             $caja->estado        = 'C';//cierre
@@ -540,7 +540,7 @@ class CajaController extends Controller
 
         //calculo del total de ingresos acumulados al mes anterior
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai = $caja->fecha_horaApert;
+        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
         $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
         $lista_mes_anterior = Caja::listIngresos($fechai_caja_first,$fechai)->get();
 
@@ -693,7 +693,7 @@ class CajaController extends Controller
 
         //calculo del total de egresos acumulados al mes anterior
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai = $caja->fecha_horaApert;
+        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
         $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
         $lista_mes_anterior = Caja::listIngresos($fechai_caja_first,$fechai)->get();
 
