@@ -130,6 +130,7 @@ class Ahorros extends Model
         ->select(
             'transaccion.id_tabla as id_ahorro',
             'transaccion.monto as monto',
+            'transaccion.id as transaccion_id',
             'transaccion.fecha as fecha'
         )
         ->where('transaccion.inicial_tabla','=', 'AH')
