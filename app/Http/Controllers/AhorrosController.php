@@ -277,7 +277,9 @@ class AhorrosController extends Controller
         $fecha_actual = date('Y-m-d'); 
         $datosfac = explode("-", $fecha_actual);
         $anioactual = $datosfac[0];
-        $cboanio = array(''.$anioactual=>''.$anioactual,
+        $cboanio = array(
+            ''.($anioactual+1)=>''.($anioactual+1),
+            ''.$anioactual=>''.$anioactual,
         ''.($anioactual-1)=>''.($anioactual-1),
         ''.($anioactual-2)=>''.($anioactual-2),
         ''.($anioactual-3)=>''.($anioactual-3),

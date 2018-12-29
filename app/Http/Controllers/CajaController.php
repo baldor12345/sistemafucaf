@@ -263,7 +263,9 @@ public function actualizardatosahorros(Request $request){
        
           $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
           $sfechA = explode('-',$fecha_actual);
+          $anioA = $sfechA[0];
           $mesA = $sfechA[1];
+
 
           $fechahora_actual = date("Y-m-d H:i:s");
           $hora_actual= date("H:i:s", strtotime($fechahora_actual));
@@ -277,8 +279,15 @@ public function actualizardatosahorros(Request $request){
   
           $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
           $sfechH = explode('-',$fecha_ah);
+          $anioH = $sfechH[0];
           $mesH = $sfechH[1];
-          $dif_mes = $mesA - $mesH;
+          $dif_mes=0;
+        if($anioA > $anioH){
+            $dif_mes = 1;
+        }else{
+            $dif_mes = $mesA - $mesH;
+        }
+          
          
           $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro){
             if($dif_mes >0){
