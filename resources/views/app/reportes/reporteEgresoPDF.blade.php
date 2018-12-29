@@ -72,62 +72,66 @@
                 <td rowspan="2" cellspacing="2" width="8%" align="center" class="fondo"><strong>Interes Pagado S/.</strong></td>
 				<td rowspan="2" cellspacing="2" width="8%" align="center" class="fondo"><strong>Gastos Admin. S/.</strong></td>
 				<td rowspan="2" cellspacing="2" width="8%" align="center" class="fondo"><strong>Utilidad Distrib. S/.</strong></td>
-				<td cellspacing="2" width="24%" align="center" class="fondo"><strong>OTROS</strong></td>
+				<td cellspacing="2" width="16%" align="center" class="fondo"><strong>OTROS</strong></td>
 				<td rowspan="2" width="10%" align="center" class="fondo"><strong>Total Egresos</strong></td>
 			</tr>
 			<tr>
-				<td width="8%" align="center" class="fondo"><strong>S/.</strong></td>
-				<td width="16%" align="center" class="fondo"><strong>Especificar</strong></td>
+				<td width="6%" align="center" class="fondo"><strong>S/.</strong></td>
+				<td width="10%" align="center" class="fondo"><strong>Especificar</strong></td>
 			</tr>
             @foreach($lista as $value )
             <tr>
 				<td width="6%" align="center"><span class="text">{{$day.'-'.$mesItm}}</span></td>
 				<td width="28%" align="center"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->deposito_ahorros }}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->pagos_de_capital }}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->intereces_recibidos }}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->acciones }}</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->monto_ahorro }}</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->monto_credito }}</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->interes_ahorro }}</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
-				<td width="16%" align="center"><span class="text">Com. Rec.</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="6%" align="center"><span class="text">-</span></td>
+				<td width="10%" align="center"><span class="text">Com. Rec.</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-					{{ ($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones) }}
+					{{ ($value->monto_ahorro+$value->monto_credito+$value->interes_ahorro) }}
 					</span>
 				</td>
             </tr>
 			@endforeach
 			
 			<tr>
-				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>TOTAL DE INGRESOS DEL MES</strong></td>
-				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_deposito_ahorros_mes_actual }}</strong></td>
-				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_pagos_de_capital_mes_actual }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interese_recibidos_mes_actual }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_acciones_mes_actual }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_otros_mes_actual }}</strong></td>
-				<td  cellspacing="2" width="16%" align="center" class="fondo"><strong>-</strong></td>
-				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_ingresos_totales_mes_actual }}</strong></td>
+				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>TOTAL DE EGRESOS DEL MES</strong></td>
+				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_retiro_ahorros_mes_actual }}</strong></td>
+				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_mes_actual }}</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_mes_actual }}</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_egresos_totales_mes_actual }}</strong></td>
 			</tr>
 
 			<tr>
-				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>INGRESOS ACUMULADOS AL MES ANTERIOR</strong></td>
-				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_deposito_ahorros_asta_mes_anterior }}</strong></td>
-				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_pagos_de_capital_asta_mes_anterior }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interese_recibidos_asta_mes_anterior }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_acciones_asta_mes_anterior }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_otros_asta_mes_anterior }}</strong></td>
-				<td  cellspacing="2" width="16%" align="center" class="fondo"><strong>-</strong></td>
-				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_ingresos_totales_asta_mes_anterior }}</strong></td>
+				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>EGRESOS ACUMULADOS AL MES ANTERIOR</strong></td>
+				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_retiro_ahorros_mes_anterior }}</strong></td>
+				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_mes_anterior }}</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_mes_anterior }}</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_egresos_totales_mes_anterior }}</strong></td>
 			</tr>
 			
 			<tr>
-				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>TOTAL DE INGRESOS ACUMULADOS A LA FECHA (*)</strong></td>
-				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_deposito_ahorros_acumulados }}</strong></td>
-				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_pagos_de_capital_acumulados }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interese_recibidos_acumulados }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_acciones_acumulados }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_otros_acumulados }}</strong></td>
-				<td  cellspacing="2" width="16%" align="center" class="fondo"><strong>-</strong></td>
-				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_ingresos_totales_acumulados }}</strong></td>
+				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>TOTAL DE EGRESOS ACUMULADOS A LA FECHA (*)</strong></td>
+				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_retiro_ahorros_acumulados }}</strong></td>
+				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_acumulados }}</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_acumulados }}</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_egresos_totales_acumulados }}</strong></td>
 			</tr>
 
     </table>
