@@ -82,4 +82,8 @@ class Credito extends Model
    
         return $results->get();
     }
+    public static function getpersonacredito($dni){
+        
+        return  Persona::where('dni','=',$dni)->get();
+    }
 }

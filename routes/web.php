@@ -193,7 +193,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::get('personas/{dni?}','AccionesController@getPersona');
 Route::get('acciones/{id?}','AccionesController@getListCantAcciones');
-
+Route::get('credito/{dnipersona?}','AccionesController@getPersona');
 Route::get('provincia/cboprovincia/{id?}', array('as' => 'provincia.cboprovincia', 'uses' => 'ProvinciaController@cboprovincia'));
 Route::get('distrito/cbodistrito/{id?}', array('as' => 'distrito.cbodistrito', 'uses' => 'DistritoController@cbodistrito'));
 
