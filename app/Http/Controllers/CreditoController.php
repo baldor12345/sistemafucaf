@@ -293,7 +293,7 @@ class CreditoController extends Controller
                     $respuesta = "El Socio ya cuenta con 2 creditos, no se permite mas de 2 !";
                 }
             }else{
-                $respuesta = "El Socio solo puede obtener un credito con un monto máximo de s/. ".($capital_actual+ $acciones[0]->numero_acciones * $precioaccion)." !";
+                $respuesta = "El Socio solo puede obtener un credito con un monto máximo de s/. ".((0.2 * $capital_actual )+ ($acciones[0]->numero_acciones * $precioaccion))." !";
             }
             
         }else{
@@ -311,7 +311,7 @@ class CreditoController extends Controller
                     $respuesta = "El Cliente ya cuenta con 2 creditos, no se permite mas de 2 !";
                 }
             }else{
-                $respuesta = "El Cliente solo puede obtener un credito con un monto máximo de s/. ".$capital_actual." !";
+                $respuesta = "El Cliente solo puede obtener un credito con un monto máximo de s/. ".(0.2*$capital_actual)." !";
             }
         }
         return $respuesta;
