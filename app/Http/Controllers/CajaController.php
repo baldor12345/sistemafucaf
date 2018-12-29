@@ -492,6 +492,7 @@ public function actualizardatosahorros(){
         $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
         $fechaf =  date("d-m-Y",strtotime($caja->fecha_horaCierre."+ 1 days"));
 
+        //extraer dia mes y anio para la cabezera del reporte
         $day = Date::parse($caja->fecha_horaApert)->format('d');
         $month = Date::parse($caja->fecha_horaApert)->format('m');
         $year = Date::parse($caja->fecha_horaApert)->format('y');
@@ -710,9 +711,11 @@ public function actualizardatosahorros(){
                 break;
         }
 
+        //lista de egresos por personas
         $lista = Caja::listEgresos($fechai,$fechaf)->get();
 
-        //calculo del total de egresos del mes actual
+
+        //calculo del total de egresos del mes actual por persona
         $sum_retiro_ahorros_mes_actual=0;
         $sum_prestamo_de_capital_mes_actual=0;
         $sum_interes_pagado_mes_actual=0;
@@ -730,8 +733,20 @@ public function actualizardatosahorros(){
             $sum_interes_pagado_mes_actual=0;
             $sum_egresos_totales_mes_actual=0;
         }
+        //lista de egresos por concepto
+        $lista_por_concepto = Caja::listEgresos_por_concepto($fechai,$fechaf)->get();
 
-        //calculo del total de egresos acumulados al mes anterior
+        // calculo del total de egresos del mes actual por concepto
+        $sum_gasto_administrativo_mes_actual=0;
+        if(count($lista_por_concepto) >0 ){
+            for($i=0; $i<count($lista_por_concepto); $i++){
+                $sum_gasto_administrativo_mes_actual += $lista_por_concepto[$i]->transaccion_monto;
+            }
+            $sum_egresos_totales_mes_actual += $sum_gasto_administrativo_mes_actual;
+        }
+
+
+        //calculo del total de egresos acumulados al mes anterior por persona
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
         $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
         $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
@@ -755,11 +770,24 @@ public function actualizardatosahorros(){
             $sum_egresos_totales_mes_anterior=0;
         }
 
+        $lista_por_concepto_asta_mes_anterior = Caja::listEgresos_por_concepto($fechai_caja_first,$fechai)->get();
+
+        // calculo del total de egresos del mes actual por concepto
+        $sum_gasto_administrativo_asta_mes_anterior=0;
+        if(count($lista_por_concepto_asta_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anterior); $i++){
+                $sum_gasto_administrativo_asta_mes_anterior += $lista_por_concepto_asta_mes_anterior[$i]->transaccion_monto;
+            }
+            $sum_egresos_totales_mes_anterior += $sum_gasto_administrativo_asta_mes_anterior;
+        }
+
         //calculo de ingresos acumulados asta la fecha
         $sum_retiro_ahorros_acumulados=0;
         $sum_prestamo_de_capital_acumulados=0;
         $sum_interes_pagado_acumulados=0;
         $sum_egresos_totales_acumulados=0;
+
+        $sum_gasto_administrativo_acumulado =0;
 
         //-------suma
         $sum_retiro_ahorros_acumulados=($sum_retiro_ahorros_mes_actual+$sum_retiro_ahorros_mes_anterior);
@@ -767,14 +795,17 @@ public function actualizardatosahorros(){
         $sum_interes_pagado_acumulados=($sum_interes_pagado_mes_actual+$sum_interes_pagado_mes_anterior);
         $sum_egresos_totales_acumulados=($sum_egresos_totales_mes_actual+$sum_egresos_totales_mes_anterior);
 
+        $sum_gasto_administrativo_acumulado =($sum_gasto_administrativo_mes_actual + $sum_gasto_administrativo_asta_mes_anterior);
+
+
 
         $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
         $titulo = "reporte ".$caja->titulo."_Ingresos";
-        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
-                                                                            'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual',
-                                                                        'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior',
-                                                                    'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados'));
+        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
+                                                                            'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual',
+                                                                        'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior',
+                                                                    'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
