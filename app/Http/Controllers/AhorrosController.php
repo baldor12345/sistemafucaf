@@ -160,8 +160,9 @@ class AhorrosController extends Controller
 
             $error = DB::transaction(function() use($request, $caja){
                 $resultado = Ahorros::getahorropersona($request->input('persona_id'));
-                $ahorro = $resultado[0];
-                if(count($ahorro) >0){
+                
+                if(count($resultado) >0){
+                    $ahorro = $resultado[0];
                     $capital = $ahorro->capital + $request->input('capital');
                     $ahorro->capital = $capital;
                     $ahorro->estado = 'P';
@@ -181,7 +182,7 @@ class AhorrosController extends Controller
                 $transaccion1->fecha = $fechahora_actual;
                 $transaccion1->monto = 0.10;
                 //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-                $transaccion1->concepto_id = 9;//id de concepto comision voucher
+                $transaccion1->concepto_id = 8;//id de concepto comision voucher
                 $transaccion1->descripcion = "Impresion de voucher deposito ahorros";
                 $transaccion1->persona_id = $ahorro->persona_id;
                 $transaccion1->usuario_id = Ahorros::idUser();

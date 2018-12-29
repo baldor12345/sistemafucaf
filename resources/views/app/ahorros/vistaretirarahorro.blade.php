@@ -30,8 +30,6 @@
     </div>
     
     <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
-     {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Nueva ventana ', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnventana', 'onclick' => "nuevaVentana('https://www.w3schools.com','_blank')")) !!}
-        
         {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Retirar ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'retirar(\''.$persona->id.'\')')) !!}
         &nbsp;
         {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
