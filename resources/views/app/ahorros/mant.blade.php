@@ -41,7 +41,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarahorro1(\''.$entidad.'\', \''.URL::route($ruta["generareciboahorroPDF"], array()).'\')')) !!}
+				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarahorro(\''.$entidad.'\', \''.URL::route($ruta["generareciboahorroPDF"], array()).'\')')) !!}
 				&nbsp;
 				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 			</div>
@@ -93,47 +93,11 @@ $(document).ready(function() {
 	});
 }); 
 
-function guardarahorro1(entidad, rutarecibo) {
-	var idformulario = IDFORMMANTENIMIENTO + entidad;
-	var data         = submitForm(idformulario);
-	var respuesta;
-	var listar       = 'NO';
-	if ($(idformulario + ' :input[id = "listar"]').length) {
-		var listar = $(idformulario + ' :input[id = "listar"]').val()
-	};
-	
-	data.done(function(msg) {
-		respuesta = msg;
-		
-	}).fail(function(xhr, textStatus, errorThrown) {
-		respuesta = 'ERROR';
-	}).always(function() {
-		
-		if(respuesta[0] === 'ERROR'){
-		}else{
-			if (respuesta[0] === 'OK') {
-				cerrarModal();
-				
-				if (listar === 'SI') {
-					if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-						entidad = entidad2;
-					}
-					buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-					
-				}
-				window.open(rutarecibo+'/'+respuesta[1]+'/'+respuesta[2]+'', "Voucher deposito ahorro", "width=400, height=500, left=200, top=100")     
-			} else {
-				mostrarErrores(respuesta, idformulario, entidad);
-			}
-		}
-	});
-}
-
-function guardarahorro(entidad, rutarecibo){
+function guardarahorro1(entidad, rutarecibo){
 	if(isNaN($('#capital').val()) == false){
 		if($('#capital').val() != ''){
 			guardar(entidad);
-			window.open(rutarecibo, "Voucher deposito ahorro", "width=400, height=500, left=200, top=100")
+			
 		}else{
 			var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de Monto vacio.!</strong></div>';
 			$('#divMensajeErrorAhorros').html(mensaje);
@@ -142,6 +106,40 @@ function guardarahorro(entidad, rutarecibo){
 		var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de monto no válido.!</strong></div>';
         $('#divMensajeErrorAhorros').html(mensaje);
 	}
+
+
+}
+
+function guardarahorro(entidad,rutarecibo) {
+	var idformulario = IDFORMMANTENIMIENTO + entidad;
+	var data         = submitForm(idformulario);
+	var respuesta    = '';
+	var listar       = 'NO';
+	if ($(idformulario + ' :input[id = "listar"]').length) {
+		var listar = $(idformulario + ' :input[id = "listar"]').val()
+	};
+	data.done(function(msg) {
+		respuesta = msg;
+	}).fail(function(xhr, textStatus, errorThrown) {
+		respuesta = 'ERROR';
+	}).always(function() {
+		
+		if(respuesta === 'ERROR'){
+		}else{
+			if (respuesta === 'OK') {
+				cerrarModal();
+				window.open(rutarecibo, "Voucher deposito ahorro", "width=400, height=500, left=200, top=100");
+				if (listar === 'SI') {
+					if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+						entidad = entidad2;
+					}
+					buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+				}        
+			} else {
+				mostrarErrores(respuesta, idformulario, entidad);
+			}
+		}
+	});
 }
 
 </script>

@@ -39,6 +39,7 @@ class AhorrosController extends Controller
             'vistahistoricoahorro' => 'ahorros.vistahistoricoahorro',
             'listarhistorico' => 'ahorros.listarhistorico',
             'generareciboahorroPDF' => 'ahorros.generareciboahorroPDF',
+            'generareciboahorroPDF1' => 'ahorros.generareciboahorroPDF1',
             'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion'
         );
 
@@ -51,7 +52,7 @@ class AhorrosController extends Controller
     {
         $this->middleware('auth');
     }
-/****************---INICIO----******** */
+/************************************** ---INICIO----**************************************** */
     public function index()
     {
         $caja = Caja::where("estado","=","A")->get();
@@ -104,9 +105,9 @@ class AhorrosController extends Controller
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
-/****************---Fin inicio---******** */
+/************************************ ---Fin inicio---*************************************** */
 
-/*******************REGISTRO DE DEPOSITO DE AHORRO******************************* */
+/******************************REGISTRO DE DEPOSITO DE AHORRO******************************** */
   
    /**
      * Show the form for creating a new resource.
@@ -144,8 +145,6 @@ class AhorrosController extends Controller
     {
         $caja = Caja::where("estado","=","A")->get();
         $msjeah = null;
-        $p_id = $request->input('persona_id');
-        $t_id = null;
         if(count($caja) >0){
             $listar     = Libreria::getParam($request->input('listar'), 'NO');
             $reglas = array(
@@ -159,7 +158,7 @@ class AhorrosController extends Controller
                 return $validacion->messages()->toJson();
             }
 
-            $error = DB::transaction(function() use($request, $caja, $t_id){
+            $error = DB::transaction(function() use($request, $caja){
                 $resultado = Ahorros::getahorropersona($request->input('persona_id'));
                 $ahorro = $resultado[0];
                 if(count($ahorro) >0){
@@ -176,21 +175,7 @@ class AhorrosController extends Controller
                     $ahorro->persona_id = $request->input('persona_id');
                     $ahorro->save();
                 }
-                
-                //Guardar en tabla transacciones **********
                 $fechahora_actual = date("Y-m-d H:i:s");
-                $idconcepto = $request->input('concepto');
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $request->input('fechai');
-                $transaccion->monto = $request->input('capital');
-                $transaccion->id_tabla = $ahorro->id;
-                $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-                $transaccion->concepto_id = $idconcepto;
-                $transaccion->persona_id = $ahorro->persona_id;
-                $transaccion->usuario_id = Ahorros::idUser();
-                $transaccion->caja_id =  $caja[0]->id;
-                $transaccion->save();
-                $t_id = $transaccion->id;
                 //Guarda el valor de comision voucher en caja
                 $transaccion1 = new Transaccion();
                 $transaccion1->fecha = $fechahora_actual;
@@ -202,18 +187,30 @@ class AhorrosController extends Controller
                 $transaccion1->usuario_id = Ahorros::idUser();
                 $transaccion1->caja_id =  $caja[0]->id;
                 $transaccion1->save();
+                //Guardar en tabla transacciones **********
+                $idconcepto = $request->input('concepto');
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $request->input('fechai');
+                $transaccion->monto = $request->input('capital');
+                $transaccion->id_tabla = $ahorro->id;
+                $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                $transaccion->concepto_id = $idconcepto;
+                $transaccion->persona_id = $ahorro->persona_id;
+                $transaccion->usuario_id = Ahorros::idUser();
+                $transaccion->caja_id =  $caja[0]->id;
+                $transaccion->save();
             });
 
             $msjeah = $error;
         }else{
             $msjeah = "Caja no aperturada, asegurese de aperturar caja primero !";
         }
-        $respuesta=array(is_null($msjeah) ? "OK" : $msjeah, $p_id, $t_id);
-        return $respuesta;
+        
+        return is_null($msjeah) ? "OK" : $msjeah;
     }
-/**********************************Fin registro deposito************************************** */
+/***********************************Fin registro deposito************************************ */
 
-/**********************************MOSTRAR DETALLE (DEPOSITOS O RETIROS) ************************************** */
+/************************** MOSTRAR DETALLE (DEPOSITOS O RETIROS) *************************** */
    //Metodo para  abrir modal detalle (depositos o retiros ) 
    public function vistadetalleahorro($persona_id, Request $request){
         $existe = Libreria::verificarExistencia($persona_id, 'persona');
@@ -261,9 +258,9 @@ class AhorrosController extends Controller
        return view($this->folderview.'.listdetahorro')->with(compact('lista', 'entidad'));
    }
 
-/**********************************Fin mostrar detalle************************************** */
+/*********************************** Fin mostrar detalle ************************************ */
 
-/**********************************MOSTRAR HISTORICO CAPITAL E INTERES MENSAL EN UN AÑO************************************** */
+/****************** MOSTRAR HISTORICO CAPITAL E INTERES MENSAL EN UN AÑO  ******************* */
    //Metodo para abrir Modal historico de capital + interes 
    public function vistahistoricoahorro ($persona_id, Request $request){
         $ruta = $this->rutas;
@@ -313,9 +310,9 @@ class AhorrosController extends Controller
         }
         return view($this->folderview.'.listdetallehistorico')->with(compact('lista', 'entidad'));
     }
-/**********************************Fin mostar historico************************************** */
+/********************************** Fin mostar historico ************************************ */
 
-/********************************** RETIRAR AHORROS ************************************** */
+/************************************ RETIRAR AHORROS *************************************** */
     //Metodo para abrir modal de retiro
     public function vistaretiro($persona_id, $listarLuego){
         $resultado = Ahorros::getahorropersona($persona_id);
@@ -369,7 +366,47 @@ class AhorrosController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
-/**********************************Fin retirar************************************** */
+/************************************---Fin retirar----************************************** */
+    
+/*********************************** ACTUALIZA AHORROS ************************************** */
+    public function actualizardatosahorros(){
+
+    }
+/************************************* Fin actualizar *************************************** */
+
+/*************************** GENERAR VOUCHER DEPOSITO AHORRO PDF **************************** */
+    //metodo para generar voucher ahorro en pdf
+    public function generareciboahorroPDF($transaccion_id = 0)
+    {   
+        if($transaccion_id == 0){
+            $transaccion = Transaccion::all()->last();
+        }else{
+            $transaccion = Transaccion::find($transaccion_id);
+        }
+        $persona = Persona::find($transaccion->persona_id);
+        $fechaahorro = $transaccion->fecha;
+        $fechacreate = $transaccion->created_ad;
+        $numoperacion = 01;
+        $codcliente = $persona->codigo;
+        $nombrecliente = $persona->nombres.' '.$persona->apellidos; 
+        $montoahorrado = $transaccion->monto;
+        $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
+        $titulo ='Voucher-ahorro-'.$persona->codigo;
+        $view = \View::make('app.ahorros.reciboahorro')->with(compact('fechaahorro','fechacreate', 'numoperacion', 'codcliente','nombrecliente', 'montoahorrado','ahorroactual'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(20);
+        PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+/************************************ Fin generar voucher *********************************** */
+
+/************************************* OTRAS FUNCIONES ************************************** */
     //Metodo para redondear numero decimal
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
@@ -409,32 +446,26 @@ class AhorrosController extends Controller
         }
         return "Datos actualizados";
     }
-
-    //metodo para generar voucher ahorro en pdf
-    public function generareciboahorroPDF($persona_id, $transaccion_id)
-    {    
-        $transaccion = Transaccion::find($transaccion_id);
-        $persona = Persona::find($persona_id);
-
-        $fechaahorro = $transaccion->fecha;
-        $numoperacion = 01;
-        $codcliente = $persona->codigo;
-        $nombrecliente = $persona->nombres.' '.$persona->apellidos; 
-        $montoahorrado = $transaccion->monto;
-        $ahorroactual = DB::table('ahorros')->where('persona_id', $persona_id)->where('fechaf','=',null)->value('capital');
-        $titulo ='Voucher-ahorro-'.$persona->codigo;
-        $view = \View::make('app.ahorros.reciboahorro')->with(compact('fechaahorro', 'numoperacion', 'codcliente','nombrecliente', 'montoahorrado','ahorroactual'));
-        $html_content = $view->render();
-
-        PDF::SetTitle($titulo);
-        PDF::AddPage('P', 'A4', 'es');
-        PDF::SetTopMargin(20);
-        PDF::SetLeftMargin(40);
-        PDF::SetRightMargin(40);
-        PDF::SetDisplayMode('fullpage');
-        PDF::writeHTML($html_content, true, false, true, false, '');
-        PDF::Output($titulo.'.pdf', 'I');
+    //funcion que devuelve el nombre del mes pasandole numero mes
+    public function getNombreMes($NumeroMes){
+        $meses = array(
+            1 => "Enero",
+            2 => "Febrero",
+            3 => "Marzo",
+            4 => "Abril",
+            5 => "Mayo",
+            6 => "Junio",
+            7 => "Julio",
+            8 => "Agosto",
+            9 => "Septiembre",
+            10 => "Octubre",
+            11 => "Noviembre",
+            12 => "Diciembre",
+        );
+        return $meses[$NumeroMes];
     }
+/********************************** Fin otras funciones ************************************* */
+    
 /***============================================================================================================================****/
 /***============================================================================================================================****/
 /***======\\\\\\\\\\\\\\\=====///==========///====\\\\\\\\\\\\\======\\\\\\\\\\\\\\\\=========\\\\\\\\\\\\\\\===================****/
@@ -453,29 +484,6 @@ class AhorrosController extends Controller
 /***============================================================================================================================****/
 /***============================================================================================================================****/
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getNombreMes($NumeroMes){
-        $meses = array(
-            1 => "Enero",
-            2 => "Febrero",
-            3 => "Marzo",
-            4 => "Abril",
-            5 => "Mayo",
-            6 => "Junio",
-            7 => "Julio",
-            8 => "Agosto",
-            9 => "Septiembre",
-            10 => "Octubre",
-            11 => "Noviembre",
-            12 => "Diciembre",
-        );
-        return $meses[$NumeroMes];
-
-    }
     /**
      * Display the specified resource.
      *
@@ -634,7 +642,6 @@ class AhorrosController extends Controller
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Retirar';
         return view($this->folderview.'.detalles_ahorro')->with(compact('ahorros','ruta','montofinal','persona', 'formData', 'entidad', 'boton', 'listar','titulo_retirar'));
-    
     }
 }
 ?>

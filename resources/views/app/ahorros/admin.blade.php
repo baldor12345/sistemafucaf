@@ -2,13 +2,6 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="page-title-box">
-            {{--
-            <ol class="breadcrumb pull-right">
-                <li><a href="#">Minton</a></li>
-                <li><a href="#">Tables</a></li>
-                <li class="active">Datatable</li>
-            </ol>
-            --}}
             <h4 class="page-title">{{ $title }}</h4>
         </div>
     </div>
@@ -34,7 +27,6 @@
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modalValidadorCaja(\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$tituloRegistrar.'\');')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Actualizar capitalizacion', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnactualizar', 'onclick' => 'actualizardatos();')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>

@@ -25,8 +25,12 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			<td>{{Date::parse($value->fecha)->format('d/m/Y') }}</td>
-            <td>{{ $value->monto }}</td>
-            <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Imprimir Voucher', array('onclick' => '','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{{ $value->monto }}</td>
+			@if($tipo == 'I')
+            <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Imprimir Voucher', array('onclick' => 'verereciboahorro(\''.URL::route($ruta["generareciboahorroPDF1"], array($value->transaccion_id)).'\')','class' => 'btn btn-xs btn-warning')) !!}</td>
+			@else
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Imprimir Voucher', array('onclick' => 'verereciboretiro(\''.URL::route($ruta["generareciboretiroPDF"], array($value->transaccion_id)).'\')','class' => 'btn btn-xs btn-warning')) !!}</td>
+			@endif
 		</tr>
 		<?php
 		$contador = $contador + 1;
@@ -34,6 +38,14 @@
 		@endforeach
 	</tbody>
 </table>
+<script>
+	function verereciboahorro(rutarecibo){
+		window.open(rutarecibo, "Voucher Deposito ahorro", "width=400, height=500, left=200, top=100");
+	}
+	function verereciboretiro(rutarecibo){
+		window.open(rutarecibo, "Voucher Retiro de ahorro", "width=400, height=500, left=200, top=100");
+	}
+</script>
 
 @endif
 

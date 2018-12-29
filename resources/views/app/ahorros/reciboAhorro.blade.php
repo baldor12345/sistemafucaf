@@ -5,52 +5,19 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
-	table{
-        border-collapse: collapse;
-    }
-    td{
-        font-size: 10px;
-    }
-    h1{
-        font-size: 21px;
-        text-align:center;
-        font-weight: bold;
-    }
-    .tabla2 {
-        margin-bottom: 10px;
-    }
-
-    .tabla3 td{
-        border: 0.9px solid #000;
-        text-align : left;;
-    }
-    .emisor{
-        color: red;
-    }
-    .linea{
-        border-bottom: 1px dotted #000;
-    }
-    .border{
-        border: 1px solid #000;
-    }
-    .fondo{
-        background-color: #dfdfdf;
-    }
-    .fisico{
-        color: #fff;
-    }
-    .fisico td{
-        color: #fff;
-    }
-    .fisico .border{
-        border: 1px solid #fff;
-    }
-    .fisico .tabla3 td{
-        border: 1px solid #fff;
-    }
-    .fisico .linea{
-        border-bottom: 1px dotted #fff;
-    }
+	.contenedor{
+			position: absolute;
+			top:50%;
+			left:50%;
+			width:200px;
+			margin-left:-200px;
+			/*determinamos una altura*/
+			height:300px;
+			/*indicamos que el margen superior, es la mitad de la altura*/
+			margin-top:-150px;
+			border:1px solid #808080;
+			padding:5px;
+		}
 </style>
 
 </head>
@@ -73,7 +40,7 @@
                 <td style="font-size: 15px" >FECHA: </td>
                 <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('d/m/y') }}</td>
                 <td style="font-size: 15px" >HORA: </td>
-                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('H:i:s') }} </td>
+                <td style="font-size: 15px" >{{ Date::parse($fechacreate)->format('H:i:s') }} </td>
 			</tr>
             <tr >
                 <td style="font-size: 15px" >N° OPE.: </td>
@@ -107,8 +74,6 @@
                 <td style="font-size: 15px" colspan="2">POR DEFINIR</td>
 			</tr>
 		</table>
-        
 	</div>
-
 </body>
 </html>
