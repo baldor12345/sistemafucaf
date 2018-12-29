@@ -71,32 +71,47 @@ class caja extends Model
     public static function listEgresos($fechai, $fechaf)
     {
         $results = DB::table('persona')
-                    ->leftJoin('persona', 'transaccion.persona_id', '=', 'persona.id')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
                     ->select(
                         'persona.nombres as persona_nombres',
 				        'persona.apellidos as persona_apellidos',
-                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
-                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
-                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
-                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
-                        DB::raw("SUM(transaccion.acciones_soles) as acciones")
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
+                        DB::raw("SUM(transaccion.monto_credito) as monto_credito"),
+                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro")
                     )
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
                     ->groupBy('persona.id');
         return $results;
     }
 
+    public static function listEgresos_por_concepto($fechai, $fechaf)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+				        'transaccion.monto as transaccion_monto'
+                    )
+                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('concepto.tipo','!=','E')
+                    ->where('concepto.titulo','!=','Retiro de ahorros')
+                    ->where('concepto.titulo','!=','Crédito');
+        return $results;
+    }
+
 /*
-SELECT 	
-				persona.nombres as persona_nombres,
+SELECT 	persona.nombres as persona_nombres,
 				persona.apellidos as persona_apellidos,
-				sum(transaccion.interes_ahorro) as interes_ahorro,
-				sum(transaccion.cuota_parte_capital) as cuota_capital,
-				sum(transaccion.cuota_interes) as cuota_interes,
-				sum(transaccion.cuota_mora) as cuota_mora,
-				sum(transaccion.acciones_soles) as acciones_soles
+				sum(transaccion.monto_ahorro) as monto_ahorro,
+				sum(transaccion.monto_credito) as monto_credito,
+				sum(transaccion.interes_ahorro) as interes_ahorro
 FROM persona LEFT JOIN  transaccion ON (persona.id = transaccion.persona_id)
 WHERE transaccion.fecha BETWEEN '2018-12-01' AND '2018-12-30'
 GROUP BY (persona.id);
+
+SELECT 	concepto.titulo as concepto_titulo,
+				transaccion.monto as transaccion_monto
+FROM concepto LEFT JOIN transaccion ON (concepto.id = transaccion.concepto_id)
+WHERE concepto.tipo = 'E' AND concepto.titulo !='Retiro de ahorros' and concepto.titulo !='Crédito';
 */
 }
