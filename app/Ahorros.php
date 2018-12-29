@@ -75,7 +75,6 @@ class Ahorros extends Model
             DB::raw('extract( month from ahorros.fechai) as mes')
         )
         ->where('ahorros.persona_id','=', $id_persona)
-        //->where('ahorros.fechaf','!=', null)
         ->where(DB::raw('extract( year from ahorros.fechai)'),'=',$anio)
         ->orderBy(DB::raw('extract( month from ahorros.fechai)'), 'ASC');
         return $results;

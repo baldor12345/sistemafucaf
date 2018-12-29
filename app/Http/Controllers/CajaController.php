@@ -162,7 +162,7 @@ class CajaController extends Controller
             $caja->persona_id        = Caja::getIdPersona();
             $caja->save();
         });
-        $this->actualizardatosahorros();
+        $error =  $this->actualizardatosahorros($request);
         return is_null($error) ? "OK" : $error;
     }
 
@@ -251,40 +251,61 @@ class CajaController extends Controller
     }
     //------------------------------
 /*********************************** ACTUALIZA AHORROS ************************************** */
-public function actualizardatosahorros(){
-    $configuracion = configuraciones::all()->last();
-    $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
-    $lista_ahorros1 = DB::table('ahorros')->where('fechaf','!=', null);
-    $lista_ahorros = Ahorros::where("fechaf","=",null)->get();
-    $fecha_actual = date('Y-m-d');
-    $fecha_hora_actual = date("Y-m-d H:i:s");
-    $sfechA = explode('-',$fecha_actual);
-    $mesA = $sfechA[1];
+public function actualizardatosahorros(Request $request){
+      /******************************************************* */
+    
+      $configuracion = Configuraciones::all()->last();
+      $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
+      $lista_ahorros = Ahorros::where("estado","=",'P')->get();
 
-    $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
-    $sfechH = explode('-',$fecha_ah);
-    $mesH = $sfechH[1];
-    $dif_mes = $mesA - $mesH;
-    if($dif_mes >0 && count($lista_ahorros)>0){
-        foreach ($lista_ahorros as $key => $value) {
-            if($value->id != null){
-                $error1 = DB::transaction(function() use($value, $fecha_hora_actual, $tasa_interes_ahorro ){
-                    $ahorro_ant = Ahorros::find($value->id);
-                    $ahorro_ant->fechaf = $fecha_hora_actual;
-                    $ahorro_ant->estado = 'C';
-                    $ahorro_ant->save();
+        $error1 = null;     
+      if(count($lista_ahorros)>0){
+       
+          $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
+          $sfechA = explode('-',$fecha_actual);
+          $mesA = $sfechA[1];
 
-                    $ahorro = new Ahorros();
-                    $ahorro->fechai = $fecha_hora_actual;
-                    $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
-                    $ahorro->interes = $tasa_interes_ahorro * $value->capital;
-                    $ahorro->persona_id = $value->persona_id;
-                    $ahorro->estado = 'C';
-                    $ahorro->save();
-                });
+          $fechahora_actual = date("Y-m-d H:i:s");
+          $hora_actual= date("H:i:s", strtotime($fechahora_actual));
+          $arrhora = explode(':',$hora_actual);
+
+          $fecha_actual = date('Y-m-d H:i:s',strtotime($fecha_actual));
+          $nuevafecha_actual = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fecha_actual ) ) ;
+          $nuevafecha_actual = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha_actual ) ;
+          $nuevafecha_actual = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha_actual ) ;
+          $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
+  
+          $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
+          $sfechH = explode('-',$fecha_ah);
+          $mesH = $sfechH[1];
+          $dif_mes = $mesA - $mesH;
+         
+          $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro){
+            if($dif_mes >0){
+                foreach ($lista_ahorros as $key => $value) {
+                    if($value->id != null){
+                    
+                        $ahorro_ant = Ahorros::find($value->id);
+                        $ahorro_ant->fechaf = $nuevafecha_actual;
+                        $ahorro_ant->estado = 'C';
+                        $ahorro_ant->save();
+
+                        $ahorro = new Ahorros();
+                        $ahorro->fechai = $nuevafecha_actual;
+                        $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
+                        $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                        $ahorro->persona_id = $value->persona_id;
+                        $ahorro->estado = 'P';
+                        $ahorro->save();
+
+                    }
+                }
             }
-        }
-    }
+        });
+
+      }
+      return $error1;
+      /******************************************************* */
 }
 
 /************************************* Fin actualizar *************************************** */

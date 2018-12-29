@@ -160,7 +160,16 @@ class AhorrosController extends Controller
 
             $error = DB::transaction(function() use($request, $caja){
                 $resultado = Ahorros::getahorropersona($request->input('persona_id'));
-                
+                $fechahora_actual = date("Y-m-d H:i:s");
+                $hora_actual= date("H:i:s", strtotime($fechahora_actual));
+                $arrhora = explode(':',$hora_actual);
+                $fechainit = date ( 'Y-m-d H:i:s' ,strtotime($request->input('fechai')));
+
+                $nuevafecha = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fechainit ) ) ;
+                $nuevafecha = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha ) ;
+                $nuevafecha = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha ) ;
+                $nuevafecha = date ( 'Y-m-d H:i:s' , $nuevafecha );
+
                 if(count($resultado) >0){
                     $ahorro = $resultado[0];
                     $capital = $ahorro->capital + $request->input('capital');
@@ -172,14 +181,14 @@ class AhorrosController extends Controller
                     $ahorro->capital = $request->input('capital');
                     $ahorro->interes = 0;
                     $ahorro->estado = 'P';
-                    $ahorro->fechai = $request->input('fechai');
+                    $ahorro->fechai = $nuevafecha;
                     $ahorro->persona_id = $request->input('persona_id');
                     $ahorro->save();
                 }
-                $fechahora_actual = date("Y-m-d H:i:s");
+                
                 //Guarda el valor de comision voucher en caja
                 $transaccion1 = new Transaccion();
-                $transaccion1->fecha = $fechahora_actual;
+                $transaccion1->fecha = $nuevafecha;
                 $transaccion1->monto = 0.10;
                 //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccion1->concepto_id = 8;//id de concepto comision voucher
@@ -191,7 +200,7 @@ class AhorrosController extends Controller
                 //Guardar en tabla transacciones **********
                 $idconcepto = $request->input('concepto');
                 $transaccion = new Transaccion();
-                $transaccion->fecha = $request->input('fechai');
+                $transaccion->fecha = $nuevafecha;
                 $transaccion->monto = $request->input('capital');
                 $transaccion->id_tabla = $ahorro->id;
                 $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
@@ -273,7 +282,15 @@ class AhorrosController extends Controller
         ''.($anioactual-2)=>''.($anioactual-2),
         ''.($anioactual-3)=>''.($anioactual-3),
         ''.($anioactual-4)=>''.($anioactual-4),
-        ''.($anioactual-5)=>''.($anioactual-5),);
+        ''.($anioactual-5)=>''.($anioactual-5),
+        ''.($anioactual-6)=>''.($anioactual-6),
+        ''.($anioactual-7)=>''.($anioactual-7),
+        ''.($anioactual-8)=>''.($anioactual-8),
+        ''.($anioactual-9)=>''.($anioactual-9),
+        ''.($anioactual-10)=>''.($anioactual-10),
+        ''.($anioactual-11)=>''.($anioactual-11),
+        ''.($anioactual-12)=>''.($anioactual-12),
+        ''.($anioactual-13)=>''.($anioactual-13),);
 
         $titulo_vistahistoricoahorro = $this->titulo_vistahistoricoahorro;
         $entidad = "Detallehistorico";
@@ -332,6 +349,15 @@ class AhorrosController extends Controller
         $persona_id = Libreria::getParam($request->input('persona_id'));
         $error = DB::transaction(function() use($ahorro_id,$monto_retiro, $persona_id){
             $fechahora_actual = date("Y-m-d H:i:s");
+            $hora_actual= date("h:j:s", strtotime($fechahora_actual));
+            $arrhora = explode(':',$hora_actual);
+            $fechainit = date ( 'Y-m-d H:i:s' ,strtotime($request->input('fechai')));
+
+            $nuevafecha = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fechainit ) ) ;
+            $nuevafecha = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha ) ;
+            $nuevafecha = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha ) ;
+            $nuevafecha = date ( 'Y-m-d H:i:s' , $nuevafecha );
+
             $ahorro = Ahorros::find($ahorro_id);
             $capital = $ahorro->capital - $monto_retiro;
             $ahorro->capital = $capital;
@@ -339,31 +365,31 @@ class AhorrosController extends Controller
 
             //Guardar en tabla transacciones **********
             $caja = Caja::where("estado","=","A")->get();
-            $idconcepto = 6;
-            //Guarda el valor de retiro en caja
+            //Guarda el valor de comision voucher en caja
             $transaccion = new Transaccion();
-            $transaccion->fecha = $fechahora_actual;
-            $transaccion->monto = $monto_retiro;
-            $transaccion->id_tabla = $ahorro->id;
-            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-            $transaccion->concepto_id = $idconcepto;
-            $transaccion->descripcion = "Retiro de S/. ".$monto_retiro." de ahorros";
+            $transaccion->fecha = $nuevafecha;
+            $transaccion->monto = 0.10;
+            //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = 9;//id de concepto comision voucher
+            $transaccion->descripcion = "Impresion de voucher por retiro ahorros";
             $transaccion->persona_id = $persona_id;
             $transaccion->usuario_id = Ahorros::idUser();
             $transaccion->caja_id =  $caja[0]->id;
             $transaccion->save();
 
-            //Guarda el valor de comision voucher en caja
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $fechahora_actual;
-            $transaccion->monto = 0.10;
-            //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-            $transaccion->concepto_id = 9;//id de concepto comision voucher
-            $transaccion->descripcion = "Impresion de voucher retiro ahorros";
-            $transaccion->persona_id = $persona_id;
-            $transaccion->usuario_id = Ahorros::idUser();
-            $transaccion->caja_id =  $caja[0]->id;
-            $transaccion->save();
+            $idconcepto = 6;
+            //Guarda el valor de retiro en caja
+            $transaccion1 = new Transaccion();
+            $transaccion1->fecha = $nuevafecha;
+            $transaccion1->monto = $monto_retiro;
+            $transaccion1->id_tabla = $ahorro->id;
+            $transaccion1->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion1->concepto_id = $idconcepto;
+            $transaccion1->descripcion = "Retiro de S/. ".$monto_retiro." de ahorros";
+            $transaccion1->persona_id = $persona_id;
+            $transaccion1->usuario_id = Ahorros::idUser();
+            $transaccion1->caja_id =  $caja[0]->id;
+            $transaccion1->save();
         });
         return is_null($error) ? "OK" : $error;
     }
