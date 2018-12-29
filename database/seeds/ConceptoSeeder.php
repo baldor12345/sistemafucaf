@@ -58,6 +58,12 @@ class ConceptoSeeder extends Seeder
             'created_at'     => $now,
             'updated_at'     => $now
         ));
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Comision Voucher',
+            'tipo'       => 'I',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
 
     }
 }

@@ -160,8 +160,9 @@ class AhorrosController extends Controller
 
             $error = DB::transaction(function() use($request, $caja){
                 $resultado = Ahorros::getahorropersona($request->input('persona_id'));
-                $ahorro = $resultado[0];
-                if(count($ahorro) >0){
+                
+                if(count($resultado) >0){
+                    $ahorro = $resultado[0];
                     $capital = $ahorro->capital + $request->input('capital');
                     $ahorro->capital = $capital;
                     $ahorro->estado = 'P';
@@ -181,7 +182,7 @@ class AhorrosController extends Controller
                 $transaccion1->fecha = $fechahora_actual;
                 $transaccion1->monto = 0.10;
                 //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-                $transaccion1->concepto_id = 9;//id de concepto comision voucher
+                $transaccion1->concepto_id = 8;//id de concepto comision voucher
                 $transaccion1->descripcion = "Impresion de voucher deposito ahorros";
                 $transaccion1->persona_id = $ahorro->persona_id;
                 $transaccion1->usuario_id = Ahorros::idUser();
@@ -370,8 +371,38 @@ class AhorrosController extends Controller
     
 /*********************************** ACTUALIZA AHORROS ************************************** */
     public function actualizardatosahorros(){
+        $config = Configuraciones::all('configuraciones')->last();
+        $tasa_interes_ahorro  = $config->tasa_interes_ahorro;
+        $lista_ahorros = DB::table('ahorros')->where('fechaf','!=', null)->get();
+        $fecha_actual = date('Y-m-d');
+        $fecha_hora_actual = date("Y-m-d H:i:s");
+        $sfechA = explode('-',$fecha_actual);
+        $mesA = $sfech[1];
 
+        $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
+        $sfechH = explode('-',$fecha_ah);
+        $mesH = $sfechH[1];
+        $dif_mes = $mesA - $mesH;
+        if($dif_mes >0){
+            foreach ($lista_ahorros as $key => $value) {
+                if($value->id != null){
+                    $error = DB::transaction(function() use($value, $fecha_hora_actual, $tasa_interes_ahorro ){
+                        $ahorro_ant = Ahorros::find($value->id);
+                        $ahorro_ant->fechaf = $fecha_hora_actual;
+                        $ahorro_ant-save();
+    
+                        $ahorro = new Ahorros();
+                        $ahorro->fechai = $fecha_hora_actual;
+                        $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
+                        $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                        $ahorro->persona_id = $value->persona_id;
+                        $ahorro->save();
+                    });
+                }
+            }
+        }
     }
+
 /************************************* Fin actualizar *************************************** */
 
 /*************************** GENERAR VOUCHER DEPOSITO AHORRO PDF **************************** */
