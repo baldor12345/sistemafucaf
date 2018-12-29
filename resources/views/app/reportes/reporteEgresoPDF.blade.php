@@ -97,13 +97,33 @@
 				</td>
             </tr>
 			@endforeach
+
+			@foreach($lista_por_concepto as $value )
+            <tr>
+				<td width="6%" align="center"><span class="text">{{$day.'-'.$mesItm}}</span></td>
+				<td width="28%" align="center"><span class="text">{{$value->concepto_titulo}}</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">{{$value->transaccion_monto}}</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="6%" align="center"><span class="text">-</span></td>
+				<td width="10%" align="center"><span class="text">Com. Rec.</span></td>
+				<td width="10%" align="center">
+					<span class="text">
+							{{$value->transaccion_monto}}
+					</span>
+				</td>
+            </tr>
+			@endforeach
+
 			
 			<tr>
 				<td  cellspacing="2" width="34%" align="center" class="fondo"><strong>TOTAL DE EGRESOS DEL MES</strong></td>
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_retiro_ahorros_mes_actual }}</strong></td>
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_mes_actual }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_mes_actual }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_gasto_administrativo_mes_actual }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
@@ -115,7 +135,7 @@
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_retiro_ahorros_mes_anterior }}</strong></td>
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_mes_anterior }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_mes_anterior }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_gasto_administrativo_asta_mes_anterior }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
@@ -127,7 +147,7 @@
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_retiro_ahorros_acumulados }}</strong></td>
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_acumulados }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_acumulados }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_gasto_administrativo_acumulado }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>

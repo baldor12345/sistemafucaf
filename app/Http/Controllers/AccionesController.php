@@ -164,7 +164,6 @@ class AccionesController extends Controller
                     }
                 }
 
-                $fechahora_actual = date("Y-m-d H:i:s");
                 $cantidad_accion = $request->input('cantidad_accion');
                 $idCaja = DB::table('caja')->where('estado', "A")->value('id');
                 $configuracion= Configuraciones::all();
@@ -174,7 +173,7 @@ class AccionesController extends Controller
                 //datos de la persona
                 $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
                 $transaccion = new Transaccion();
-                $transaccion->fecha = $fechahora_actual;
+                $transaccion->fecha = $request->input('fechai').date(" H:i:s");
                 $transaccion->monto = $monto_ingreso;
                 $transaccion->acciones_soles = $monto_ingreso;
                 $transaccion->concepto_id = $request->input('concepto_id');
@@ -352,14 +351,16 @@ class AccionesController extends Controller
         $acciones_por_persona = DB::table('acciones')->where('persona_id', $id)->where('estado', "C")->get();
         $descripcion_venta=$request->input('descripcion');
         $cantidad_accion= $request->input('cantidad_accion');
+        $fechaf = $request->input('fechai').date(" H:i:s");
+
         if($cantidad_accion !== ''){            
             for($i=0; $i< $cantidad_accion; $i++){
                 $idaccion= $acciones_por_persona[$i]->id;
-                $error  = DB::transaction(function() use ($idaccion,$descripcion_venta){
+                $error  = DB::transaction(function() use ($idaccion,$descripcion_venta, $fechaf){
                     $acciones                 = Acciones::find($idaccion); 
                     $acciones->estado        = 'V';
                     $acciones->descripcion        = $descripcion_venta;
-                    $acciones->fechaf = date("Y-m-d H:i:s");
+                    $acciones->fechaf = $fechaf;
                     $acciones->save();
                 });
             }
@@ -372,7 +373,7 @@ class AccionesController extends Controller
                 for($i=0; $i< $cantidad_accion; $i++){
                     $acciones               = new Acciones();    
                     $acciones->estado        = 'C';
-                    $acciones->fechai        = date("Y-m-d H:i:s");
+                    $acciones->fechai        = $request->input('fechai').date(" H:i:s");
                     $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
                     $acciones->persona_id        = $request->input('idcomprador');
                     $acciones->configuraciones_id        = $request->input('configuraciones_id');
@@ -381,7 +382,6 @@ class AccionesController extends Controller
                 }
             }
 
-            $fechahora_actual = date("Y-m-d H:i:s");
             //registrar compra de de la persona que compra 
             $idCaja = DB::table('caja')->where('estado', "A")->value('id');
             $cant_tranferencia= $request->input('cantidad_accion');
@@ -390,7 +390,7 @@ class AccionesController extends Controller
             $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
             //registro de venta en la transaccion
             $transaccion = new Transaccion();
-            $transaccion->fecha = date("Y-m-d H:i:s");
+            $transaccion->fecha = $request->input('fechai').date(" H:i:s");
             $transaccion->monto = 0.0;
             $transaccion->concepto_id = $request->input('concepto_id');
             $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";

@@ -93,7 +93,7 @@ class caja extends Model
 				        'transaccion.monto as transaccion_monto'
                     )
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
-                    ->where('concepto.tipo','!=','E')
+                    ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito');
         return $results;
