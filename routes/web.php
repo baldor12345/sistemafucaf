@@ -153,6 +153,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/listarhistorico', 'AhorrosController@listarhistorico')->name('ahorros.listarhistorico');
     Route::get('/generareciboahorroPDF', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF');
     Route::get('/generareciboahorroPDF1/{transaccion_id}', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF1');
+    Route::get('/generareciboretiroPDF', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF');
+    Route::get('/generareciboretiroPDF1/{transaccion_id}', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF1');
     
     
     /*GASTOS*/
@@ -191,7 +193,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::get('personas/{dni?}','AccionesController@getPersona');
 Route::get('acciones/{id?}','AccionesController@getListCantAcciones');
-
+Route::get('credito/{dnipersona?}','AccionesController@getPersona');
 Route::get('provincia/cboprovincia/{id?}', array('as' => 'provincia.cboprovincia', 'uses' => 'ProvinciaController@cboprovincia'));
 Route::get('distrito/cbodistrito/{id?}', array('as' => 'distrito.cbodistrito', 'uses' => 'DistritoController@cbodistrito'));
 

@@ -38,9 +38,9 @@
 			</tr>
             <tr >
                 <td style="font-size: 15px" >FECHA: </td>
-                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('d/m/y') }}</td>
+                <td style="font-size: 15px" >{{ Date::parse($fecharetiro)->format('d/m/y') }}</td>
                 <td style="font-size: 15px" >HORA: </td>
-                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('H:i:s') }} </td>
+                <td style="font-size: 15px" >{{ Date::parse($fecharetiro)->format('H:i:s') }} </td>
 			</tr>
             <tr >
                 <td style="font-size: 15px" >N° OPE.: </td>
@@ -61,18 +61,19 @@
                 <td style="font-size: 15px" colspan="3">{{$nombrecliente}} </td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="3"></td>
-                <td style="font-size: 15px">Ahorro Actual</td>
+                <td style="font-size: 15px" colspan="4"></td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="2">MONTO AHORRADO S/.</td>
-                <td style="font-size: 15px">{{$montoahorrado}}</td>
-                <td style="font-size: 15px">{{ $ahorroactual }}</td>
+                <td style="font-size: 15px" colspan="2">MONTO RETIRADO S/.: </td>
+                <td style="font-size: 15px">{{$montoretirado}}</td>
+                <td style="font-size: 15px"></td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="2">A CUANTOS MESES</td>
-                <td style="font-size: 15px" colspan="2">POR DEFINIR</td>
-			</tr>
+                <td style="font-size: 15px" colspan="4"></td>
+            </tr>
+            <tr >
+                <td style="font-size: 15px" colspan="4">----------------------------------------------</td>
+            </tr>
 		</table>
 	</div>
 </body>

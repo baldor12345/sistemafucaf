@@ -209,6 +209,7 @@
 		});
 
 		$("input[name=dnicl]").keyup(function(event){
+
         	$.get("personas/"+event.target.value+"",function(response, facultad){
 				$('#nombrescl').val('');
 				$('#idcl').val('');
@@ -221,10 +222,13 @@
 						$("#idcl").attr('tipocl','s');
 						$("#dniavl").prop('disabled', true);
 						$("#lblavl").html('DNI del Aval:');
+						$('#divMensajeError').hide();
 					}else{
 						$("#idcl").attr('tipocl','c');
 						$("#dniavl").prop('disabled', false);
 						$("#lblavl").html('DNI del Aval: *');
+						document.getElementById("divMensajeError").innerHTML = "El Cliente necesita un aval obligatorio.!";
+						$('#divMensajeError').show();
 					}
 				}else{
 					$("#dniavl").prop('disabled', true);
@@ -288,6 +292,7 @@
 		if($('#periodo').val() == "" || $('#idcl').val() == ""|| $('#valor_credito').val() == "" || $('#tasa_interes').val() == ""){
 			res = false;
 		}
+		
 		if($("#idcl").attr('tipocl') == 'c'){
 			if($('#idavl').val() == ''){
 				res = false;

@@ -40,6 +40,8 @@ class AhorrosController extends Controller
             'listarhistorico' => 'ahorros.listarhistorico',
             'generareciboahorroPDF' => 'ahorros.generareciboahorroPDF',
             'generareciboahorroPDF1' => 'ahorros.generareciboahorroPDF1',
+            'generareciboretiroPDF' => 'ahorros.generareciboretiroPDF',
+            'generareciboretiroPDF1' => 'ahorros.generareciboretiroPDF1',
             'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion'
         );
 
@@ -349,11 +351,11 @@ class AhorrosController extends Controller
         $ahorro_id = $request->get('ahorro_id');
         $monto_retiro = Libreria::getParam($request->input('montoretiro'));
         $persona_id = Libreria::getParam($request->input('persona_id'));
-        $error = DB::transaction(function() use($ahorro_id,$monto_retiro, $persona_id){
+        $error = DB::transaction(function() use($ahorro_id,$monto_retiro, $persona_id,$request){
             $fechahora_actual = date("Y-m-d H:i:s");
-            $hora_actual= date("h:j:s", strtotime($fechahora_actual));
+            $hora_actual= date("H:i:s", strtotime($fechahora_actual));
             $arrhora = explode(':',$hora_actual);
-            $fechainit = date ( 'Y-m-d H:i:s' ,strtotime($request->input('fechai')));
+            $fechainit = date ( 'Y-m-d H:i:s' ,strtotime($request->input('fechar')));
 
             $nuevafecha = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fechainit ) ) ;
             $nuevafecha = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha ) ;
@@ -452,6 +454,37 @@ class AhorrosController extends Controller
         $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-ahorro-'.$persona->codigo;
         $view = \View::make('app.ahorros.reciboahorro')->with(compact('fechaahorro','fechacreate', 'numoperacion', 'codcliente','nombrecliente', 'montoahorrado','ahorroactual'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(20);
+        PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+/************************************ Fin generar voucher *********************************** */
+
+/*************************** GENERAR VOUCHER DRETIRO AHORRO PDF **************************** */
+    //metodo para generar voucher ahorro en pdf
+    public function generareciboretiroPDF($transaccion_id = 0)
+    {   
+        if($transaccion_id == 0){
+            $transaccion = Transaccion::all()->last();
+        }else{
+            $transaccion = Transaccion::find($transaccion_id);
+        }
+        $persona = Persona::find($transaccion->persona_id);
+        $fecharetiro = $transaccion->fecha;
+        $numoperacion = 01;//por definir
+        $codcliente = $persona->codigo;
+        $nombrecliente = $persona->nombres.' '.$persona->apellidos; 
+        $montoretirado = $transaccion->monto;
+        //$ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
+        $titulo ='Voucher-retiro-'.$persona->codigo;
+        $view = \View::make('app.ahorros.reciboretiroahorro')->with(compact('fecharetiro', 'numoperacion', 'codcliente','nombrecliente', 'montoretirado'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);

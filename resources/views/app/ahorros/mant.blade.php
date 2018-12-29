@@ -97,7 +97,6 @@ function guardarahorro1(entidad, rutarecibo){
 	if(isNaN($('#capital').val()) == false){
 		if($('#capital').val() != ''){
 			guardar(entidad);
-			
 		}else{
 			var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de Monto vacio.!</strong></div>';
 			$('#divMensajeErrorAhorros').html(mensaje);
@@ -106,8 +105,6 @@ function guardarahorro1(entidad, rutarecibo){
 		var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de monto no válido.!</strong></div>';
         $('#divMensajeErrorAhorros').html(mensaje);
 	}
-
-
 }
 
 function guardarahorro(entidad,rutarecibo) {

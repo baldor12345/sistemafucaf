@@ -74,12 +74,13 @@
 		$("input[name=dnicl]").keyup(function(event){
 			$.get("personas/"+event.target.value+"",function(response, facultad){
 				//console.log("datos de la persona");
-				//console.log(response);
+				console.log(response);
 				$('#nombrescl').val('');
 				$('#idcl').val('');
 				$('#idavl').val('');
 				if(response.length>0){
-				
+					console.log("tipo: "+response[0].tipo);
+					
 					$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
 					console.log("esponse[0]: "+response[0].nombres +" "+ response[0].apellidos);
 					$("#idcl").val(response[0].id);
@@ -90,6 +91,8 @@
 					}else{
 						$("#dniavl").prop('disabled', false);
 						$("#lblavl").html('DNI del Aval: *');
+						$("#divMensajeError").html("El cliente necesita un aval obligatorio");
+						$('#divMensajeError').show();
 					}
 				}else{
 					$("#dniavl").prop('disabled', true);
@@ -107,7 +110,7 @@
 					$("#nombresavl").html(response[0].nombres +" "+ response[0].apellidos);
 					$("#idavl").val(response[0].id);
 				}else{
-					$("nombresavl").html("El DNI ingresado no existe");
+					$("#nombresavl").html("El DNI ingresado no existe");
 				}
 			});
 		});
