@@ -90,7 +90,7 @@
 				<td width="16%" align="center"><span class="text">Com. Rec.</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-					{{ ($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones) }}
+					{{ ($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro+$value->cuota_mora + $value->comision_voucher) }}
 					</span>
 				</td>
             </tr>
