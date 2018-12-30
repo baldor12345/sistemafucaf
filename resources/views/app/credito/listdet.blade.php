@@ -1,8 +1,14 @@
+
+
 @if(count($lista) == 0)
     <h3 class="text-warning">No se encontraron resultados.</h3>
 @else
     {!! $paginacion or '' !!}
-    
+    <script type="text/javascript">
+        var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array())}}";
+        console.log('RUTA: '+rutarecibopagocuota);
+   </script>
+
    <table id="example1" class="table table-bordered table-striped table-condensed table-hover">
         <thead>
             <tr>
@@ -144,9 +150,12 @@ function abrirmodal(accion, msrecibo){
 
     $('.btnrecibo').each(function(){
         $(this).click(function(){
+           var id_cuota = $(this).attr('idcuota');
             var array_tr =  this.parentElement.parentElement.children;
             var msrecibo = generar_recibo('{{$credito->nombres}}','fucaf001','direccion','fechafin','fechaini','nuemroucota','partecap','interes','interesmora','saldorest','cuotasprox','Diciembre-18');
-            abrirmodal("show", msrecibo);
+            //abrirmodal("show", msrecibo);
+            window.open(rutarecibopagocuota+"/"+id_cuota, "Voucher credito", "width=700, height=500, left=50, top=20");
+                                            
         });
     });
 
@@ -179,7 +188,7 @@ function abrirmodal(accion, msrecibo){
                                 label: ''+textbtnCancel
                             }
                         },
-                        callback: function (result) {
+                        callback: function (result) { //
                             if(result & {{$idcaja}} != 0){
                                 $.ajax({
                                     url: 'creditos/pagarcuota',
@@ -205,9 +214,10 @@ function abrirmodal(accion, msrecibo){
                                             $('#rec'+idbt).click(function(){
                                                 var array_tr =  this.parentElement.parentElement.children;
                                                 var msrecibo = generar_recibo('{{$credito->nombres}}','fucaf001','direccion','fechafin','fechaini','nuemroucota','partecap','interes','interesmora','saldorest','cuotasprox','Diciembre-18');
-                                                abrirmodal("show", msrecibo);
+                                                //abrirmodal("show", msrecibo);
+                                                window.open(rutarecibopagocuota+"/"+idcuota, "Voucher credito", "width=700, height=500, left=50, top=20");
                                             });
-                                            
+                                            window.open(rutarecibopagocuota+"/"+idcuota, "Voucher credito", "width=700, height=500, left=50, top=20");
                                         }else{
                                             mostrarMensaje(res, 'ERROR');
                                         }

@@ -15,6 +15,7 @@ use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
+use PDF;
 
 class CreditoController extends Controller
 {
@@ -34,6 +35,7 @@ class CreditoController extends Controller
             'pagarcuota'    => 'creditos.pagarcuota',
             'detallecredito'    => 'creditos.detallecredito',
             'guardarcredito'    => 'creditos.guardarcredito',
+            'generarecibopagocuotaPDF' => 'creditos.generarecibopagocuotaPDF'
             
         );
 
@@ -293,9 +295,8 @@ class CreditoController extends Controller
                     $respuesta = "El Socio ya cuenta con 2 creditos, no se permite mas de 2 !";
                 }
             }else{
-                $respuesta = "El Socio solo puede obtener un credito con un monto máximo de s/. ".((0.2 * $capital_actual )+ ($acciones[0]->numero_acciones * $precioaccion))." !";
+                $respuesta = "El Socio solo puede obtener un credito con un monto máximo de s/. ".((0.2 * $capital_actual ) + ($acciones[0]->numero_acciones * $precioaccion))." !";
             }
-            
         }else{
             $capital_actual = $acreditado->ingreso_personal + $acreditado->ingreso_familiar ;
             if( $valorCredito<= 0.2 * $capital_actual){
@@ -571,4 +572,33 @@ class CreditoController extends Controller
             return response()->json($personas);
         }
     }
+
+/*************************** GENERAR VOUCHER DEPOSITO AHORRO PDF **************************** */
+    //metodo para generar voucher ahorro en pdf
+    public function generarecibopagocuotaPDF($cuota_id)
+    {   
+        $cuota = Cuota::find($cuota_id);
+        $credito = Credito::find($cuota->credito_id);
+        $persona = Persona::find($credito->persona_id);
+        $periodocredito = $credito->periodo;
+        $numoperacion = 00;
+        $cuota_s = Cuota::where('credito_id','=',$credito->id)->where('numero_cuota','=',($cuota->numero_cuota + 1))->first();
+        $cuota_s1 = Cuota::where('credito_id','=',$credito->id)->where('numero_cuota','=',($cuota->numero_cuota + 2))->first();
+        $cuota_s2 = Cuota::where('credito_id','=',$credito->id)->where('numero_cuota','=',($cuota->numero_cuota + 3))->first();
+
+        $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
+        $titulo ='Voucher-Pago cuota-'.$persona->codigo;
+        $view = \View::make('app.credito.recibopagocuota')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+/************************************ Fin generar voucher *********************************** */
 }
