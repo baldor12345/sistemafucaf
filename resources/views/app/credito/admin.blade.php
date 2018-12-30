@@ -269,6 +269,7 @@
 						$("#nombrescl").html("DNI Cliente Vacio");
 						$('#nombresavl').html("DNI Aval Vacio");
 						$('#creditoManModal').modal('hide');
+						window.open(rutarecibocredito, "Voucher credito", "width=700, height=500, left=50, top=20");
 					}else{
 						document.getElementById("divMensajeError").innerHTML = res+"";
 						$('#divMensajeError').show();
