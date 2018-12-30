@@ -96,7 +96,7 @@ class ConceptoController extends Controller
         $entidad        = 'Concepto';
         $concepto        = null;
         $formData       = array('concepto.store');
-        $cboTipo        = [''=>'Todo']+ array('I'=>'Ingresos','E'=>'Egresos');
+        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
         return view($this->folderview.'.mant')->with(compact('concepto', 'cboTipo','formData', 'entidad', 'boton', 'listar'));
@@ -155,7 +155,7 @@ class ConceptoController extends Controller
         $concepto        = Concepto::find($id);
         $entidad        = 'Concepto';
         $formData       = array('concepto.update', $id);
-        $cboTipo        = [''=>'Todo']+ array('I'=>'Ingresos','E'=>'Egresos');
+        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
         return view($this->folderview.'.mant')->with(compact('concepto','cboTipo', 'formData', 'entidad', 'boton', 'listar'));
