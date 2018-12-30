@@ -6,9 +6,15 @@
     {!! $paginacion or '' !!}
     <script type="text/javascript">
         var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array())}}";
+        var rutareportecuotas = "{{ URL::route($ruta['generareportecuotasPDF'], array())}}";
+        function imprimirpdf(){
+            window.open(rutareportecuotas+"/"+"{{ $credito->credito_id }}", "Cuotas de Credito", "width=700, height=800, left=50, top=20");
+        }
         console.log('RUTA: '+rutarecibopagocuota);
    </script>
-
+   <div class="form-group">
+   {!! Form::button('<i class="fa fa-check fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-success btn-sm', 'id' => 'btnImprimirpdf', 'onclick' => 'imprimirpdf();')) !!}
+   </div>
    <table id="example1" class="table table-bordered table-striped table-condensed table-hover">
         <thead>
             <tr>

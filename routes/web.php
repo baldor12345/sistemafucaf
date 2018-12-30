@@ -138,6 +138,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
     Route::get('creditos/buscarcuota', 'CreditoController@buscarcuota')->name('creditos.buscarcuota');
     Route::get('/generarecibopagocuotaPDF/{cuota_id?}', 'CreditoController@generarecibopagocuotaPDF')->name('creditos.generarecibopagocuotaPDF');
+    Route::get('/generareportecuotasPDF/{credito_id?}', 'CreditoController@generareportecuotasPDF')->name('creditos.generareportecuotasPDF');
+    
     
     /*AHORROS*/
     Route::post('ahorros/buscar', 'AhorrosController@buscar')->name('ahorros.buscar');

@@ -35,7 +35,8 @@ class CreditoController extends Controller
             'pagarcuota'    => 'creditos.pagarcuota',
             'detallecredito'    => 'creditos.detallecredito',
             'guardarcredito'    => 'creditos.guardarcredito',
-            'generarecibopagocuotaPDF' => 'creditos.generarecibopagocuotaPDF'
+            'generarecibopagocuotaPDF' => 'creditos.generarecibopagocuotaPDF',
+            'generareportecuotasPDF' => 'creditos.generareportecuotasPDF'
             
         );
 
@@ -379,24 +380,22 @@ class CreditoController extends Controller
                     $interes = $credito->tasa_interes/100;
 
                     $valor_cuota =  ($interes * $montocredito) / (1 - (pow(1/(1+$interes), $periodo)));
-                    $valor_cuota =  $this->rouNumber($valor_cuota, 1);
+                    
                     $fecha_actual = $credito->fechai;
                     $i = 0;
                     $interesAcumulado = 0.00;
                     for($i=0;$i< (int)$request->get('periodo'); $i++){
                         //sumo 1 mes
                         $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
-                        $montInteres = $this->rouNumber($interes *$montorestante , 1); 
+                        $montInteres = $interes *$montorestante; 
                         $interesAcumulado +=  $montInteres; 
-
-                        $montCapital = $this->rouNumber(($valor_cuota - $montInteres) , 1); 
-                        $montorestante = $this->rouNumber(($montorestante - $montCapital) , 1);
-
-                        $cuota       = new Cuota();
-                        $cuota->parte_capital = $montCapital;
-                        $cuota->interes = $montInteres;
+                        $montCapital =$valor_cuota - $montInteres; 
+                        $montorestante = $montorestante - $montCapital;
+                        $cuota = new Cuota();
+                        $cuota->parte_capital = $this->rouNumber($montCapital , 1); 
+                        $cuota->interes = $this->rouNumber($montInteres , 1);
                         $cuota->interes_mora = 0.00;
-                        $cuota->saldo_restante = $montorestante;
+                        $cuota->saldo_restante =$this->rouNumber(($montorestante) , 1);
                         $cuota->numero_cuota = $i + 1;
                         $cuota->fecha_programada_pago = $fecha_actual;
                         $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
@@ -632,4 +631,29 @@ class CreditoController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
     }
 /************************************ Fin generar voucher *********************************** */
+
+/*************************** GENERAR REPORTE CUOTAS PDF **************************** */
+    //metodo para generar reporte de cuotas en pdf
+    public function generareportecuotasPDF($credito_id)
+    {   
+        $resultado = Cuota::listar($credito_id);
+        $lista = $resultado->get();
+        $credito = Credito::find($credito_id);
+        $cliente = Persona::find($credito->persona_id);
+        $nombres_cliente = $cliente->nombres.' '.$cliente->apellidos;
+
+        $titulo ='Detalle de cuotas - '.$cliente->codigo;
+        $view = \View::make('app.credito.reportecuotas')->with(compact('lista','credito', 'nombres_cliente'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+/************************************ Fin generar reporte *********************************** */
 }
