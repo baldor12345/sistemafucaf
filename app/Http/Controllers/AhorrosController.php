@@ -198,6 +198,7 @@ class AhorrosController extends Controller
                 $transaccion1->persona_id = $ahorro->persona_id;
                 $transaccion1->usuario_id = Ahorros::idUser();
                 $transaccion1->caja_id =  $caja[0]->id;
+                $transaccion1->comision_voucher = 0.1;
                 $transaccion1->save();
                 //Guardar en tabla transacciones **********
                 $idconcepto = $request->input('concepto');
@@ -375,11 +376,12 @@ class AhorrosController extends Controller
             $transaccion->fecha = $nuevafecha;
             $transaccion->monto = 0.10;
             //$transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-            $transaccion->concepto_id = 9;//id de concepto comision voucher
+            $transaccion->concepto_id = 8;//id de concepto comision voucher
             $transaccion->descripcion = "Impresion de voucher por retiro ahorros";
             $transaccion->persona_id = $persona_id;
             $transaccion->usuario_id = Ahorros::idUser();
             $transaccion->caja_id =  $caja[0]->id;
+            $transaccion->comision_voucher = 0.10;
             $transaccion->save();
 
             $idconcepto = 6;

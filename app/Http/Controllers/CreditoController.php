@@ -404,8 +404,25 @@ class CreditoController extends Controller
                         $cuota->save();
 
                     }
+
+
+
                     $caja = Caja::where("estado","=","A")->get();
                     $fechahora_actual = date('Y-m-d H:i:s');
+//comision voucher
+                    $transaccion2 = new Transaccion();
+                    $transaccion2->fecha = $fechahora_actual;
+                    $transaccion2->monto = 0.1;
+                    $transaccion2->concepto_id = 8;
+                    $transaccion2->descripcion ='Comision por recibo credito';
+                    $transaccion2->persona_id = $request->get('idcl');
+                    $transaccion2->usuario_id = Credito::idUser();
+                    $transaccion2->caja_id = $caja[0]->id;
+                    $transaccion2->comision_voucher = 0.1;
+                    $transaccion2->save();
+
+
+//registro credito
                     $transaccion = new Transaccion();
                     $transaccion->fecha = $fechahora_actual;
                     $transaccion->monto = $credito->valor_credito;
@@ -533,10 +550,23 @@ class CreditoController extends Controller
             $error = DB::transaction(function() use($request, $id_cuota){
                 $fechahora_actual = date('Y-m-d H:i:s');
                 $credito = Credito::find((int)$request->get('id_crd'));
-                $cuota       = Cuota::find($id_cuota);
+                $cuota   = Cuota::find($id_cuota);
                 $cuota->estado = 1;
                 $cuota->fecha_pago = $fechahora_actual;
                 $cuota->save();
+//comision por voucher
+                $transaccion2 = new Transaccion();
+                $transaccion2->fecha = $fechahora_actual;
+                $transaccion2->monto = 0.2;
+                $transaccion2->concepto_id = 8;
+                $transaccion2->descripcion ='Comision por recibo cuota';
+                $transaccion2->persona_id = $request->get('id_cliente');
+                $transaccion2->usuario_id = Credito::idUser();
+                $transaccion2->caja_id = $request->get('id_caja');
+                $transaccion2->comision_voucher = 0.2;
+                $transaccion2->save();
+
+//pago cuota
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fechahora_actual;
                 $transaccion->monto = $cuota->parte_capital + $cuota->interes+ $cuota->interes_mora;
@@ -548,8 +578,9 @@ class CreditoController extends Controller
                 $transaccion->cuota_parte_capital = $cuota->parte_capital;
                 $transaccion->cuota_interes = $cuota->interes;
                 $transaccion->cuota_mora = $cuota->interes_mora;
-
                 $transaccion->save();
+
+                
                 
                 if($credito->periodo == $cuota->numero_cuota){// valida si se cancela totalmente todas las cuotas y modifica el estado del credito
                     $credito->estado = 1;// estado : 1 = Cancelado totalmente
