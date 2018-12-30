@@ -67,7 +67,7 @@
 			modal(controlador, titulo);
 		}else{
 			bootbox.confirm({
-				title: "Mensaje de eeror",
+				title: "Mensaje de error",
 				message: "Caja no aperturada",
 				buttons: {
 					cancel: {
