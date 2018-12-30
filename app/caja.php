@@ -54,16 +54,20 @@ class caja extends Model
     {
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
                         'persona.nombres as persona_nombres',
 				        'persona.apellidos as persona_apellidos',
                         DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
                         DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
                         DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
                         DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
-                        DB::raw("SUM(transaccion.acciones_soles) as acciones")
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones"),
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
                     )
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('concepto.tipo','=','I')
                     ->groupBy('persona.id');
         return $results;
     }

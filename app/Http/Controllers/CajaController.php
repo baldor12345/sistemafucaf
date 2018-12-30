@@ -593,11 +593,11 @@ public function actualizardatosahorros(Request $request){
         $sum_ingresos_totales_mes_actual=0;
         if(count($lista) >0 ){
             for($i=0; $i<count($lista); $i++){
-                $sum_deposito_ahorros_mes_actual += $lista[$i]->deposito_ahorros;
+                $sum_deposito_ahorros_mes_actual += $lista[$i]->deposito_ahorros + $lista[$i]->monto_ahorro;
                 $sum_pagos_de_capital_mes_actual += $lista[$i]->pagos_de_capital;
                 $sum_interese_recibidos_mes_actual += $lista[$i]->intereces_recibidos;
                 $sum_acciones_mes_actual += $lista[$i]->acciones;
-                $sum_otros_mes_actual += $lista[$i]->cuota_mora;
+                $sum_otros_mes_actual += $lista[$i]->cuota_mora+$lista[$i]->comision_voucher;
             }
             $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
         }else{
@@ -623,11 +623,11 @@ public function actualizardatosahorros(Request $request){
         $sum_ingresos_totales_asta_mes_anterior=0;
         if(count($lista_mes_anterior) >0 ){
             for($i=0; $i<count($lista_mes_anterior); $i++){
-                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterior[$i]->deposito_ahorros;
+                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterior[$i]->deposito_ahorros + $lista_mes_anterior[$i]->monto_ahorro;
                 $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterior[$i]->pagos_de_capital;
                 $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterior[$i]->intereces_recibidos;
                 $sum_acciones_asta_mes_anterior += $lista_mes_anterior[$i]->acciones;
-                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->cuota_mora;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->cuota_mora+$lista_mes_anterior[$i]->comision_voucher;
             }
             $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
         }else{
@@ -844,11 +844,11 @@ public function actualizardatosahorros(Request $request){
         $sum_ingresos_totales_mes_actual=0;
         if(count($listaingreso) >0 ){
             for($i=0; $i<count($listaingreso); $i++){
-                $sum_deposito_ahorros_mes_actual += $listaingreso[$i]->deposito_ahorros;
+                $sum_deposito_ahorros_mes_actual += $listaingreso[$i]->deposito_ahorros + $listaingreso[$i]->monto_ahorro;
                 $sum_pagos_de_capital_mes_actual += $listaingreso[$i]->pagos_de_capital;
                 $sum_interese_recibidos_mes_actual += $listaingreso[$i]->intereces_recibidos;
                 $sum_acciones_mes_actual += $listaingreso[$i]->acciones;
-                $sum_otros_mes_actual += $listaingreso[$i]->cuota_mora;
+                $sum_otros_mes_actual += $listaingreso[$i]->cuota_mora + $listaingreso[$i]->comision_voucher;
             }
             $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
         }else{
@@ -874,11 +874,11 @@ public function actualizardatosahorros(Request $request){
         $sum_ingresos_totales_asta_mes_anterior=0;
         if(count($lista_mes_anterioringreso) >0 ){
             for($i=0; $i<count($lista_mes_anterioringreso); $i++){
-                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->deposito_ahorros;
+                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->deposito_ahorros + $lista_mes_anterioringreso[$i]->monto_ahorro;
                 $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterioringreso[$i]->pagos_de_capital;
                 $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterioringreso[$i]->intereces_recibidos;
                 $sum_acciones_asta_mes_anterior += $lista_mes_anterioringreso[$i]->acciones;
-                $sum_otros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->cuota_mora;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->cuota_mora + $lista_mes_anterioringreso[$i]->comision_voucher;
             }
             $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
         }else{

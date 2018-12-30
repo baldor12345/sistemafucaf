@@ -82,11 +82,11 @@
             <tr>
 				<td width="6%" align="center"><span class="text">{{$day.'-'.$mesItm}}</span></td>
 				<td width="28%" align="center"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->deposito_ahorros }}</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->deposito_ahorros + $value->monto_ahorro }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->pagos_de_capital }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->intereces_recibidos }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->acciones }}</span></td>
-				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->cuota_mora + $value->comision_voucher}}</span></td>
 				<td width="16%" align="center"><span class="text">Com. Rec.</span></td>
 				<td width="10%" align="center">
 					<span class="text">
