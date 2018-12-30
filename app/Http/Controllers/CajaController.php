@@ -400,7 +400,7 @@ public function actualizardatosahorros(Request $request){
         }
 
         $entidad        = 'Transaccion';
-        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
+        $cboTipo        = [''=>'Seleccione']+ array('E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];
         $boton          = 'Registrar Gasto';
         return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos'));
@@ -920,12 +920,6 @@ public function actualizardatosahorros(Request $request){
         $total_ingresos_del_mes= ($saldo_del_mes_anterior + $ingresos_del_mes);  
         $egresos_del_mes=   $sum_egresos_totales_acumulados;
         $saldo =    ($total_ingresos_del_mes-$egresos_del_mes);
-
-
-
-        //saldo del mes anterior
-        $saldo_del_mes_anterior =0;
-
 
 
         //-------------------------------------------

@@ -158,7 +158,6 @@
 
 	<br/>
 	<br/>
-	<br/>
 	
 	<table width="100%" class="tabla3">
 		<tr>

@@ -65,5 +65,12 @@ class ConceptoSeeder extends Seeder
             'updated_at'     => $now
         ));
 
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Impresiones de Recibos',
+            'tipo'       => 'E',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
+
     }
 }
