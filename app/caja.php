@@ -72,6 +72,7 @@ class caja extends Model
     {
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
                         'persona.nombres as persona_nombres',
 				        'persona.apellidos as persona_apellidos',
@@ -80,6 +81,7 @@ class caja extends Model
                         DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro")
                     )
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('concepto.tipo','=','E')
                     ->groupBy('persona.id');
         return $results;
     }

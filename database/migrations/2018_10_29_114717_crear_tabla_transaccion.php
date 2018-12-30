@@ -24,6 +24,7 @@ class CrearTablaTransaccion extends Migration
             $table->decimal('acciones_soles',20,2)->nullable();
             $table->decimal('monto_ahorro',20,2)->nullable();
             $table->decimal('monto_credito',20,2)->nullable();
+            $table->decimal('comision_voucher',20,2)->nullable();
             $table->integer('id_tabla')->nullable();
             $table->char('inicial_tabla',2)->nullable();
             $table->integer('concepto_id')->unsigned()->nullable();
