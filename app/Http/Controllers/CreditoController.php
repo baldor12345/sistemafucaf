@@ -363,9 +363,9 @@ class CreditoController extends Controller
                     $credito->tasa_interes = $request->input('tasa_interes');
                     $credito->tasa_multa = $configuraciones->tasa_interes_multa;
                     //$fecha =Libreria::getParam($request->input('fecha'));
-                    $credito->fechai = $request->input('fechacred');
+                    $credito->fechai = $request->input('fechacred').date(" H:i:s");//**** */
                     $nuevafecha = strtotime ( '+'.$request->input('periodo').' month' , strtotime ( $credito->fechai ) ) ;
-                    $nuevafecha = date ( 'Y-m-d' , $nuevafecha );
+                    $nuevafecha = date( 'Y-m-d' , $nuevafecha );
                     $credito->fechaf = $nuevafecha;
                     $credito->estado = '0';
                     $credito->descripcion = $request->get('descripcion');
@@ -407,10 +407,10 @@ class CreditoController extends Controller
 
 
                     $caja = Caja::where("estado","=","A")->get();
-                    $fechahora_actual = date('Y-m-d H:i:s');
+                    //$fechahora_actual = date('Y-m-d H:i:s');
 //comision voucher
                     $transaccion2 = new Transaccion();
-                    $transaccion2->fecha = $fechahora_actual;
+                    $transaccion2->fecha = $request->input('fechacred').date(" H:i:s");;
                     $transaccion2->monto = 0.1;
                     $transaccion2->concepto_id = 8;
                     $transaccion2->descripcion ='Comision por recibo credito';
@@ -423,7 +423,7 @@ class CreditoController extends Controller
 
 //registro credito
                     $transaccion = new Transaccion();
-                    $transaccion->fecha = $fechahora_actual;
+                    $transaccion->fecha = $request->input('fechacred').date(" H:i:s");;
                     $transaccion->monto = $credito->valor_credito;
 
                     $clso = $request->input('cltipo') == 'S'? "socio":"cliente";
