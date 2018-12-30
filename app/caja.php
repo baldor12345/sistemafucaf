@@ -52,6 +52,9 @@ class caja extends Model
 
     public static function listIngresos($fechai, $fechaf)
     {
+        $fechai = date('Y-m-d', strtotime($fechai));
+        $fechaf = date('Y-m-d', strtotime($fechaf));
+
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
@@ -73,7 +76,10 @@ class caja extends Model
     }
 
     public static function listEgresos($fechai, $fechaf)
+
     {
+        $fechai = date('Y-m-d', strtotime($fechai));
+        $fechaf = date('Y-m-d', strtotime($fechaf));
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
@@ -92,6 +98,8 @@ class caja extends Model
 
     public static function listEgresos_por_concepto($fechai, $fechaf)
     {
+        $fechai = date('Y-m-d', strtotime($fechai));
+        $fechaf = date('Y-m-d', strtotime($fechaf));
         $results = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
