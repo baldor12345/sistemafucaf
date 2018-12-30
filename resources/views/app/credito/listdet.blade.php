@@ -152,8 +152,6 @@ function abrirmodal(accion, msrecibo){
 		$(divModal).children('.modal-dialog').css('margin-right','auto');
         
 }
-
-
     $('.btnrecibo').each(function(){
         $(this).click(function(){
            var id_cuota = $(this).attr('idcuota');

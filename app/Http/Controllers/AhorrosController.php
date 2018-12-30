@@ -42,7 +42,8 @@ class AhorrosController extends Controller
             'generareciboahorroPDF1' => 'ahorros.generareciboahorroPDF1',
             'generareciboretiroPDF' => 'ahorros.generareciboretiroPDF',
             'generareciboretiroPDF1' => 'ahorros.generareciboretiroPDF1',
-            'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion'
+            'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion',
+            'generareportehistoricoahorrosPDF' => 'ahorros.generareportehistoricoahorrosPDF'
         );
 
     /**
@@ -470,7 +471,7 @@ class AhorrosController extends Controller
     }
 /************************************ Fin generar voucher *********************************** */
 
-/*************************** GENERAR VOUCHER DRETIRO AHORRO PDF **************************** */
+/*************************** GENERAR VOUCHER RETIRO AHORRO PDF **************************** */
     //metodo para generar voucher ahorro en pdf
     public function generareciboretiroPDF($transaccion_id = 0)
     {   
@@ -500,6 +501,30 @@ class AhorrosController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
     }
 /************************************ Fin generar voucher *********************************** */
+/*************************** GENERAR REPORTE HISTORICO DE AHORRO PDF **************************** */
+    //metodo para generar voucher ahorro en pdf
+    public function generareportehistoricoahorrosPDF($persona_id=0,$anio=2018)
+    {   
+
+        $resultado = Ahorros::listarhistorico($persona_id,$anio);
+        $lista            = $resultado->get();
+        $persona = Persona::find($persona_id);
+
+        //$ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
+        $titulo ='Voucher-retiro-'.$persona->codigo;
+        $view = \View::make('app.ahorros.reportehistoricoahorros')->with(compact('lista', 'persona', '$anio'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(20);
+        PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+/************************************ Fin generar reporte *********************************** */
 
 /************************************* OTRAS FUNCIONES ************************************** */
     //Metodo para redondear numero decimal
