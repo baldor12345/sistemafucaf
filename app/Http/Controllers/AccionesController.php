@@ -407,7 +407,7 @@ class AccionesController extends Controller
         $detalle        = Acciones::listAcciones($id);
         $lista           = $detalle->get();
         $persona = DB::table('persona')->where('id', $id)->first();
-        $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('importe');
+        $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
         $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
         $titulo = $persona->nombres.$cant;
         $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
