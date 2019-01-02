@@ -18,6 +18,7 @@
 			border:1px solid #808080;
 			padding:5px;
 		}
+    
 </style>
 
 </head>

@@ -171,7 +171,7 @@ function abrirmodal(accion, msrecibo){
                 console.log("fila: "+array_tr[3].innerText);
                 var msje ="", textbtnOk="",textbtnCancel="";;
                 if({{$idcaja}} !=0){
-                    msje = "<div class='alert alert-success'> ¿Esta seguro de realizar el pago?</div>";
+                    msje = "<div class='alert alert-success'> ¿Esta seguro de realizar el pago? </div>";
                     textbtnOk = "<i class='fa fa-times'></i> Cancelar";
                     textbtnCancel = "<i class='fa fa-check'></i>Confirmar";
                 }else{
@@ -194,6 +194,7 @@ function abrirmodal(accion, msrecibo){
                         },
                         callback: function (result) { //
                             if(result & {{$idcaja}} != 0){
+                                
                                 $.ajax({
                                     url: 'creditos/pagarcuota',
                                     headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },

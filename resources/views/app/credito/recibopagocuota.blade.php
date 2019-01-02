@@ -18,6 +18,10 @@
 			border:1px solid #808080;
 			padding:5px;
 		}
+        .table td{
+            border: 0.9px solid #000;
+            text-align : left;
+        }
 </style>
 
 </head>
