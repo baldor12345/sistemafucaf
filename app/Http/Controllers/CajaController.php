@@ -153,6 +153,7 @@ class CajaController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
+            //apertura una nueva caja
             $caja               = new Caja();
             $caja->titulo        = $request->input('titulo');
             $caja->descripcion        = $request->input('descripcion');
@@ -161,6 +162,27 @@ class CajaController extends Controller
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();
             $caja->save();
+
+            //actualizar datos en la tabla transaccion las ganancias de las acciones
+            $findCajalast = DB::table('caja')->orderBy('id','DESC')->first();
+            
+            $caja_id = $findCajalast->id;
+            
+            $listacciones_socio = Caja::list_ganancia_acciones_persona()->get();
+            for($i=0; $i<count($listacciones_socio); $i++){
+                $transaccion = new Transaccion();
+                $transaccion->fecha =           $request->input('fecha_horaApert').date(" H:i:s");
+                $transaccion->monto =           $listacciones_socio[$i]->ganancia_accion;
+                $transaccion->ganancia_accion = $listacciones_socio[$i]->ganancia_accion;
+                $transaccion->concepto_id =     10;
+                $transaccion->persona_id =         $listacciones_socio[$i]->persona_id;
+                $transaccion->descripcion =     " ganancia accion ";
+                $transaccion->usuario_id =      Caja::getIdPersona();
+                $transaccion->caja_id =         $caja_id;
+                $transaccion->save();
+            }
+            
+
         });
         $error =  $this->actualizardatosahorros($request);
         return is_null($error) ? "OK" : $error;

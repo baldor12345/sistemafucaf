@@ -109,9 +109,41 @@ class caja extends Model
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
-                    ->where('concepto.titulo','!=','Crédito');
+                    ->where('concepto.titulo','!=','Crédito')
+                    ->where('concepto.titulo','!=','Ganancia por accion');
         return $results;
     }
+
+    //busqueda de cantidad de acciones por personas para actualizar las ganancias por mes
+    public static function list_ganancia_acciones_persona()
+    {
+        $results = DB::table('acciones')
+                    ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
+                    ->join('persona', 'acciones.persona_id', '=', 'persona.id')
+                    ->select(
+                        DB::raw("(COUNT(acciones.estado)*configuraciones.ganancia_accion) as ganancia_accion"),
+                        'acciones.persona_id AS persona_id',
+                        'acciones.concepto_id as concepto_id',
+                        'persona.tipo as persona_tipo'
+                    )
+                    ->where('acciones.estado','=','C')
+                    ->where('persona.tipo','=','S')
+                    ->orWhere('persona.tipo', 'SC')
+                    ->groupBy('persona_id','configuraciones.ganancia_accion','concepto_id','persona.tipo');
+        return $results;
+    }
+    /*
+    SELECT 
+				(COUNT(acciones.estado)*configuraciones.ganancia_accion) AS ganancia_accion,
+				acciones.persona_id AS persona_id,
+				acciones.concepto_id as concepto_id,
+				persona.tipo as persona_tipo,
+				acciones.caja_id as caja_id
+    FROM acciones INNER JOIN configuraciones ON (acciones.configuraciones_id = configuraciones.id)
+                                INNER JOIN persona ON (acciones.persona_id = persona.id)
+    WHERE acciones.estado = 'C' AND (persona.tipo = 'S' OR persona.tipo ='SC')
+    GROUP BY acciones.persona_id, configuraciones.ganancia_accion, acciones.concepto_id,persona.tipo, caja_id;
+    */
 
 /*
 SELECT 	persona.nombres as persona_nombres,
@@ -128,4 +160,5 @@ SELECT 	concepto.titulo as concepto_titulo,
 FROM concepto LEFT JOIN transaccion ON (concepto.id = transaccion.concepto_id)
 WHERE concepto.tipo = 'E' AND concepto.titulo !='Retiro de ahorros' and concepto.titulo !='Crédito';
 */
+
 }

@@ -72,5 +72,12 @@ class ConceptoSeeder extends Seeder
             'updated_at'     => $now
         ));
 
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Ganancia por accion',
+            'tipo'       => 'E',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
+
     }
 }

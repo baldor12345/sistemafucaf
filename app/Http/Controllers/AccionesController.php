@@ -160,6 +160,7 @@ class AccionesController extends Controller
                         $acciones->persona_id        = $request->input('persona_id');
                         $acciones->configuraciones_id        = $request->input('configuraciones_id');
                         $acciones->caja_id = $idCaja;
+                        $acciones->concepto_id        = $request->input('concepto_id');
                         $acciones->save();
                     }
                 }
@@ -320,7 +321,7 @@ class AccionesController extends Controller
             $listar = $listarParam;
         }
         $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
-        $cboConcepto  =array(7=>'Venta de Acciones');
+        $cboConcepto  =array(2=>'Venta de Acciones');
         $acciones        = Acciones::find($id);
         $entidad        = 'Acciones';
 
@@ -352,15 +353,16 @@ class AccionesController extends Controller
         $descripcion_venta=$request->input('descripcion');
         $cantidad_accion= $request->input('cantidad_accion');
         $fechaf = $request->input('fechai').date(" H:i:s");
-
+       $concepto_id = $request->input('concepto_id');
         if($cantidad_accion !== ''){            
             for($i=0; $i< $cantidad_accion; $i++){
                 $idaccion= $acciones_por_persona[$i]->id;
-                $error  = DB::transaction(function() use ($idaccion,$descripcion_venta, $fechaf){
+                $error  = DB::transaction(function() use ($idaccion,$descripcion_venta, $fechaf, $concepto_id){
                     $acciones                 = Acciones::find($idaccion); 
                     $acciones->estado        = 'V';
                     $acciones->descripcion        = $descripcion_venta;
                     $acciones->fechaf = $fechaf;
+                    $acciones->concepto_id        = $concepto_id;
                     $acciones->save();
                 });
             }
@@ -378,6 +380,7 @@ class AccionesController extends Controller
                     $acciones->persona_id        = $request->input('idcomprador');
                     $acciones->configuraciones_id        = $request->input('configuraciones_id');
                     $acciones->caja_id =$idCaja;
+                    $acciones->concepto_id        =  1;
                     $acciones->save();
                 }
             }
