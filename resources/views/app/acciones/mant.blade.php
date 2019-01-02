@@ -4,13 +4,12 @@ use App\Acciones;
 use App\Configuraciones;
 use Illuminate\Support\Facades\DB;
 ?>
-
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($acciones, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
-<div class="form-group">
-<p id="info" class="" ></p>
+<div id="divInfo" class="form-group" style="background: rgb(160, 188, 110); color: white; text-align:center;">
+	<p id="info" class="" ></p>
 </div>
 
 <div class="form-group">
@@ -25,7 +24,7 @@ use Illuminate\Support\Facades\DB;
 <div class="form-group">
 	{!! Form::label('cantidad_accion', 'Cantidad Accion:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_accion', 'placeholder' => 'Ingrese cantidad')) !!}
+		{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_accion', 'placeholder' => 'Ingrese cantidad', 'maxlength' => '3')) !!}
 	</div>
 </div>
 
@@ -83,33 +82,44 @@ use Illuminate\Support\Facades\DB;
 		//funcion para los datos de la persona
 		$("input[name=dni]").change(function(event){
         	$.get("personas/"+event.target.value+"",function(response, facultad){
-				console.log("datos de la persona");
 				console.log(response);
 				$('#nombres').val('');
 				$('#persona_id').val('');
-				for(i=0; i<response.length; i++){
-					document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-					document.getElementById("persona_id").value = response[i].id;
-				}
+				if(response.length>0){
+					for(i=0; i<response.length; i++){
+						if((response[i].tipo).trim() === 'S' || (response[i].tipo).trim() === 'SC'){
+							document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
+							document.getElementById("persona_id").value = response[i].id;
+						}else{
+							document.getElementById("info").innerHTML= "DNI ingresado no pertenece a un Socio, </br> ¡por favor ingrese DNI de un socio!";
+						}
+					}
+				}else{
+					document.getElementById("nombresCompletos").innerHTML ="DNI no existe";
+				}	
+				
 			});
     	});
 
 		$("input[name=dni]").change(function(event){
         	$.get("acciones/"+event.target.value+"",function(response, facultad){
+
 				console.log("datos de la cantidad acumulada de acciones");
 				console.log(response);
 				
 				var cantAcciones=0;
+				var persona_tipo="";
 				for(i=0; i<response.length; i++){
 					cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
+					persona_tipo = response[i].persona_tipo;
 				}
-				console.log(cantAcciones);
-				
+
 				var limite_accionPor= response[0].limite_acciones;
 				var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
-				var result="Estimado usuario, por reglas establecidas de la empresa usted solo puede adquirir el 20% de la "+
+				var result="Estimado Socio!</br>por reglas establecidas de la empresa usted solo puede adquirir el 20% de la "+
 							"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!";
 				document.getElementById("info").innerHTML= result;
+				
 			});
     	});
 		

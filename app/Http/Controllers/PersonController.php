@@ -48,7 +48,7 @@ class PersonController extends Controller
         $codigo             = Libreria::getParam($request->input('codigo'));
         $nombres             = Libreria::getParam($request->input('nombres'));
         $dni             = Libreria::getParam($request->input('dni'));
-        $tipo             = Libreria::getParam($request->input('tipo'));
+        $tipo             = Libreria::getParam($request->input('tipoi'));
         $resultado        = Persona::listar($codigo, $nombres, $dni, $tipo);
         $lista            = $resultado->get();
         $cabecera         = array();
@@ -103,6 +103,12 @@ class PersonController extends Controller
      */
     public function create(Request $request)
     {
+        //generar codigo para agregar una nueva persona
+
+        $findPersonalast = DB::table('persona')->orderBy('id','DESC')->first();
+        $codigo_generado = "";
+        $codigo_generado = "FUCAF0".($findPersonalast->id+1);
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Persona';
         $persona        = null;
@@ -112,7 +118,7 @@ class PersonController extends Controller
         $formData       = array('persona.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil'));
     }
 
     /**
@@ -135,16 +141,25 @@ class PersonController extends Controller
             'tipo'    => 'required|max:5',
             'direccion'    => 'required|max:100',
             'ingreso_personal'    => 'required|max:20',
-            'ingreso_familiar'    => 'required|max:20',
-            'telefono_fijo'     => 'required|max:15|regex:/^[0-9]+?-?[0-9]+$/',
+            'ingreso_familiar'    => 'required|max:20'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
+
+            $codigo_generado = $request->input('codigo');
+            if($request->input('tipo') == "S"){
+                $codigo_generado = "S".$codigo_generado;
+            }else if($request->input('tipo') == "C"){
+                $codigo_generado = "C".$codigo_generado;
+            }else{
+                $codigo_generado = "SC".$codigo_generado;
+            }
+
             $perosna               = new Persona();
-            $perosna->codigo        = $request->input('codigo');
+            $perosna->codigo        = $codigo_generado;
             $perosna->dni        = $request->input('dni');
             $perosna->nombres        = $request->input('nombres');
             $perosna->apellidos        = $request->input('apellidos');
@@ -199,7 +214,7 @@ class PersonController extends Controller
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
-        $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
+        $cboTipo        = [''=>'Seleccione']+ array('S '=>'Socio','C '=>'Cliente' ,'SC' => 'Socio/Cliente');
         $persona        = Persona::find($id);
         $entidad        = 'Persona';
         $formData       = array('persona.update', $id);
@@ -232,16 +247,19 @@ class PersonController extends Controller
             'tipo'    => 'required|max:5',
             'direccion'    => 'required|max:100',
             'ingreso_personal'    => 'required|max:20',
-            'ingreso_familiar'    => 'required|max:20',
-            'telefono_fijo'    => 'required|max:15',
+            'ingreso_familiar'    => 'required|max:20'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         } 
         $error = DB::transaction(function() use($request, $id){
+            $valor = $request->input('codigo');
+            $tipo_selected = $request->input('tipo');
+            $codigo_generado =  substr_replace($valor , $tipo_selected, 0, 1);
+
             $perosna                 = Persona::find($id);
-            $perosna->codigo        = $request->input('codigo');
+            $perosna->codigo        = $codigo_generado;
             $perosna->dni        = $request->input('dni');
             $perosna->nombres        = $request->input('nombres');
             $perosna->apellidos        = $request->input('apellidos');

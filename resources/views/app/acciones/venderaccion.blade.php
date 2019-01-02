@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 {!! Form::open(array('route' => array('acciones.guardarventa', $persona->id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('idpropietario', $persona->id, array('id' => 'idpropietario')) !!}
-<div class="form-group">
+<div class="form-group" style="background: rgb(160, 188, 110); color: white; text-align:center;">
 <p id="info" class="" ></p>
 </div>
 
@@ -96,10 +96,17 @@ use Illuminate\Support\Facades\DB;
 				console.log(response);
 				$('#nombres').val('');
 				$('#idcomprador').val('');
-				for(i=0; i<response.length; i++){
-					document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-					document.getElementById("idcomprador").value = response[i].id;
+				var dni_vendedor = '{{ $persona->dni }}';
+				if(event.target.value !== dni_vendedor){
+					for(i=0; i<response.length; i++){
+						document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
+						document.getElementById("idcomprador").value = response[i].id;
+					}
+				}else{
+					document.getElementById("nombresCompletos").innerHTML = "el DNI debe ser diferente al del vendedor";
+					document.getElementById("idcomprador").value = "";
 				}
+				
 			});
     	});
 

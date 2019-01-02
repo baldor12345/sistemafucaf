@@ -94,20 +94,19 @@ class Acciones extends Model
     }
 
     public static function cant_acciones_acumuladas($persona_dni){
-
         $persona_id = DB::table('persona')->where('dni', $persona_dni)->pluck('id');
         return  DB::table('acciones')
-                    ->join('persona', 'acciones.persona_id', '=', 'persona.id')
-                    ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
-                    ->select( 
-                            'persona.nombres as persona_nombres',
-                            'persona.dni as persona_dni',
-                            'configuraciones.limite_acciones as limite_acciones',
-                            DB::raw('count(acciones.estado) as cantidad_accion_acumulada')
-                            )
-                            ->where('acciones.persona_id', '!=', $persona_id)
-                            ->where('acciones.estado', '=', 'C')
-                            ->groupBy('configuraciones.limite_acciones','persona.dni','persona.nombres','acciones.persona_id')->get();
+                ->join('persona', 'acciones.persona_id', '=', 'persona.id')
+                ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
+                ->select( 
+                        'persona.nombres as persona_nombres',
+                        'persona.tipo as persona_tipo',
+                        'configuraciones.limite_acciones as limite_acciones',
+                        DB::raw('count(acciones.estado) as cantidad_accion_acumulada')
+                )
+                ->where('acciones.persona_id', '!=', $persona_id)
+                ->where('acciones.estado', '=', 'C')
+                ->groupBy('configuraciones.limite_acciones','persona.tipo', 'persona.nombres')->get();
     }
 
     

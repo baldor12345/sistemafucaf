@@ -115,7 +115,6 @@ class ConfiguracionesController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
-            'codigo'         => 'required|max:20|unique:configuraciones,codigo,NULL,id,deleted_at,NULL',
             'precio_accion'         => 'required',
             'ganancia_accion'        => 'required',
             'limite_acciones'      => 'required',
@@ -131,6 +130,11 @@ class ConfiguracionesController extends Controller
             $configuraciones->precio_accion        = $request->input('precio_accion');
             $configuraciones->ganancia_accion        = $request->input('ganancia_accion');
             $configuraciones->limite_acciones        = $request->input('limite_acciones');
+
+            $configuraciones->tasa_interes_credito        = $request->input('tasa_interes_credito');
+            $configuraciones->tasa_interes_multa        = $request->input('tasa_interes_multa');
+            $configuraciones->tasa_interes_ahorro        = $request->input('tasa_interes_ahorro');
+
             $configuraciones->fecha        = $request->input('fecha');
             $configuraciones->descripcion        = $request->input('descripcion');
             $configuraciones->save();
@@ -184,7 +188,6 @@ class ConfiguracionesController extends Controller
             return $existe;
         }
         $reglas = array(
-            'codigo'       => 'required|max:20|unique:configuraciones,codigo,'.$id.',id,deleted_at,NULL',
             'precio_accion'         => 'required',
             'ganancia_accion'        => 'required',
             'limite_acciones'      => 'required',
@@ -200,6 +203,9 @@ class ConfiguracionesController extends Controller
             $configuraciones->precio_accion        = $request->input('precio_accion');
             $configuraciones->ganancia_accion        = $request->input('ganancia_accion');
             $configuraciones->limite_acciones        = $request->input('limite_acciones');
+            $configuraciones->tasa_interes_credito        = $request->input('tasa_interes_credito');
+            $configuraciones->tasa_interes_multa        = $request->input('tasa_interes_multa');
+            $configuraciones->tasa_interes_ahorro        = $request->input('tasa_interes_ahorro');
             $configuraciones->fecha        = $request->input('fecha');
             $configuraciones->descripcion        = $request->input('descripcion');
             $configuraciones->save();
