@@ -1,6 +1,5 @@
 <div id="divMensajeErrorRetiro"></div>
 <div class="card-box table-responsive crbox">
-    <div class="row m-b-30" id="selectfilas">
         <div class="col-sm-12">
             {!! Form::open(['route' => $ruta["retiro"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formRetiro']) !!}
             {!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
@@ -13,24 +12,40 @@
                 {!! Form::hidden('ahorro_id', $ahorro->id, array('id' => 'ahorro_id')) !!}
                 {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
             </div>
-            <div class="form-group col-12 col-md-12 col-sm-12">
-                {!! Form::label('montoretiro1', 'Monto a retirar S/.: *', array('class' => '')) !!}
-                &nbsp;
-                {!! Form::text('montoretiro', null, array('class' => 'form-control input-md input-number', 'id' => 'montoretiro', 'placeholder' => 'Monto a retirar S/.')) !!}
-            </div>
-            <div class="form-group col-12 col-md-12 col-sm-12">
-                    {!! Form::label('fechar', 'Fecha de retiro: *', array('class' => '')) !!}
-                    {!! Form::date('fechar', null, array('class' => 'form-control input-xs', 'id' => 'fechar')) !!}
+            <div class = "form-group">
+                <div class="form-group col-12 col-md-12 col-sm-12">
+                    {!! Form::label('montoretiro', 'Monto a retirar S/.: *', array('class' => '')) !!}
                 </div>
-            <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('comision', 'Comision por voucher S/.: 0.10')!!}
+                 <div class="form-group col-12 col-md-12 col-sm-12">
+                    {!! Form::text('montoretiro', null, array('class' => 'form-control input-md', 'id' => 'montoretiro', 'placeholder' => 'Monto a retirar S/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+                </div>
             </div>
-           
-            <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('totalretirar', 'Total a retirar S/.: ',array('id' => 'totalretirar'))!!}
+            <br>
+            <br>
+            <div class = "form-group">
+                <div class="form-group col-12 col-md-12 col-sm-12">
+                {!! Form::label('fechar', 'Fecha de retiro: *', array('class' => '')) !!}
+                </div>
+                <div class="form-group col-12 col-md-12 col-sm-12">
+                {!! Form::date('fechar', null, array('class' => 'form-control input-md', 'id' => 'fechar')) !!}
+                </div>
+            </div>
+            <br>
+            <br>
+            
+            <div class = "form-group">
+                <div class="form-group col-12 col-md-12 col-sm-12">
+                {!! Form::label('comision', 'Comision por voucher S/.: 0.10')!!}
+                </div>
+            </div>
+            <br>
+
+            <div class = "form-group">
+                <div class="form-group col-12 col-md-12 col-sm-12">
+                {!! Form::label('totalretirar', 'Total a retirar S/.: ',array('id' => 'totalretirar'))!!}
+                </div>
             </div>
             {!! Form::close() !!}
-        </div>
     </div>
     
     <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
@@ -43,11 +58,15 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		configurarAnchoModal('450');
+        var fechaActual = new Date();
+        var day = ("0" + fechaActual.getDate()).slice(-2);
+        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
+        var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+
+        $('#fechar').val(fechaactualr);
         $("input[name=montoretiro]").keyup(function(event){
             var monto = $('#montoretiro').val();
-            console.log("monto: "+monto);
             if(monto != ''){
-                console.log("monto paso: "+monto);
 			    $('#totalretirar').html('Total a retirar S/.: '+(monto - 0.10));
             }
     	});

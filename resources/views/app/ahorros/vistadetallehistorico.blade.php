@@ -14,6 +14,10 @@
             {!! Form::label('cboanio', 'Año:')!!}
             {!! Form::select('cboanio', $cboanio, null, array('class' => 'form-control input-xs', 'id' => 'cboanio', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
             </div>
+            <div class="form-group" >
+                &nbsp;
+                {!! Form::button('<i class="fa fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte'.$entidad, 'onclick' => 'imprimirpdf(\''.URL::route($ruta["generareportehistoricoahorrosPDF"], array($persona_id)).'\')')) !!}
+            </div>
             {!! Form::close() !!}
         </div>
     </div>
@@ -28,7 +32,17 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		configurarAnchoModal('850');
+        var fechaActual = new Date();
+        //var fechai = (fechaActual.getFullYear()) +"-01-01";
+        $('#cboanio').val(fechaActual.getFullYear());
         buscar("{{ $entidad }}");
     });
+
+    function reportehistoricopdf(ruta){
+        var anyo = $('#cboanio').val();
+        console.log('AÑO: '+anyo);
+        var rutareporte = ruta+"/"+anyo;
+        imprimirpdf(rutareporte);
+    }
 
 </script>

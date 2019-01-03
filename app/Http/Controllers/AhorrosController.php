@@ -503,16 +503,16 @@ class AhorrosController extends Controller
 /************************************ Fin generar voucher *********************************** */
 /*************************** GENERAR REPORTE HISTORICO DE AHORRO PDF **************************** */
     //metodo para generar voucher ahorro en pdf
-    public function generareportehistoricoahorrosPDF($persona_id=0,$anio=2018)
+    public function generareportehistoricoahorrosPDF($persona_id=0,$anioactual=2018)
     {   
-
+        $anio = $anioactual;
         $resultado = Ahorros::listarhistorico($persona_id,$anio);
         $lista            = $resultado->get();
         $persona = Persona::find($persona_id);
 
         //$ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
-        $titulo ='Voucher-retiro-'.$persona->codigo;
-        $view = \View::make('app.ahorros.reportehistoricoahorros')->with(compact('lista', 'persona', '$anio'));
+        $titulo ='Reporte Historico de ahorros -'.$persona->codigo." - ".$anio;
+        $view = \View::make('app.ahorros.reportehistoricoahorros')->with(compact('lista', 'persona', 'anio'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);

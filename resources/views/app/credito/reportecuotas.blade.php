@@ -5,30 +5,32 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
-	.contenedor{
-			position: absolute;
-			top:50%;
-			left:50%;
-			width:200px;
-			margin-left:-200px;
-			/*determinamos una altura*/
-			height:300px;
-			/*indicamos que el margen superior, es la mitad de la altura*/
-			margin-top:-150px;
-			border:1px solid #808080;
-			padding:5px;
-		}
+        .linebordercenter tr th, td{
+            border: 0.9px solid #3f3f3f;
+            text-align : center;
+            
+        }
+        .linebordercenter{
+            padding: 2px;
+            margin: 1px;
+        }
+
+        .lineborderleft tr td{
+            border: 0.9px solid #3f3f3f;
+            text-align : left;;
+        }
     
-</style>
+    </style>
 
 </head>
 <body>
 	<div class="">
-            <div class="contenedor">
-                <h3>Nombres del Socio o Cliente</h3>
-                <h3>{{ $nombres_cliente }}</h3>
-            </div>
-		<table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
+        <table class="lineborderleft" width ="40%">
+                <tr><td><strong>Nombre del Socio o Cliente</strong> </td></tr>
+                <tr><td> {{ $nombres_cliente }}</td></tr>
+        </table>
+        <h3>Reporte de Cuotas</h3>
+		<table class ="linebordercenter">
             <thead>
                 <tr>
                     <th style="font-size: 8px" colspan="1">FECHA PRESTAMO</th>
