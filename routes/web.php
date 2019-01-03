@@ -130,18 +130,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/generarvoucheraccionPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionPDF')->name('generarvoucheraccionPDF');
     Route::get('/generarnormasaccionPDF', 'AccionesController@generarnormasaccionPDF')->name('generarnormasaccionPDF');
     
-    /*CREDITO*/
-    Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
-    Route::get('creditos/eliminar/{id}/{listarluego}', 'CreditoController@eliminar')->name('creditos.eliminar');
-    Route::resource('creditos', 'CreditoController', array('except' => array('show')));
-    Route::get('creditos/guardarcredito', 'CreditoController@guardarcredito')->name('creditos.guardarcredito');
-    Route::get('creditos/detallecredito/{idcredito}/{listarluego}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
-    Route::get('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
-    Route::get('creditos/buscarcuota', 'CreditoController@buscarcuota')->name('creditos.buscarcuota');
-    Route::get('/generarecibopagocuotaPDF/{cuota_id?}', 'CreditoController@generarecibopagocuotaPDF')->name('creditos.generarecibopagocuotaPDF');
-    Route::get('/generareportecuotasPDF/{credito_id?}', 'CreditoController@generareportecuotasPDF')->name('creditos.generareportecuotasPDF');
-    
-    
+     /*CREDITO*/
+     Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
+     Route::get('creditos/eliminar/{id?}/{listarluego?}', 'CreditoController@eliminar')->name('creditos.eliminar');
+     Route::resource('creditos', 'CreditoController', array('except' => array('show')));
+     Route::get('creditos/detallecredito/{idcredito?}/{listarluego?}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
+     Route::get('creditos/vistapagocuota/{idcredito?}/{listarluego?}', 'CreditoController@vistapagocuota')->name('creditos.vistapagocuota');
+     
+     Route::post('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
+     Route::get('creditos/listardetallecuotas', 'CreditoController@listardetallecuotas')->name('creditos.listardetallecuotas');
+     Route::get('/generarecibopagocuotaPDF/{cuota_id?}', 'CreditoController@generarecibopagocuotaPDF')->name('creditos.generarecibopagocuotaPDF');
+     Route::get('/generareportecuotasPDF/{credito_id?}', 'CreditoController@generareportecuotasPDF')->name('creditos.generareportecuotasPDF');
+     //Route::get('creditos/abrirpdf', 'CreditoController@abrirpdf')->name('creditos.abrirpdf');
+     
     /*AHORROS*/
     Route::post('ahorros/buscar', 'AhorrosController@buscar')->name('ahorros.buscar');
     Route::get('ahorros/eliminar/{id}/{listarluego}', 'AhorrosController@eliminar')->name('ahorros.eliminar');
@@ -154,11 +155,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/actualizarecapitalizacion', 'AhorrosController@actualizarecapitalizacion')->name('ahorros.actualizarecapitalizacion');
     Route::get('ahorros/vistahistoricoahorro/{persona_id}/{listarluego}', 'AhorrosController@vistahistoricoahorro')->name('ahorros.vistahistoricoahorro');
     Route::get('ahorros/listarhistorico', 'AhorrosController@listarhistorico')->name('ahorros.listarhistorico');
+    
     Route::get('/generareciboahorroPDF', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF');
     Route::get('/generareciboahorroPDF1/{transaccion_id}', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF1');
+    
     Route::get('/generareciboretiroPDF', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF');
     Route::get('/generareciboretiroPDF1/{transaccion_id}', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF1');
-    
+    Route::get('/generareportehistoricoahorrosPDF/{persona_id?}/{anio?}', 'AhorrosController@generareportehistoricoahorrosPDF')->name('ahorros.generareportehistoricoahorrosPDF');
     
     /*GASTOS*/
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');

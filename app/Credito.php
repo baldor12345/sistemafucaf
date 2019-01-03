@@ -26,31 +26,30 @@ class Credito extends Model
         return $id;
     }
 
-    public function scopelistar($query,$nombreAcreditado, $fechai, $estado){
+    public function scopelistar($query,$nombreAcreditado, $fechai = '2000-01-01', $estado){
+        $fechai = $fechai==null? '2000-01-01' :  $fechai;
         $results = DB::table('credito')
-    ->leftJoin('persona', 'persona.id', '=', 'credito.persona_id')
-    ->select(
-        'persona.id as persona_id',
-        'persona.nombres as nombres',
-        'persona.apellidos as apellidos',
-        'persona.tipo as tipo',
-        'persona.codigo as codigo',
-        'credito.id as credito_id',
-        'credito.valor_credito as valor_credito',
-        'credito.periodo as periodo',
-        'credito.descripcion as descripcion',
-        'credito.tasa_interes as tasa_interes',
-        'credito.tasa_multa as tasa_multa',
-        'credito.fechai as fechai',
-        'credito.fechaf as fechaf',
-        'credito.estado as estado'
-    )
-    ->orwhere('persona.nombres','LIKE', '%'.$nombreAcreditado.'%')
-    ->orwhere('persona.apellidos','LIKE', '%'.$nombreAcreditado.'%')
-    ->where('credito.fechai','>=',$fechai)
-    ->where('credito.estado','=',$estado)
-    
-    ->orderBy('credito.fechai', 'DSC');
+        ->leftJoin('persona', 'persona.id', '=', 'credito.persona_id')
+        ->select(
+            'persona.id as persona_id',
+            'persona.nombres as nombres',
+            'persona.apellidos as apellidos',
+            'persona.tipo as tipo',
+            'persona.codigo as codigo',
+            'credito.id as credito_id',
+            'credito.valor_credito as valor_credito',
+            'credito.periodo as periodo',
+            'credito.descripcion as descripcion',
+            'credito.tasa_interes as tasa_interes',
+            'credito.tasa_multa as tasa_multa',
+            'credito.fechai as fechai',
+            'credito.fechaf as fechaf',
+            'credito.estado as estado'
+        )
+        ->where('persona.nombres','ILIKE', '%'.$nombreAcreditado.'%')
+        ->where('credito.fechai','>=',$fechai)
+        ->where('credito.estado','=',$estado)
+        ->orderBy('credito.fechai', 'DSC');
         return $results;
     }
 

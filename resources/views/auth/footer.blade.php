@@ -18,11 +18,6 @@
 {!! Html::script('assets/js/jquery.core.js') !!}
 {!! Html::script('assets/js/jquery.app.js') !!}
 
-<!-- Countdown -->
-{!! Html::script('../plugins/countdown/dest/jquery.countdown.min.js') !!}
-{!! Html::script('../plugins/simple-text-rotator/jquery.simple-text-rotator.min.js') !!}
-
-
 <script type="text/javascript">
     /*$(document).ready(function () {
 

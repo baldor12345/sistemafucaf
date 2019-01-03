@@ -7,22 +7,22 @@
 			<div class="form-group col-6 col-md-6 col-sm-6">
 				{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => 'control-label')) !!}
 				@if($ahorros = null)
-				{!! Form::text('dnicl', null, array('class' => 'form-control input-xs input-number', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
+				{!! Form::text('dnicl', null, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente','onkeypress'=>'return filterFloat(event,this);')) !!}
 				@else
-				{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
+				{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente','onkeypress'=>'return filterFloat(event,this);')) !!}
 				@endif
 				<p id="nombrescl" class="" >DNI Cliente Vacio</p>
 				<input type="hidden" id="persona_id" name="persona_id" value="" >
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px">
 				{!! Form::label('capital', 'Importe S/.: *', array('class' => '')) !!}
-				{!! Form::text('capital', null, array('class' => 'form-control input-md input-number', 'id' => 'capital', 'placeholder' => 'Ingrese el monto de ahorro')) !!}
+				{!! Form::text('capital', null, array('class' => 'form-control input-md', 'id' => 'capital', 'placeholder' => 'Ingrese el monto de ahorro', 'onkeypress'=>'return filterFloat(event,this);')) !!}
 			</div>
 		</div>
 		<div class = "form-group">
 			<div class="form-group col-6 col-md-6 col-sm-6">
 				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
-				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual')) !!}
+				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);')) !!}
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
 				{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
@@ -52,6 +52,12 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
+	var fechaActual = new Date();
+		var day = ("0" + fechaActual.getDate()).slice(-2);
+		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
+		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day;
+		$('#fechai').val(fechai);
+
 	if($('#dnicl').val() != ''){
 		$.get("personas/"+$('#dnicl').val()+"",function(response, facultad){
 			if(response.length>0){
@@ -61,31 +67,28 @@ $(document).ready(function() {
 				$("#nombrescl").html("El DNI ingresado no existe");
 			}
 		});
-	}else{
-		var fechaActual = new Date();
-		var day = ("0" + fechaActual.getDate()).slice(-2);
-		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
-		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day;
-		$('#fecha_inicio').val(fechai);
 	}
 
 	configurarAnchoModal('650');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 	$("input[name=dnicl]").keyup(function(event){
-		$.get("personas/"+event.target.value+"",function(response, facultad){
-			$('#nombrescl').val('');
-			$('#persona_id').val('');
-			if(response.length>0){
-				$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
-				$("#persona_id").val(response[0].id);
-			}else{
-				$("#nombrescl").html("El DNI ingresado no existe");
-			}
-		});
+		var valdni = event.target.value;
+		if(!isNaN(valdni) && valdni.length >6){
+			$.get("personas/"+event.target.value+"",function(response, facultad){
+				$('#nombrescl').val('');
+				$('#persona_id').val('');
+				if(response.length>0){
+					$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
+					$("#persona_id").val(response[0].id);
+				}else{
+					$("#nombrescl").html("El DNI ingresado no existe");
+				}
+			});
+		}
 	});
 	$("input[name=capital]").keyup(function(event){
 		var capitalahorro = $('#capital').val();
-		if(capitalahorro != ''){
+		if(capitalahorro != '' && !isNaN(capitalahorro)){
 			$('#totalpagar').html('Total a cancelar S/.: '+(capitalahorro - (-0.10)));
 		}else{
 			$('#totalpagar').html('Total a cancelar S/.: ');

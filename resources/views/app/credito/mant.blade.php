@@ -2,119 +2,270 @@
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-
 <div class="form-row">
-		<div id='txtcliente' class="form-group col-6 col-md-6 col-sm-6">
-			{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => '')) !!}
-			{!! Form::text('dnicl', null, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente')) !!}
-			<p id="nombrescl" class="" >DNI Cliente Vacio</p>
-			<input type="hidden" id="idcl" name="idcl" value="" tipocl=''>
-		</div>
-		<div id='txtaval' class="form-group col-6 col-md-6 col-sm-6">
-			{!! Form::label('dniavl', 'DNI del Aval:', array('id' => 'lblavl', 'class' => '')) !!}
-			{!! Form::text('dniavl', 	null, array('class' => 'form-control input-xs', 'id' => 'dniavl', 'placeholder' => 'Ingrese el DNI del Aval')) !!}
-			<p id="nombresavl" class="" >DNI Aval Vacio</p>
-			<input type="hidden" id="idavl", name="idavl" value="" tipoavl=''>
-		</div>
-		<div class="form-group col-6 col-md-6 col-sm-6">
-			{!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => '')) !!}
-			{!! Form::text('valor_credito', null, array('class' => 'form-control input-xs input-number', 'id' => 'valor_credito', 'placeholder' => 's/.')) !!}
-		</div>
-		<div class="form-group col-6 col-md-6 col-sm-6">
-			{!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => '')) !!}
-			{!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %')) !!}
-		</div>
-	
-		<div class="form-group col-6 col-md-6 col-sm-6">
-			{!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => '')) !!}
-			{!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses')) !!}
-		</div>
-	
-		<div class="form-group col-6 col-md-6 col-sm-6" >
-			{!! Form::label('fechacred', 'Fecha: *', array('class' => '')) !!}
-			{!! Form::date('fechacred', null, array('class' => 'form-control input-xs', 'id' => 'fechacred')) !!}
-		</div>
-		<div class="form-group col-12" >
-			{!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
-			{!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
-		</div>
-		<div class="form-group col-6 col-md-6 col-sm-6" >
-			{!! Form::label('btnCronograma', 'Ver cronograma de pagos: *', array('class' => '')) !!}
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> Cronograma', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
-		</div>
+    <div id='txtcliente' class="form-group col-6 col-md-6 col-sm-12">
+        {!! Form::label('dnicliente', 'DNI del Cliente: *', array('class' => '')) !!}
+        {!! Form::text('dnicliente', null, array('class' => 'form-control input-xs', 'id' => 'dnicliente', 'placeholder' => 'Ingrese el DNI del cliente', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+        <p id="nombrescliente" class="" >DNI Cliente Vacio</p>
+        <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
+    </div>
+    <div id='txtaval' class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
+        {!! Form::label('dniaval', 'DNI del Aval:', array('id' => 'lblavl', 'class' => '')) !!}
+        {!! Form::text('dniaval', 	null, array('class' => 'form-control input-xs', 'id' => 'dniaval', 'placeholder' => 'Ingrese el DNI del Aval', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+        <p id="nombresaval" class="" >DNI Aval Vacio</p>
+        <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="" tipoavl=''>
+    </div>
+    <div class="form-group col-6 col-md-6 col-sm-12">
+        {!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => '')) !!}
+        {!! Form::text('valor_credito', null, array('class' => 'form-control input-xs', 'id' => 'valor_credito', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+    </div>
+    <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
+        {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => '')) !!}
+        {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);')) !!}
+    </div>
+
+    <div class="form-group col-6 col-md-6 col-sm-12">
+        {!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => '')) !!}
+        {!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+    </div>
+
+    <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
+        {!! Form::label('fechacredito', 'Fecha: *', array('class' => '')) !!}
+        {!! Form::date('fechacredito', null, array('class' => 'form-control input-xs', 'id' => 'fechacredito')) !!}
+    </div>
+    <div class="form-group col-12" >
+        {!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
+        {!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
+    </div>
+    <div class="form-check form-group col-6 col-md-6 col-sm-6">
+        {!! Form::label('imprimir_voucher', '¿IMPRIMIR VOUCHER?:', array('class' => 'custom-control-input')) !!}
+        {!! Form::checkbox('imprimir_voucher', '0', false, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
+    </div>
+    <div class="form-group col-6 col-md-6 col-sm-6" >
+        {!! Form::button('<i class="fa fa-check fa-lg"></i>Ver Cronograma Cuotas', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
+    </div>
 </div>
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarCredito(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
 </div>
+
 {!! Form::close() !!}
+<script>
+    $(document).ready(function() {
+        var fechaActual = new Date();
+        var day = ("0" + fechaActual.getDate()).slice(-2);
+        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
+        var fechaactualcredito = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+        
+        $('#fechacredito').val(fechaactualcredito);
+        $("#dniaval").prop('disabled', true);
+        init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+        $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
+        configurarAnchoModal('650');
 
+        $("input[name=dnicliente]").keyup(function(event){
+            var dnicli = event.target.value+"";
+            if(dnicli.length > 6){
+                $.get("personas/"+event.target.value+"",function(response, facultad){
+                    $('#nombrescliente').val('');
+                    $('#persona_id').val('');
+                    $('#pers_aval_id').val('');
+                    if(response.length>0){
+                    
+                        $("#nombrescliente").html(response[0].nombres +" "+ response[0].apellidos);
+                        $("#persona_id").val(response[0].id);
+                        if( response[0].tipo.trim() == 'S'){
+                            $("#persona_id").attr('tipocl','s');
+                            $("#dniaval").prop('disabled', true);
+                            $("#lblavl").html('DNI del Aval:');
+                            $('#divMensajeError{{ $entidad }}').hide();
+                        }else{
+                            $("#persona_id").attr('tipocl','c');
+                            $("#dniaval").prop('disabled', false);
+                            $("#lblavl").html('DNI del Aval: *');
+                            document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "El La persona ingresada es un cliente, si fuese necesario ingrese un aval o garante.!";
+                            $('#divMensajeError{{ $entidad }}').show();
+                        }
+                    }else{
+                        $("#dniaval").prop('disabled', true);
+                        $("#lblavl").html('DNI del Aval:');
+                        $("#nombrescliente").html("El DNI ingresado no existe");
+                    }
+                });
+            }
+        
+        });
+        $("input[name=dniavl]").keyup(function(event){
+            $.get("personas/"+event.target.value+"",function(response, facultad){
+                $('#nombresaval').val('');
+                $('#pers_aval_id').val('');
+                if(response.length>0){
+                    $("#nombresaval").html(response[0].nombres +" "+ response[0].apellidos);
+                    $("#pers_aval_id").val(response[0].id);
+                }else{
+                    $("nombresaval").html("El DNI ingresado no existe");
+                }
+            });
+        });
 
-<script type="text/javascript">
-	$(document).ready(function() {
+        $("#imprimir_voucher").change(function(event) {
+            var checkbox = event.target;
+            if (checkbox.checked) {
+                $("#imprimir_voucher").val(1);
+            } else {
+                $("#imprimir_voucher").val(0);
+            }
+        });
 
-		var fechaActual = new Date();
-		var day = ("0" + fechaActual.getDate()).slice(-2);
-		var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
-		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-		
-		$('#fechacred').val(fechai);
-		$("#dniavl").prop('disabled', true);
-		console.log("INGRESO AQUI: "+fechai);
-
-		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('650');
-
-		
-		$("input[name=dnicl]").keyup(function(event){
-			$.get("personas/"+event.target.value+"",function(response, facultad){
-				//console.log("datos de la persona");
-				console.log(response);
-				$('#nombrescl').val('');
-				$('#idcl').val('');
-				$('#idavl').val('');
-				if(response.length>0){
-					console.log("tipo: "+response[0].tipo);
-					
-					$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
-					console.log("esponse[0]: "+response[0].nombres +" "+ response[0].apellidos);
-					$("#idcl").val(response[0].id);
-					console.log(response[0].tipo);
-					if( response[0].tipo.trim() == 'S'){
-						$("#dniavl").prop('disabled', true);
-						$("#lblavl").html('DNI del Aval:');
-					}else{
-						$("#dniavl").prop('disabled', false);
-						$("#lblavl").html('DNI del Aval: *');
-						$("#divMensajeError").html("El cliente necesita un aval obligatorio");
-						$('#divMensajeError').show();
+    });
+    function filterFloat(evt,input){
+		// Backspace = 8, Enter = 13, ‘0′ = 48, ‘9′ = 57, ‘.’ = 46, ‘-’ = 43
+		var key = window.Event ? evt.which : evt.keyCode;    
+		var chark = String.fromCharCode(key);
+		var tempValue = input.value+chark;
+		if(key >= 48 && key <= 57){
+			if(filter(tempValue)=== false){
+				return false;
+			}else{       
+				return true;
+			}
+		}else{
+			if(key == 8 || key == 13 || key == 0) {     
+				return true;              
+			}else if(key == 46){
+					if(filter(tempValue)=== false){
+						return false;
+					}else{       
+						return true;
 					}
-				}else{
-					$("#dniavl").prop('disabled', true);
-					$("#lblavl").html('DNI del Aval:');
-					$("#nombrescl").html("El DNI ingresado no existe");
-				}
-			});
-		});
+			}else{
+				return false;
+			}
+		}
+	}
+	function filter(__val__){
+		var preg = /^([0-9]+\.?[0-9]{0,2})$/; 
+		if(preg.test(__val__) === true){
+			return true;
+		}else{
+		return false;
+		}
+	}
+    function guardarCredito(entidad, id){
+        if($("#imprimir_voucher").val() == 1){
+            guardar(entidad, id);
+            //window.open(rutarecibocredito, "Voucher credito", "width=700, height=500, left=50, top=20");
+        }else{
+            guardar(entidad, id);
+        }
+    }
+    function abrirmodal(datahtml){
+        var boxmodal = bootbox.dialog({
+                                title: 'Cronograma de Cuotas',
+                                className: 'modalcronograma',
+                                message: ''+datahtml,
+                                closeButton: true
+                            });
+            boxmodal.prop('id', 'modalcronograma');
+            boxmodal.modal('show');
+            $('#btncerraCronograma').click(function(){
+                boxmodal.modal("hide");
+                $('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"}); 
+            });
+            $("#modalcronograma").on('hidden.bs.modal', function () {
+                $('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});   
+            });
+            var divModal = '.modalcronograma';
+            $(divModal).children('.modal-dialog').css('width','auto');
+            $(divModal).children('.modal-dialog').css('max-width', '550px');
+            $(divModal).children('.modal-dialog').css('margin-left','auto');
+            $(divModal).children('.modal-dialog').css('margin-right','auto');
+            
+    }
 
-		$("input[name=dniavl]").keyup(function(event){
-			$.get("personas/"+event.target.value+"",function(response, facultad){
-				$('#nombresavl').val('');
-				$('#idavl').val('');
-				if(response.length>0){
-					$("#nombresavl").html(response[0].nombres +" "+ response[0].apellidos);
-					$("#idavl").val(response[0].id);
-				}else{
-					$("#nombresavl").html("El DNI ingresado no existe");
-				}
-			});
-		});
+    function generarCronograma(){
+        var periodo= parseInt($('#periodo').val());
+		var Monto= parseFloat($('#valor_credito').val());
+		var Interes= parseFloat($('#tasa_interes').val());
+		var CapitalInicial= parseFloat($('#valor_credito').val());
+        console.log('valor crdito: '+Monto);
+        if(isNaN(periodo)|| isNaN(Monto) || isNaN(Interes)){
+            bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese que los campos Monto, Interes mensual, Periodo y fecha, contengan valor para el debido cálculo. !</div>");
+        }else{
+            
+            var mdCronograma = "<fieldset class='col-12'><table id='example1' class='table table-bordered table-striped table-condensed table-hover'><thead><tr>"+
+                        "<th style='width: 5%' class='text-center'>#</th>"+
+                        "<th style='width: 10%'>INTERES</th>"+
+                        "<th style='width: 30%' class='text-center'>PARTE CAPITAL</th>"+
+                        "<th style='width: 30%' class='text-center'>MONTO CUOTA</th>"+
+                        "<th style='width: 25%' class='text-center'>FECHA DE PAGO</th>"+
+                        "</tr></thead><tbody id='filasTcuotas'></tbody></table>"+
+                        "<div class='form-row'><div class='form-group col-12' >"+
+                        "<label for='' id='interesTotal' class=''>Interes total: </label>"+
+                        "<label for='' id='capitalTotal' class=''>Capital total: </label>"+
+                        "</div></div><div class='modal-footer'><button type='button' class='btn btn-secondary' id='btncerraCronograma' >Close</button></div>"+
+                        "</fieldset>";
+            
+            abrirmodal(mdCronograma);
+            $('#filasTcuotas').empty();
+            
+            var montInteres=0.00;
+            var montCapital=0.00;
+            var montCuota = 0.00;
+            var fechac = new Date($('#fechacredito').val());
+            fechac.setDate(fechac.getDate() + 1);
+            var interesAcumulado=0.00;
+            var capitalTotal = 0.00;
+            var sumacuotas = 0.00;
+            var fila='';
+            //FORMULA: CUOTA = (Interes * CpitalInicial)/(1-  (1/ (1+InteresMensual)^NumeroCuotas)  );  Math.pow(7, 2);
+            montCuota =((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo)));
+            var i=0;
+            
+            for(i=0; i<periodo; i++){
+                fechac.setMonth(fechac.getMonth() + 1);
+                var day = ("0" + fechac.getDate()).slice(-2);
+                var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
+                montInteres =  (Interes/100)*CapitalInicial;
+                interesAcumulado = montInteres + interesAcumulado;
+                montCapital= montCuota - montInteres;
+                CapitalInicial = CapitalInicial - montCapital;
+                capitalTotal += montCapital;
+                sumacuotas += montCuota;
+                console.log("FechaC:"+fechac);
+                fila = fila + "<tr>"
+                        +"<td>"+(i+1)+"</td>"
+                        +"<td>"+RoundDecimal(montInteres,2)+"</td>"
+                        +"<td>"+RoundDecimal(montCapital,2)+"</td>"
+                        +"<td>"+RoundDecimal(montCuota,2)+"</td>"
+                        +"<td>"+fechac.getDate()+"/"+(fechac.getMonth()+1)+"/"+(fechac.getFullYear())+"</td>"
+                        +"</tr>";
+            }
+            
+            interesAcumulado = interesAcumulado;
+            fila += "<tr><td>TOTAL</td><td>"+RoundDecimal(interesAcumulado,2)+"</td><td>"+
+                    RoundDecimal(capitalTotal,2)+"</td><td>"+RoundDecimal(sumacuotas,2)+"</td></tr>";
+            
+            $("#filasTcuotas").append(fila);
+            $('#interesToal').empty();
+            $('#capitalTotal').empty();
+            $('#interesTotal').text("Interes total: " +RoundDecimal(interesAcumulado,1));
+            $('#capitalTotal').text("Total al finalizar: " + (RoundDecimal(capitalTotal,1)+RoundDecimal(interesAcumulado,1)));
+        }
+	}
 
-	}); 
+	function RoundDecimal(numero, decimales) {
+		numeroRegexp = new RegExp('\\d\\.(\\d){' + decimales + ',}');   // Expresion regular para numeros con un cierto numero de decimales o mas
+		if (numeroRegexp.test(numero)) {         // Ya que el numero tiene el numero de decimales requeridos o mas, se realiza el redondeo
+			return Number(numero.toFixed(decimales));
+		} else {
+			return Number(numero.toFixed(decimales)) === 0 ? 0 : numero;  // En valores muy bajos, se comprueba si el numero es 0 (con el redondeo deseado), si no lo es se devuelve el numero otra vez.
+		}
+	}
 
 </script>
