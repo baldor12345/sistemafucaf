@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
     {
         $now = new DateTime;
 		$usertype_id = DB::table('usertype')->where('name', '=', 'ADMINISTRADOR PRINCIPAL')->first()->id;
-		$persona_id = DB::table('persona')->where('dni','=','12345678')->first()->id;
+		$persona_id = DB::table('persona')->where('dni','=','41604698')->first()->id;
 		DB::table('user')->insert(array(
 				'login'          => 'admin',
 				'password'       => Hash::make('123456'),
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
 				'updated_at'     => $now
 			));
 		$usertype_id = DB::table('usertype')->where('name', '=', 'TESORERO')->first()->id;
-		$persona_id = DB::table('persona')->where('dni','=','12345679')->first()->id;
+		$persona_id = DB::table('persona')->where('dni','=','17643035')->first()->id;
 		DB::table('user')->insert(array(
 				'login'          => '12345678',
 				'password'       => Hash::make('123456'),

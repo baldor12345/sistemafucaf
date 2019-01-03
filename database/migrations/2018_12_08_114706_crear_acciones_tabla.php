@@ -22,9 +22,11 @@ class CrearAccionesTabla extends Migration
             $table->integer('persona_id')->unsigned();
             $table->integer('configuraciones_id')->unsigned();
             $table->integer('caja_id')->unsigned();
+            $table->integer('concepto_id')->unsigned();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
             $table->foreign('caja_id')->references('id')->on('caja')->onDelete('restrict')->onUpdate('restrict');
             $table->foreign('configuraciones_id')->references('id')->on('configuraciones')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('concepto_id')->references('id')->on('concepto')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
             $table->softDeletes();
         });

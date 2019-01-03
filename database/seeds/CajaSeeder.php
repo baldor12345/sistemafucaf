@@ -12,7 +12,7 @@ class CajaSeeder extends Seeder
     public function run()
     {
         $now = new DateTime;
-        $persona_id = DB::table('persona')->where('dni','=','12345678')->first()->id;
+        $persona_id = DB::table('persona')->where('dni','=','41604698')->first()->id;
         DB::table('caja')->insert(array(
                 'titulo'          => 'Caja 00001',
                 'descripcion'       => 'ok',

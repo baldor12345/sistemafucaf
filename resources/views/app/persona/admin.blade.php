@@ -36,8 +36,8 @@
 						{!! Form::text('nombres', '', array('class' => 'form-control input-sm', 'id' => 'nombres')) !!}
 					</div>
 					<div class="form-group">
-						{!! Form::label('tipo', 'Tipo:', array('class' => 'input-sm')) !!}
-						{!! Form::select('tipo', $cboTipo, null, array('class' => 'form-control input-sm', 'id' => 'tipo')) !!}
+						{!! Form::label('tipoi', 'Tipo:', array('class' => 'input-sm')) !!}
+						{!! Form::select('tipoi', $cboTipo, null, array('class' => 'form-control input-sm', 'id' => 'tipoi')) !!}
 					</div>
 
 					<div class="form-group">

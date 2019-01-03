@@ -41,7 +41,6 @@ class Persona extends Model
 		            		$subquery->where('tipo', 'LIKE', '%'.$tipo.'%');
 		            	}
                     })
-        			->orderBy('codigo', 'ASC')
         			->orderBy('nombres', 'ASC');
     }
 

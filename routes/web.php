@@ -128,6 +128,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
     Route::post('acciones/guardarventa/{id}', 'AccionesController@guardarventa')->name('acciones.guardarventa');
     Route::get('/generarvoucheraccionPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionPDF')->name('generarvoucheraccionPDF');
+    Route::get('/generarnormasaccionPDF', 'AccionesController@generarnormasaccionPDF')->name('generarnormasaccionPDF');
     
      /*CREDITO*/
      Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');

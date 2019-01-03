@@ -94,22 +94,50 @@ class Acciones extends Model
     }
 
     public static function cant_acciones_acumuladas($persona_dni){
-
         $persona_id = DB::table('persona')->where('dni', $persona_dni)->pluck('id');
         return  DB::table('acciones')
-                    ->join('persona', 'acciones.persona_id', '=', 'persona.id')
-                    ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
-                    ->select( 
-                            'persona.nombres as persona_nombres',
-                            'persona.dni as persona_dni',
-                            'configuraciones.limite_acciones as limite_acciones',
-                            DB::raw('count(acciones.estado) as cantidad_accion_acumulada')
-                            )
-                            ->where('acciones.persona_id', '!=', $persona_id)
-                            ->where('acciones.estado', '=', 'C')
-                            ->groupBy('configuraciones.limite_acciones','persona.dni','persona.nombres','acciones.persona_id')->get();
+                ->join('persona', 'acciones.persona_id', '=', 'persona.id')
+                ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
+                ->select( 
+                        'persona.nombres as persona_nombres',
+                        'persona.tipo as persona_tipo',
+                        'configuraciones.limite_acciones as limite_acciones',
+                        DB::raw('count(acciones.estado) as cantidad_accion_acumulada')
+                )
+                ->where('acciones.persona_id', '!=', $persona_id)
+                ->where('acciones.estado', '=', 'C')
+                ->groupBy('configuraciones.limite_acciones','persona.tipo', 'persona.nombres')->get();
     }
 
+    //metodo listar cantidad de acciones por socio para el calculo de las normas 
+    public static function list_acciones_persona()
+    {
+        $results = DB::table('acciones')
+                    ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
+                    ->join('persona', 'acciones.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres AS persona_nombres',
+                        'persona.apellidos AS persona_apellidos',
+                        DB::raw("COUNT(acciones.estado) as cantidad_accion"),
+                        'configuraciones.limite_acciones AS limite_accion'
+                    )
+                    ->where('acciones.estado','=','C')
+                    ->where('persona.tipo','=','S')
+                    ->orWhere('persona.tipo', 'SC')
+                    ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos');
+        return $results;
+    }
     
+    /*
+    SELECT 
+				persona.nombres AS persona_nombres,
+				persona.apellidos AS persona_apellidos,
+				COUNT(acciones.estado) AS cantidad_accion,
+				configuraciones.ganancia_accion AS acciones_ganancia
+    FROM acciones INNER JOIN configuraciones ON (acciones.configuraciones_id = configuraciones.id)
+                                INNER JOIN persona ON (acciones.persona_id = persona.id)
+    WHERE acciones.estado = 'C' AND (persona.tipo = 'S' OR persona.tipo ='SC')
+    GROUP BY configuraciones.ganancia_accion, persona.tipo, persona.nombres,persona.apellidos;
+    */
 
 }
