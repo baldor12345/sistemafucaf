@@ -78,7 +78,7 @@
 				<td width="40%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
                 <td width="12%" align="center"><span class="text">{{ $value->cantidad_accion }}</span></td>
                 <td width="12%" align="center"><span class="text">{{ number_format((($value->cantidad_accion*100)/$cant),2) }}%</span></td>
-                @if(number_format((($value->cantidad_accion*100)/$cant),2)<= 0.20)
+                @if(number_format((($value->cantidad_accion*100)/$cant),2)<=($value->limite_accion*100))
                 <td width="25%" align="center"><span class="text" style="color:green;font-weight: bold;">POSITIVO</span></td>
                 @else
                 <td width="25%" align="center"><span class="text" style="color:red;font-weight: bold;">NEGATICO</span></td>
