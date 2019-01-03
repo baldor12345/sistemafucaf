@@ -425,4 +425,30 @@ class AccionesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    //metodo para generar normas en pdf
+    public function generarnormasaccionPDF(Request $request)
+    {    
+        $list        = Acciones::list_acciones_persona();
+        $lista           = $list->get();
+
+        $cant = DB::table('acciones')->where('estado', 'C')->count();
+
+        $year = date("Y");
+        $month = date("m");
+        $day = date("d");
+
+        $titulo = "normas_acciones";
+        $view = \View::make('app.acciones.generarnormasaccionPDF')->with(compact('lista', 'cant','year','month','day'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        PDF::SetLeftMargin(20);
+        //PDF::SetRightMargin(110);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
 }
