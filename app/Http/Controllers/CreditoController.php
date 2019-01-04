@@ -36,6 +36,7 @@ class CreditoController extends Controller{
         'pagarcuota' => 'creditos.pagarcuota',
         'generareportecuotasPDF' => 'creditos.generareportecuotasPDF',
         'generarecibopagocuotaPDF' => 'creditos.generarecibopagocuotaPDF',
+        'generarecibocreditoPDF' => 'creditos.generarecibocreditoPDF',
         'abrirpdf' => 'creditos.abrirpdf'
     );
 
@@ -98,10 +99,11 @@ class CreditoController extends Controller{
         $listar = Libreria::getParam($request->input('listar'), 'NO');
         $entidad = 'Credito';
         $credito = null;
+        $ruta = $this->rutas;
         $formData = array('creditos.store');
         $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id'));
+        return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta'));
     
     }
 /*************--REGISTRO DE CREDITO--************ */
@@ -120,8 +122,8 @@ class CreditoController extends Controller{
             if ($validacion->fails()) {
                 return $validacion->messages()->toJson();
             }
-                $configuraciones = configuraciones::all()->last();
-                $error = DB::transaction(function() use($request, $caja_id){
+            $configuraciones = configuraciones::all()->last();
+            $error = DB::transaction(function() use($request, $caja_id){
                 $configuraciones = configuraciones::all()->last();
                 $periodo = $request->input('periodo');
                 $fechainicio = $request->input('fechacredito').date(" H:i:s");//**** */
@@ -197,11 +199,15 @@ class CreditoController extends Controller{
                 $transaccion->monto_credito = $valorcredito;
                 $transaccion->save();
             });
+            $ultimo_credito = Credito::all()->last();
             $res = $error;
         }else{
             $res = 'Caja no aperturada, asegurece de aperturar primero para registrar alguna transacción.!';
         }
-        return is_null($res) ? "OK" : $res;
+        $ultimo_credito = Credito::all()->last();
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $ultimo_credito->id);
+        return $respuesta;
     }
 /*************--ELIMINAR CREDITO--*************** */
     public function eliminar($id, $listarLuego){
@@ -473,7 +479,27 @@ class CreditoController extends Controller{
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
-    
+
+/*************--RECIBO CREDITO PDF--********** */
+    public function generarecibocreditoPDF($credito_id){   
+        
+        $credito = Credito::find($credito_id);
+        $persona = Persona::find($credito->persona_id);
+        $numoperacion = '--';
+        $titulo ='Voucher-Credito -'.$persona->codigo;
+        $view = \View::make('app.credito.recibocreditopdf')->with(compact('credito', 'persona', 'numoperacion'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
 /*************--OTRAS FUNCIONES--**************** */
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 

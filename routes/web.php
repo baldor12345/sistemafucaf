@@ -142,6 +142,8 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/listardetallecuotas', 'CreditoController@listardetallecuotas')->name('creditos.listardetallecuotas');
      Route::get('/generarecibopagocuotaPDF/{cuota_id?}', 'CreditoController@generarecibopagocuotaPDF')->name('creditos.generarecibopagocuotaPDF');
      Route::get('/generareportecuotasPDF/{credito_id?}', 'CreditoController@generareportecuotasPDF')->name('creditos.generareportecuotasPDF');
+     Route::get('/generarecibocreditoPDF/{credito_id?}', 'CreditoController@generarecibocreditoPDF')->name('creditos.generarecibocreditoPDF');
+     
      //Route::get('creditos/abrirpdf', 'CreditoController@abrirpdf')->name('creditos.abrirpdf');
      
     /*AHORROS*/
@@ -158,10 +160,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/listarhistorico', 'AhorrosController@listarhistorico')->name('ahorros.listarhistorico');
     
     Route::get('/generareciboahorroPDF', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF');
-    Route::get('/generareciboahorroPDF1/{transaccion_id}', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF1');
+    Route::get('/generareciboahorroPDF1/{transaccion_id?}', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF1');
     
-    Route::get('/generareciboretiroPDF', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF');
-    Route::get('/generareciboretiroPDF1/{transaccion_id}', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF1');
+    Route::get('/generareciboretiroPDF/{transaccion_id?}', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF');
     Route::get('/generareportehistoricoahorrosPDF/{persona_id?}/{anio?}', 'AhorrosController@generareportehistoricoahorrosPDF')->name('ahorros.generareportehistoricoahorrosPDF');
     
     /*GASTOS*/

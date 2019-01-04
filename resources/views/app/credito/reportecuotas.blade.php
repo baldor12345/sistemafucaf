@@ -33,17 +33,34 @@
 		<table class ="linebordercenter">
             <thead>
                 <tr>
-                    <th style="font-size: 8px" colspan="1">FECHA PRESTAMO</th>
-                    <th style="font-size: 8px" colspan="1">Fecha de pago</th>
-                    <th style="font-size: 8px" colspan="1">Numero de cuota</th>
-                    <th style="font-size: 8px" colspan="1">Monto de cuota S/.</th>
-                    <th style="font-size: 8px" colspan="1">Capital</th>
-                    <th style="font-size: 8px" colspan="1">Interes</th>
-                    <th style="font-size: 8px" colspan="1">Fecha real de pago</th>
-                    <th style="font-size: 8px" colspan="1">Interes moratorio</th>
-                    <th style="font-size: 8px" colspan="1">Monto real cuota S/.</th>
-                    <th style="font-size: 8px" colspan="1">Saldo de capital S/.</th>
-                    <th style="font-size: 8px" colspan="1">Estado de cuota</th>
+                    <td style="font-size: 8px" colspan="2">Monto Préstamo: </td>
+                    <td style="font-size: 8px" colspan="1">{{ $credito->valor_credito }}</td>
+                    <td style="font-size: 8px" colspan="1"> </td>
+                    <td style="font-size: 8px" colspan="2">Tasa Efectiva Mensual: </td>
+                    <td style="font-size: 8px" colspan="1">{{ $credito->tasa_interes }} %</td>
+                    <td style="font-size: 8px" colspan="4"> </td>
+                    
+                </tr>
+                <tr>
+                    <td style="font-size: 8px" colspan="2">NUmero de Cuotas: </td>
+                    <td style="font-size: 8px" colspan="1">{{ $credito->periodo }}</td>
+                    <td style="font-size: 8px" colspan="1"></td>
+                    <td style="font-size: 8px" colspan="2">Estado de Cuota: </td>
+                    <td style="font-size: 8px" colspan="3">P=Pagada C=Pago total capital</td>
+                    <td style="font-size: 8px" colspan="2"> </td>
+                </tr>
+                <tr>
+                    <th style="font-size: 8px" colspan="1"><strong>FECHA PRESTAMO</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Fecha de pago</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Numero de cuota</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Monto de cuota S/.</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Capital</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Interes</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Fecha real de pago</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Interes moratorio</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Monto real cuota S/.</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Saldo de capital S/.</strong></th>
+                    <th style="font-size: 8px" colspan="1"><strong>Estado de cuota</strong></th>
                 </tr>
             </thead>
             <tbody>
@@ -76,23 +93,7 @@
                     </tr>
                 @endforeach
 
-                <tr>
-                    <td style="font-size: 8px" colspan="2">Monto Préstamo: </td>
-                    <td style="font-size: 8px" colspan="1">{{ $credito->valor_credito }}</td>
-                    <td style="font-size: 8px" colspan="1"> </td>
-                    <td style="font-size: 8px" colspan="2">Tasa Efectiva Mensual: </td>
-                    <td style="font-size: 8px" colspan="1">{{ $credito->tasa_interes }} %</td>
-                    <td style="font-size: 8px" colspan="4"> </td>
-                    
-                </tr>
-                <tr>
-                    <td style="font-size: 8px" colspan="2">NUmero de Cuotas: </td>
-                    <td style="font-size: 8px" colspan="1">{{ $credito->periodo }}</td>
-                    <td style="font-size: 8px" colspan="1"></td>
-                    <td style="font-size: 8px" colspan="2">Estado de Cuota: </td>
-                    <td style="font-size: 8px" colspan="3">P=Pagada C=Pago total capital</td>
-                    <td style="font-size: 8px" colspan="2"> </td>
-                </tr>
+               
             <tbody>
 		</table>
 	</div>
