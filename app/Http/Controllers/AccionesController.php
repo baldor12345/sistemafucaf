@@ -426,6 +426,28 @@ class AccionesController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
     }
 
+    //metodo para generar voucher en pdf
+    public function generarvoucheraccionventaPDF($id, $cant, $fecha, Request $request)
+    {    
+        $detalle        = Acciones::listAcciones($id);
+        $lista           = $detalle->get();
+        $persona = DB::table('persona')->where('id', $id)->first();
+        $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+        $titulo = $persona->nombres.$cant;
+        $view = \View::make('app.acciones.generarvoucheraccionventaPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(110);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
     //metodo para generar normas en pdf
     public function generarnormasaccionPDF(Request $request)
     {    
