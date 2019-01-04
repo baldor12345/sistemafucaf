@@ -70,13 +70,15 @@ class CajaController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Nombre', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha-hora Apertura', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha-hora Cierre', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Monto I.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Monto C.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Monto D.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Apertura', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Cierre', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto Ini.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto Cie.', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Monto Dif.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '6');
+        $cabecera[]       = array('valor' => 'Movimiento', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'Reportes', 'numero' => '3');
+        $cabecera[]       = array('valor' => '', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -222,7 +224,8 @@ class CajaController extends Controller
             }
         }
         $diferencia= $ingresos-$egresos;
-
+        $monto_cierre=0;
+        $monto_cierre = ($result->monto_iniciado-$diferencia);
 
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true) {
@@ -236,7 +239,7 @@ class CajaController extends Controller
         $formData       = array('caja.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Cerrar Caja';
-        return view($this->folderview.'.cierrecaja')->with(compact( 'formData', 'caja','listar','entidad', 'boton','diferencia'));
+        return view($this->folderview.'.cierrecaja')->with(compact( 'formData', 'caja','listar','entidad', 'boton','diferencia','monto_cierre'));
     }
 
     /**

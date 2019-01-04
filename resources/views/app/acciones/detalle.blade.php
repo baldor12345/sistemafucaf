@@ -29,7 +29,12 @@
 								@endif
 								<td fechaT='{{ $value->acciones_fecha }}' > {{ Date::parse($value->acciones_fecha)->format('d/m/y') }} </td>
 								<td estadoT='{{ $value->acciones_descripcion }}'>{{$value->acciones_descripcion}}</td>
+								@if($value->acciones_estado === 'C')
 								<td><a target="_blank" href="{{ route('generarvoucheraccionPDF', array('id' => $value->acciones_persona_id,'cant' => $value->cantidad_accion_comprada, 'fecha' => $value->acciones_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
+								@else
+								<td><a target="_blank" href="{{ route('generarvoucheraccionventaPDF', array('id' => $value->acciones_persona_id,'cant' => $value->cantidad_accion_comprada, 'fecha' => $value->acciones_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
+								@endif
+								
 							</tr>
 							<?php
 							$contador = $contador + 1;

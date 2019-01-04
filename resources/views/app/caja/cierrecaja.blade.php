@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\DB;
 <div class="form-group">
 	{!! Form::label('diferencia_monto', 'Diferencia:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('diferencia_monto', 0.0 , array('class' => 'form-control input-xs', 'id' => 'diferencia_monto', 'placeholder' => 'S/.')) !!}
+		{!! Form::text('diferencia_monto', $monto_cierre , array('class' => 'form-control input-xs', 'id' => 'diferencia_monto', 'placeholder' => 'S/.')) !!}
 	</div>
 </div>
 

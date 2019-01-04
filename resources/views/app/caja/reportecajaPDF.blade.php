@@ -62,7 +62,7 @@
 			</tr>
 			<tr >
 				<td align="center" style="font-size: 10px" colspan="3"><b>LA FINANCIERA ÚNICA DE CRÉDITO Y AHORRO FAMILIAR – FUCAF</b></td>
-				<td rowspan="8" align="right" ><img src="assets/images/users/fucaf.png" width="125" height="115" /></td>
+				<td rowspan="6" align="right" ><img src="assets/images/users/fucaf.png" width="125" height="95" /></td>
 			</tr>
 			<tr>
 				<td align="center" style="font-size: 10px" colspan="3">LAS BRISAS-CHICLAYO</td>
@@ -78,17 +78,13 @@
 				</td>
 			</tr>
 			<tr>
-				<td align="left" style="font-size: 10px" colspan="3">
+				<td align="left" style="font-size: 10px" colspan="1">
 					<b>Monto inicio:</b> {{ $caja->monto_iniciado }} 
 				</td>
-			</tr>
-			<tr>
-				<td align="left" style="font-size: 10px" colspan="3">
+				<td align="left" style="font-size: 10px" colspan="1">
 					<b>Monto cierre:</b> {{ $caja->monto_cierre }}
 				</td>
-			</tr>
-			<tr>
-				<td align="left" style="font-size: 10px" colspan="3">
+				<td align="left" style="font-size: 10px" colspan="1">
 					<b>Cajero:</b> {{ $persona->nombres.' '.$persona->apellidos }}
 				</td>
 			</tr>
