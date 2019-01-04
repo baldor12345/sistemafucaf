@@ -41,7 +41,7 @@ class AhorrosController extends Controller
             'generareciboahorroPDF' => 'ahorros.generareciboahorroPDF',
             'generareciboahorroPDF1' => 'ahorros.generareciboahorroPDF1',
             'generareciboretiroPDF' => 'ahorros.generareciboretiroPDF',
-            'generareciboretiroPDF1' => 'ahorros.generareciboretiroPDF1',
+            
             'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion',
             'generareportehistoricoahorrosPDF' => 'ahorros.generareportehistoricoahorrosPDF'
         );
@@ -462,9 +462,9 @@ class AhorrosController extends Controller
 
         PDF::SetTitle($titulo);
         PDF::AddPage('P', 'A4', 'es');
-        PDF::SetTopMargin(20);
-        PDF::SetLeftMargin(40);
-        PDF::SetRightMargin(40);
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
@@ -475,6 +475,7 @@ class AhorrosController extends Controller
     //metodo para generar voucher ahorro en pdf
     public function generareciboretiroPDF($transaccion_id = 0)
     {   
+       
         if($transaccion_id == 0){
             $transaccion = Transaccion::all()->last();
         }else{
@@ -482,20 +483,19 @@ class AhorrosController extends Controller
         }
         $persona = Persona::find($transaccion->persona_id);
         $fecharetiro = $transaccion->fecha;
-        $numoperacion = 01;//por definir
+        $numoperacion = 01;
         $codcliente = $persona->codigo;
         $nombrecliente = $persona->nombres.' '.$persona->apellidos; 
         $montoretirado = $transaccion->monto;
-        //$ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-retiro-'.$persona->codigo;
         $view = \View::make('app.ahorros.reciboretiroahorro')->with(compact('fecharetiro', 'numoperacion', 'codcliente','nombrecliente', 'montoretirado'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
         PDF::AddPage('P', 'A4', 'es');
-        PDF::SetTopMargin(20);
-        PDF::SetLeftMargin(40);
-        PDF::SetRightMargin(40);
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
@@ -517,9 +517,9 @@ class AhorrosController extends Controller
 
         PDF::SetTitle($titulo);
         PDF::AddPage('P', 'A4', 'es');
-        PDF::SetTopMargin(20);
-        PDF::SetLeftMargin(40);
-        PDF::SetRightMargin(40);
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');

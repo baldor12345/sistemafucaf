@@ -5,75 +5,69 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
-	.contenedor{
-			position: absolute;
-			top:50%;
-			left:50%;
-			width:200px;
-			margin-left:-200px;
-			/*determinamos una altura*/
-			height:300px;
-			/*indicamos que el margen superior, es la mitad de la altura*/
-			margin-top:-150px;
-			border:1px solid #808080;
-			padding:5px;
-		}
-</style>
+		.contenedor{
+				border-collapse: collapse;
+				border:1px solid #808080;
+				padding-left: 4px;
+			}
+|	</style>
 
 </head>
 <body>
-	<div class="contenedor">
-		<table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
+		<table width="50%" class="table contenedor">
+				
 			<tr>
-				<td style="font-size: 15px" colspan="4">FUCAF</td>
+				<td style="font-size: 10px" colspan="4"><strong>FUCAF</strong></td>
 			</tr>
 			<tr >
-                <td style="font-size: 15px" colspan="4">LAS BRISAS-CHICLAYO</td>
+                <td style="font-size: 10px" colspan="4"><strong>LAS BRISAS-CHICLAYO</strong></td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="4"></td>
+                <td style="font-size: 10px" colspan="4"></td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="4"></td>
+                <td style="font-size: 10px" colspan="4"></td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" >FECHA: </td>
-                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('d/m/y') }}</td>
-                <td style="font-size: 15px" >HORA: </td>
-                <td style="font-size: 15px" >{{ Date::parse($fechaahorro)->format('H:i:s') }} </td>
+                <td style="font-size: 10px" ><strong>FECHA: </strong></td>
+                <td style="font-size: 10px" >{{ Date::parse($fechaahorro)->format('d/m/y') }}</td>
+                <td style="font-size: 10px" ><strong>HORA: </strong></td>
+                <td style="font-size: 10px" >{{ Date::parse($fechaahorro)->format('H:i:s') }} </td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" >N° OPE.: </td>
-                <td style="font-size: 15px" >{{$numoperacion}}</td>
-                <td style="font-size: 15px" >COD. CLI.: </td>
-                <td style="font-size: 15px" >{{$codcliente}} </td>
+                <td style="font-size: 10px" ><strong>N° OPE.: </strong></td>
+                <td style="font-size: 10px" >{{$numoperacion}}</td>
+                <td style="font-size: 10px" ><strong>COD. CLI.: </strong></td>
+                <td style="font-size: 10px" >{{$codcliente}} </td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="4"></td>
+                <td style="font-size: 10px" colspan="4"></td>
 			</tr>
             <tr >
-                <td align="center"  style="font-size: 15px" colspan="4">
-                ---------------AHORRO---------------
+                <td align="center"  style="font-size: 10px" colspan="4">
+					<strong>---------------AHORRO---------------</strong>
                 </td>
 			</tr>
             <tr >
-                <td style="font-size: 15px">CLIENTE: </td>
-                <td style="font-size: 15px" colspan="3">{{$nombrecliente}} </td>
+                <td style="font-size: 10px"><strong>CLIENTE: </strong></td>
+                <td style="font-size: 10px" colspan="3">{{$nombrecliente}} </td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="3"></td>
-                <td style="font-size: 15px">Ahorro Actual</td>
+                <td style="font-size: 10px" colspan="3"></td>
+                <td style="font-size: 10px"><strong>Ahorro Actual</strong></td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="2">MONTO AHORRADO S/.</td>
-                <td style="font-size: 15px">{{$montoahorrado}}</td>
-                <td style="font-size: 15px">{{ $ahorroactual }}</td>
+                <td style="font-size: 10px" colspan="2"><strong>MONTO AHORRADO S/.</strong></td>
+                <td style="font-size: 10px">{{$montoahorrado}}</td>
+                <td style="font-size: 10px">{{ $ahorroactual }}</td>
 			</tr>
             <tr >
-                <td style="font-size: 15px" colspan="2">A CUANTOS MESES</td>
-                <td style="font-size: 15px" colspan="2">POR DEFINIR</td>
+                <td style="font-size: 10px" colspan="2"><strong>A CUANTOS MESES</strong></td>
+                <td style="font-size: 10px" colspan="2">POR DEFINIR</td>
+			</tr>
+			<tr >
+				<td style="font-size: 10px; text-align: center" colspan="4">----------------------------------------------------------</td>
 			</tr>
 		</table>
-	</div>
 </body>
 </html>

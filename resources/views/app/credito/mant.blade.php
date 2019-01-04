@@ -39,7 +39,7 @@
     </div>
     <div class="form-check form-group col-6 col-md-6 col-sm-6">
         {!! Form::label('imprimir_voucher', '¿IMPRIMIR VOUCHER?:', array('class' => 'custom-control-input')) !!}
-        {!! Form::checkbox('imprimir_voucher', '0', false, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
+        {!! Form::checkbox('imprimir_voucher', '1', true, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
     </div>
     <div class="form-group col-6 col-md-6 col-sm-6" >
         {!! Form::button('<i class="fa fa-check fa-lg"></i>Ver Cronograma Cuotas', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
@@ -48,7 +48,7 @@
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarCredito(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarCredito(\''.$entidad.'\', \''.URL::route($ruta["generarecibocreditoPDF"], array()).'\')')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -156,14 +156,40 @@
 		return false;
 		}
 	}
-    function guardarCredito(entidad, id){
-        if($("#imprimir_voucher").val() == 1){
-            guardar(entidad, id);
-            //window.open(rutarecibocredito, "Voucher credito", "width=700, height=500, left=50, top=20");
-        }else{
-            guardar(entidad, id);
-        }
+
+    function guardarCredito(entidad, rutarecibo) {
+        var idformulario = IDFORMMANTENIMIENTO + entidad;
+        var data         = submitForm(idformulario);
+        var respuesta    = null;
+        var listar       = 'NO';
+        if ($(idformulario + ' :input[id = "listar"]').length) {
+            var listar = $(idformulario + ' :input[id = "listar"]').val()
+        };
+        data.done(function(msg) {
+            respuesta = msg;
+        }).fail(function(xhr, textStatus, errorThrown) {
+            respuesta = 'ERROR';
+        }).always(function() {
+            
+            if(respuesta[0] === 'ERROR'){
+            }else{
+                
+                if (respuesta[0] === 'OK') {
+                    cerrarModal();
+                    modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
+                    if (listar === 'SI') {
+                        if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+                            entidad = entidad2;
+                        }
+                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                    }        
+                } else {
+                    mostrarErrores(respuesta, idformulario, entidad);
+                }
+            }
+        });
     }
+
     function abrirmodal(datahtml){
         var boxmodal = bootbox.dialog({
                                 title: 'Cronograma de Cuotas',

@@ -18,6 +18,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
 use PDF;
+use DateTime;
 
 class CajaController extends Controller
 {
@@ -266,7 +267,6 @@ class CajaController extends Controller
             $caja->diferencia_monto        = $request->get('diferencia_monto');
             $caja->estado        = 'C';//cierre
             $caja->save();
-            
         });
         
         return is_null($error) ? "OK" : $error;
@@ -276,14 +276,16 @@ class CajaController extends Controller
 public function actualizardatosahorros(Request $request){
       /******************************************************* */
     
-      $configuracion = Configuraciones::all()->last();
-      $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
-      $lista_ahorros = Ahorros::where("estado","=",'P')->get();
+    $configuracion = Configuraciones::all()->last();
+    $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
+    $lista_ahorros = Ahorros::where("estado","=",'P')->get();
 
-        $error1 = null;     
+    $error1 = null;     
       if(count($lista_ahorros)>0){
        
           $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
+          //$fecha_final = new DateTime($fecha_actual);
+
           $sfechA = explode('-',$fecha_actual);
           $anioA = $sfechA[0];
           $mesA = $sfechA[1];
@@ -300,10 +302,14 @@ public function actualizardatosahorros(Request $request){
           $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
   
           $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
+         // $fecha_inicial = new DateTime($fecha_ah);
           $sfechH = explode('-',$fecha_ah);
           $anioH = $sfechH[0];
           $mesH = $sfechH[1];
           $dif_mes=0;
+         // $diferencia = $fecha_inicial->diff($fecha_final);
+         // $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
+
         if($anioA > $anioH){
             $dif_mes = 1;
         }else{
@@ -311,7 +317,7 @@ public function actualizardatosahorros(Request $request){
         }
           
          
-          $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro){
+          $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses){
             if($dif_mes >0){
                 foreach ($lista_ahorros as $key => $value) {
                     if($value->id != null){
@@ -337,6 +343,74 @@ public function actualizardatosahorros(Request $request){
       }
       return $error1;
       /******************************************************* */
+}
+
+/************************************* Fin actualizar *************************************** */
+/*********************************** ACTUALIZA AHORROS ************************************** */
+public function actualizardatosahorrosNuevo(Request $request){
+    /******************************************************* */
+  
+  $configuracion = Configuraciones::all()->last();
+  $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
+  $lista_ahorros = Ahorros::where("estado","=",'P')->get();
+
+  
+  $error1 = null;     
+    if(count($lista_ahorros)>0){
+     
+        $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
+        $fecha_final = new DateTime($fecha_actual);
+
+        $sfechA = explode('-',$fecha_actual);
+        $anioA = $sfechA[0];
+        $mesA = $sfechA[1];
+
+        $fechahora_actual = date("Y-m-d H:i:s");
+        $hora_actual= date("H:i:s", strtotime($fechahora_actual));
+        $arrhora = explode(':',$hora_actual);
+
+        $fecha_actual = date('Y-m-d H:i:s',strtotime($fecha_actual));
+        $nuevafecha_actual = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fecha_actual ) ) ;
+        $nuevafecha_actual = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha_actual ) ;
+        $nuevafecha_actual = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha_actual ) ;
+        $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
+
+        $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
+        $fecha_inicial = new DateTime($fecha_ah);
+        $sfechH = explode('-',$fecha_ah);
+        $anioH = $sfechH[0];
+        $mesH = $sfechH[1];
+        $dif_mes=0;
+        $diferencia = $fecha_inicial->diff($fecha_final);
+        $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
+       
+        $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses){
+            if($NumeroMeses >0){
+                for($j=0; $j < $NumeroMeses; $j++){
+                    $lista_ahorros = Ahorros::where("estado","=",'P')->get();
+                    foreach ($lista_ahorros as $key => $value) {
+                        if($value->id != null){
+                            $ahorro_ant = Ahorros::find($value->id);
+                            $ahorro_ant->fechaf = $nuevafecha_actual;
+                            $ahorro_ant->estado = 'C';
+                            $ahorro_ant->save();
+
+                            $ahorro = new Ahorros();
+                            $ahorro->fechai = $nuevafecha_actual;
+                            $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
+                            $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                            $ahorro->persona_id = $value->persona_id;
+                            $ahorro->estado = 'P';
+                            $ahorro->save();
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+    return $error1;
+    /******************************************************* */
 }
 
 /************************************* Fin actualizar *************************************** */
