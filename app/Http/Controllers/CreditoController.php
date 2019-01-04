@@ -152,7 +152,6 @@ class CreditoController extends Controller{
 
                 $montorestante =  $valorcredito;
                 $valor_cuota =  (($tasa_interes/100) * $valorcredito) / (1 - (pow(1/(1+($tasa_interes/100)), $periodo)));
-                echo('valor Cuota: '.$valor_cuota);
                 $fecha_actual = $fechainicio;
                 $interesAcumulado = 0.00;
                 for($i=0;$i<(int)$periodo; $i++){
