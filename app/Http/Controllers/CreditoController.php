@@ -151,12 +151,13 @@ class CreditoController extends Controller{
                 $credito->save();
 
                 $montorestante =  $valorcredito;
-                $valor_cuota =  ($tasa_interes * $valorcredito) / (1 - (pow(1/(1+$tasa_interes), $periodo)));
+                $valor_cuota =  (($tasa_interes/100) * $valorcredito) / (1 - (pow(1/(1+($tasa_interes/100)), $periodo)));
+                echo('valor Cuota: '.$valor_cuota);
                 $fecha_actual = $fechainicio;
                 $interesAcumulado = 0.00;
                 for($i=0;$i<(int)$periodo; $i++){
                     $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
-                    $montInteres = $tasa_interes * $montorestante; 
+                    $montInteres = ($tasa_interes/100) * $montorestante; 
                     $interesAcumulado +=  $montInteres; 
                     $montCapital =$valor_cuota - $montInteres; 
                     $montorestante = $montorestante - $montCapital;
