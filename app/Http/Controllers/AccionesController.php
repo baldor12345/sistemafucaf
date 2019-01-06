@@ -33,6 +33,8 @@ class AccionesController extends Controller
             'search' => 'acciones.buscar',
             'cargarventa'   => 'acciones.cargarventa',
             'updateventa'   => 'acciones.updateventa',
+            'reciboaccionpdf' => 'acciones.reciboaccionpdf',
+            'reciboaccionventapdf' => 'acciones.reciboaccionventapdf',
             'index'  => 'acciones.index',
         );
 
@@ -113,16 +115,18 @@ class AccionesController extends Controller
      */
     public function create(Request $request)
     {
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
         $cboConcepto  =array(1=>'Compra de Acciones');
         $entidad        = 'Acciones';
         $acciones        = null;
+        $ruta = $this->rutas;
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta'));
     }
 
     /**
@@ -134,20 +138,26 @@ class AccionesController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas = array(
-            'dni'        => 'required|max:100',
-            'cantidad_accion'        => 'required|max:100',
-            'fechai'        => 'required|max:100',
-            'configuraciones_id'        => 'required|max:100'
-            );
-        $validacion = Validator::make($request->all(),$reglas);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-        }
+        
+        
         //evaluando los datos que vienen del view
-        $caja = Caja::where("estado","=","A")->get();
-        $res = "OK";
-        if(count($caja) > 0){//validamos si existe caja aperturada
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+
+        $res = null;
+        if(count($caja_id) != 0){//validamos si existe caja aperturada
+            $reglas = array(
+                'dni'        => 'required|max:100',
+                'cantidad_accion'        => 'required|max:100',
+                'fechai'        => 'required|max:100',
+                'configuraciones_id'        => 'required|max:100'
+            );
+
+            $validacion = Validator::make($request->all(),$reglas);
+            if ($validacion->fails()) {
+                return $validacion->messages()->toJson();
+            }
+
             $error = DB::transaction(function() use($request){
                 $idCaja = DB::table('caja')->where('estado', "A")->value('id');
                 $cantidad_accion= $request->input('cantidad_accion');
@@ -173,23 +183,46 @@ class AccionesController extends Controller
                 $monto_ingreso = ($cantidad_accion*$precio);
                 //datos de la persona
                 $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $request->input('fechai').date(" H:i:s");
-                $transaccion->monto = $monto_ingreso;
-                $transaccion->acciones_soles = $monto_ingreso;
-                $transaccion->concepto_id = $request->input('concepto_id');
-                $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
-                $transaccion->persona_id = $request->input('persona_id');
-                $transaccion->usuario_id =Caja::getIdPersona();;
-                $transaccion->caja_id =$idCaja;
-                $transaccion->save();
-                
+
+                $imprimivoucher = $request->get('imprimir_voucher');
+                //comision voucher si esque desea imprimirlo
+                if($imprimivoucher == 1){
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                    $transaccion->monto = $monto_ingreso;
+                    $transaccion->acciones_soles = $monto_ingreso;
+                    $transaccion->concepto_id = $request->input('concepto_id');
+                    $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
+                    $transaccion->persona_id = $request->input('persona_id');
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->comision_voucher = 0.1;
+                    $transaccion->caja_id =$idCaja;
+                    $transaccion->save();
+                }else{
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                    $transaccion->monto = $monto_ingreso;
+                    $transaccion->acciones_soles = $monto_ingreso;
+                    $transaccion->concepto_id = $request->input('concepto_id');
+                    $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
+                    $transaccion->persona_id = $request->input('persona_id');
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id =$idCaja;
+                    $transaccion->save();
+                }
+
             });
-            return is_null($error) ? "OK" : $error;
+            $ultima_accion = Acciones::all()->last();
+            $cant = $request->input('cantidad_accion');
+            $fecha = $request->input('fechai').date(" H:i:s");
+            $res = $error;
         }else{
             $res = "No hay una caja aperturada, por favor aperture una caja ...!";
         }
-        return $res;
+        $ultima_accion = Acciones::all()->last();
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $ultima_accion->persona_id, $cant, $fecha);
+        return $respuesta;
     }
     /**
      * Display the specified resource.
@@ -316,6 +349,7 @@ class AccionesController extends Controller
             return $existe;
         }
         $listar = "NO";
+        $ruta = $this->rutas;
         $persona = Persona::find($id);
         if (isset($listarParam)) {
             $listar = $listarParam;
@@ -326,7 +360,7 @@ class AccionesController extends Controller
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta'));
     }
 
     public function guardarventa(Request $request, $id)
@@ -338,70 +372,110 @@ class AccionesController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-        $reglas = array(
-            'dni'        => 'required|max:100',
-            'cantidad_accion'        => 'required|max:100',
-            'configuraciones_id'        => 'required|max:100'
-            );
-        $validacion = Validator::make($request->all(),$reglas);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-       }
 
-        $listar        = Libreria::getParam($request->input('listar'), 'NO');
-        $acciones_por_persona = DB::table('acciones')->where('persona_id', $id)->where('estado', "C")->get();
-        $descripcion_venta=$request->input('descripcion');
-        $cantidad_accion= $request->input('cantidad_accion');
-        $fechaf = $request->input('fechai').date(" H:i:s");
-       $concepto_id = $request->input('concepto_id');
-        if($cantidad_accion !== ''){            
-            for($i=0; $i< $cantidad_accion; $i++){
-                $idaccion= $acciones_por_persona[$i]->id;
-                $error  = DB::transaction(function() use ($idaccion,$descripcion_venta, $fechaf, $concepto_id){
-                    $acciones                 = Acciones::find($idaccion); 
-                    $acciones->estado        = 'V';
-                    $acciones->descripcion        = $descripcion_venta;
-                    $acciones->fechaf = $fechaf;
-                    $acciones->concepto_id        = $concepto_id;
-                    $acciones->save();
-                });
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+
+        $res = null;
+        if(count($caja_id) != 0){//validamos si existe caja aperturada
+
+            $reglas = array(
+                'dni'        => 'required|max:100',
+                'cantidad_accion'        => 'required|max:100',
+                'configuraciones_id'        => 'required|max:100'
+                );
+            $validacion = Validator::make($request->all(),$reglas);
+            if ($validacion->fails()) {
+                    return $validacion->messages()->toJson();
             }
-        }
-        //funcion para registrar las acciones del comprador
-        $error = DB::transaction(function() use($request){
-            $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+
+            $listar        = Libreria::getParam($request->input('listar'), 'NO');
+            $acciones_por_persona = DB::table('acciones')->where('persona_id', $id)->where('estado', "C")->get();
+            $descripcion_venta=$request->input('descripcion');
             $cantidad_accion= $request->input('cantidad_accion');
-            if($cantidad_accion !== ''){
+            $fechaf = $request->input('fechai').date(" H:i:s");
+            $concepto_id = $request->input('concepto_id');
+
+            $res = null;
+
+
+            if($cantidad_accion !== ''){            
                 for($i=0; $i< $cantidad_accion; $i++){
-                    $acciones               = new Acciones();    
-                    $acciones->estado        = 'C';
-                    $acciones->fechai        = $request->input('fechai').date(" H:i:s");
-                    $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
-                    $acciones->persona_id        = $request->input('idcomprador');
-                    $acciones->configuraciones_id        = $request->input('configuraciones_id');
-                    $acciones->caja_id =$idCaja;
-                    $acciones->concepto_id        =  1;
-                    $acciones->save();
+                    $idaccion= $acciones_por_persona[$i]->id;
+                    $error  = DB::transaction(function() use ($idaccion,$descripcion_venta, $fechaf, $concepto_id){
+                        $acciones                 = Acciones::find($idaccion); 
+                        $acciones->estado        = 'V';
+                        $acciones->descripcion        = $descripcion_venta;
+                        $acciones->fechaf = $fechaf;
+                        $acciones->concepto_id        = $concepto_id;
+                        $acciones->save();
+                    });
                 }
             }
 
-            //registrar compra de de la persona que compra 
-            $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-            $cant_tranferencia= $request->input('cantidad_accion');
-            //datos de la persona
-            $persona_comprador = DB::table('persona')->where('id', $request->input('idcomprador'))->value('nombres');
-            $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
-            //registro de venta en la transaccion
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $request->input('fechai').date(" H:i:s");
-            $transaccion->monto = 0.0;
-            $transaccion->concepto_id = $request->input('concepto_id');
-            $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
-            $transaccion->usuario_id =Caja::getIdPersona();
-            $transaccion->caja_id =$idCaja;
-            $transaccion->save();
-        });
-        return is_null($error) ? "OK" : $error;
+
+            //funcion para registrar las acciones del comprador
+            
+            $error = DB::transaction(function() use($request){
+                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+                $cantidad_accion= $request->input('cantidad_accion');
+                if($cantidad_accion !== ''){
+                    for($i=0; $i< $cantidad_accion; $i++){
+                        $acciones               = new Acciones();    
+                        $acciones->estado        = 'C';
+                        $acciones->fechai        = $request->input('fechai').date(" H:i:s");
+                        $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
+                        $acciones->persona_id        = $request->input('idcomprador');
+                        $acciones->configuraciones_id        = $request->input('configuraciones_id');
+                        $acciones->caja_id =$idCaja;
+                        $acciones->concepto_id        =  1;
+                        $acciones->save();
+                    }
+                }
+
+                //registrar compra de de la persona que compra 
+                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+                $cant_tranferencia= $request->input('cantidad_accion');
+                //datos de la persona
+                $persona_comprador = DB::table('persona')->where('id', $request->input('idcomprador'))->value('nombres');
+                $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
+                //registro de venta en la transaccion
+
+                $imprimivoucher = $request->get('imprimir_voucher');
+                if($imprimivoucher == 1){
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                    $transaccion->monto = 0.0;
+                    $transaccion->concepto_id = $request->input('concepto_id');
+                    $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id =$idCaja;
+                    $transaccion->comision_voucher = 0.1;
+                    $transaccion->save();
+                }else{
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                    $transaccion->monto = 0.0;
+                    $transaccion->concepto_id = $request->input('concepto_id');
+                    $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id =$idCaja;
+                    $transaccion->save();
+                }
+                
+            });
+
+            $cant = $request->input('cantidad_accion');
+            $fecha = $request->input('fechai').date(" H:i:s");
+            $id_vendedor = $request->input('idpropietario');
+            $id_comprador = $request->input('idcomprador');
+            $res = $error;
+        }else{
+            $res = "No hay una caja aperturada, por favor aperture una caja ...!";
+        }
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $id_vendedor, $id_comprador, $cant, $fecha);
+        return $respuesta;
     }
 
     //metodo para generar voucher en pdf
@@ -447,6 +521,58 @@ class AccionesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    //generar voucher a la hora de la compra de acciones
+    public function reciboaccionpdf($id, $cant, $fecha){  
+        $detalle        = Acciones::listAcciones($id);
+        
+        $lista           = $detalle->get();
+        $persona = DB::table('persona')->where('id', $id)->first();
+        $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+        $titulo = $persona->nombres.$cant;
+
+        $view = \View::make('app.acciones.voucheraccionpdf')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(110);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
+
+    //recibo para vender acciones 
+    public function reciboaccionventapdf($id_vendedor, $id_comprador, $cant, $fecha){  
+        $detalle        = Acciones::listAcciones($id_vendedor);
+        $lista           = $detalle->get();
+
+        //id del vendedor
+        $vendedor = DB::table('persona')->where('id', $id_vendedor)->first();
+
+        $comprador = DB::table('persona')->where('id', $id_comprador)->first();
+
+        $monto_ahorroComprador = DB::table('ahorros')->where('persona_id', $id_comprador)->where('estado','P')->value('capital');
+        $CantAccioneComprador = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id_comprador)->count();
+        $titulo = $comprador->nombres.$cant;
+
+        $view = \View::make('app.acciones.reciboaccionventapdf')->with(compact('lista', 'id', 'vendedor','comprador','cant', 'fecha','CantAccioneComprador','monto_ahorroComprador'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        PDF::SetRightMargin(110);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
 
     //metodo para generar normas en pdf
     public function generarnormasaccionPDF(Request $request)

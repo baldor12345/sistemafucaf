@@ -131,6 +131,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/generarvoucheraccionventaPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionventaPDF')->name('generarvoucheraccionventaPDF');
     Route::get('/generarnormasaccionPDF', 'AccionesController@generarnormasaccionPDF')->name('generarnormasaccionPDF');
     
+    Route::get('/reciboaccionpdf/{accion_id?}/{cant?}/{fecha?}', 'AccionesController@reciboaccionpdf')->name('acciones.reciboaccionpdf');
+    Route::get('/reciboaccionventapdf/{id_comprador?}/{id_vendedor?}/{cant?}/{fecha?}', 'AccionesController@reciboaccionventapdf')->name('acciones.reciboaccionventapdf');
+
      /*CREDITO*/
      Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
      Route::get('creditos/eliminar/{id?}/{listarluego?}', 'CreditoController@eliminar')->name('creditos.eliminar');
