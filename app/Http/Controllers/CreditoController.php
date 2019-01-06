@@ -7,9 +7,9 @@ use App\Http\Requests;
 use App\Credito;
 use App\Persona;
 use App\Cuota;
-use App\caja;
+use App\Caja;
 use App\Transaccion;
-use App\configuraciones;
+use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +95,7 @@ class CreditoController extends Controller{
     public function create(Request $request){
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
-        $configuraciones = configuraciones::all()->last();
+        $configuraciones = Configuraciones::all()->last();
         $listar = Libreria::getParam($request->input('listar'), 'NO');
         $entidad = 'Credito';
         $credito = null;
@@ -124,7 +124,7 @@ class CreditoController extends Controller{
             }
             $configuraciones = configuraciones::all()->last();
             $error = DB::transaction(function() use($request, $caja_id){
-                $configuraciones = configuraciones::all()->last();
+                $configuraciones = Configuraciones::all()->last();
                 $periodo = $request->input('periodo');
                 $fechainicio = $request->input('fechacredito').date(" H:i:s");//**** */
                 $fechafinal = strtotime ( '+'.$periodo.' month' , strtotime ( $fechainicio));

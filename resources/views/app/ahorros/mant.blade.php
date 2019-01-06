@@ -128,7 +128,8 @@ function guardarahorro(entidad,rutarecibo) {
 		}else{
 			if (respuesta === 'OK') {
 				cerrarModal();
-				window.open(rutarecibo, "Voucher deposito ahorro", "width=400, height=500, left=200, top=100");
+				imprimirpdf(rutarecibo);
+				
 				if (listar === 'SI') {
 					if(typeof entidad2 != 'undefined' && entidad2 !== ''){
 						entidad = entidad2;
