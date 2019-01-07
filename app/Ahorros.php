@@ -93,6 +93,8 @@ class Ahorros extends Model
         )
         ->where('transaccion.inicial_tabla','=', 'AH')
         ->where('concepto.tipo','=', ''.$tipo)
+        ->where('concepto.id','!=', '8')
+        ->where('transaccion.deleted_at','=', null)
         ->where('transaccion.persona_id','=', $id_persona)
         ->where('transaccion.fecha','>=', $fechainicio)
         ->orderBy('transaccion.fecha', 'ASC');

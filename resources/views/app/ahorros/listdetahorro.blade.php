@@ -27,9 +27,11 @@
 			<td>{{Date::parse($value->fecha)->format('d/m/Y') }}</td>
 			<td>{{ $value->monto }}</td>
 			@if($tipo == 'I')
-            <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Imprimir Voucher', array('onclick' => 'imprimirpdf(\''.URL::route($ruta["generareciboahorroPDF1"], array($value->transaccion_id)).'\')','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Imprimir Voucher', array('onclick' => 'imprimirpdf(\''.URL::route($ruta["generareciboahorroPDF1"], array($value->transaccion_id)).'\')','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->transaccion_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
 			@else
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Imprimir Voucher', array('onclick' => 'imprimirpdf(\''.URL::route($ruta["generareciboretiroPDF"], array($value->transaccion_id)).'\')','class' => 'btn btn-xs btn-warning')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->transaccion_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
 			@endif
 		</tr>
 		<?php

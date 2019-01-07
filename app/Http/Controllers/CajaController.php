@@ -397,8 +397,8 @@ public function actualizardatosahorrosNuevo(Request $request){
 
                             $ahorro = new Ahorros();
                             $ahorro->fechai = $fecha_nueva;
-                            $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
-                            $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                            $ahorro->capital = $this->rouNumber( ($value->capital + $tasa_interes_ahorro * $value->capital), 1);
+                            $ahorro->interes = $this->rouNumber( ($tasa_interes_ahorro * $value->capital), 1);
                             $ahorro->persona_id = $value->persona_id;
                             $ahorro->estado = 'P';
                             $ahorro->save();
@@ -1037,6 +1037,12 @@ public function actualizardatosahorrosNuevo(Request $request){
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
+    }
+
+    //Metodo para redondear numero decimal
+    public function rouNumber($numero, $decimales) { 
+        $factor = pow(10, $decimales); 
+        return (round($numero*$factor)/$factor);
     }
 
 }
