@@ -22,7 +22,7 @@
 		<div class = "form-group">
 			<div class="form-group col-6 col-md-6 col-sm-6">
 				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
-				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
 				{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
@@ -57,7 +57,6 @@ $(document).ready(function() {
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day;
 		$('#fechai').val(fechai);
-		$('#interes').attr('disabled', 'true');
 
 	if($('#dnicl').val() != ''){
 		$.get("personas/"+$('#dnicl').val()+"",function(response, facultad){

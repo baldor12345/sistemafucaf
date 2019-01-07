@@ -21,7 +21,7 @@
     </div>
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
         {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => '')) !!}
-        {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);')) !!}
+        {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
     </div>
 
     <div class="form-group col-6 col-md-6 col-sm-12">
@@ -61,7 +61,6 @@
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualcredito = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#tasa_interes').attr('disabled', 'true');
         $('#fechacredito').val(fechaactualcredito);
         $("#dniaval").prop('disabled', true);
         init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');

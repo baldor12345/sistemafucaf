@@ -15,7 +15,7 @@ class CrearTablaCredito extends Migration
     {
         Schema::create('credito', function (Blueprint $table) {
             $table->increments('id');
-            $table->decimal('valor_credito',10,2);
+            $table->decimal('valor_credito',10,1);
             $table->integer('periodo');
             $table->string('descripcion', 200)->nullable();
             $table->decimal('tasa_interes',10,2);//en porcentaje =>interes
