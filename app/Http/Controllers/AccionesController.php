@@ -147,13 +147,20 @@ class AccionesController extends Controller
         $res = null;
         if(count($caja_id) != 0){//validamos si existe caja aperturada
             $reglas = array(
-                'dni'        => 'required|max:100',
+                'dni'        => 'required',
+                'persona_id' => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'fechai'        => 'required|max:100',
                 'configuraciones_id'        => 'required|max:100'
             );
+            $messages = [
+                'dni.required' => 'El dni ingresado no es de un socio',
+                'persona_id.required' => 'El dni ingresado no es de un socio',
+                'cantidad_accion.required' => 'ingrese cantidad de acciones',
+                'configuraciones_id.required' => 'El campo concepto no debe ser vacio'
+            ];
 
-            $validacion = Validator::make($request->all(),$reglas);
+            $validacion = Validator::make($request->all(),$reglas, $messages);
             if ($validacion->fails()) {
                 return $validacion->messages()->toJson();
             }
@@ -341,6 +348,16 @@ class AccionesController extends Controller
             return response()->json($CantAcciones);
         }
     }
+
+    //listar la cantidad de acciones acumuladas por persona
+    public function getListCantAccionesPersona(Request $request, $dni, $n){
+        if($request->ajax()){
+            $persona_id = DB::table('persona')->where('dni', $dni)->pluck('id');
+            $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$persona_id)->count();
+            return response()->json($CantAcciones);
+        }
+    }
+
     //venta de acciones
     public function cargarventa($id, Request $request)
     {
@@ -354,13 +371,14 @@ class AccionesController extends Controller
         if (isset($listarParam)) {
             $listar = $listarParam;
         }
+        $nom = '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos;
         $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
         $cboConcepto  =array(2=>'Venta de Acciones');
         $acciones        = Acciones::find($id);
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom'));
     }
 
     public function guardarventa(Request $request, $id)
@@ -380,11 +398,19 @@ class AccionesController extends Controller
         if(count($caja_id) != 0){//validamos si existe caja aperturada
 
             $reglas = array(
-                'dni'        => 'required|max:100',
+                'dni'        => 'required',
+                'idcomprador' => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'configuraciones_id'        => 'required|max:100'
-                );
-            $validacion = Validator::make($request->all(),$reglas);
+            );
+            $messages = [
+                'dni.required' => 'El dni ingresado no es de un socio',
+                'idcomprador.required' => 'El dni ingresado no es de un socio',
+                'cantidad_accion.required' => 'ingrese cantidad de acciones',
+                'configuraciones_id.required' => 'El campo concepto no debe ser vacio'
+            ];
+
+            $validacion = Validator::make($request->all(),$reglas, $messages);
             if ($validacion->fails()) {
                     return $validacion->messages()->toJson();
             }
