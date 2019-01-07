@@ -37,7 +37,7 @@
 <div class="form-group">
 	{!! Form::label('monto_iniciado', 'Monto Inicio(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('monto_iniciado', $ingresos, array('class' => 'form-control input-xs', 'id' => 'monto_iniciado', 'placeholder' => 'S/.')) !!}
+		{!! Form::text('monto_iniciado', $ingresos, array('class' => 'form-control input-xs', 'id' => 'monto_iniciado', 'placeholder' => 'S/.','readonly')) !!}
 	</div>
 </div>
 

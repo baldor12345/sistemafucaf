@@ -28,6 +28,7 @@ class CajaController extends Controller
     protected $tituloModificar = 'Modificar Caja';
     protected $titulo_nuevomovimiento = 'Registrar Nuevo Gasto';
     protected $tituloCerrarCaja = 'Cerrar Caja';
+    protected $titulo_reaperturar = 'Reaperturar Caja';
     protected $titulo_transaccion = 'Transacciones Realizadas';
     protected $tituloNuevaTransaccion = 'Registrar Nuevo Gasto';
     protected $tituloEliminar  = 'Eliminar persona';
@@ -40,6 +41,10 @@ class CajaController extends Controller
             'detalle'   => 'caja.detalle',
             'search1' => 'caja.detalle',
             'nuevomovimiento'   => 'caja.nuevomovimiento',
+
+            'cargarreapertura'   => 'caja.cargarreapertura',
+            'guardarreapertura' => 'caja.guardarreapertura',
+            
             'cargarselect' => 'encuesta.cargarselect',
             'buscartransaccion'=> 'caja.buscartransaccion'
         );
@@ -78,13 +83,14 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Movimiento', 'numero' => '2');
         $cabecera[]       = array('valor' => 'Reportes', 'numero' => '3');
-        $cabecera[]       = array('valor' => '', 'numero' => '1');
+        $cabecera[]       = array('valor' => '', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
         $titulo_cerrarCaja = $this->tituloCerrarCaja;
         $titulo_transaccion = $this->titulo_transaccion;
         $titulo_nuevomovimiento = $this->titulo_nuevomovimiento;
+        $titulo_reapertura = $this->titulo_reaperturar;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -95,7 +101,7 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta','titulo_reapertura'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -113,9 +119,10 @@ class CajaController extends Controller
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $titulo_nuevomovimiento = $this->titulo_nuevomovimiento;
+        $titulo_reapertura = $this->titulo_reaperturar;
         $ruta             = $this->rutas;
         $listCaja = Caja::listCaja();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja','titulo_reapertura'));
     }
 
     /**
@@ -167,6 +174,7 @@ class CajaController extends Controller
             $caja->persona_id        = Caja::getIdPersona();
             $caja->save();
 
+            /*
             //actualizar datos en la tabla transaccion las ganancias de las acciones
             $findCajalast = DB::table('caja')->orderBy('id','DESC')->first();
             
@@ -185,7 +193,7 @@ class CajaController extends Controller
                 $transaccion->caja_id =         $caja_id;
                 $transaccion->save();
             }
-            
+            */
 
         });
         $error =  $this->actualizardatosahorrosNuevo($request);
@@ -275,145 +283,187 @@ class CajaController extends Controller
         
         return is_null($error) ? "OK" : $error;
     }
-/*********************************** ACTUALIZA AHORROS ************************************** */
-public function actualizardatosahorros(Request $request){
+
+
+    /**REAPERTURAR CAJA LA ULTIMA CAJA CERRADA*/
+    public function cargarreapertura($id, $listarLuego){
+        $caja = DB::table('caja')->where('id', $id)->first();
+        $monto_inicio = $caja->monto_iniciado;
+        $monto_cierre = 0;
+        $diferencia = 0;
+        $cboEstado        = array('A'=>'Reaperturar');
+        $entidad  = 'Caja';
+        $ruta = $this->rutas;
+        $titulo_reapertura = $this->titulo_reaperturar;
+        return view($this->folderview.'.reaperturar')->with(compact('caja','entidad', 'ruta', 'titulo_reapertura','cboEstado','monto_inicio','monto_cierre','diferencia'));
+    }
+
+    /**ACTUALIZAR REAPERTURA DE LA ULTIMA CAJA */
+    public function guardarreapertura(Request $request)
+    {
+        $caja_id = $request->get('caja_id');
+        $monto_inicio = Libreria::getParam($request->input('monto_inicio'));
+        $monto_cierre = Libreria::getParam($request->input('monto_cierre'));
+        $estado = Libreria::getParam($request->input('estado'));
+
+        $existe = Libreria::verificarExistencia($caja_id, 'caja');
+        if ($existe !== true) {
+            return $existe;
+        }
+        
+        $error = DB::transaction(function() use($request, $caja_id, $monto_inicio, $monto_cierre, $estado){
+            $caja                 = Caja::find($caja_id);
+            $caja->fecha_horaCierre        = null;
+            $caja->monto_cierre        = $monto_cierre;
+            $caja->diferencia_monto        = 0.0;
+            $caja->estado        = $estado;//cierre
+            $caja->save();
+        });
+        
+        return is_null($error) ? "OK" : $error;
+    }
+
+
+
+    /*********************************** ACTUALIZA AHORROS ************************************** */
+    public function actualizardatosahorros(Request $request){
+        
+        $configuracion = Configuraciones::all()->last();
+        $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
+        $lista_ahorros = Ahorros::where("estado","=",'P')->get();
+
+        $error1 = null;     
+        if(count($lista_ahorros)>0){
+        
+            $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
+            //$fecha_final = new DateTime($fecha_actual);
+
+            $sfechA = explode('-',$fecha_actual);
+            $anioA = $sfechA[0];
+            $mesA = $sfechA[1];
+
+
+            $fechahora_actual = date("Y-m-d H:i:s");
+            $hora_actual= date("H:i:s", strtotime($fechahora_actual));
+            $arrhora = explode(':',$hora_actual);
+
+            $fecha_actual = date('Y-m-d H:i:s',strtotime($fecha_actual));
+            $nuevafecha_actual = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fecha_actual ) ) ;
+            $nuevafecha_actual = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha_actual ) ;
+            $nuevafecha_actual = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha_actual ) ;
+            $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
+    
+            $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
+            // $fecha_inicial = new DateTime($fecha_ah);
+            $sfechH = explode('-',$fecha_ah);
+            $anioH = $sfechH[0];
+            $mesH = $sfechH[1];
+            $dif_mes=0;
+            // $diferencia = $fecha_inicial->diff($fecha_final);
+            // $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
+
+            if($anioA > $anioH){
+                $dif_mes = 1;
+            }else{
+                $dif_mes = $mesA - $mesH;
+            }
+            
+            
+            $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses){
+                if($dif_mes >0){
+                    foreach ($lista_ahorros as $key => $value) {
+                        if($value->id != null){
+                        
+                            $ahorro_ant = Ahorros::find($value->id);
+                            $ahorro_ant->fechaf = $nuevafecha_actual;
+                            $ahorro_ant->estado = 'C';
+                            $ahorro_ant->save();
+
+                            $ahorro = new Ahorros();
+                            $ahorro->fechai = $nuevafecha_actual;
+                            $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
+                            $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                            $ahorro->persona_id = $value->persona_id;
+                            $ahorro->estado = 'P';
+                            $ahorro->save();
+
+                        }
+                    }
+                }
+            });
+
+        }
+        return $error1;
+        
+    }
+
+    /*********************************** ACTUALIZA AHORROS ************************************** */
+    public function actualizardatosahorrosNuevo(Request $request){
     
     $configuracion = Configuraciones::all()->last();
     $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
     $lista_ahorros = Ahorros::where("estado","=",'P')->get();
 
     $error1 = null;     
-      if(count($lista_ahorros)>0){
-       
-          $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
-          //$fecha_final = new DateTime($fecha_actual);
+        if(count($lista_ahorros)>0){
+        
+            $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
+            $fecha_final = new DateTime($fecha_actual);
 
-          $sfechA = explode('-',$fecha_actual);
-          $anioA = $sfechA[0];
-          $mesA = $sfechA[1];
+            $sfechA = explode('-',$fecha_actual);
+            $anioA = $sfechA[0];
+            $mesA = $sfechA[1];
 
+            $fechahora_actual = date("Y-m-d H:i:s");
+            $hora_actual= date("H:i:s", strtotime($fechahora_actual));
+            $arrhora = explode(':',$hora_actual);
 
-          $fechahora_actual = date("Y-m-d H:i:s");
-          $hora_actual= date("H:i:s", strtotime($fechahora_actual));
-          $arrhora = explode(':',$hora_actual);
+            $fecha_actual = date('Y-m-d H:i:s',strtotime($fecha_actual));
+            $nuevafecha_actual = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fecha_actual ) ) ;
+            $nuevafecha_actual = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha_actual ) ;
+            $nuevafecha_actual = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha_actual ) ;
+            $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
 
-          $fecha_actual = date('Y-m-d H:i:s',strtotime($fecha_actual));
-          $nuevafecha_actual = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fecha_actual ) ) ;
-          $nuevafecha_actual = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha_actual ) ;
-          $nuevafecha_actual = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha_actual ) ;
-          $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
-  
-          $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
-         // $fecha_inicial = new DateTime($fecha_ah);
-          $sfechH = explode('-',$fecha_ah);
-          $anioH = $sfechH[0];
-          $mesH = $sfechH[1];
-          $dif_mes=0;
-         // $diferencia = $fecha_inicial->diff($fecha_final);
-         // $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
+            $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
+            $fecha_inicial = new DateTime($fecha_ah);
 
-        if($anioA > $anioH){
-            $dif_mes = 1;
-        }else{
-            $dif_mes = $mesA - $mesH;
-        }
-          
-         
-          $error1 = DB::transaction(function() use($request,$dif_mes, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses){
-            if($dif_mes >0){
-                foreach ($lista_ahorros as $key => $value) {
-                    if($value->id != null){
-                    
-                        $ahorro_ant = Ahorros::find($value->id);
-                        $ahorro_ant->fechaf = $nuevafecha_actual;
-                        $ahorro_ant->estado = 'C';
-                        $ahorro_ant->save();
+            $diferencia = $fecha_inicial->diff($fecha_final);
+            $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
+        
+            $error1 = DB::transaction(function() use($request, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses, $fecha_actual, $arrhora, $fecha_ah){
+                $fecha_nueva = date ( 'Y-m-d H:i:s' ,strtotime($fecha_ah ));
+                
+                if($NumeroMeses >0){
+                    for($j=0; $j <= $NumeroMeses; $j++){
+                        
+                        $fecha_nueva = date("Y-m-d",strtotime($fecha_nueva."+ 1 month")); 
+                        $lista_ahorros = Ahorros::where("estado","=",'P')->get();
+                        foreach ($lista_ahorros as $key => $value) {
+                            if($value->id != null){
+                                $ahorro_ant = Ahorros::find($value->id);
+                                $ahorro_ant->fechaf = $fecha_nueva;
+                                $ahorro_ant->estado = 'C';
+                                $ahorro_ant->save();
 
-                        $ahorro = new Ahorros();
-                        $ahorro->fechai = $nuevafecha_actual;
-                        $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
-                        $ahorro->interes = $tasa_interes_ahorro * $value->capital;
-                        $ahorro->persona_id = $value->persona_id;
-                        $ahorro->estado = 'P';
-                        $ahorro->save();
-
-                    }
-                }
-            }
-        });
-
-      }
-      return $error1;
-      
-}
-
-/*********************************** ACTUALIZA AHORROS ************************************** */
-public function actualizardatosahorrosNuevo(Request $request){
-  
-  $configuracion = Configuraciones::all()->last();
-  $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
-  $lista_ahorros = Ahorros::where("estado","=",'P')->get();
-
-  $error1 = null;     
-    if(count($lista_ahorros)>0){
-     
-        $fecha_actual = date('Y-m-d',strtotime($request->input('fecha_horaApert')));
-        $fecha_final = new DateTime($fecha_actual);
-
-        $sfechA = explode('-',$fecha_actual);
-        $anioA = $sfechA[0];
-        $mesA = $sfechA[1];
-
-        $fechahora_actual = date("Y-m-d H:i:s");
-        $hora_actual= date("H:i:s", strtotime($fechahora_actual));
-        $arrhora = explode(':',$hora_actual);
-
-        $fecha_actual = date('Y-m-d H:i:s',strtotime($fecha_actual));
-        $nuevafecha_actual = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fecha_actual ) ) ;
-        $nuevafecha_actual = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha_actual ) ;
-        $nuevafecha_actual = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha_actual ) ;
-        $nuevafecha_actual = date ( 'Y-m-d H:i:s' , $nuevafecha_actual );
-
-        $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
-        $fecha_inicial = new DateTime($fecha_ah);
-
-        $diferencia = $fecha_inicial->diff($fecha_final);
-        $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
-       
-        $error1 = DB::transaction(function() use($request, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses, $fecha_actual, $arrhora, $fecha_ah){
-            $fecha_nueva = date ( 'Y-m-d H:i:s' ,strtotime($fecha_ah ));
-            
-            if($NumeroMeses >0){
-                for($j=0; $j <= $NumeroMeses; $j++){
-                    
-                    $fecha_nueva = date("Y-m-d",strtotime($fecha_nueva."+ 1 month")); 
-                    $lista_ahorros = Ahorros::where("estado","=",'P')->get();
-                    foreach ($lista_ahorros as $key => $value) {
-                        if($value->id != null){
-                            $ahorro_ant = Ahorros::find($value->id);
-                            $ahorro_ant->fechaf = $fecha_nueva;
-                            $ahorro_ant->estado = 'C';
-                            $ahorro_ant->save();
-
-                            $ahorro = new Ahorros();
-                            $ahorro->fechai = $fecha_nueva;
-                            $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
-                            $ahorro->interes = $tasa_interes_ahorro * $value->capital;
-                            $ahorro->persona_id = $value->persona_id;
-                            $ahorro->estado = 'P';
-                            $ahorro->save();
-                            
+                                $ahorro = new Ahorros();
+                                $ahorro->fechai = $fecha_nueva;
+                                $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
+                                $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                                $ahorro->persona_id = $value->persona_id;
+                                $ahorro->estado = 'P';
+                                $ahorro->save();
+                                
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
+        }
+        return $error1;
     }
-    return $error1;
-}
 
-/************************************* Fin actualizar *************************************** */
+    /************************************* Fin actualizar *************************************** */
     //CONTROL DETALLE DE LA CAJA
 
     public function detalle($id, Request $request)
@@ -514,8 +564,7 @@ public function actualizardatosahorrosNuevo(Request $request){
         $reglas = array(
             'fecha'        => 'required|max:100',
             'concepto_id'        => 'required|max:100',
-            'total'        => 'required|max:100',
-            'comentario'        => 'required|max:100'
+            'total'        => 'required|max:100'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
@@ -562,6 +611,9 @@ public function actualizardatosahorrosNuevo(Request $request){
         $retorno = '<select class="form-control input-sm" id="' . $t . $entidad . '_id" name="';
         $cbo = Concepto::select('id', 'titulo')
             ->where('tipo', '=', $idselect)
+            ->where('titulo', '!=', 'Ganancia por accion')
+            ->where('titulo', '!=', 'Crédito')
+            ->where('titulo', '!=', 'Retiro de ahorros')
             ->get();
         $retorno .= '><option value="" selected="selected">Seleccione</option>';
 

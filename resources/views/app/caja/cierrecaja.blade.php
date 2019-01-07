@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 <div class="form-group">
 	{!! Form::label('titulo', 'Titulo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('titulo', $caja->titulo, array('class' => 'form-control input-xs', 'id' => 'titulo', 'placeholder' => 'Ingrese titulo', 'disabled')) !!}
+		{!! Form::text('titulo', $caja->titulo, array('class' => 'form-control input-xs', 'id' => 'titulo', 'placeholder' => 'Ingrese titulo','readonly')) !!}
 	</div>
 </div>
 
@@ -27,21 +27,21 @@ use Illuminate\Support\Facades\DB;
 <div class="form-group">
 	{!! Form::label('monto_iniciado', 'Monto inicio(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('monto_iniciado', $caja->monto_iniciado, array('class' => 'form-control input-xs', 'id' => 'monto_iniciado', 'placeholder' => 'S/.')) !!}
+		{!! Form::text('monto_iniciado', $caja->monto_iniciado, array('class' => 'form-control input-xs', 'id' => 'monto_iniciado', 'placeholder' => 'S/.','readonly')) !!}
 	</div>
 </div>
 
 <div class="form-group">
 	{!! Form::label('monto_cierre', 'Monto Cierre(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('monto_cierre', $diferencia, array('class' => 'form-control input-xs', 'id' => 'monto_cierre', 'placeholder' => 'S/.')) !!}
+		{!! Form::text('monto_cierre', $diferencia, array('class' => 'form-control input-xs', 'id' => 'monto_cierre', 'placeholder' => 'S/.','readonly')) !!}
 	</div>
 </div>
 
 <div class="form-group">
 	{!! Form::label('diferencia_monto', 'Diferencia:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('diferencia_monto', $monto_cierre , array('class' => 'form-control input-xs', 'id' => 'diferencia_monto', 'placeholder' => 'S/.')) !!}
+		{!! Form::text('diferencia_monto', $monto_cierre , array('class' => 'form-control input-xs', 'id' => 'diferencia_monto', 'placeholder' => 'S/.','readonly')) !!}
 	</div>
 </div>
 
