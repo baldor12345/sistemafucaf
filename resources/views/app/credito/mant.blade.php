@@ -4,7 +4,7 @@
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 <div class="form-row">
     <div id='txtcliente' class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('dnicliente', 'DNI del Cliente: *', array('class' => '')) !!}
+        {!! Form::label('dnicliente', 'DNI del Socio o Cliente: *', array('class' => '')) !!}
         {!! Form::text('dnicliente', null, array('class' => 'form-control input-xs', 'id' => 'dnicliente', 'placeholder' => 'Ingrese el DNI del cliente', 'onkeypress'=>'return filterFloat(event,this);')) !!}
         <p id="nombrescliente" class="" >DNI Cliente Vacio</p>
         <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
@@ -21,7 +21,7 @@
     </div>
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
         {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => '')) !!}
-        {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);')) !!}
+        {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
     </div>
 
     <div class="form-group col-6 col-md-6 col-sm-12">
@@ -61,7 +61,6 @@
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualcredito = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        
         $('#fechacredito').val(fechaactualcredito);
         $("#dniaval").prop('disabled', true);
         init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');

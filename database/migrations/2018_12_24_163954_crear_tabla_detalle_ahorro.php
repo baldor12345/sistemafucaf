@@ -15,8 +15,8 @@ class CrearTablaDetalleAhorro extends Migration
     {
         Schema::create('detalle_ahorro', function (Blueprint $table) {
             $table->increments('id');
-            $table->decimal('capital',20,2);
-            $table->decimal('interes',10,2);
+            $table->decimal('capital',20,1);
+            $table->decimal('interes',10,1);
             $table->timestamp('fecha_capitalizacion')->nullable();
             $table->integer('ahorros_id')->unsigned();
             $table->foreign('ahorros_id')->references('id')->on('ahorros')->onDelete('restrict')->onUpdate('restrict');

@@ -22,7 +22,7 @@
 		<div class = "form-group">
 			<div class="form-group col-6 col-md-6 col-sm-6">
 				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
-				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
 				{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
@@ -128,7 +128,8 @@ function guardarahorro(entidad,rutarecibo) {
 		}else{
 			if (respuesta === 'OK') {
 				cerrarModal();
-				window.open(rutarecibo, "Voucher deposito ahorro", "width=400, height=500, left=200, top=100");
+				imprimirpdf(rutarecibo);
+				
 				if (listar === 'SI') {
 					if(typeof entidad2 != 'undefined' && entidad2 !== ''){
 						entidad = entidad2;
