@@ -158,7 +158,7 @@ class CreditoController extends Controller{
                     $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
                     $montInteres = ($tasa_interes/100) * $montorestante; 
                     $interesAcumulado +=  $montInteres; 
-                    $montCapital =$valor_cuota - $montInteres; 
+                    $montCapital = ($this->rouNumber($valor_cuota,1)) - ($this->rouNumber($montInteres,1)); 
                     $montorestante = $montorestante - $montCapital;
 
                     $cuota = new Cuota();

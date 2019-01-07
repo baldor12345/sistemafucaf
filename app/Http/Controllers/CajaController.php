@@ -1091,4 +1091,10 @@ class CajaController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
     }
 
+    //Metodo para redondear numero decimal
+    public function rouNumber($numero, $decimales) { 
+        $factor = pow(10, $decimales); 
+        return (round($numero*$factor)/$factor);
+    }
+
 }

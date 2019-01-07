@@ -8,7 +8,7 @@
 <div class="card-box table-responsive crbox">
     <div class="form-row lbldatos">
         <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
-            {!! Form::label('', 'Cliente: '.$persona->nombres.' '.$persona->apellidos, array('id'=>'cliente','class' => '')) !!}
+            {!! Form::label('', 'Socio o Cliente: '.$persona->nombres.' '.$persona->apellidos, array('id'=>'cliente','class' => '')) !!}
         </div>
     </div>
     <div class="form-row lbldatos">
