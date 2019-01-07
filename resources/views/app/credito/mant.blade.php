@@ -239,14 +239,14 @@
             abrirmodal(mdCronograma);
             $('#filasTcuotas').empty();
             
-            var montInteres=0.00;
-            var montCapital=0.00;
-            var montCuota = 0.00;
+            var montInteres=0.0;
+            var montCapital=0.0;
+            var montCuota = 0.0;
             var fechac = new Date($('#fechacredito').val());
             fechac.setDate(fechac.getDate() + 1);
-            var interesAcumulado=0.00;
-            var capitalTotal = 0.00;
-            var sumacuotas = 0.00;
+            var interesAcumulado=0.0;
+            var capitalTotal = 0.0;
+            var sumacuotas = 0.0;
             var fila='';
             //FORMULA: CUOTA = (Interes * CpitalInicial)/(1-  (1/ (1+InteresMensual)^NumeroCuotas)  );  Math.pow(7, 2);
             montCuota =((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo)));
@@ -258,16 +258,16 @@
                 var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
                 montInteres =  (Interes/100)*CapitalInicial;
                 interesAcumulado = montInteres + interesAcumulado;
-                montCapital= montCuota - montInteres;
+                montCapital= (RoundDecimal(montCuota,1)) - (RoundDecimal( montInteres,1));
                 CapitalInicial = CapitalInicial - montCapital;
                 capitalTotal += montCapital;
                 sumacuotas += montCuota;
                 console.log("FechaC:"+fechac);
                 fila = fila + "<tr>"
                         +"<td>"+(i+1)+"</td>"
-                        +"<td>"+RoundDecimal(montInteres,2)+"</td>"
-                        +"<td>"+RoundDecimal(montCapital,2)+"</td>"
-                        +"<td>"+RoundDecimal(montCuota,2)+"</td>"
+                        +"<td>"+RoundDecimal(montInteres,1)+"</td>"
+                        +"<td>"+RoundDecimal(montCapital,1)+"</td>"
+                        +"<td>"+RoundDecimal(montCuota,1)+"</td>"
                         +"<td>"+fechac.getDate()+"/"+(fechac.getMonth()+1)+"/"+(fechac.getFullYear())+"</td>"
                         +"</tr>";
             }
