@@ -105,6 +105,7 @@ class CajaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
         
@@ -211,24 +212,24 @@ class CajaController extends Controller
     public function edit($id, Request $request)
     {
         $result = DB::table('caja')->where('id', $id)->first();
-        //calculos
-        $ingresos =$result->monto_iniciado;
-        $egresos=0;
-        $diferencia =0;
+        $ingresos = $result->monto_iniciado;
+        $egresos = 0;
+        $diferencia = 0;
         $saldo = Transaccion::getsaldo($id)->get();
-        for($i=0; $i<count($saldo); $i++){
+        for($i = 0; $i<count( $saldo ); $i++){
             if(($saldo[$i]->concepto_tipo)=="I"){
                 $ingresos  += $saldo[$i]->monto; 
             }else if(($saldo[$i]->concepto_tipo)=="E"){
                 $egresos += $saldo[$i]->monto;
             }
         }
+
         $diferencia= $ingresos-$egresos;
         $monto_cierre=0;
         $monto_cierre = ($result->monto_iniciado-$diferencia);
 
         $existe = Libreria::verificarExistencia($id, 'caja');
-        if ($existe !== true) {
+        if ($existe !== true){
             return $existe;
         }
 
@@ -274,10 +275,8 @@ class CajaController extends Controller
         
         return is_null($error) ? "OK" : $error;
     }
-    //------------------------------
 /*********************************** ACTUALIZA AHORROS ************************************** */
 public function actualizardatosahorros(Request $request){
-      /******************************************************* */
     
     $configuracion = Configuraciones::all()->last();
     $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
@@ -345,13 +344,11 @@ public function actualizardatosahorros(Request $request){
 
       }
       return $error1;
-      /******************************************************* */
+      
 }
 
-/************************************* Fin actualizar *************************************** */
 /*********************************** ACTUALIZA AHORROS ************************************** */
 public function actualizardatosahorrosNuevo(Request $request){
-    /******************************************************* */
   
   $configuracion = Configuraciones::all()->last();
   $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
@@ -379,10 +376,7 @@ public function actualizardatosahorrosNuevo(Request $request){
 
         $fecha_ah = date("Y-m-d", strtotime($lista_ahorros[0]->fechai));
         $fecha_inicial = new DateTime($fecha_ah);
-        //$sfechH = explode('-',$fecha_ah);
-       // $anioH = $sfechH[0];
-        //$mesH = $sfechH[1];
-       // $dif_mes=0;
+
         $diferencia = $fecha_inicial->diff($fecha_final);
         $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
        
@@ -417,7 +411,6 @@ public function actualizardatosahorrosNuevo(Request $request){
 
     }
     return $error1;
-    /******************************************************* */
 }
 
 /************************************* Fin actualizar *************************************** */

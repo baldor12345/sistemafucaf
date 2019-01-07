@@ -13,7 +13,7 @@ use App\Caja;
 use App\Persona;
 use App\Transaccion;
 use App\Credito;
-use App\configuraciones;
+use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -60,11 +60,11 @@ class AhorrosController extends Controller
     {
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
-        $configuraciones = configuraciones::all()->last();
-        $entidad          = 'Ahorros';
-        $title            = $this->tituloAdmin;
+        $configuraciones = Configuraciones::all()->last();
+        $entidad = 'Ahorros';
+        $title = $this->tituloAdmin;
         $tituloRegistrar = $this->tituloRegistrar;
-        $ruta             = $this->rutas;
+        $ruta = $this->rutas;
         return view($this->folderview.'.admin')->with(compact('entidad','idcaja','configuraciones', 'title', 'tituloRegistrar', 'ruta'));
     }
     /**
@@ -77,14 +77,14 @@ class AhorrosController extends Controller
     {
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
-        $configuraciones = configuraciones::all()->last();
-        $pagina    = $request->input('page');
-        $filas     = $request->input('filas');
-        $entidad   = 'Ahorros';
-        $nombres    = Libreria::getParam($request->input('nombres'));
-        $resultado  = Ahorros::listar($nombres);
-        $lista      = $resultado->get();
-        $cabecera   = array();
+        $configuraciones = Configuraciones::all()->last();
+        $pagina = $request->input('page');
+        $filas = $request->input('filas');
+        $entidad = 'Ahorros';
+        $nombres = Libreria::getParam($request->input('nombres'));
+        $resultado = Ahorros::listar($nombres);
+        $lista = $resultado->get();
+        $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
         $cabecera[] = array('valor' => 'COD. CLIENTE', 'numero' => '1');
         $cabecera[] = array('valor' => 'NOMBRE CLIENTE', 'numero' => '1');
@@ -96,19 +96,18 @@ class AhorrosController extends Controller
         $titulo_vistahistoricoahorro = $this->titulo_vistahistoricoahorro;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
-            $clsLibreria     = new Libreria();
+            $clsLibreria = new Libreria();
             $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
-            $paginacion      = $paramPaginacion['cadenapaginacion'];
-            $inicio          = $paramPaginacion['inicio'];
-            $fin             = $paramPaginacion['fin'];
-            $paginaactual    = $paramPaginacion['nuevapagina'];
-            $lista           = $resultado->paginate($filas);
+            $paginacion = $paramPaginacion['cadenapaginacion'];
+            $inicio = $paramPaginacion['inicio'];
+            $fin = $paramPaginacion['fin'];
+            $paginaactual = $paramPaginacion['nuevapagina'];
+            $lista = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
             return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta', 'titulo_vistaretiro','titulo_vistadetalleahorro','titulo_vistahistoricoahorro','idcaja','configuraciones'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
-/************************************ ---Fin inicio---*************************************** */
 
 /******************************REGISTRO DE DEPOSITO DE AHORRO******************************** */
   
@@ -122,19 +121,19 @@ class AhorrosController extends Controller
     {
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
-        $configuraciones = configuraciones::all()->last();
+        $configuraciones = Configuraciones::all()->last();
 
-        $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $entidad        = 'Ahorros';
-        $ahorros        =  null;
+        $listar = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad = 'Ahorros';
+        $ahorros =  null;
         $dni = null;
         $idopcion = null;
-        $ruta             = $this->rutas;
-        $resultado      = Concepto::listar('I');
+        $ruta = $this->rutas;
+        $resultado = Concepto::listar('I');
         $cboConcepto  = array(5=>'Deposito de ahorros');// Concepto::pluck('titulo', 'id')->all();
-        $formData       = array('ahorros.store');
-        $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $formData = array('ahorros.store');
+        $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton = 'Registrar'; 
         return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto'));
     }
    /**
@@ -149,11 +148,11 @@ class AhorrosController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $msjeah = null;
         if(count($caja) >0){
-            $listar     = Libreria::getParam($request->input('listar'), 'NO');
+            $listar = Libreria::getParam($request->input('listar'), 'NO');
             $reglas = array(
-                'capital'         => 'required|max:20',
-                'fechai'      => 'required|max:20',
-                'persona_id'    => 'required|max:100',
+                'capital' => 'required|max:20',
+                'fechai' => 'required|max:20',
+                'persona_id' => 'required|max:100',
                 );
 
             $validacion = Validator::make($request->all(),$reglas);
@@ -223,7 +222,6 @@ class AhorrosController extends Controller
         
         return is_null($msjeah) ? "OK" : $msjeah;
     }
-/***********************************Fin registro deposito************************************ */
 
 /************************** MOSTRAR DETALLE (DEPOSITOS O RETIROS) *************************** */
    //Metodo para  abrir modal detalle (depositos o retiros ) 
@@ -273,7 +271,6 @@ class AhorrosController extends Controller
        return view($this->folderview.'.listdetahorro')->with(compact('lista', 'entidad'));
    }
 
-/*********************************** Fin mostrar detalle ************************************ */
 
 /****************** MOSTRAR HISTORICO CAPITAL E INTERES MENSAL EN UN AÑO  ******************* */
    //Metodo para abrir Modal historico de capital + interes 
@@ -335,7 +332,6 @@ class AhorrosController extends Controller
         }
         return view($this->folderview.'.listdetallehistorico')->with(compact('lista', 'entidad'));
     }
-/********************************** Fin mostar historico ************************************ */
 
 /************************************ RETIRAR AHORROS *************************************** */
     //Metodo para abrir modal de retiro
@@ -401,7 +397,6 @@ class AhorrosController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
-/************************************---Fin retirar----************************************** */
     
 /*********************************** ACTUALIZA AHORROS ************************************** */
     public function actualizardatosahorros(){
@@ -437,7 +432,6 @@ class AhorrosController extends Controller
         }
     }
 
-/************************************* Fin actualizar *************************************** */
 
 /*************************** GENERAR VOUCHER DEPOSITO AHORRO PDF **************************** */
     //metodo para generar voucher ahorro en pdf
@@ -469,7 +463,6 @@ class AhorrosController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
-/************************************ Fin generar voucher *********************************** */
 
 /*************************** GENERAR VOUCHER RETIRO AHORRO PDF **************************** */
     //metodo para generar voucher ahorro en pdf
@@ -500,7 +493,6 @@ class AhorrosController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
-/************************************ Fin generar voucher *********************************** */
 /*************************** GENERAR REPORTE HISTORICO DE AHORRO PDF **************************** */
     //metodo para generar voucher ahorro en pdf
     public function generareportehistoricoahorrosPDF($persona_id=0,$anioactual=2018)

@@ -57,6 +57,7 @@ $(document).ready(function() {
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day;
 		$('#fechai').val(fechai);
+		$('#interes').attr('disabled', 'true');
 
 	if($('#dnicl').val() != ''){
 		$.get("personas/"+$('#dnicl').val()+"",function(response, facultad){
