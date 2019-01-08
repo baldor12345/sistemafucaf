@@ -86,12 +86,15 @@
                         
                     },
                     success: function(res){
-                        
-                        mostrarMensaje ("Retiro exitoso", "OK");
-                        buscar("{{$entidad}}");
-                        cerrarModal();
-                        window.open(rutarecibo, "Voucher retiro ahorro", "width=400, height=500, left=200, top=100");
-				
+                        if(res == 'OK'){
+                            mostrarMensaje ("Retiro exitoso", "OK");
+                            buscar("{{$entidad}}");
+                            cerrarModal();
+                            window.open(rutarecibo, "Voucher retiro ahorro", "width=400, height=500, left=200, top=100");
+                        }else{
+                            var mensaje = "<div class='alert alert-danger'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>"+res+"</strong></div>";
+                        $('#divMensajeErrorRetiro').html(mensaje);
+                        }
                     }
                     }).fail(function(){
                         mostrarMensaje ("Error de servidor", "ERROR")
