@@ -39,7 +39,9 @@
 					@else
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura Caja', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
 					@endif
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Reportes', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["cargarreporte"], array('listar'=>'SI')).'\', \''.$titulo_reporte.'\', this);')) !!}
 					{!! Form::close() !!}
+					
                 </div>
             </div>
 

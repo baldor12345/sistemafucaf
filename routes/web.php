@@ -181,15 +181,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/detalle/{id}', 'CajaController@detalle')->name('caja.detalle');
     Route::get('/reporteingresosPDF/{id}', 'CajaController@reporteingresosPDF')->name('reporteingresosPDF');
     Route::get('/reporteegresosPDF/{id}', 'CajaController@reporteegresosPDF')->name('reporteegresosPDF');
-
     Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
     Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');
     Route::get('caja/cargarselect/{idselect}', 'CajaController@cargarselect')->name('caja.cargarselect');
     Route::get('caja/buscartransaccion', 'CajaController@buscartransaccion')->name('caja.buscartransaccion');
-
     Route::get('caja/cargarreapertura/{id}/{listarluego}', 'CajaController@cargarreapertura')->name('caja.cargarreapertura');
-    //Route::get('caja/guardarreapertura/{id}', 'CajaController@guardarreapertura');
     Route::get('caja/guardarreapertura', 'CajaController@guardarreapertura')->name('caja.guardarreapertura');
+    Route::get('caja/cargarreporte', 'CajaController@cargarreporte')->name('caja.cargarreporte');
+    Route::get('caja/generarreportes', 'CajaController@generarreportes')->name('caja.generarreportes');
 
    /*CONCEPTO*/
    Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');

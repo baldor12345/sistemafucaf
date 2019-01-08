@@ -29,6 +29,7 @@ class CajaController extends Controller
     protected $titulo_nuevomovimiento = 'Registrar Nuevo Gasto';
     protected $tituloCerrarCaja = 'Cerrar Caja';
     protected $titulo_reaperturar = 'Reaperturar Caja';
+    protected $titulo_reporte = 'Reportes';
     protected $titulo_transaccion = 'Transacciones Realizadas';
     protected $tituloNuevaTransaccion = 'Registrar Nuevo Gasto';
     protected $tituloEliminar  = 'Eliminar persona';
@@ -44,7 +45,8 @@ class CajaController extends Controller
 
             'cargarreapertura'   => 'caja.cargarreapertura',
             'guardarreapertura' => 'caja.guardarreapertura',
-            
+            'cargarreporte' => 'caja.cargarreporte',
+            'generarreportes' => 'caja.generarreportes',
             'cargarselect' => 'encuesta.cargarselect',
             'buscartransaccion'=> 'caja.buscartransaccion'
         );
@@ -91,6 +93,7 @@ class CajaController extends Controller
         $titulo_transaccion = $this->titulo_transaccion;
         $titulo_nuevomovimiento = $this->titulo_nuevomovimiento;
         $titulo_reapertura = $this->titulo_reaperturar;
+        $titulo_reporte = $this->titulo_reporte;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -101,7 +104,7 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta','titulo_reapertura'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta','titulo_reapertura','titulo_reporte'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -120,9 +123,10 @@ class CajaController extends Controller
         $titulo_registrar = $this->tituloRegistrar;
         $titulo_nuevomovimiento = $this->titulo_nuevomovimiento;
         $titulo_reapertura = $this->titulo_reaperturar;
+        $titulo_reporte = $this->titulo_reporte;
         $ruta             = $this->rutas;
         $listCaja = Caja::listCaja();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja','titulo_reapertura'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja','titulo_reapertura','titulo_reporte'));
     }
 
     /**
@@ -300,6 +304,40 @@ class CajaController extends Controller
 
     /**ACTUALIZAR REAPERTURA DE LA ULTIMA CAJA */
     public function guardarreapertura(Request $request)
+    {
+        $caja_id = $request->get('caja_id');
+        $monto_inicio = Libreria::getParam($request->input('monto_inicio'));
+        $monto_cierre = Libreria::getParam($request->input('monto_cierre'));
+        $estado = Libreria::getParam($request->input('estado'));
+
+        $existe = Libreria::verificarExistencia($caja_id, 'caja');
+        if ($existe !== true) {
+            return $existe;
+        }
+        
+        $error = DB::transaction(function() use($request, $caja_id, $monto_inicio, $monto_cierre, $estado){
+            $caja                 = Caja::find($caja_id);
+            $caja->fecha_horaCierre        = null;
+            $caja->monto_cierre        = $monto_cierre;
+            $caja->diferencia_monto        = 0.0;
+            $caja->estado        = $estado;//cierre
+            $caja->save();
+        });
+        
+        return is_null($error) ? "OK" : $error;
+    }
+
+    /**CARGAR REPORTE */
+    public function cargarreporte(){
+        
+        $entidad  = 'Caja';
+        $ruta = $this->rutas;
+        $titulo_reporte = $this->titulo_reporte;
+        return view($this->folderview.'.reportes')->with(compact('entidad', 'ruta', 'titulo_reporte','cboEstado'));
+    }
+
+    /**GENERAR REPORTES DE CAJA Y EGRESOS E INGRESOS DEL MES */
+    public function generarreportes(Request $request)
     {
         $caja_id = $request->get('caja_id');
         $monto_inicio = Libreria::getParam($request->input('monto_inicio'));
