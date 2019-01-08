@@ -179,8 +179,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/cargarCaja/{id}', 'CajaController@cargarCaja')->name('caja.cargarCaja');
     Route::get('/reportecajaPDF/{id}', 'CajaController@reportecajaPDF')->name('reportecajaPDF');
     Route::get('caja/detalle/{id}', 'CajaController@detalle')->name('caja.detalle');
-    Route::get('/reporteingresosPDF/{id}', 'CajaController@reporteingresosPDF')->name('reporteingresosPDF');
-    Route::get('/reporteegresosPDF/{id}', 'CajaController@reporteegresosPDF')->name('reporteegresosPDF');
+
+    Route::get('/reporteingresosPDF/{id?}', 'CajaController@reporteingresosPDF')->name('caja.reporteingresosPDF');
+    Route::get('/reporteegresosPDF/{id?}', 'CajaController@reporteegresosPDF')->name('caja.reporteegresosPDF');
+
     Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
     Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');
     Route::get('caja/cargarselect/{idselect}', 'CajaController@cargarselect')->name('caja.cargarselect');

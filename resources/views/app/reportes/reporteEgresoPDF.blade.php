@@ -65,7 +65,7 @@
 
 	<table width="100%" class="tabla3">
             <tr>
-                <td rowspan="2" cellspacing="1" width="6%" align="center" class="fondo"><strong>Dia</strong></td>
+                <td rowspan="2" cellspacing="1" width="6%" align="center" class="fondo"><strong>#</strong></td>
 				<td rowspan="2" cellspacing="1" width="28%" align="center" class="fondo"><strong>Concepto y/o Nombre del Socio o Cliente</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Retiros Ahorros S/.</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Préstamos S/.</strong></td>
@@ -81,7 +81,7 @@
 			</tr>
             @foreach($lista as $value )
             <tr>
-				<td width="6%" align="center"><span class="text">{{$day.'-'.$mesItm}}</span></td>
+				<td width="6%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
 				<td width="28%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->monto_ahorro }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->monto_credito }}</span></td>
@@ -100,7 +100,7 @@
 
 			@foreach($lista_por_concepto as $value )
             <tr>
-				<td width="6%" align="center"><span class="text">{{$day.'-'.$mesItm}}</span></td>
+				<td width="6%" align="center"><span class="text">-</span></td>
 				<td width="28%" align="left"><span class="text">{{$value->concepto_titulo}}</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>

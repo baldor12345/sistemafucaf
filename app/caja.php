@@ -50,11 +50,35 @@ class caja extends Model
         return $results;
     }
 
-    public static function listIngresos($fechai, $fechaf)
+    //lista de ingresos por persona del mes actual
+    public static function listIngresos($anio, $month)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
+                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones"),
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
+    //lista de ingresos por persona asta el mes anterior
+    public static function listIngresosastamesanterior($fechai, $fechaf)
     {
         $fechai = date('Y-m-d', strtotime($fechai));
         $fechaf = date('Y-m-d', strtotime($fechaf));
-
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
@@ -75,7 +99,73 @@ class caja extends Model
         return $results;
     }
 
-    public static function listEgresos($fechai, $fechaf)
+    //lista de ingresos por concepto del mes actual
+
+    public static function listIngresos_por_concepto($month, $anio)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+				        'transaccion.monto as transaccion_monto'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('concepto.titulo','!=','Compra de acciones')
+                    ->where('concepto.titulo','!=','Venta de acciones')
+                    ->where('concepto.titulo','!=','Comision Voucher')
+                    ->where('concepto.titulo','!=','Deposito de ahorros')
+                    ->where('concepto.titulo','!=','Pago de cuotas');
+        return $results;
+    }
+
+    //lista de ingresos por concepto aste el mes anterior 
+    public static function listIngresos_por_concepto_asta_mes_anterior($fechai, $fechaf)
+    {
+        $fechai = date('Y-m-d', strtotime($fechai));
+        $fechaf = date('Y-m-d', strtotime($fechaf));
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+				        'transaccion.monto as transaccion_monto'
+                    )
+                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('concepto.tipo','=','I')
+                    ->where('concepto.titulo','!=','Compra de acciones')
+                    ->where('concepto.titulo','!=','Venta de acciones')
+                    ->where('concepto.titulo','!=','Deposito de ahorros')
+                    ->where('concepto.titulo','!=','Comision Voucher')
+                    ->where('concepto.titulo','!=','Pago de cuotas');
+        return $results;
+    }
+
+
+    /**----------------------------------------------------- */
+    //lista de egresos  del mes actual por persona
+    public static function listEgresos($month, $anio)
+
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
+                        DB::raw("SUM(transaccion.monto_credito) as monto_credito"),
+                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','E')
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
+    //lista de egresos por persona asta el mes anterior 
+    public static function listEgresos_asta_mes_anterior($fechai, $fechaf)
 
     {
         $fechai = date('Y-m-d', strtotime($fechai));
@@ -96,7 +186,26 @@ class caja extends Model
         return $results;
     }
 
-    public static function listEgresos_por_concepto($fechai, $fechaf)
+    //list de egresos del mes actual por concepto
+    public static function listEgresos_por_concepto($anio, $month)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+				        'transaccion.monto as transaccion_monto'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','E')
+                    ->where('concepto.titulo','!=','Retiro de ahorros')
+                    ->where('concepto.titulo','!=','Crédito')
+                    ->where('concepto.titulo','!=','Ganancia por accion');
+        return $results;
+    }
+
+    //list de egresos asta el es anterior por concepto
+    public static function listEgresos_por_concepto_asta_mes_anterior($fechai, $fechaf)
     {
         $fechai = date('Y-m-d', strtotime($fechai));
         $fechaf = date('Y-m-d', strtotime($fechaf));
@@ -113,6 +222,8 @@ class caja extends Model
                     ->where('concepto.titulo','!=','Ganancia por accion');
         return $results;
     }
+
+
 
     //busqueda de cantidad de acciones por personas para actualizar las ganancias por mes
     public static function list_ganancia_acciones_persona()

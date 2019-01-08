@@ -65,11 +65,11 @@
 
 	<table width="100%" class="tabla3">
             <tr>
-                <td rowspan="2" cellspacing="1" width="6%" align="center" class="fondo"><strong>Dia</strong></td>
-				<td rowspan="2" cellspacing="1" width="28%" align="center" class="fondo"><strong>Nombre del Socio o Cliente</strong></td>
+                <td rowspan="2" cellspacing="1" width="5%" align="center" class="fondo"><strong>#</strong></td>
+				<td rowspan="2" cellspacing="1" width="29%" align="center" class="fondo"><strong>Nombre del Socio o Cliente</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Deposito Ahorros</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Pagos de Capital S/.</strong></td>
-                <td rowspan="2" cellspacing="2" width="8%" align="center" class="fondo"><strong>intereses Recibidos S/.</strong></td>
+                <td rowspan="2" cellspacing="2" width="8%" align="center" class="fondo"><strong>intereses Recibidos</strong></td>
 				<td rowspan="2" cellspacing="2" width="8%" align="center" class="fondo"><strong>Acciones S/.</strong></td>
 				<td cellspacing="2" width="24%" align="center" class="fondo"><strong>OTROS</strong></td>
 				<td rowspan="2" width="10%" align="center" class="fondo"><strong>Total Ingresos</strong></td>
@@ -80,17 +80,39 @@
 			</tr>
             @foreach($lista as $value )
             <tr>
-				<td width="6%" align="center"><span class="text">{{$day.'-'.$mesItm}}</span></td>
-				<td width="28%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
+				<td width="5%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
+				<td width="29%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->deposito_ahorros + $value->monto_ahorro }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->pagos_de_capital }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->intereces_recibidos }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->acciones }}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->cuota_mora + $value->comision_voucher}}</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->comision_voucher}}</span></td>
+				@if($value->comision_voucher != null)
 				<td width="16%" align="center"><span class="text">Com. Rec.</span></td>
+				@else
+				<td width="16%" align="center"><span class="text">-</span></td>
+				@endif
 				<td width="10%" align="center">
 					<span class="text">
-					{{ ($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro+$value->cuota_mora + $value->comision_voucher) }}
+					{{ ($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro + $value->comision_voucher) }}
+					</span>
+				</td>
+            </tr>
+			@endforeach
+
+			@foreach($lista_ingresos_por_concepto as $value )
+            <tr>
+				<td width="5%" align="center"><span class="text">-</span></td>
+				<td width="29%" align="left"><span class="text">{{$value->concepto_titulo}}</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">{{$value->transaccion_monto}}</span></td>
+				<td width="16%" align="center"><span class="text">-</span></td>
+				<td width="10%" align="center">
+					<span class="text">
+							{{$value->transaccion_monto}}
 					</span>
 				</td>
             </tr>

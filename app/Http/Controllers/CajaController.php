@@ -26,7 +26,7 @@ class CajaController extends Controller
     protected $tituloAdmin     = 'Caja';
     protected $tituloRegistrar = 'Apertura Caja';
     protected $tituloModificar = 'Modificar Caja';
-    protected $titulo_nuevomovimiento = 'Registrar Nuevo Gasto';
+    protected $titulo_nuevomovimiento = 'Registrar Nuevo Movimiento';
     protected $tituloCerrarCaja = 'Cerrar Caja';
     protected $titulo_reaperturar = 'Reaperturar Caja';
     protected $titulo_reporte = 'Reportes';
@@ -48,7 +48,10 @@ class CajaController extends Controller
             'cargarreporte' => 'caja.cargarreporte',
             'generarreportes' => 'caja.generarreportes',
             'cargarselect' => 'encuesta.cargarselect',
-            'buscartransaccion'=> 'caja.buscartransaccion'
+            'buscartransaccion'=> 'caja.buscartransaccion',
+
+            'reporteingresosPDF' => 'caja.reporteingresosPDF',
+            'reporteegresosPDF' => 'caja.reporteegresosPDF'
         );
 
     /**
@@ -329,7 +332,7 @@ class CajaController extends Controller
 
     /**CARGAR REPORTE */
     public function cargarreporte(){
-        $cboTipo        = array('I'=>'Ingresos', 'E'=>'Egresos');
+        $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos');
         $entidad  = 'Caja';
         $ruta = $this->rutas;
         $titulo_reporte = $this->titulo_reporte;
@@ -339,28 +342,11 @@ class CajaController extends Controller
     /**GENERAR REPORTES DE CAJA Y EGRESOS E INGRESOS DEL MES */
     public function generarreportes(Request $request)
     {
+        $res = null;
         $mes = $request->get('mes');
-        echo "el mes y año seleccionado  ".$mes;
-        $tipo = Libreria::getParam($request->input('tipo'));
-        echo $tipo;
-        $monto_cierre = Libreria::getParam($request->input('monto_cierre'));
-        $estado = Libreria::getParam($request->input('estado'));
-
-        $existe = Libreria::verificarExistencia($caja_id, 'caja');
-        if ($existe !== true) {
-            return $existe;
-        }
-        
-        $error = DB::transaction(function() use($request, $caja_id, $monto_inicio, $monto_cierre, $estado){
-            $caja                 = Caja::find($caja_id);
-            $caja->fecha_horaCierre        = null;
-            $caja->monto_cierre        = $monto_cierre;
-            $caja->diferencia_monto        = 0.0;
-            $caja->estado        = $estado;//cierre
-            $caja->save();
-        });
-        
-        return is_null($error) ? "OK" : $error;
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $mes);
+        return $respuesta;
     }
 
 
@@ -586,7 +572,7 @@ class CajaController extends Controller
         }
 
         $entidad        = 'Transaccion';
-        $cboTipo        = [''=>'Seleccione']+ array('E'=>'Egreso');
+        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];
         $boton          = 'Registrar Gasto';
         return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos'));
@@ -654,6 +640,12 @@ class CajaController extends Controller
             ->where('titulo', '!=', 'Ganancia por accion')
             ->where('titulo', '!=', 'Crédito')
             ->where('titulo', '!=', 'Retiro de ahorros')
+            ->where('titulo', '!=', 'Compra de acciones')
+            ->where('titulo', '!=', 'Venta de acciones')
+            ->where('titulo', '!=', 'Pago de cuotas')
+            ->where('titulo', '!=', 'Contribución de Ingreso')
+            ->where('titulo', '!=', 'venta de acciones')
+            ->where('titulo', '!=', 'Deposito de ahorros')
             ->get();
         $retorno .= '><option value="" selected="selected">Seleccione</option>';
 
@@ -704,55 +696,52 @@ class CajaController extends Controller
     }
 
     //---------------------------------------------------------------------------METODO PARA GENERAR REPORTE DE INGRESOS
-    public function reporteingresosPDF($id, Request $request)
-    {    
-        $caja = DB::table('caja')->where('id', $id)->first();
-        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
-        $fechaf =  date("d-m-Y",strtotime($caja->fecha_horaCierre."+ 1 days"));
+    public function reporteingresosPDF($fecha)
+    {
+        //fecha en mes y año separados
+        $fechaf = explode("-", $fecha);
+        $anio =  $fechaf[0];
+        $month = $fechaf[1];
 
-        //extraer dia mes y anio para la cabezera del reporte
-        $day = Date::parse($caja->fecha_horaApert)->format('d');
-        $month = Date::parse($caja->fecha_horaApert)->format('m');
-        $year = Date::parse($caja->fecha_horaApert)->format('y');
-        $anio = "20".$year;
+        $lista = Caja::listIngresos($anio,$month)->get();
 
         //evaluar mes 
         $mes="";
         $mesItm="";
         switch($month){
-            case '1':
+            case '01':
                 $mes = "ENERO";
                 $mesItm = "Ene";
                 break;
-            case '2':
+            case '02':
                 $mes = "FEBRERO";
                 $mesItm = "Feb";
                 break;
-            case '3':
+            case '03':
                 $mes = "MARZO";
                 $mesItm = "Mar";
                 break;
-            case '4':
+            case '04':
                 $mes = "ABRIL";
                 $mesItm = "Abr";
                 break;
-            case '5':
+            case '05':
                 $mes = "MAYO";
                 $mesItm = "May";
                 break;
-            case '6':
+            case '06':
                 $mes = "JUNIO";
                 $mesItm = "Jun";
                 break;
-            case '7':
+            case '07':
                 $mes = "JULIO";
                 $mesItm = "Jul";
                 break;
-            case '8':
+            case '08':
                 $mes = "AGOSTO";
                 $mesItm = "Ago";
                 break;
-            case '9':
+            case '09':
                 $mes = "SETIEMBRE";
                 $mesItm = "Set";
                 break;
@@ -770,8 +759,6 @@ class CajaController extends Controller
                 break;
         }
 
-        $lista = Caja::listIngresos($fechai,$fechaf)->get();
-
         //calculo del total de ingresos del mes
         $sum_deposito_ahorros_mes_actual=0;
         $sum_pagos_de_capital_mes_actual=0;
@@ -785,7 +772,7 @@ class CajaController extends Controller
                 $sum_pagos_de_capital_mes_actual += $lista[$i]->pagos_de_capital;
                 $sum_interese_recibidos_mes_actual += $lista[$i]->intereces_recibidos;
                 $sum_acciones_mes_actual += $lista[$i]->acciones;
-                $sum_otros_mes_actual += $lista[$i]->cuota_mora+$lista[$i]->comision_voucher;
+                $sum_otros_mes_actual += $lista[$i]->comision_voucher;
             }
             $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
         }else{
@@ -797,11 +784,32 @@ class CajaController extends Controller
             $sum_ingresos_totales_mes_actual=0;
         }
 
+        //lista de ingresos por concepto
+        $lista_ingresos_por_concepto = Caja::listIngresos_por_concepto($month,$anio)->get();
+        // calculo del total de ingresos del mes actual por concepto
+        $sum_por_concepto_actual=0;
+        if(count($lista_ingresos_por_concepto) >0 ){
+            for($i=0; $i<count($lista_ingresos_por_concepto); $i++){
+                $sum_por_concepto_actual += $lista_ingresos_por_concepto[$i]->transaccion_monto;
+            }
+            $sum_ingresos_totales_mes_actual += $sum_por_concepto_actual;
+            $sum_otros_mes_actual += $sum_por_concepto_actual;
+        }
+        
+
+
+
         //calculo del total de ingresos acumulados al mes anterior
+        //--primero identifico la fecha de la primera caja que fue aperturada
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
         $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
-        $lista_mes_anterior = Caja::listIngresos($fechai_caja_first,$fechai)->get();
+
+        //identifico la fecha del mes anterior 
+        $fecha_completa= $fecha."-01";
+        $fechai =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
+
+        $lista_mes_anterior = Caja::listIngresosastamesanterior($fechai_caja_first, $fechai)->get();
+
 
         $sum_deposito_ahorros_asta_mes_anterior=0;
         $sum_pagos_de_capital_asta_mes_anterior=0;
@@ -815,7 +823,7 @@ class CajaController extends Controller
                 $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterior[$i]->pagos_de_capital;
                 $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterior[$i]->intereces_recibidos;
                 $sum_acciones_asta_mes_anterior += $lista_mes_anterior[$i]->acciones;
-                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->cuota_mora+$lista_mes_anterior[$i]->comision_voucher;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->comision_voucher;
             }
             $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
         }else{
@@ -826,6 +834,20 @@ class CajaController extends Controller
             $sum_otros_asta_mes_anterior=0;
             $sum_ingresos_totales_asta_mes_anterior=0;
         }
+
+        //lista de ingresos por concepto
+        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fechai_caja_first,$fechai)->get();
+        // calculo del total de ingresos del mes actual por concepto
+        $sum_por_concepto_mes_anterior=0;
+        if(count($lista_ingresos_por_concepto_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_ingresos_por_concepto_mes_anterior); $i++){
+                $sum_por_concepto_mes_anterior += $lista_ingresos_por_concepto_mes_anterior[$i]->transaccion_monto;
+            }
+            $sum_ingresos_totales_asta_mes_anterior += $sum_por_concepto_mes_anterior;
+            $sum_otros_asta_mes_anterior += $sum_por_concepto_mes_anterior;
+        }
+
+
 
         //calculo de ingresos acumulados asta la fecha
         $sum_deposito_ahorros_acumulados=0;
@@ -845,11 +867,11 @@ class CajaController extends Controller
         $sum_ingresos_totales_acumulados=($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
 
 
-        $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+        //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
-        $titulo = "reporte ".$caja->titulo."_Ingresos";
-        $view = \View::make('app.reportes.reporteIngresoPDF')->with(compact('lista', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_deposito_ahorros_mes_actual',
-                                                                            'sum_pagos_de_capital_mes_actual','sum_interese_recibidos_mes_actual','sum_acciones_mes_actual','sum_otros_mes_actual','sum_ingresos_totales_mes_actual',
+        $titulo = "reporte ".$mes."-".$anio."_Ingresos";
+        $view = \View::make('app.reportes.reporteIngresoPDF')->with(compact('lista','lista_ingresos_por_concepto' ,'id', 'caja', 'mes','anio','mesItm','sum_deposito_ahorros_mes_actual',
+                                                                            'sum_pagos_de_capital_mes_actual','sum_interese_recibidos_mes_actual','sum_acciones_mes_actual','sum_otros_mes_actual','sum_ingresos_totales_mes_actual','sum_por_concepto_actual',
                                                                         'sum_deposito_ahorros_asta_mes_anterior','sum_pagos_de_capital_asta_mes_anterior','sum_interese_recibidos_asta_mes_anterior','sum_acciones_asta_mes_anterior','sum_otros_asta_mes_anterior','sum_ingresos_totales_asta_mes_anterior',
                                                                     'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados'));
         $html_content = $view->render();      
@@ -865,16 +887,14 @@ class CajaController extends Controller
     }
 
     //---------------------------------------------------------------------------METODO PARA GENERAR REPORTE DE EGRESOS
-    public function reporteegresosPDF($id, Request $request)
+    public function reporteegresosPDF($fecha, Request $request)
     {    
-        $caja = DB::table('caja')->where('id', $id)->first();
-        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
-        $fechaf =  date("d-m-Y",strtotime($caja->fecha_horaCierre."+ 1 days"));
+        //fecha en mes y año separados
+        $fechaf = explode("-", $fecha);
+        $anio =  $fechaf[0];
+        $month = $fechaf[1];
 
-        $day = Date::parse($caja->fecha_horaApert)->format('d');
-        $month = Date::parse($caja->fecha_horaApert)->format('m');
-        $year = Date::parse($caja->fecha_horaApert)->format('y');
-        $anio = "20".$year;
+        $lista = Caja::listEgresos($month,$anio)->get();
 
         //evaluar mes 
         $mes="";
@@ -931,7 +951,6 @@ class CajaController extends Controller
         }
 
         //lista de egresos por personas
-        $lista = Caja::listEgresos($fechai,$fechaf)->get();
 
 
         //calculo del total de egresos del mes actual por persona
@@ -952,8 +971,10 @@ class CajaController extends Controller
             $sum_interes_pagado_mes_actual=0;
             $sum_egresos_totales_mes_actual=0;
         }
+
+
         //lista de egresos por concepto
-        $lista_por_concepto = Caja::listEgresos_por_concepto($fechai,$fechaf)->get();
+        $lista_por_concepto = Caja::listEgresos_por_concepto($anio,$month)->get();
 
         // calculo del total de egresos del mes actual por concepto
         $sum_gasto_administrativo_mes_actual=0;
@@ -966,11 +987,17 @@ class CajaController extends Controller
 
 
         //calculo del total de egresos acumulados al mes anterior por persona
+
+        //calculo del total de ingresos acumulados al mes anterior
+        //--primero identifico la fecha de la primera caja que fue aperturada
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechainicial =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
         $fechai_caja_first_egreso =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
 
-        $lista_mes_anterior = Caja::listEgresos($fechai_caja_first_egreso,$fechainicial)->get();
+        //identifico la fecha del mes anterior 
+        $fecha_completa= $fecha."-01";
+        $fechainicial =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
+
+        $lista_mes_anterior = Caja::listEgresos_asta_mes_anterior($fechai_caja_first_egreso,$fechainicial)->get();
 
         $sum_retiro_ahorros_mes_anterior=0;
         $sum_prestamo_de_capital_mes_anterior=0;
@@ -990,7 +1017,7 @@ class CajaController extends Controller
             $sum_egresos_totales_mes_anterior=0;
         }
 
-        $lista_por_concepto_asta_mes_anterior = Caja::listEgresos_por_concepto($fechai_caja_first_egreso,$fechai)->get();
+        $lista_por_concepto_asta_mes_anterior = Caja::listEgresos_por_concepto_asta_mes_anterior($fechai_caja_first_egreso,$fechainicial)->get();
 
         // calculo del total de egresos del mes actual por concepto
         $sum_gasto_administrativo_asta_mes_anterior=0;
@@ -1000,6 +1027,7 @@ class CajaController extends Controller
             }
             $sum_egresos_totales_mes_anterior += $sum_gasto_administrativo_asta_mes_anterior;
         }
+
 
         //calculo de ingresos acumulados asta la fecha
         $sum_retiro_ahorros_acumulados=0;
@@ -1013,6 +1041,7 @@ class CajaController extends Controller
         $sum_retiro_ahorros_acumulados=($sum_retiro_ahorros_mes_actual+$sum_retiro_ahorros_mes_anterior);
         $sum_prestamo_de_capital_acumulados=($sum_prestamo_de_capital_mes_actual+$sum_prestamo_de_capital_mes_anterior);
         $sum_interes_pagado_acumulados=($sum_interes_pagado_mes_actual+$sum_interes_pagado_mes_anterior);
+
         $sum_egresos_totales_acumulados=($sum_egresos_totales_mes_actual+$sum_egresos_totales_mes_anterior);
 
         $sum_gasto_administrativo_acumulado =($sum_gasto_administrativo_mes_actual + $sum_gasto_administrativo_asta_mes_anterior);
@@ -1021,7 +1050,7 @@ class CajaController extends Controller
 
         //calculo de los ingresos y egresos y saldo-----------------------------------------------------------
 
-        $listaingreso = Caja::listIngresos($fechai,$fechaf)->get();
+        $listaingreso = Caja::listIngresos($anio,$month)->get();
 
         //calculo del total de ingresos del mes
         $sum_deposito_ahorros_mes_actual=0;
@@ -1036,7 +1065,7 @@ class CajaController extends Controller
                 $sum_pagos_de_capital_mes_actual += $listaingreso[$i]->pagos_de_capital;
                 $sum_interese_recibidos_mes_actual += $listaingreso[$i]->intereces_recibidos;
                 $sum_acciones_mes_actual += $listaingreso[$i]->acciones;
-                $sum_otros_mes_actual += $listaingreso[$i]->cuota_mora + $listaingreso[$i]->comision_voucher;
+                $sum_otros_mes_actual += $listaingreso[$i]->comision_voucher;
             }
             $sum_ingresos_totales_mes_actual=($sum_deposito_ahorros_mes_actual+$sum_pagos_de_capital_mes_actual+$sum_interese_recibidos_mes_actual+$sum_acciones_mes_actual+$sum_otros_mes_actual);
         }else{
@@ -1048,11 +1077,32 @@ class CajaController extends Controller
             $sum_ingresos_totales_mes_actual=0;
         }
 
+        //lista de ingresos por concepto
+        $lista_ingresos_por_concepto = Caja::listIngresos_por_concepto($month,$anio)->get();
+        // calculo del total de ingresos del mes actual por concepto
+        $sum_por_concepto_actual=0;
+        if(count($lista_ingresos_por_concepto) >0 ){
+            for($i=0; $i<count($lista_ingresos_por_concepto); $i++){
+                $sum_por_concepto_actual += $lista_ingresos_por_concepto[$i]->transaccion_monto;
+            }
+            $sum_ingresos_totales_mes_actual += $sum_por_concepto_actual;
+            $sum_otros_mes_actual += $sum_por_concepto_actual;
+        }
+        
+
+
+
         //calculo del total de ingresos acumulados al mes anterior
-        $caja_asta_mes_anterioringreso = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai =  date("d-m-Y",strtotime($caja->fecha_horaApert."- 1 days"));
-        $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterioringreso[0]->fecha_horaApert."- 1 days"));
-        $lista_mes_anterioringreso = Caja::listIngresos($fechai_caja_first,$fechai)->get();
+        //--primero identifico la fecha de la primera caja que fue aperturada
+        $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
+        $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
+
+        //identifico la fecha del mes anterior 
+        $fecha_completa= $fecha."-01";
+        $fechai =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
+
+        $lista_mes_anterioringreso = Caja::listIngresosastamesanterior($fechai_caja_first, $fechai)->get();
+
 
         $sum_deposito_ahorros_asta_mes_anterior=0;
         $sum_pagos_de_capital_asta_mes_anterior=0;
@@ -1066,7 +1116,7 @@ class CajaController extends Controller
                 $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterioringreso[$i]->pagos_de_capital;
                 $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterioringreso[$i]->intereces_recibidos;
                 $sum_acciones_asta_mes_anterior += $lista_mes_anterioringreso[$i]->acciones;
-                $sum_otros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->cuota_mora + $lista_mes_anterioringreso[$i]->comision_voucher;
+                $sum_otros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->comision_voucher;
             }
             $sum_ingresos_totales_asta_mes_anterior=($sum_deposito_ahorros_asta_mes_anterior+$sum_pagos_de_capital_asta_mes_anterior+$sum_interese_recibidos_asta_mes_anterior+$sum_acciones_asta_mes_anterior+$sum_otros_asta_mes_anterior);
         }else{
@@ -1077,6 +1127,20 @@ class CajaController extends Controller
             $sum_otros_asta_mes_anterior=0;
             $sum_ingresos_totales_asta_mes_anterior=0;
         }
+
+        //lista de ingresos por concepto
+        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fechai_caja_first,$fechai)->get();
+        // calculo del total de ingresos del mes actual por concepto
+        $sum_por_concepto_mes_anterior=0;
+        if(count($lista_ingresos_por_concepto_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_ingresos_por_concepto_mes_anterior); $i++){
+                $sum_por_concepto_mes_anterior += $lista_ingresos_por_concepto_mes_anterior[$i]->transaccion_monto;
+            }
+            $sum_ingresos_totales_asta_mes_anterior += $sum_por_concepto_mes_anterior;
+            $sum_otros_asta_mes_anterior += $sum_por_concepto_mes_anterior;
+        }
+
+
 
         //calculo de ingresos acumulados asta la fecha
         $sum_deposito_ahorros_acumulados=0;
@@ -1092,8 +1156,9 @@ class CajaController extends Controller
         $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
         $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
         $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
-        
-        $sum_ingresos_totales_acumulados= ($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
+
+        $sum_ingresos_totales_acumulados = ($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
+
 
         //------------------------
         //inicializar variables
@@ -1111,10 +1176,10 @@ class CajaController extends Controller
 
 
         //-------------------------------------------
-        $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+        //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
-        $titulo = "reporte ".$caja->titulo."_Egresos";
-        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja', 'persona','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
+        $titulo = "reporte ".$anio."-".$month."_Egresos";
+        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
                                                                             'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual',
                                                                         'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior',
                                                                     'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado', 
