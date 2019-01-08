@@ -47,16 +47,26 @@ class MenuoptionSeeder extends Seeder
 			);
 		}
 
-		$menuoptioncategory_id = DB::table('menuoptioncategory')->where('name', '=', 'Administración')->first()->id;
+		$menuoptioncategory_id = DB::table('menuoptioncategory')->where('name', '=', 'Movimientos')->first()->id;
 
 		$datos = array(
 				array(
 					'name' => 'Caja',
 					'link'   => 'caja'
 				),
-				
+
 				array(
-					'name' => 'Ahorros',
+					'name' => 'Créditos y Pago de Cuotas',
+					'link'   => 'creditos'
+				),
+
+				array(
+					'name' => 'Compra y Venta de Acciones',
+					'link'   => 'acciones'
+				),
+
+				array(
+					'name' => 'Deposito y Retiro de Ahorros',
 					'link'   => 'ahorros'
 				)
 			);
@@ -87,17 +97,10 @@ class MenuoptionSeeder extends Seeder
 				),
 
 				array(
-					'name' => 'Personas',
+					'name' => 'Socios y Clientes',
 					'link'   => 'persona'
 				),
-				array(
-					'name' => 'Acciones',
-					'link'   => 'acciones'
-				),
-				array(
-					'name' => 'Creditos',
-					'link'   => 'creditos'
-				),
+				
 			);
 
 		for ($i=0; $i < count($datos); $i++) { 

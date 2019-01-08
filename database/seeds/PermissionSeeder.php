@@ -26,7 +26,7 @@ class PermissionSeeder extends Seeder
 				));
 		}
 		$usertype_id = DB::table('usertype')->where('name', '=', 'TESORERO')->first()->id;
-		$menuoption_id  = DB::table('menuoption')->where('name', '=', 'Personas')->first()->id;
+		$menuoption_id  = DB::table('menuoption')->where('name', '=', 'Socios y Clientes')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,
@@ -36,7 +36,7 @@ class PermissionSeeder extends Seeder
 				)
 			));
 		
-		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Creditos')->first()->id;
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Créditos y Pago de Cuotas')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,
@@ -54,7 +54,7 @@ class PermissionSeeder extends Seeder
 				'updated_at'     => $now
 				)
 		));
-		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Ahorros')->first()->id;
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Deposito y Retiro de Ahorros')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,
@@ -63,7 +63,7 @@ class PermissionSeeder extends Seeder
 				'updated_at'     => $now
 				)
 		));
-		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Acciones')->first()->id;
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Compra y Venta de Acciones')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,

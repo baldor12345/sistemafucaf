@@ -16,7 +16,7 @@ class MenuoptioncategorySeeder extends Seeder
 
 		DB::table('menuoptioncategory')->insert(array(
 				array(
-					'name'     => 'Administración',
+					'name'     => 'Movimientos',
 					'order'      => 1,
 					'icon'      => 'fa fa-bank',
 					'position'      => 'V',
