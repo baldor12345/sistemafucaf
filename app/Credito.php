@@ -90,19 +90,12 @@ class Credito extends Model
             'persona.nombres as nombres',
             'persona.apellidos as apellidos',
             'persona.tipo as tipo',
+            'persona.estado as estado',
             DB::raw('count(cred.persona_id) as numerocreditos')
          )
          ->where('persona.dni','=', $dni)
+         ->where('cred.estado','=', 0)
          ->groupBy('persona.id');
-
-            /*
-         tableA::whereIn("field", function ($query) use ($value) {
-            $query->select('id')
-                ->from('table_b')
-                ->where('other_field', $value);
-        })->get()
-        */
-
         return  $result->get();
     }
 }
