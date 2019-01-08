@@ -2,6 +2,7 @@
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
+{!! Form::hidden('numcreditos', 0, array('id' => 'numcreditos')) !!}
 <div class="form-row">
     <div id='txtcliente' class="form-group col-6 col-md-6 col-sm-12">
         {!! Form::label('dnicliente', 'DNI del Socio o Cliente: *', array('class' => '')) !!}
@@ -70,19 +71,33 @@
         $("input[name=dnicliente]").keyup(function(event){
             var dnicli = event.target.value+"";
             if(dnicli.length > 6){
-                $.get("personas/"+event.target.value+"",function(response, facultad){
+                $.get("creditos/"+event.target.value+"",function(response, facultad){
                     $('#nombrescliente').val('');
                     $('#persona_id').val('');
                     $('#pers_aval_id').val('');
                     if(response.length>0){
                     
                         $("#nombrescliente").html(response[0].nombres +" "+ response[0].apellidos);
-                        $("#persona_id").val(response[0].id);
+                        $("#persona_id").val(response[0].persona_id);
                         if( response[0].tipo.trim() == 'S'){
                             $("#persona_id").attr('tipocl','s');
                             $("#dniaval").prop('disabled', true);
                             $("#lblavl").html('DNI del Aval:');
-                            $('#divMensajeError{{ $entidad }}').hide();
+                            if(response[0].numerocreditos == '1'){
+                                $('#numcreditos').val(1);
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+response[0].nombres+" "+response[0].apellidos+" ya cuenta con 1 credito activo, por lo cual solo tiene opcion a uno mas, a una sola cuota.!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                            }else if(response[0].numerocreditos >= '2'){
+                                $('#numcreditos').val(response[0].numerocreditos);
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+response[0].nombres+" "+response[0].apellidos+" ya cuenta con 2 creditos activos, por lo cual no podrá obtener otro.!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                            }else{
+                                $('#numcreditos').val(0);
+                                $('#divMensajeError{{ $entidad }}').html("");
+                                $('#divMensajeError{{ $entidad }}').hide();
+                            }
                         }else{
                             $("#persona_id").attr('tipocl','c');
                             $("#dniaval").prop('disabled', false);
@@ -155,38 +170,72 @@
 		return false;
 		}
 	}
+    function valid(){
+       var res = true;
+        if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#persona_id').val() == 0 || $('#valor_credito').val().length <= 0 || $('#periodo').val() <= 0 || $('#valor_credito').val() <= 0){
+            res = false;
+        }
+        return  res;
+    }
 
     function guardarCredito(entidad, rutarecibo) {
-        var idformulario = IDFORMMANTENIMIENTO + entidad;
-        var data         = submitForm(idformulario);
-        var respuesta    = null;
-        var listar       = 'NO';
-        if ($(idformulario + ' :input[id = "listar"]').length) {
-            var listar = $(idformulario + ' :input[id = "listar"]').val()
-        };
-        data.done(function(msg) {
-            respuesta = msg;
-        }).fail(function(xhr, textStatus, errorThrown) {
-            respuesta = 'ERROR';
-        }).always(function() {
-            
-            if(respuesta[0] === 'ERROR'){
-            }else{
-                
-                if (respuesta[0] === 'OK') {
-                    cerrarModal();
-                    modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
-                    if (listar === 'SI') {
-                        if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-                            entidad = entidad2;
-                        }
-                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                    }        
-                } else {
-                    mostrarErrores(respuesta, idformulario, entidad);
+        var valida = true;
+        var mensaje = "";
+        if(valid()){
+            if($('#numcreditos').val() == 1 ){
+                if($('#periodo').val() > 1){
+                    valida = false;
+                    mensaje = "El periodo es mayor a 1, el socio solo puede tener un credito más a una sola cuota.!";
                 }
+            }else if($('#numcreditos').val() >= 2 ){
+                mensaje = "¡El socio no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
+                valida = false;
             }
-        });
+            valid
+
+            if(valida){
+                var idformulario = IDFORMMANTENIMIENTO + entidad;
+                var data         = submitForm(idformulario);
+                var respuesta    = null;
+                var listar       = 'NO';
+                if ($(idformulario + ' :input[id = "listar"]').length) {
+                    var listar = $(idformulario + ' :input[id = "listar"]').val()
+                };
+                data.done(function(msg) {
+                    respuesta = msg;
+                }).fail(function(xhr, textStatus, errorThrown) {
+                    respuesta = 'ERROR';
+                }).always(function() {
+                    
+                    if(respuesta[0] === 'ERROR'){
+                    }else{
+                        
+                        if (respuesta[0] === 'OK') {
+                            cerrarModal();
+                            modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
+                            if (listar === 'SI') {
+                                if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+                                    entidad = entidad2;
+                                }
+                                buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                            }        
+                        } else {
+                            mostrarErrores(respuesta, idformulario, entidad);
+                        }
+                    }
+                });
+            }else{
+                var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+mensaje+"</div>";
+                $('#divMensajeError{{ $entidad }}').html(msj);
+                $('#divMensajeError{{ $entidad }}').show();
+            }
+        }else{
+            var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
+                $('#divMensajeError{{ $entidad }}').html(msj);
+                $('#divMensajeError{{ $entidad }}').show();
+        }
+        
+        
     }
 
     function abrirmodal(datahtml){

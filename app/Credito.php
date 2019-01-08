@@ -83,6 +83,26 @@ class Credito extends Model
     }
     public static function getpersonacredito($dni){
         
-        return  Persona::where('dni','=',$dni)->get();
+        $result = DB::table('persona')
+         ->leftJoin('credito as cred','cred.persona_id','=','persona.id')
+         ->select(
+            'persona.id as persona_id',
+            'persona.nombres as nombres',
+            'persona.apellidos as apellidos',
+            'persona.tipo as tipo',
+            DB::raw('count(cred.persona_id) as numerocreditos')
+         )
+         ->where('persona.dni','=', $dni)
+         ->groupBy('persona.id');
+
+            /*
+         tableA::whereIn("field", function ($query) use ($value) {
+            $query->select('id')
+                ->from('table_b')
+                ->where('other_field', $value);
+        })->get()
+        */
+
+        return  $result->get();
     }
 }
