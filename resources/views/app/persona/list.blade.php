@@ -25,6 +25,11 @@
 			<td>{{ $value->direccion }}</td>
 			<td>{{ $value->telefono_fijo }}</td>
 			<td>{{ $value->email }}</td>
+			@if ($value->estado === 'A')
+			<td style="color:green;font-weight: bold;" >Activo</td>
+			@else
+			<td style="color:red;font-weight: bold;" >Inactivo</td>
+			@endif
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
 		</tr>

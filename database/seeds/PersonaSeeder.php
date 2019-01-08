@@ -32,6 +32,7 @@ class PersonSeeder extends Seeder
                 'fechai'	=>'2009-01-03',
                 'ingreso_personal'              =>'2000.00',
                 'ingreso_familiar'              =>'3400.00',
+                'estado'              =>'A',
 				'created_at'     => $now,
 				'updated_at'     => $now
             ));
@@ -52,6 +53,7 @@ class PersonSeeder extends Seeder
                 'fechai'	=>'2011-12-22',
                 'ingreso_personal'              =>'1000.00',
                 'ingreso_familiar'              =>'2500.00',
+                'estado'              =>'A',
 				'created_at'     => $now,
 				'updated_at'     => $now
 			));
