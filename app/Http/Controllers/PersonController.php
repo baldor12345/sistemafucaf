@@ -60,6 +60,7 @@ class PersonController extends Controller
         $cabecera[]       = array('valor' => 'Direccion', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Telefono', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Email', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
@@ -113,12 +114,13 @@ class PersonController extends Controller
         $entidad        = 'Persona';
         $persona        = null;
         $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
+        $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
         $formData       = array('persona.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil','cboEstado'));
     }
 
     /**
@@ -182,6 +184,7 @@ class PersonController extends Controller
             $perosna->telefono_fijo        = $request->input('telefono_fijo');
             $perosna->telefono_movil1        = $request->input('telefono_movil1');
             $perosna->telefono_movil2        = $request->input('telefono_movil2');
+            $perosna->estado        = $request->input('estado');
             $perosna->email        = $request->input('email');
             $perosna->save();
         });
@@ -214,13 +217,14 @@ class PersonController extends Controller
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
+        $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $cboTipo        = [''=>'Seleccione']+ array('S '=>'Socio','C '=>'Cliente' ,'SC' => 'Socio/Cliente');
         $persona        = Persona::find($id);
         $entidad        = 'Persona';
         $formData       = array('persona.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','cboSexo','cboEstadoCivil', 'cboTipo'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','cboSexo','cboEstadoCivil', 'cboTipo','cboEstado'));
     }
 
     /**
@@ -282,6 +286,7 @@ class PersonController extends Controller
             $perosna->telefono_fijo        = $request->input('telefono_fijo');
             $perosna->telefono_movil1        = $request->input('telefono_movil1');
             $perosna->telefono_movil2        = $request->input('telefono_movil2');
+            $perosna->estado        = $request->input('estado');
             $perosna->email        = $request->input('email');
             $perosna->save();
         });

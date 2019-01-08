@@ -38,7 +38,7 @@ class CrearTablaPersona extends Migration
             $table->string('telefono_movil2',18)->nullable();
             $table->decimal('ingreso_personal',10,2)->nullable();
             $table->decimal('ingreso_familiar',10,2)->nullable();
-
+            $table->char('estado', 1)->nullable();
             //acciones
             $table->char('tipo',2)->nullable(); // S=>socio, C=>Cliente, 2=>SC
             $table->date('fechai')->nullable();

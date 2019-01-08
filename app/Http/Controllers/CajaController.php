@@ -329,18 +329,20 @@ class CajaController extends Controller
 
     /**CARGAR REPORTE */
     public function cargarreporte(){
-        
+        $cboTipo        = array('I'=>'Ingresos', 'E'=>'Egresos');
         $entidad  = 'Caja';
         $ruta = $this->rutas;
         $titulo_reporte = $this->titulo_reporte;
-        return view($this->folderview.'.reportes')->with(compact('entidad', 'ruta', 'titulo_reporte','cboEstado'));
+        return view($this->folderview.'.reportes')->with(compact('entidad', 'ruta', 'titulo_reporte','cboTipo'));
     }
 
     /**GENERAR REPORTES DE CAJA Y EGRESOS E INGRESOS DEL MES */
     public function generarreportes(Request $request)
     {
-        $caja_id = $request->get('caja_id');
-        $monto_inicio = Libreria::getParam($request->input('monto_inicio'));
+        $mes = $request->get('mes');
+        echo "el mes y año seleccionado  ".$mes;
+        $tipo = Libreria::getParam($request->input('tipo'));
+        echo $tipo;
         $monto_cierre = Libreria::getParam($request->input('monto_cierre'));
         $estado = Libreria::getParam($request->input('estado'));
 

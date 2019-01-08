@@ -89,17 +89,24 @@
     </div>
 </div>
 
-<div class="form-row">
-    <div class="form-group col-md-6 col-sm-6">
-		{!! Form::label('ingreso_personal', 'Ingreso personal:*', array('class' => '')) !!}
-		{!! Form::text('ingreso_personal', null, array('class' => 'form-control input-xs ', 'id' => 'ingreso_personal',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 
-    </div>
-    <div class="form-group col-md-6 col-sm-6" style="margin-left: 25px;">
-		{!! Form::label('ingreso_familiar', 'Ingreso familiar:*', array('class' => '')) !!}
-		{!! Form::text('ingreso_familiar', null, array('class' => 'form-control input-xs ', 'id' => 'ingreso_familiar',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
-    </div>
-</div>
+
+<div class="form-row">
+		<div class="form-group col-md-4 col-sm-4">
+			{!! Form::label('ingreso_personal', 'Ingreso personal:*', array('class' => '')) !!}
+			{!! Form::text('ingreso_personal', null, array('class' => 'form-control input-xs ', 'id' => 'ingreso_personal',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
+		</div>
+		<div class="form-group col-md-4 col-sm-4" style="margin-left: 12.5px;">
+			{!! Form::label('ingreso_familiar', 'Ingreso familiar:*', array('class' => '')) !!}
+			{!! Form::text('ingreso_familiar', null, array('class' => 'form-control input-xs ', 'id' => 'ingreso_familiar',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
+		</div>
+		<div class="form-group col-md-4 col-sm-4" style="margin-left: 12.5px;">
+			{!! Form::label('estado', 'Estado:*', array('class' => 'input-sm')) !!}
+			{!! Form::select('estado', $cboEstado, null, array('class' => 'form-control input-sm', 'id' => 'estado')) !!}
+		</div>
+	</div>
+
+
 
 <div class="form-row">
     <div class="form-group col-md-6 col-sm-6">
