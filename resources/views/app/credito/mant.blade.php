@@ -2,9 +2,11 @@
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
+{!! Form::hidden('numcreditos', 0, array('id' => 'numcreditos')) !!}
+{!! Form::hidden('estado', 'I', array('id' => 'estado')) !!}
 <div class="form-row">
     <div id='txtcliente' class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('dnicliente', 'DNI del Socio o Cliente: *', array('class' => '')) !!}
+        {!! Form::label('dnicliente', 'DNI del Socio o Cliente: ', array('class' => 'dnicliente')) !!}
         {!! Form::text('dnicliente', null, array('class' => 'form-control input-xs', 'id' => 'dnicliente', 'placeholder' => 'Ingrese el DNI del cliente', 'onkeypress'=>'return filterFloat(event,this);')) !!}
         <p id="nombrescliente" class="" >DNI Cliente Vacio</p>
         <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
@@ -13,28 +15,28 @@
         {!! Form::label('dniaval', 'DNI del Aval:', array('id' => 'lblavl', 'class' => '')) !!}
         {!! Form::text('dniaval', 	null, array('class' => 'form-control input-xs', 'id' => 'dniaval', 'placeholder' => 'Ingrese el DNI del Aval', 'onkeypress'=>'return filterFloat(event,this);')) !!}
         <p id="nombresaval" class="" >DNI Aval Vacio</p>
-        <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="" tipoavl=''>
+        <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="0" tipoavl=''>
     </div>
     <div class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => '')) !!}
+        {!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => 'valor_credito')) !!}
         {!! Form::text('valor_credito', null, array('class' => 'form-control input-xs', 'id' => 'valor_credito', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
     </div>
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
-        {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => '')) !!}
+        {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => 'tasa_interes')) !!}
         {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
     </div>
 
     <div class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => '')) !!}
+        {!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => 'periodo')) !!}
         {!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses', 'onkeypress'=>'return filterFloat(event,this);')) !!}
     </div>
 
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
-        {!! Form::label('fechacredito', 'Fecha: *', array('class' => '')) !!}
+        {!! Form::label('fechacredito', 'Fecha: *', array('class' => 'fechacredito')) !!}
         {!! Form::date('fechacredito', null, array('class' => 'form-control input-xs', 'id' => 'fechacredito')) !!}
     </div>
     <div class="form-group col-12" >
-        {!! Form::label('descripcion', 'Descripción: ', array('class' => '')) !!}
+        {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descripcion')) !!}
         {!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
     </div>
     <div class="form-check form-group col-6 col-md-6 col-sm-6">
@@ -63,6 +65,11 @@
         var fechaactualcredito = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
         $('#fechacredito').val(fechaactualcredito);
         $("#dniaval").prop('disabled', true);
+        $(".dnicliente").html('DNI del Socio o Cliente: <sup style="color: red;">Obligatorio</sup>');
+        $(".valor_credito").html('Valor de Crédito: <sup style="color: red;">Obligatorio</sup>');
+        $(".periodo").html('Periodo (N° Meses): <sup style="color: red;">Obligatorio</sup>');
+        $(".fechacredito").html('Fecha: <sup style="color: red;">Obligatorio</sup>');
+        $('.descripcion').html(' Descripción: <sup style="color: blue;">Opcional</sup>');
         init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
         $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
         configurarAnchoModal('650');
@@ -70,25 +77,59 @@
         $("input[name=dnicliente]").keyup(function(event){
             var dnicli = event.target.value+"";
             if(dnicli.length > 6){
-                $.get("personas/"+event.target.value+"",function(response, facultad){
+                $.get("creditos/"+event.target.value+"",function(response, facultad){
                     $('#nombrescliente').val('');
                     $('#persona_id').val('');
                     $('#pers_aval_id').val('');
                     if(response.length>0){
                     
                         $("#nombrescliente").html(response[0].nombres +" "+ response[0].apellidos);
-                        $("#persona_id").val(response[0].id);
+                        $("#persona_id").val(response[0].persona_id);
                         if( response[0].tipo.trim() == 'S'){
-                            $("#persona_id").attr('tipocl','s');
+                            $("#persona_id").attr('tipocl','S');
                             $("#dniaval").prop('disabled', true);
                             $("#lblavl").html('DNI del Aval:');
-                            $('#divMensajeError{{ $entidad }}').hide();
+                            if(response[0].numerocreditos == '1'){
+                                $('#numcreditos').val(1);
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+response[0].nombres+" "+response[0].apellidos+" ya cuenta con 1 credito activo, por lo cual solo tiene opcion a uno mas, a una sola cuota.!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                                $("#persona_id").attr('tipocl','S');
+                            }else if(response[0].numerocreditos >= '2'){
+                                $('#numcreditos').val(response[0].numerocreditos);
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+response[0].nombres+" "+response[0].apellidos+" ya cuenta con 2 creditos activos, por lo cual no podrá obtener otro.!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                               
+                            }else{
+                                $('#numcreditos').val(0);
+                                $('#divMensajeError{{ $entidad }}').html("");
+                                $('#divMensajeError{{ $entidad }}').hide();
+                                $("#persona_id").attr('tipocl','s');
+                            }
                         }else{
-                            $("#persona_id").attr('tipocl','c');
-                            $("#dniaval").prop('disabled', false);
-                            $("#lblavl").html('DNI del Aval: *');
-                            document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "El La persona ingresada es un cliente, si fuese necesario ingrese un aval o garante.!";
-                            $('#divMensajeError{{ $entidad }}').show();
+                            if(response[0].numerocreditos == '1'){
+                                $('#numcreditos').val(1);
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+response[0].nombres+" "+response[0].apellidos+" ya cuenta con 1 credito activo, por lo cual solo tiene opcion a uno mas, a una sola cuota.!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                                $("#persona_id").attr('tipocl','C');
+                                $("#dniaval").prop('disabled', false);
+                                $("#lblavl").html('DNI del Aval: *');
+                            }else if(response[0].numerocreditos >= '2'){
+                                $('#numcreditos').val(response[0].numerocreditos);
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+response[0].nombres+" "+response[0].apellidos+" ya cuenta con 2 creditos activos, por lo cual no podrá obtener otro.!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                            }else{
+                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> ¡Se recomienda un aval o garante para el cliente "+response[0].nombres+" "+response[0].apellidos+" si fuese mecesario (El aval debe de ser un socio).!</div>";
+                                $('#divMensajeError{{ $entidad }}').html(msj);
+                                $('#divMensajeError{{ $entidad }}').show();
+                                $('#numcreditos').val(0);
+                                $("#persona_id").attr('tipocl','C');
+                                $("#dniaval").prop('disabled', false);
+                                $("#lblavl").html('DNI del Aval: <sup style="color: blue;">Opcional</sup>');
+                            }
                         }
                     }else{
                         $("#dniaval").prop('disabled', true);
@@ -97,16 +138,18 @@
                     }
                 });
             }
-        
         });
-        $("input[name=dniavl]").keyup(function(event){
+        $("input[name=dniaval]").keyup(function(event){
             $.get("personas/"+event.target.value+"",function(response, facultad){
                 $('#nombresaval').val('');
                 $('#pers_aval_id').val('');
+                $('#pers_aval_id').attr('tipoavl', ''+(response[0].tipo).trim());
+                console.log('persona: aval: '+response[0]);
                 if(response.length>0){
                     $("#nombresaval").html(response[0].nombres +" "+ response[0].apellidos);
                     $("#pers_aval_id").val(response[0].id);
                 }else{
+                    $("#pers_aval_id").val(0);
                     $("nombresaval").html("El DNI ingresado no existe");
                 }
             });
@@ -120,7 +163,6 @@
                 $("#imprimir_voucher").val(0);
             }
         });
-
     });
     function filterFloat(evt,input){
 		// Backspace = 8, Enter = 13, ‘0′ = 48, ‘9′ = 57, ‘.’ = 46, ‘-’ = 43
@@ -155,38 +197,88 @@
 		return false;
 		}
 	}
+    function valid(){
+       var res = true;
+        if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#persona_id').val() == 0 || $('#valor_credito').val().length <= 0 || $('#periodo').val() <= 0 || $('#valor_credito').val() <= 0){
+            res = false;
+        }
+       
+        return  res;
+    }
 
     function guardarCredito(entidad, rutarecibo) {
-        var idformulario = IDFORMMANTENIMIENTO + entidad;
-        var data         = submitForm(idformulario);
-        var respuesta    = null;
-        var listar       = 'NO';
-        if ($(idformulario + ' :input[id = "listar"]').length) {
-            var listar = $(idformulario + ' :input[id = "listar"]').val()
-        };
-        data.done(function(msg) {
-            respuesta = msg;
-        }).fail(function(xhr, textStatus, errorThrown) {
-            respuesta = 'ERROR';
-        }).always(function() {
-            
-            if(respuesta[0] === 'ERROR'){
-            }else{
-                
-                if (respuesta[0] === 'OK') {
-                    cerrarModal();
-                    modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
-                    if (listar === 'SI') {
-                        if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-                            entidad = entidad2;
-                        }
-                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                    }        
-                } else {
-                    mostrarErrores(respuesta, idformulario, entidad);
+        var valida = true;
+        var mensaje = "";
+        if(valid()){
+            if($('#numcreditos').val() == 1 ){
+                if($('#periodo').val() > 1){
+                    valida = false;
+                    mensaje = "El periodo es mayor a 1, el socio solo puede tener un credito más a una sola cuota.!";
                 }
+            }else if($('#numcreditos').val() >= 2 ){
+                mensaje = "¡El socio no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
+                valida = false;
             }
-        });
+            valid
+
+            if(valida){
+                var val_aval = true;
+                if($("#persona_id").attr('tipocl') == 'C'){
+                    if($('#dniaval').length > 0 && $('#pers_aval_id').val() == 0){
+                        val_aval = false;
+                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval ingresado es </div>";
+                        $('#divMensajeError{{ $entidad }}').html(msj);
+                        $('#divMensajeError{{ $entidad }}').show();
+                    }else if($('#pers_aval_id').attr('tipoavl') != 'S' && $('#pers_aval_id').val() != 0){
+                        val_aval = false;
+                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval Ingresado no es un socio.! </div>";
+                        $('#divMensajeError{{ $entidad }}').html(msj);
+                        $('#divMensajeError{{ $entidad }}').show();
+                    }
+                }
+                if(val_aval){
+                    var idformulario = IDFORMMANTENIMIENTO + entidad;
+                    var data = submitForm(idformulario);
+                    var respuesta = null;
+                    var listar = 'NO';
+                    if ($(idformulario + ' :input[id = "listar"]').length) {
+                        var listar = $(idformulario + ' :input[id = "listar"]').val()
+                    };
+                    data.done(function(msg) {
+                        respuesta = msg;
+                    }).fail(function(xhr, textStatus, errorThrown) {
+                        respuesta = 'ERROR';
+                    }).always(function() {
+                        
+                        if(respuesta[0] === 'ERROR'){
+                        }else{
+                            
+                            if (respuesta[0] === 'OK') {
+                                cerrarModal();
+                                modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
+                                if (listar === 'SI') {
+                                    if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+                                        entidad = entidad2;
+                                    }
+                                    buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                                }        
+                            } else {
+                                mostrarErrores(respuesta, idformulario, entidad);
+                            }
+                        }
+                    });
+                }
+                
+            }else{
+                var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+mensaje+"</div>";
+                $('#divMensajeError{{ $entidad }}').html(msj);
+                $('#divMensajeError{{ $entidad }}').show();
+            }
+        }else{
+            var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
+                $('#divMensajeError{{ $entidad }}').html(msj);
+                $('#divMensajeError{{ $entidad }}').show();
+        }
     }
 
     function abrirmodal(datahtml){

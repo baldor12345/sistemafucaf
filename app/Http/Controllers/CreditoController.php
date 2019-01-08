@@ -112,95 +112,111 @@ class CreditoController extends Controller{
         $caja_id = ($caja_id != "")?$caja_id:0;
         $res = null;
         if($caja_id != 0){
-            $reglas =array(
-                'valor_credito' => 'required|max:20',
-                'periodo' => 'required|max:50|integer',
-                'tasa_interes' => 'required|max:20',
-                'persona_id' => 'required|max:20'
-            );
-            $validacion = Validator::make($request->all(),$reglas);
-            if ($validacion->fails()) {
-                return $validacion->messages()->toJson();
+            $numCreditos = Credito::where('estado','=','0')->where('persona_id','=', $request->get('persona_id'))->get();
+            $valid = true;
+            if(count($numCreditos) >= 2){
+                $valid=false;
+                $res = "El socio o cliente ya cuenta con 2 créditos por lo cual ya no puede obtener más.!";
+            }else if(count($numCreditos) == 1){
+                if($request->input('periodo') == '1'){
+                    $valid=true;
+                }else{
+                    $valid=false;
+                    $res = "El socio o Cliente ya cuenta con un crédito, solo se le permite un crédito mas a una sola cuota.!";
+                }
             }
-            $configuraciones = configuraciones::all()->last();
-            $error = DB::transaction(function() use($request, $caja_id){
-                $configuraciones = Configuraciones::all()->last();
-                $periodo = $request->input('periodo');
-                $fechainicio = $request->input('fechacredito').date(" H:i:s");//**** */
-                $fechafinal = strtotime ( '+'.$periodo.' month' , strtotime ( $fechainicio));
-                $fechafinal = date( 'Y-m-d' , $fechafinal);
-                $valorcredito = $request->get('valor_credito');
-                $descripcion = $request->get('descripcion');
-                $persona_id = $request->get('persona_id');
-                $pers_aval_id= $request->get('pers_aval_id');
-                $tasa_interes = $request->input('tasa_interes');
-                $imprimivoucher = $request->get('imprimir_voucher');
-                $tasa_multa = $configuraciones->tasa_interes_multa;
-
-                $credito = new Credito();
-                $credito->valor_credito = $valorcredito;
-                $credito->periodo = $periodo;
-                $credito->tasa_interes = $tasa_interes;
-                $credito->tasa_multa = $tasa_multa;
-                $credito->fechai =$fechainicio;
-                $credito->fechaf = $fechafinal;
-                $credito->estado = '0';
-                $credito->descripcion = $descripcion;
-                $credito->persona_id = $persona_id;
-                $credito->pers_aval_id = $pers_aval_id;
-                $credito->save();
-
-                $montorestante =  $valorcredito;
-                $valor_cuota =  (($tasa_interes/100) * $valorcredito) / (1 - (pow(1/(1+($tasa_interes/100)), $periodo)));
-                $fecha_actual = $fechainicio;
-                $interesAcumulado = 0.00;
-                for($i=0;$i<(int)$periodo; $i++){
-                    $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
-                    $montInteres = ($tasa_interes/100) * $montorestante; 
-                    $interesAcumulado +=  $montInteres; 
-                    $montCapital = ($this->rouNumber($valor_cuota,1)) - ($this->rouNumber($montInteres,1)); 
-                    $montorestante = $montorestante - $montCapital;
-
-                    $cuota = new Cuota();
-                    $cuota->parte_capital = $this->rouNumber($montCapital , 1); 
-                    $cuota->interes = $this->rouNumber($montInteres , 1);
-                    $cuota->interes_mora = 0.00;
-                    $cuota->saldo_restante =$this->rouNumber($montorestante , 1);
-                    $cuota->numero_cuota = $i + 1;
-                    $cuota->fecha_programada_pago = $fecha_actual;
-                    $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
-                    $cuota->credito_id = $credito->id;
-                    $cuota->save();
+            //if($valid){
+                $reglas =array(
+                    'valor_credito' => 'required|max:20',
+                    'periodo' => 'required|max:50|integer',
+                    'tasa_interes' => 'required|max:20',
+                    'persona_id' => 'required|max:20'
+                );
+                $validacion = Validator::make($request->all(),$reglas);
+                if ($validacion->fails()) {
+                    return $validacion->messages()->toJson();
                 }
-                //comision voucher si esque desea imprimirlo
-                if($imprimivoucher == 1){
-                    $concepto_id = 8;
-                    $transaccion2 = new Transaccion();
-                    $transaccion2->fecha = $fechainicio;
-                    $transaccion2->monto = 0.1;
-                    $transaccion2->concepto_id = $concepto_id;
-                    $transaccion2->descripcion ='Comision por recibo credito';
-                    $transaccion2->persona_id = $persona_id;
-                    $transaccion2->usuario_id = Credito::idUser();
-                    $transaccion2->caja_id = $caja_id;
-                    $transaccion2->comision_voucher = 0.1;
-                    $transaccion2->save();
-                }
-
-                //registro credito en transaccion
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $fechainicio;
-                $transaccion->monto = $credito->valor_credito;
-                $transaccion->concepto_id = 3;
-                $transaccion->descripcion = $descripcion;
-                $transaccion->persona_id = $persona_id;
-                $transaccion->usuario_id = Credito::idUser();
-                $transaccion->caja_id = $caja_id;
-                $transaccion->monto_credito = $valorcredito;
-                $transaccion->save();
-            });
-            $ultimo_credito = Credito::all()->last();
-            $res = $error;
+                $configuraciones = configuraciones::all()->last();
+                $error = DB::transaction(function() use($request, $caja_id){
+                    $configuraciones = Configuraciones::all()->last();
+                    $periodo = $request->input('periodo');
+                    $fechainicio = $request->input('fechacredito').date(" H:i:s");//**** */
+                    $fechafinal = strtotime ( '+'.$periodo.' month' , strtotime ( $fechainicio));
+                    $fechafinal = date( 'Y-m-d' , $fechafinal);
+                    $valorcredito = $request->get('valor_credito');
+                    $descripcion = $request->get('descripcion');
+                    $persona_id = $request->get('persona_id');
+                    $pers_aval_id= $request->get('pers_aval_id');
+                    $tasa_interes = $request->input('tasa_interes');
+                    $imprimivoucher = $request->get('imprimir_voucher');
+                    $tasa_multa = $configuraciones->tasa_interes_multa;
+    
+                    $credito = new Credito();
+                    $credito->valor_credito = $valorcredito;
+                    $credito->periodo = $periodo;
+                    $credito->tasa_interes = $tasa_interes;
+                    $credito->tasa_multa = $tasa_multa;
+                    $credito->fechai =$fechainicio;
+                    $credito->fechaf = $fechafinal;
+                    $credito->estado = '0';
+                    $credito->descripcion = $descripcion;
+                    $credito->persona_id = $persona_id;
+                    $credito->pers_aval_id = $pers_aval_id;
+                    $credito->save();
+    
+                    $montorestante =  $valorcredito;
+                    $valor_cuota =  (($tasa_interes/100) * $valorcredito) / (1 - (pow(1/(1+($tasa_interes/100)), $periodo)));
+                    $fecha_actual = $fechainicio;
+                    $interesAcumulado = 0.00;
+                    for($i=0;$i<(int)$periodo; $i++){
+                        $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+                        $montInteres = ($tasa_interes/100) * $montorestante; 
+                        $interesAcumulado +=  $montInteres; 
+                        $montCapital = ($this->rouNumber($valor_cuota,1)) - ($this->rouNumber($montInteres,1)); 
+                        $montorestante = $montorestante - $montCapital;
+    
+                        $cuota = new Cuota();
+                        $cuota->parte_capital = $this->rouNumber($montCapital , 1); 
+                        $cuota->interes = $this->rouNumber($montInteres , 1);
+                        $cuota->interes_mora = 0.00;
+                        $cuota->saldo_restante =$this->rouNumber($montorestante , 1);
+                        $cuota->numero_cuota = $i + 1;
+                        $cuota->fecha_programada_pago = $fecha_actual;
+                        $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
+                        $cuota->credito_id = $credito->id;
+                        $cuota->save();
+                    }
+                    //comision voucher si esque desea imprimirlo
+                    if($imprimivoucher == 1){
+                        $concepto_id = 8;
+                        $transaccion2 = new Transaccion();
+                        $transaccion2->fecha = $fechainicio;
+                        $transaccion2->monto = 0.1;
+                        $transaccion2->concepto_id = $concepto_id;
+                        $transaccion2->descripcion ='Comision por recibo credito';
+                        $transaccion2->persona_id = $persona_id;
+                        $transaccion2->usuario_id = Credito::idUser();
+                        $transaccion2->caja_id = $caja_id;
+                        $transaccion2->comision_voucher = 0.1;
+                        $transaccion2->save();
+                    }
+    
+                    //registro credito en transaccion
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $fechainicio;
+                    $transaccion->monto = $credito->valor_credito;
+                    $transaccion->concepto_id = 3;
+                    $transaccion->descripcion = $descripcion;
+                    $transaccion->persona_id = $persona_id;
+                    $transaccion->usuario_id = Credito::idUser();
+                    $transaccion->caja_id = $caja_id;
+                    $transaccion->monto_credito = $valorcredito;
+                    $transaccion->save();
+                });
+                $ultimo_credito = Credito::all()->last();
+                $res = $error;
+            //}
+            
         }else{
             $res = 'Caja no aperturada, asegurece de aperturar primero para registrar alguna transacción.!';
         }
@@ -505,6 +521,16 @@ class CreditoController extends Controller{
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
     }
+
+    //listar el objeto persona por dni
+    public function getPersona(Request $request, $dni){
+        
+        if($request->ajax()){
+            $personas = Credito::getpersonacredito($dni);
+            return response()->json($personas);
+        }
+    }
+
     /*
     public function abrirpdf(){
         $idcuota =1;
