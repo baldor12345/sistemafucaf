@@ -81,7 +81,7 @@
                 @if(number_format((($value->cantidad_accion*100)/$cant),2)<=($value->limite_accion*100))
                 <td width="25%" align="center"><span class="text" style="color:green;font-weight: bold;">POSITIVO</span></td>
                 @else
-                <td width="25%" align="center"><span class="text" style="color:red;font-weight: bold;">NEGATICO</span></td>
+                <td width="25%" align="center"><span class="text" style="color:red;font-weight: bold;">NEGATIVO</span></td>
                 @endIf
             </tr>
             @endforeach

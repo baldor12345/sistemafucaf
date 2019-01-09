@@ -7,8 +7,8 @@
                     {!! Form::hidden('page', 1, array('id' => 'page')) !!}
                     {!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
                     <div class="form-group">
-                        {!! Form::label('concepto_id', 'Concepto:', array('class' => 'input-sm')) !!}
-                        {!! Form::select('concepto_id', $cboConcepto, null, array('class' => 'form-control input-sm', 'id' => 'concepto_id')) !!}
+                        {!! Form::label('fecha', 'Fecha de Reunion:', array('class' => 'input-xs')) !!}
+                        {!! Form::date('fecha', '', array('class' => 'form-control input-sm', 'id' => 'fecha')) !!}
                     </div>
                     <div class="form-group">
                         {!! Form::label('filas', 'Filas a mostrar:')!!}
@@ -36,5 +36,10 @@
         configurarAnchoModal('800');
         buscar("{{ $entidad }}");
         init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
+        var fechaActual = new Date();
+        var day = ("0" + fechaActual.getDate()).slice(-2);
+        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
+        var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+        $('#fecha').val(fechaactualr);
     }); 
 </script>

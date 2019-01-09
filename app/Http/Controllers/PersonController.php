@@ -358,8 +358,7 @@ class PersonController extends Controller
                 for($i=0; $i<count($lista); $i++){
                     $control_socio               = new ControlPersona();
                     $control_socio->persona_id        = $lista[$i]->id;
-                    $control_socio->tardanza = 2;
-                    $control_socio->inasistencia = 2;
+                    $control_socio->asistencia = 'A';
                     $control_socio->estado = 'A';
                     $control_socio->fecha        = date ("Y-m-d H:i:s");
                     $control_socio->save();
@@ -386,11 +385,11 @@ class PersonController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Socio o Socio Cliente', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Tardanza', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Falta', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Asistencia', 'numero' => '1');
         $cabecera[]       = array('valor' => 'estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
       
+        $cboAsistencia        = array('A'=>'Asistió','T'=>'Tardanza','F' => 'Faltó');
         $ruta             = $this->rutas;
         $inicio           = 0;
         $titulo_pagarmulta = "Pagar Multa";
@@ -404,7 +403,7 @@ class PersonController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.buscarpersona')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta'));
+            return view($this->folderview.'.buscarpersona')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta','cboAsistencia'));
         }
         return view($this->folderview.'.buscarpersona')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta'));
     
@@ -412,51 +411,19 @@ class PersonController extends Controller
 
     public function cambiartardanza(Request $request) {
         $idpersona         = $request->get('idpersona');
+        $asistencia_id  =$request->get('asistencia');
+        echo "el id del combo asistencia ".$asistencia_id."--------------";
 
         $persona = DB::table('control_socio')->where('id',$idpersona)->first();
-        if($persona->tardanza == 1){
-            $error = DB::transaction(function() use($request, $idpersona){
-                $control_socio            = ControlPersona::find($idpersona);
-                $control_socio->tardanza = 2;
-                $control_socio->estado = 'A';
-                $control_socio->save();
-            });
-        }else{
-            $error = DB::transaction(function() use($request, $idpersona){
-                $control_socio            = ControlPersona::find($idpersona);
-                $control_socio->tardanza = 1;
-                $control_socio->estado = 'N';
-                $control_socio->save();
-            });
-        }
-
-        
+        $error = DB::transaction(function() use($request, $idpersona, $asistencia_id){
+            $control_socio            = ControlPersona::find($idpersona);
+            $control_socio->asistencia = $asistencia_id;
+            $control_socio->estado = 'N';
+            $control_socio->save();
+        });
         return is_null($error) ? "OK" : $error;
     }
 
-    public function cambiarfalta(Request $request) {
-        $idpersona         = $request->get('idpersona');
-
-        $persona = DB::table('control_socio')->where('id',$idpersona)->first();
-        if($persona->inasistencia == 1){
-            $error = DB::transaction(function() use($request, $idpersona){
-                $control_socio            = ControlPersona::find($idpersona);
-                $control_socio->inasistencia = 2;
-                $control_socio->estado = 'A';
-                $control_socio->save();
-            });
-        }else{
-            $error = DB::transaction(function() use($request, $idpersona){
-                $control_socio            = ControlPersona::find($idpersona);
-                $control_socio->inasistencia = 1;
-                $control_socio->estado = 'N';
-                $control_socio->save();
-            });
-        }
-
-        
-        return is_null($error) ? "OK" : $error;
-    }
 
     public function cargarpagarmulta($id, $listarLuego){
 

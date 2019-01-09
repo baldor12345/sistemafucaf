@@ -42,7 +42,7 @@
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-
+        $('#fecha_pago').val(fechaactualr);
         
     });
 

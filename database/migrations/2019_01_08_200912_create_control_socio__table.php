@@ -15,8 +15,7 @@ class CreateControlSocioTable extends Migration
     {
         Schema::create('control_socio', function (Blueprint $table) {
             $table->increments('id');
-            $table->char('tardanza',1)->nullable();
-            $table->char('inasistencia',1)->nullable();
+            $table->char('asistencia',1)->nullable();
             $table->char('estado',1)->nullable();
             $table->decimal('monto',20,1)->nullable();
             $table->timestamp('fecha')->nullable();
