@@ -56,8 +56,6 @@ class PersonController extends Controller
         $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Nombres', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha de Ingreso', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Direccion', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Telefono', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Email', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');

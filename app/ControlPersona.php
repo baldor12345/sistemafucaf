@@ -5,10 +5,10 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Persona extends Model
+class ControlPersona extends Model
 {
     use SoftDeletes;
-    protected $table = 'persona';
+    protected $table = 'control_socio';
     protected $dates = ['deleted_at'];
     
     /**
@@ -17,6 +17,18 @@ class Persona extends Model
      * @param  string $name  nombre
      * @return sql        sql
      */
+    public function persona()
+	{
+		return $this->hasMany('App\Persona');
+    }
+    public function concepto()
+	{
+		return $this->hasMany('App\Concepto');
+    }
+    public function caja()
+	{
+		return $this->hasMany('App\Caja');
+    }
 
     public function scopelistar($query, $codigo, $nombre, $dni, $tipo){
 
@@ -28,7 +40,7 @@ class Persona extends Model
 		            })->where(function($subquery) use($nombre)
 		            {
 		            	if (!is_null($nombre)) {
-		            		$subquery->where('nombres', 'LIKE', '%'.$nombre.'%');
+		            		$subquery->whereRaw("nombres || ' ' || apellidos LIKE ?", '%'.$nombre.'%');
 		            	}
                     })->where(function($subquery) use($dni)
                     {
@@ -44,12 +56,5 @@ class Persona extends Model
         			->orderBy('nombres', 'ASC');
     }
 
-    public static function personas($dni){
-        return  Persona::where('dni','=',$dni)->get();
-    }
-
-    //lista para el control de asistencia
-    public static function listSocioCliente(){
-        return  Persona::where('tipo','=','SC')->orWhere('tipo','=','S')->get();
-    }
+    
 }
