@@ -40,7 +40,7 @@
                 
                 @else
                 <td ></td>
-                <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td>
+                <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI','nan')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td>
                 <td >{!! Form::button('<i class=""></i> ......', array('class' => 'btn btn-light btn-sm', 'id' => '', 'onclick' => '')) !!}</td>
                 @endif
             </tr>

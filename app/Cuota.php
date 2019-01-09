@@ -25,4 +25,36 @@ class Cuota extends Model
         ->orderBy('cuota.fecha_programada_pago', 'ASC');
         return $results;
     }
+
+    public static function listarCuotasAlafecha($anio, $mes, $nombre){
+
+        $results = DB::table('cuota')
+        ->Join('credito','credito.id','=','cuota.credito_id')
+        ->Join('persona','persona.id','=','credito.persona_id')
+        ->select(
+            'cuota.id as cuota_id',
+            'cuota.parte_capital as parte_capital',
+            'cuota.interes as interes',
+            'cuota.interes_mora as interes_mora',
+            'cuota.fecha_programada_pago as fecha_pagar',
+            'cuota.estado as estado',
+            'cuota.numero_cuota as numero_cuota',
+            'credito.id as credito_id',
+            'credito.periodo as periodo',
+            'persona.id as persona_id',
+            'persona.nombres as nombres',
+            'persona.apellidos as apellidos',
+            'persona.tipo as tipo',
+            DB::raw('extract( month from cuota.fecha_programada_pago) as mes'),
+            DB::raw('extract( year from cuota.fecha_programada_pago) as anio')
+        )
+        ->where('persona.nombres','ILIKE', '%'.$nombre.'%')
+        ->where('cuota.estado','=', '0')
+        ->where(DB::raw('extract( year from cuota.fecha_programada_pago)'),'<=',$anio)
+        ->where(DB::raw('extract( month from cuota.fecha_programada_pago)'),'<=',$mes)
+        ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')
+        ->orderBy(DB::raw('extract( month from cuota.fecha_programada_pago)'), 'DSC');
+        return $results;
+    }
+
 }

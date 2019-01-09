@@ -161,7 +161,9 @@ class CreditoController extends Controller{
                     $credito->estado = '0';
                     $credito->descripcion = $descripcion;
                     $credito->persona_id = $persona_id;
-                    $credito->pers_aval_id = $pers_aval_id;
+                    if($pers_aval_id != 0){
+                        $credito->pers_aval_id = $pers_aval_id;
+                    }
                     $credito->save();
     
                     $montorestante =  $valorcredito;
@@ -298,7 +300,8 @@ class CreditoController extends Controller{
         return is_null($error) ? "OK" : $error;
     }
 /*************--MODAL PAGO CUOTA--*************** */
-    public function vistapagocuota(Request $request, $cuota_id){
+    public function vistapagocuota(Request $request, $cuota_id, $listarluego, $entidadr="nan"){
+        $entidad_recibo = $entidadr;
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
         $existe = Libreria::verificarExistencia($cuota_id, 'cuota');
@@ -317,7 +320,7 @@ class CreditoController extends Controller{
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
         $credito2 = Credito::find($cuota->credito_id);
-        return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito', 'credito','credito2', 'formData','listar','ruta'));
+        return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
     }
 /*************--REGISTRO PAGO CUOTA--************ */
     public function pagarcuota(Request $request){
@@ -524,10 +527,9 @@ class CreditoController extends Controller{
 
     //listar el objeto persona por dni
     public function getPersona(Request $request, $dni){
-        
         if($request->ajax()){
-            $personas = Credito::getpersonacredito($dni);
-            return response()->json($personas);
+            $res = Credito::getpersonacredito($dni);
+            return response()->json($res);
         }
     }
 
