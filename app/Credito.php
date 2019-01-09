@@ -82,20 +82,13 @@ class Credito extends Model
         return $results->get();
     }
     public static function getpersonacredito($dni){
-        
-        $result = DB::table('persona')
-         ->leftJoin('credito as cred','cred.persona_id','=','persona.id')
-         ->select(
-            'persona.id as persona_id',
-            'persona.nombres as nombres',
-            'persona.apellidos as apellidos',
-            'persona.tipo as tipo',
-            'persona.estado as estado',
-            DB::raw('count(cred.persona_id) as numerocreditos')
-         )
-         ->where('persona.dni','=', $dni)
-         ->where('cred.estado','=', 0)
-         ->groupBy('persona.id');
-        return  $result->get();
+        $persona = Persona::where('dni','=',$dni)->get();
+        $numerocreditos = null;
+        if(count($persona) > 0){
+            $numerocreditos = Credito::where('estado', '=', '0')->where('persona_id','=',$persona[0]->id)->count();
+        }
+        $res = array($persona,$numerocreditos);
+
+        return  $res;
     }
 }

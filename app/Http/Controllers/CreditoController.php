@@ -524,10 +524,9 @@ class CreditoController extends Controller{
 
     //listar el objeto persona por dni
     public function getPersona(Request $request, $dni){
-        
         if($request->ajax()){
-            $personas = Credito::getpersonacredito($dni);
-            return response()->json($personas);
+            $res = Credito::getpersonacredito($dni);
+            return response()->json($res);
         }
     }
 
