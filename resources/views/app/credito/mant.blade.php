@@ -145,13 +145,15 @@
             $.get("personas/"+event.target.value+"",function(response, facultad){
                 $('#nombresaval').val('');
                 $('#pers_aval_id').val('');
-                $('#pers_aval_id').attr('tipoavl', ''+(response[0].tipo).trim());
+                
                 if(response.length>0){
                     $("#nombresaval").html(response[0].nombres +" "+ response[0].apellidos);
                     $("#pers_aval_id").val(response[0].id);
+                    $('#pers_aval_id').attr('tipoavl', ''+(response[0].tipo).trim());
                 }else{
                     $("#pers_aval_id").val(0);
-                    $("nombresaval").html("El DNI ingresado no existe");
+                    $('#pers_aval_id').attr('tipoavl', '0');
+                    $("#nombresaval").html("El DNI ingresado no existe");
                 }
             });
         });
@@ -217,7 +219,7 @@
                     mensaje = "El periodo es mayor a 1, el socio solo puede tener un credito más a una sola cuota.!";
                 }
             }else if($('#numcreditos').val() >= 2 ){
-                mensaje = "¡El socio no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
+                mensaje = "¡El Socio o Cliente no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
                 valida = false;
             }
             valid
@@ -225,9 +227,9 @@
             if(valida){
                 var val_aval = true;
                 if($("#persona_id").attr('tipocl') == 'C'){
-                    if($('#dniaval').length > 0 && $('#pers_aval_id').val() == 0){
+                    if($('#dniaval').val().length > 0 && $('#pers_aval_id').val() == 0){
                         val_aval = false;
-                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval ingresado es </div>";
+                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> ¡El DNI del aval ingresado no existe.! </div>";
                         $('#divMensajeError{{ $entidad }}').html(msj);
                         $('#divMensajeError{{ $entidad }}').show();
                     }else if($('#pers_aval_id').attr('tipoavl') != 'S' && $('#pers_aval_id').val() != 0){

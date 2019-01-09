@@ -161,7 +161,9 @@ class CreditoController extends Controller{
                     $credito->estado = '0';
                     $credito->descripcion = $descripcion;
                     $credito->persona_id = $persona_id;
-                    $credito->pers_aval_id = $pers_aval_id;
+                    if($pers_aval_id != 0){
+                        $credito->pers_aval_id = $pers_aval_id;
+                    }
                     $credito->save();
     
                     $montorestante =  $valorcredito;
