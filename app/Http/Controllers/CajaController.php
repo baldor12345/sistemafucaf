@@ -90,6 +90,8 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Reportes', 'numero' => '3');
         $cabecera[]       = array('valor' => '', 'numero' => '2');
         
+        $caja_last = Caja::all()->last();
+
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
         $titulo_cerrarCaja = $this->tituloCerrarCaja;
@@ -107,7 +109,7 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta','titulo_reapertura','titulo_reporte'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar','titulo_cerrarCaja','titulo_nuevomovimiento','titulo_transaccion' ,'ruta','titulo_reapertura','titulo_reporte','caja_last'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
