@@ -100,6 +100,11 @@ class MenuoptionSeeder extends Seeder
 					'name' => 'Socios y Clientes',
 					'link'   => 'persona'
 				),
+
+				array(
+					'name' => 'Recibos de Cuotas a la fecha',
+					'link'   => 'recibocuotas'
+				),
 				
 			);
 
