@@ -39,12 +39,12 @@
 			<td>{{ $value->estado }}</td>
 			<td>{{ $nomMeses[$value->mes].'-'.$value->anio }}</td>
 			<td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->cuota_id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
-			<td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->cuota_id, 'SI')).'\',  \''.$tituloPagoCuota.'\')')) !!}</td>
+			<td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnpago2', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->cuota_id, 'SI','ReciboCuota')).'\', \''.$tituloPagoCuota.'\')')) !!}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;
 		?>
 		@endforeach
 	</tbody>
-</table
+</table>
 @endif

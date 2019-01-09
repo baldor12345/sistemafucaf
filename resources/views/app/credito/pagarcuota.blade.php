@@ -1,11 +1,11 @@
 
-<div id="divMensajeError{!! $entidad_cuota !!}"></div>
+<div id="divMensajeError{!! $entidad_cuota !!}1"></div>
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('id_cuota', $cuota->id, array('id' => 'id_cuota')) !!}
 {!! Form::hidden('id_credito', $cuota->credito_id, array('id' => 'id_credito')) !!}
 {!! Form::hidden('id_cliente', $credito2->persona_id, array('id' => 'id_cliente')) !!}
-{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
+
 
 <div class="form-row">
     <div class="form-group col-12 col-md-12 col-sm-12" >
@@ -51,14 +51,13 @@
         $("#modal"+(contadorModal - 1)).on('hidden.bs.modal', function () {
             $('.modal' + (contadorModal-2)).css('pointer-events','auto'); 
         });
-
     });
 
     
     function guardarPagoCuota (entidad, idboton) {
         var idformulario = IDFORMMANTENIMIENTO + entidad;
-        var data         = submitForm(idformulario);
-        var respuesta    = '';
+        var data = submitForm(idformulario);
+        var respuesta  = '';
         var btn = $(idboton);
         btn.button('loading');
         data.done(function(msg) {
@@ -71,8 +70,13 @@
             }else{
                 if (respuesta === 'OK') {
                     cerrarModal();
-                    buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                    buscar('{{ $entidad_credito }}');
+                    if("{{ $entidad_recibo }}" == "nan"){
+                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                        buscar('{{ $entidad_credito }}');
+                    }else{
+                        buscar('{{ $entidad_recibo }}');
+                    }
+                    
                     if($("#imprimir_voucherpago").val() == 1){
                         var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array($cuota->id))}}";
                         //window.open(rutarecibopagocuota+"/{{ $cuota->id }}", "Voucher credito", "width=700, height=500, left=50, top=20");
@@ -80,7 +84,10 @@
                         modalrecibopdf(rutarecibopagocuota,anchoModal);
                     }  
                 } else {
-                    mostrarErrores(respuesta, idformulario, entidad);
+                    var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+respuesta+"</div>";
+                    $('#divMensajeError{{ $entidad_cuota }}1').html(msj);
+                    $('#divMensajeError{{ $entidad_cuota }}1').show();
+                   // mostrarErrores(respuesta, idformulario, entidad);
                 }
             }
         });

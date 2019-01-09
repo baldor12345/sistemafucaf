@@ -300,7 +300,8 @@ class CreditoController extends Controller{
         return is_null($error) ? "OK" : $error;
     }
 /*************--MODAL PAGO CUOTA--*************** */
-    public function vistapagocuota(Request $request, $cuota_id){
+    public function vistapagocuota(Request $request, $cuota_id, $listarluego, $entidadr="nan"){
+        $entidad_recibo = $entidadr;
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
         $existe = Libreria::verificarExistencia($cuota_id, 'cuota');
@@ -319,7 +320,7 @@ class CreditoController extends Controller{
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
         $credito2 = Credito::find($cuota->credito_id);
-        return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito', 'credito','credito2', 'formData','listar','ruta'));
+        return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
     }
 /*************--REGISTRO PAGO CUOTA--************ */
     public function pagarcuota(Request $request){

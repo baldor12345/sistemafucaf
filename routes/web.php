@@ -139,7 +139,7 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/eliminar/{id?}/{listarluego?}', 'CreditoController@eliminar')->name('creditos.eliminar');
      Route::resource('creditos', 'CreditoController', array('except' => array('show')));
      Route::get('creditos/detallecredito/{idcredito?}/{listarluego?}', 'CreditoController@detallecredito')->name('creditos.detallecredito');
-     Route::get('creditos/vistapagocuota/{idcredito?}/{listarluego?}', 'CreditoController@vistapagocuota')->name('creditos.vistapagocuota');
+     Route::get('creditos/vistapagocuota/{idcredito?}/{listarluego?}/{entidad?}', 'CreditoController@vistapagocuota')->name('creditos.vistapagocuota');
      
      Route::post('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
      Route::get('creditos/listardetallecuotas', 'CreditoController@listardetallecuotas')->name('creditos.listardetallecuotas');
