@@ -18,9 +18,12 @@ class CreateControlSocioTable extends Migration
             $table->char('tardanza',1)->nullable();
             $table->char('inasistencia',1)->nullable();
             $table->char('estado',1)->nullable();
-            $table->integer('persona_id')->unsigned();
-            $table->integer('caja_id')->unsigned();
-            $table->integer('concepto_id')->unsigned();
+            $table->decimal('monto',20,1)->nullable();
+            $table->timestamp('fecha')->nullable();
+            $table->timestamp('fecha_pago')->nullable();
+            $table->integer('persona_id')->unsigned()->nullable();
+            $table->integer('caja_id')->unsigned()->nullable();
+            $table->integer('concepto_id')->unsigned()->nullable();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
             $table->foreign('caja_id')->references('id')->on('caja')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();

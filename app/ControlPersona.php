@@ -1,7 +1,8 @@
 <?php
 
 namespace App;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,44 +18,31 @@ class ControlPersona extends Model
      * @param  string $name  nombre
      * @return sql        sql
      */
-    public function persona()
-	{
-		return $this->hasMany('App\Persona');
-    }
-    public function concepto()
-	{
-		return $this->hasMany('App\Concepto');
-    }
-    public function caja()
-	{
-		return $this->hasMany('App\Caja');
+    public function persona(){
+        return $this->belongsTo('App\Persona', 'persona_id');
     }
 
-    public function scopelistar($query, $codigo, $nombre, $dni, $tipo){
+    public function concepto(){
+        return $this->belongsTo('App\Concepto', 'concepto_id');
+    }
 
-        return $query->where(function($subquery) use($codigo)
+    public function caja(){
+        return $this->belongsTo('App\Caja', 'caja_id');
+    }
+
+    public function scopelistar($query, $persona_id){
+
+        return $query->where(function($subquery) use($persona_id)
 		            {
-		            	if (!is_null($codigo)) {
-		            		$subquery->where('codigo', 'LIKE', '%'.$codigo.'%');
+		            	if (!is_null($persona_id)) {
+		            		$subquery->where('persona_id', '=',$persona_id );
 		            	}
-		            })->where(function($subquery) use($nombre)
-		            {
-		            	if (!is_null($nombre)) {
-		            		$subquery->whereRaw("nombres || ' ' || apellidos LIKE ?", '%'.$nombre.'%');
-		            	}
-                    })->where(function($subquery) use($dni)
-                    {
-                        if (!is_null($dni)) {
-		            		$subquery->where('dni', 'LIKE', '%'.$dni.'%');
-		            	}
-                    })->where(function($subquery) use($tipo)
-                    {
-                        if (!is_null($tipo)) {
-		            		$subquery->where('tipo', 'LIKE', '%'.$tipo.'%');
-		            	}
-                    })
-        			->orderBy('nombres', 'ASC');
+		            })
+        			->orderBy('persona_id', 'ASC');
     }
 
+    public static function listSocioCliente(){
+        return  DB::table('persona')->where('tipo', 'S')->orWhere('tipo','SC');
+    }
     
 }

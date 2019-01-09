@@ -115,6 +115,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('persona/buscar', 'PersonController@buscar')->name('persona.buscar');
     Route::get('persona/eliminar/{id}/{listarluego}', 'PersonController@eliminar')->name('persona.eliminar');
     Route::resource('persona', 'PersonController', array('except' => array('show')));
+    Route::get('persona/cargarcontrolpersona', 'PersonController@cargarcontrolpersona')->name('persona.cargarcontrolpersona');
+    Route::get('persona/buscarpersona', 'PersonController@buscarpersona')->name('persona.buscarpersona');
+    Route::get('persona/cambiartardanza', 'PersonController@cambiartardanza')->name('persona.cambiartardanza');
+    Route::get('persona/cambiarfalta', 'PersonController@cambiarfalta')->name('persona.cambiarfalta');
+    Route::get('persona/cargarpagarmulta/{id}/{listarluego}', 'PersonController@cargarpagarmulta')->name('persona.cargarpagarmulta');
+    Route::get('persona/guardarpagarmulta', 'PersonController@guardarpagarmulta')->name('persona.guardarpagarmulta');
 
     /*CONFIGURACIONES*/
     Route::post('configuraciones/buscar', 'ConfiguracionesController@buscar')->name('configuraciones.buscar');

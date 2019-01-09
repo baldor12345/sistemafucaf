@@ -86,5 +86,12 @@ class ConceptoSeeder extends Seeder
             'updated_at'     => $now
         ));
 
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Multa por Inasistencia o Tardanza',
+            'tipo'       => 'I',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
+
     }
 }
