@@ -347,9 +347,12 @@ class PersonController extends Controller
 
     public function cargarcontrolpersona(Request $request)
     {
-        $caja_id = DB::table('caja')->where('estado', 'A')->first();
+        $caja = Caja::where("estado","=","A")->get();
+        $idCaja = count($caja) == 0 ?0: $caja[0]->id;
 
-        $listaControl = DB::table('control_socio')->count();
+        $fecha = date("Y-m-d");
+
+        $listaControl = DB::table('control_socio')->where('fecha','=',$fecha)->count();
 
         if($listaControl == 0){
             $resultado        = ControlPersona::listSocioCliente();
@@ -360,27 +363,29 @@ class PersonController extends Controller
                     $control_socio->persona_id        = $lista[$i]->id;
                     $control_socio->asistencia = 'A';
                     $control_socio->estado = 'A';
-                    $control_socio->fecha        = date ("Y-m-d H:i:s");
+                    $control_socio->fecha        = date ("Y-m-d");
                     $control_socio->save();
                 }
             });
         }
 
-        $cboConcepto = array('' => 'Todo') + Concepto::pluck('titulo', 'id')->all();
         $titulo_control = $this->titulo_control;
         $ruta             = $this->rutas;
         $entidad ='ControlPersona';
-        return view($this->folderview.'.controlpersona')->with(compact('entidad', 'ruta', 'cboConcepto','titulo_control'));
+        return view($this->folderview.'.controlpersona')->with(compact('entidad', 'ruta','titulo_control','idCaja'));
     }
 
     public function buscarpersona(Request $request){
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
+        $fecha            = Libreria::getParam($request->input('fecha'));
         $entidad ='ControlPersona';
-
-        //$codigo             = Libreria::getParam($request->input('codigo'));
-        $resultado        = ControlPersona::listar(null);
+        $resultado        = ControlPersona::listar($fecha);
         $lista            = $resultado->get();
+
+        $caja = Caja::where("estado","=","A")->get();
+        $idCaja = count($caja) == 0 ?0: $caja[0]->id;
+
 
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
@@ -403,16 +408,15 @@ class PersonController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.buscarpersona')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta','cboAsistencia'));
+            return view($this->folderview.'.buscarpersona')->with(compact('lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta','cboAsistencia','idCaja'));
         }
-        return view($this->folderview.'.buscarpersona')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta'));
+        return view($this->folderview.'.buscarpersona')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','titulo_pagarmulta','idCaja'));
     
     }
 
     public function cambiartardanza(Request $request) {
         $idpersona         = $request->get('idpersona');
         $asistencia_id  =$request->get('asistencia');
-        echo "el id del combo asistencia ".$asistencia_id."--------------";
 
         $persona = DB::table('control_socio')->where('id',$idpersona)->first();
         $error = DB::transaction(function() use($request, $idpersona, $asistencia_id){
@@ -438,8 +442,6 @@ class PersonController extends Controller
 
     public function guardarpagarmulta(Request $request)
     {
-
-        
         $concepto_id = Libreria::getParam($request->input('concepto_id'));
         $monto = Libreria::getParam($request->input('monto'));
         $fecha_pago = Libreria::getParam($request->input('fecha_pago'));

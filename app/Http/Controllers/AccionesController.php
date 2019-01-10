@@ -558,7 +558,7 @@ class AccionesController extends Controller
         $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
         $titulo = $persona->nombres.$cant;
 
-        $view = \View::make('app.acciones.voucheraccionpdf')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+        $view = \View::make('app.acciones.voucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
