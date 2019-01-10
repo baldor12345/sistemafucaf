@@ -986,8 +986,6 @@ class CajaController extends Controller
             }
             $sum_egresos_totales_mes_actual += $sum_gasto_administrativo_mes_actual;
         }
-
-
         //calculo del total de egresos acumulados al mes anterior por persona
 
         //calculo del total de ingresos acumulados al mes anterior
@@ -1091,9 +1089,6 @@ class CajaController extends Controller
             $sum_otros_mes_actual += $sum_por_concepto_actual;
         }
         
-
-
-
         //calculo del total de ingresos acumulados al mes anterior
         //--primero identifico la fecha de la primera caja que fue aperturada
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();

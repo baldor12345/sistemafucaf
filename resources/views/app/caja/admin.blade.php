@@ -66,7 +66,6 @@
 		});
 	});
 	
-
 	function modalrecibopdf(url_pdf, ancho_modal, titulo_modal) {
 		var a = document.createElement("a");
 		a.target = "_blank";
