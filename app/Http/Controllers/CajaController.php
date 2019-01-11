@@ -1155,7 +1155,7 @@ class CajaController extends Controller
         //-------------------------------------------
         //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
-        $titulo = "reporte ".$anio."-".$month."_Egresos";
+        $titulo = "reporte ".$mes."_Egresos";
         $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
                                                                             'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual',
                                                                         'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior',
