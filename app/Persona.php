@@ -52,4 +52,8 @@ class Persona extends Model
     public static function listSocioCliente(){
         return  Persona::where('tipo','=','SC')->orWhere('tipo','=','S')->get();
     }
+
+    public static function estadoCuenta(){
+        
+    }
 }
