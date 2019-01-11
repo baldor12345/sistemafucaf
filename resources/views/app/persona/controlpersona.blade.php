@@ -21,8 +21,6 @@
             {!! Form::close() !!}
         
             <div id="listado{{ $entidad }}"></div>
-
-
         </div>
     </div>
 </div>

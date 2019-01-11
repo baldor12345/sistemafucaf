@@ -74,7 +74,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 
     /*PERSON*/
-    Route::post('person/search', 'PersonController@search')->name('person.search');
+    Route::post('person/search','PersonController@search')->name('person.search');
     Route::get('person/employeesautocompleting/{searching}', 'PersonController@employeesautocompleting')->name('person.employeesautocompleting');
     Route::get('person/providersautocompleting/{searching}', 'PersonController@providersautocompleting')->name('person.providersautocompleting');
     Route::get('person/customersautocompleting/{searching}', 'PersonController@customersautocompleting')->name('person.customersautocompleting');

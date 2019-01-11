@@ -32,19 +32,6 @@
             </div>
             <br>
             <br>
-            
-            <div class = "form-group">
-                <div class="form-group col-12 col-md-12 col-sm-12">
-                {!! Form::label('comision', 'Comision por voucher S/.: 0.10')!!}
-                </div>
-            </div>
-            <br>
-
-            <div class = "form-group">
-                <div class="form-group col-12 col-md-12 col-sm-12">
-                {!! Form::label('totalretirar', 'Total a retirar S/.: ',array('id' => 'totalretirar'))!!}
-                </div>
-            </div>
             {!! Form::close() !!}
     </div>
     
@@ -64,12 +51,6 @@
         var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 
         $('#fechar').val(fechaactualr);
-        $("input[name=montoretiro]").keyup(function(event){
-            var monto = $('#montoretiro').val();
-            if(monto != ''){
-			    $('#totalretirar').html('Total a retirar S/.: '+(monto - 0.10));
-            }
-    	});
     });
 
     function retirar(id,rutarecibo){
@@ -90,7 +71,8 @@
                             mostrarMensaje ("Retiro exitoso", "OK");
                             buscar("{{$entidad}}");
                             cerrarModal();
-                            window.open(rutarecibo, "Voucher retiro ahorro", "width=400, height=500, left=200, top=100");
+                            imprimirpdf(rutarecibo);
+                           // window.open(rutarecibo, "Voucher retiro ahorro", "width=400, height=500, left=200, top=100");
                         }else{
                             var mensaje = "<div class='alert alert-danger'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>"+res+"</strong></div>";
                         $('#divMensajeErrorRetiro').html(mensaje);

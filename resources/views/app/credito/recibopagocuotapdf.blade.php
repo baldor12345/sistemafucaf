@@ -65,7 +65,7 @@
 
 		<table width="100%" class="">
 			<tr>
-                <td style="font-size: 8px" colspan="2"><strong>ESTADO DE CUENTA FUCAF</strong></td>
+                <td style="font-size: 8px" colspan="2"><strong>RECIBO PAGO DE CUOTA FUCAF</strong></td>
                 <td style="font-size: 8px" colspan="7"></td>
                 
             </tr>

@@ -40,14 +40,6 @@
 		@endforeach
 	</tbody>
 </table>
-<script>
-/*	function verereciboahorro(rutarecibo){
-		window.open(rutarecibo, "Voucher Deposito ahorro", "width=400, height=500, left=200, top=100");
-	}
-	function verereciboretiro(rutarecibo){
-		window.open(rutarecibo, "Voucher Retiro de ahorro", "width=400, height=500, left=200, top=100");
-	}*/
-</script>
 
 @endif
 

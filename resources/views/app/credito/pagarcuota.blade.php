@@ -12,10 +12,10 @@
         {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
         {!! Form::date('fecha_pago', null, array('class' => 'form-control input-xs', 'id' => 'fecha_pago')) !!}
     </div>
-    <div class="form-check form-group col-12 col-md-12 col-sm-12">
+   {{-- <div class="form-check form-group col-12 col-md-12 col-sm-12">
         {!! Form::checkbox('imprimir_voucherpago', '0', false, array('class' => 'form-check-input', 'id' => 'imprimir_voucherpago')) !!}
         {!! Form::label('imprimir_voucherpago', 'IMPRIMIR VOUCHER:', array('class' => 'form-check-label')) !!}
-    </div>
+    </div>--}}
 </div>
 
 <div class="form-group">
