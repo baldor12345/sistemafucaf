@@ -68,6 +68,10 @@ class MenuoptionSeeder extends Seeder
 				array(
 					'name' => 'Deposito y Retiro de Ahorros',
 					'link'   => 'ahorros'
+				),
+				array(
+					'name' => 'Distribucion de Utilidades',
+					'link'   => 'distribucion_utilidades'
 				)
 			);
 

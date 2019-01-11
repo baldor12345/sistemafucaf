@@ -90,5 +90,14 @@ class PermissionSeeder extends Seeder
 				'updated_at'     => $now
 				)
 		));
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Distribucion de Utilidades')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
     }
 }
