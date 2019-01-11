@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use DateTime;
 class Cuota extends Model
 {
     use SoftDeletes;
@@ -27,6 +27,10 @@ class Cuota extends Model
     }
 
     public static function listarCuotasAlafecha($anio, $mes, $nombre){
+
+        $fecha_p = new DateTime($anio.'-'.$mes.'-01');
+        $fecha_p->modify('last day of this month');
+        $fecha_p->format('Y-m-d');
 
         $results = DB::table('cuota')
         ->Join('credito','credito.id','=','cuota.credito_id')
@@ -50,11 +54,9 @@ class Cuota extends Model
         )
         ->where('persona.nombres','ILIKE', '%'.$nombre.'%')
         ->where('cuota.estado','=', '0')
-        ->where(DB::raw('extract( year from cuota.fecha_programada_pago)'),'<=',$anio)
-        ->where(DB::raw('extract( month from cuota.fecha_programada_pago)'),'<=',$mes)
+        ->where('cuota.fecha_programada_pago','<=',$fecha_p)
         ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')
         ->orderBy(DB::raw('extract( month from cuota.fecha_programada_pago)'), 'DSC');
         return $results;
     }
-
 }

@@ -33,12 +33,6 @@
 			{!! Form::label('concepto', 'Concepto:', array('class' => '')) !!}
 			{!! Form::select('concepto', $cboConcepto, $idopcion, array('class' => 'form-control input-xs', 'id' => 'concepto')) !!}
 		</div>
-		<div class="form-group col-12 col-md-12 col-sm-12" >
-			{!! Form::label('comision', 'Comision por voucher S/.: 0.10')!!}
-		</div>
-		<div class="form-group col-12 col-md-12 col-sm-12" >
-			{!! Form::label('totalpagar', 'Total a cancelar S/.: ',array('id' => 'totalpagar'))!!}
-		</div>
 		<div class="form-group">
 			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
 				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarahorro(\''.$entidad.'\', \''.URL::route($ruta["generareciboahorroPDF"], array()).'\')')) !!}
@@ -86,16 +80,8 @@ $(document).ready(function() {
 			});
 		}
 	});
-	$("input[name=capital]").keyup(function(event){
-		var capitalahorro = $('#capital').val();
-		if(capitalahorro != '' && !isNaN(capitalahorro)){
-			$('#totalpagar').html('Total a cancelar S/.: '+(capitalahorro - (-0.10)));
-		}else{
-			$('#totalpagar').html('Total a cancelar S/.: ');
-		}
-	});
 }); 
-
+/*
 function guardarahorro1(entidad, rutarecibo){
 	if(isNaN($('#capital').val()) == false){
 		if($('#capital').val() != ''){
@@ -108,7 +94,7 @@ function guardarahorro1(entidad, rutarecibo){
 		var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de monto no válido.!</strong></div>';
         $('#divMensajeErrorAhorros').html(mensaje);
 	}
-}
+}*/
 
 function guardarahorro(entidad,rutarecibo) {
 	var idformulario = IDFORMMANTENIMIENTO + entidad;

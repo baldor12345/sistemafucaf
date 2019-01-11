@@ -434,7 +434,7 @@ class AhorrosController extends Controller
         $montoahorrado = $transaccion->monto;
         $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-ahorro-'.$persona->codigo;
-        $view = \View::make('app.ahorros.reciboahorro')->with(compact('fechaahorro','fechacreate', 'numoperacion', 'codcliente','nombrecliente', 'montoahorrado','ahorroactual'));
+        $view = \View::make('app.ahorros.reciboAhorro')->with(compact('fechaahorro','fechacreate', 'numoperacion', 'codcliente','nombrecliente', 'montoahorrado','ahorroactual'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
@@ -712,7 +712,7 @@ class AhorrosController extends Controller
             });   
         
         }else{
-            $error = "Error! El registro que intenta eliminar está esta asociado a una caja actualmente cerrada.";
+            $error = "Error! El registro que intenta eliminar está asociado a una caja actualmente cerrada.";
         }
         
         return is_null($error) ? "OK" : $error;
@@ -734,11 +734,20 @@ class AhorrosController extends Controller
             $listar = $listarLuego;
         }
         $titulo_eliminar = $this->titulo_eliminar;
+        $transaccion = Transaccion::find($id);
+        $caja = Caja::find($transaccion->caja_id);
+
         $modelo = Ahorros::find($id);
         $entidad = 'Ahorros';
         $formData = array('route' => array('ahorros.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton = 'Eliminar';
-        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar'));
+        $mensaje = "¡Error! El registro no se puede aliminar, está asociado a una caja actualmente cerrada.";
+        if($caja->estado == 'A'){
+            return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar'));
+        }else{
+            return view($this->folderview.'.mensajealerta')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar','mensaje'));
+        }
+        
     }
 
     public function verahorro($id, Request $request){

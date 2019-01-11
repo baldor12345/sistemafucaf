@@ -39,10 +39,10 @@
         {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descrip')) !!}
         {!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
     </div>
-    <div class="form-check form-group col-6 col-md-6 col-sm-6">
+    {{--  <div class="form-check form-group col-6 col-md-6 col-sm-6">
         {!! Form::label('imprimir_voucher', '¿IMPRIMIR VOUCHER?:', array('class' => 'custom-control-input')) !!}
         {!! Form::checkbox('imprimir_voucher', '1', true, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
-    </div>
+    </div> --}}
     <div class="form-group col-6 col-md-6 col-sm-6" >
         {!! Form::button('<i class="fa fa-check fa-lg"></i>Ver Cronograma Cuotas', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
     </div>

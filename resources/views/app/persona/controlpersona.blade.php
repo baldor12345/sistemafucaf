@@ -21,8 +21,6 @@
             {!! Form::close() !!}
         
             <div id="listado{{ $entidad }}"></div>
-
-
         </div>
     </div>
 </div>
@@ -34,12 +32,12 @@
 <script type="text/javascript">
     $(document).ready(function() {
         configurarAnchoModal('800');
-        buscar("{{ $entidad }}");
         init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
         var fechaActual = new Date();
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
         $('#fecha').val(fechaactualr);
+        buscar("{{ $entidad }}");
     }); 
 </script>
