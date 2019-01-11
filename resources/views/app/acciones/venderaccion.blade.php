@@ -106,51 +106,54 @@ use Illuminate\Support\Facades\DB;
 		$('#fechai').val(fechai);
 
 
-
-
 		//funcion para los datos de la persona
 		$("input[name=dni]").change(function(event){
         	$.get("personas/"+event.target.value+"",function(response, facultad){
-				
 				$('#nombresCompletos').val('');
 				$('#idcomprador').val('');
 				var dni_vendedor = '{{ $persona->dni }}';
+
+				console.log(response);
 				if(event.target.value !== dni_vendedor){
 					for(i=0; i<response.length; i++){
-						if((response[i].tipo).trim() === 'S' || (response[i].tipo).trim() === 'SC'){
-							document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-							document.getElementById("idcomprador").value = response[i].id;
+						if((response[i].estado).trim() === 'A'){
+							if((response[i].tipo).trim() === 'S' || (response[i].tipo).trim() === 'SC'){
+								document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
+								document.getElementById("idcomprador").value = response[i].id;
 
-							$.get("acciones/"+event.target.value+"",function(response, facultad){
-								
-								var cantAcciones=0;
-								for(i=0; i<response.length; i++){
-									cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
-								}
+								$.get("acciones/"+event.target.value+"",function(response, facultad){
+									
+									var cantAcciones=0;
+									for(i=0; i<response.length; i++){
+										cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
+									}
 
-								$.get("acciones/"+event.target.value+"/1", function(response, acciones){
-									var accion_persona = response;
-									$('#cantaccionpersona').val(accion_persona);
-									$('#cantacciontotal').val(cantAcciones);
-									$('#cantpersonaNuevo').val(accion_persona);
+									$.get("acciones/"+event.target.value+"/1", function(response, acciones){
+										var accion_persona = response;
+										$('#cantaccionpersona').val(accion_persona);
+										$('#cantacciontotal').val(cantAcciones);
+										$('#cantpersonaNuevo').val(accion_persona);
+									});
+									
+									var limite_accionPor= response[0].limite_acciones;
+									var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
+									document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+												"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
+									$('#divMensajeError{{ $entidad }}').show();
 								});
-								
-								var limite_accionPor= response[0].limite_acciones;
-								var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
-								document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>por reglas establecidas de la empresa usted solo puede adquirir el 20% de la "+
-											"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
-                            	$('#divMensajeError{{ $entidad }}').show();
-							});
+							}else{
+								$('#divMensajeError{{ $entidad }}').hide();
+								document.getElementById("nombresCompletos").innerHTML= "DNI ingresado no pertenece a un Socio";
+								document.getElementById("tipo").value ="";
+								$('#nombresCompletos').val('');
+								$('#idcomprador').val('');
+								$('#cantaccionpersona').val('');
+								$('#cantacciontotal').val('');
+							}
 						}else{
-							$('#divMensajeError{{ $entidad }}').hide();
-							document.getElementById("nombresCompletos").innerHTML= "DNI ingresado no pertenece a un Socio";
-							document.getElementById("tipo").value ="";
-							$('#nombresCompletos').val('');
-							$('#idcomprador').val('');
-							$('#cantaccionpersona').val('');
-							$('#cantacciontotal').val('');
+							document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >El DNI de la persona ingresada no se encuentra activa</span></div>";
+									$('#divMensajeError{{ $entidad }}').show();
 						}
-
 					}
 				}else{
 					document.getElementById("nombresCompletos").innerHTML = "el DNI debe ser diferente al del vendedor";
@@ -160,69 +163,63 @@ use Illuminate\Support\Facades\DB;
 			});
     	});
 
-		
-		
+	});
+
+	$("input[name=cantidad_accion]").change(function(event){
+		var cant = event.target.value;
+		var  cant_persona = '{{ $cant_acciones }}';
+		if(cant > cant_persona){
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones!!</span></div>";
+									$('#divMensajeError{{ $entidad }}').show();
+		}else{
+			$('#divMensajeError{{ $entidad }}').show();
+		}
 	});
 
 	$('.input-number').on('input', function () { 
     	this.value = this.value.replace(/[^0-9]/g,'');
 	});
 
-
-	/*
-	function realizarventa(){
-		route = 'acciones/updateventa';
-		$.ajax({
-			url: route,
-			headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-			type: 'GET',
-			data: $('#formMantenimientoAcciones').serialize(),
-			beforeSend: function(){
-	        },
-	        success: function(res){
-				$('#idcaja').val('');
-				$('#titulo').val('');
-				$('#fecha').val('');
-				$('#monto_iniciado').val('');
-				$('#hora_cierre').val('');
-				$('#monto_cierre').val('');
-				$('#diferencia_monto').val('');
-				$('#descripcion').val('');
-	        }
-		}).fail(function(){
-		});
-	}*/ 
 	function guardaraccionventa(entidad, rutarecibo) {
-        var idformulario = IDFORMMANTENIMIENTO + entidad;
-        var data         = submitForm(idformulario);
-        var respuesta    = null;
-        var listar       = 'NO';
-        if ($(idformulario + ' :input[id = "listar"]').length) {
-            var listar = $(idformulario + ' :input[id = "listar"]').val()
-        };
-        data.done(function(msg) {
-            respuesta = msg;
-        }).fail(function(xhr, textStatus, errorThrown) {
-            respuesta = 'ERROR';
-        }).always(function() {
-            
-            if(respuesta[0] === 'ERROR'){
-            }else{
-                
-                if (respuesta[0] === 'OK') {
-                    cerrarModal();
-                    modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3]+"/"+respuesta[4], '100', 'recibo accion');
-                    if (listar === 'SI') {
-                        if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-                            entidad = entidad2;
-                        }
-                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                    }        
-                } else {
-                    mostrarErrores(respuesta, idformulario, entidad);
-                }
-            }
-        });
+		var  cant_persona = '{{ $cant_acciones }}';
+		var  cantidad = $('#cantidad_accion').val();
+		if(cantidad > cant_persona){
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones!!</span></div>";
+									$('#divMensajeError{{ $entidad }}').show();
+		}else{
+			$('#divMensajeError{{ $entidad }}').hide();
+			var cant = $('')
+			var idformulario = IDFORMMANTENIMIENTO + entidad;
+			var data         = submitForm(idformulario);
+			var respuesta    = null;
+			var listar       = 'NO';
+			if ($(idformulario + ' :input[id = "listar"]').length) {
+				var listar = $(idformulario + ' :input[id = "listar"]').val()
+			};
+			data.done(function(msg) {
+				respuesta = msg;
+			}).fail(function(xhr, textStatus, errorThrown) {
+				respuesta = 'ERROR';
+			}).always(function() {
+				if(respuesta[0] === 'ERROR'){
+				}else{
+					
+					if (respuesta[0] === 'OK') {
+						cerrarModal();
+						modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3]+"/"+respuesta[4], '100', 'recibo accion');
+						if (listar === 'SI') {
+							if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+								entidad = entidad2;
+							}
+							buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+						}        
+					} else {
+						mostrarErrores(respuesta, idformulario, entidad);
+					}
+				}
+			});
+		}
+		
 	}
 
 </script>

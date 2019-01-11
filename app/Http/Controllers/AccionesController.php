@@ -380,6 +380,8 @@ class AccionesController extends Controller
         if ($existe !== true) {
             return $existe;
         }
+        $cant_acciones = DB::table('acciones')->where('estado','C')->where('persona_id',$id)->count();
+
         $listar = "NO";
         $ruta = $this->rutas;
         $persona = Persona::find($id);
@@ -393,7 +395,7 @@ class AccionesController extends Controller
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones'));
     }
 
     public function guardarventa(Request $request, $id)
