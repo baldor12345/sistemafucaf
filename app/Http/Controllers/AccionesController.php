@@ -11,6 +11,7 @@ use App\Persona;
 use App\Caja;
 use App\Concepto;
 use App\Transaccion;
+use App\HistorialAccion;
 use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -180,6 +181,20 @@ class AccionesController extends Controller
                         $acciones->concepto_id        = $request->input('concepto_id');
                         $acciones->save();
                     }
+                }
+
+                if($cantidad_accion !== ''){
+                    $historial_accion               = new HistorialAccion();    
+                    $historial_accion->cantidad        =  $request->input('cantidad_accion');
+                    $historial_accion->estado        = 'C';
+                    $historial_accion->fecha        = $request->input('fechai');
+                    $historial_accion->descripcion        = $request->input('descripcion');
+                    $historial_accion->persona_id        = $request->input('persona_id');
+                    $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
+                    $historial_accion->caja_id = $idCaja;
+                    $historial_accion->concepto_id        = $request->input('concepto_id');
+                    $historial_accion->save();
+                    
                 }
 
                 $cantidad_accion = $request->input('cantidad_accion');
@@ -365,6 +380,8 @@ class AccionesController extends Controller
         if ($existe !== true) {
             return $existe;
         }
+        $cant_acciones = DB::table('acciones')->where('estado','C')->where('persona_id',$id)->count();
+
         $listar = "NO";
         $ruta = $this->rutas;
         $persona = Persona::find($id);
@@ -378,7 +395,7 @@ class AccionesController extends Controller
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones'));
     }
 
     public function guardarventa(Request $request, $id)
@@ -457,6 +474,34 @@ class AccionesController extends Controller
                         $acciones->concepto_id        =  1;
                         $acciones->save();
                     }
+                }
+
+                if($cantidad_accion !== ''){
+                    $historial_accion               = new HistorialAccion();    
+                    $historial_accion->cantidad        = $request->input('cantidad_accion');
+                    $historial_accion->estado        = 'V';
+                    $historial_accion->fecha        = $request->input('fechai');
+                    $historial_accion->descripcion        = $request->input('descripcion');
+                    $historial_accion->persona_id        = $request->input('idpropietario');
+                    $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
+                    $historial_accion->caja_id = $idCaja;
+                    $historial_accion->concepto_id        = $request->input('concepto_id');
+                    $historial_accion->save();
+                    
+                }
+
+                if($cantidad_accion !== ''){
+                    $historial_accion               = new HistorialAccion();    
+                    $historial_accion->cantidad        = $request->input('cantidad_accion');
+                    $historial_accion->estado        = 'C';
+                    $historial_accion->fecha        = $request->input('fechai');
+                    $historial_accion->descripcion        = $request->input('descripcion');
+                    $historial_accion->persona_id        = $request->input('idcomprador');
+                    $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
+                    $historial_accion->caja_id = $idCaja;
+                    $historial_accion->concepto_id        = $request->input('concepto_id');
+                    $historial_accion->save();
+                    
                 }
 
                 //registrar compra de de la persona que compra 
@@ -558,7 +603,7 @@ class AccionesController extends Controller
         $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
         $titulo = $persona->nombres.$cant;
 
-        $view = \View::make('app.acciones.voucheraccionpdf')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+        $view = \View::make('app.acciones.voucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);

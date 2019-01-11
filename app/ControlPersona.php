@@ -30,16 +30,18 @@ class ControlPersona extends Model
         return $this->belongsTo('App\Caja', 'caja_id');
     }
 
-    public function scopelistar($query, $persona_id){
+    public function scopelistar($query, $fecha){
 
-        return $query->where(function($subquery) use($persona_id)
+        return $query->where(function($subquery) use($fecha)
 		            {
-		            	if (!is_null($persona_id)) {
-		            		$subquery->where('persona_id', '=',$persona_id );
+		            	if (!is_null($fecha)) {
+		            		$subquery->where('fecha', '=',$fecha );
 		            	}
 		            })
         			->orderBy('persona_id', 'ASC');
     }
+
+
 
     public static function listSocioCliente(){
         return  DB::table('persona')->where('tipo', 'S')->orWhere('tipo','SC');

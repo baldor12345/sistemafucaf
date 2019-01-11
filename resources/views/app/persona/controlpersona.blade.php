@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card-box table-responsive">
-            {!! Form::open(['route' => $ruta["buscarpersona"], 'method' => 'GET', 'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusquedaControlPersona']) !!}
+            {!! Form::open(['route' => $ruta["buscarpersona"], 'method' => 'POST', 'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusquedaControlPersona']) !!}
             <div class="row m-b-30">
                 <div class="col-sm-12">
                     {!! Form::hidden('page', 1, array('id' => 'page')) !!}
@@ -32,6 +32,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         configurarAnchoModal('800');
+        
         init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
         var fechaActual = new Date();
         var day = ("0" + fechaActual.getDate()).slice(-2);

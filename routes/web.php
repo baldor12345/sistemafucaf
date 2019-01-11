@@ -116,7 +116,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('persona/eliminar/{id}/{listarluego}', 'PersonController@eliminar')->name('persona.eliminar');
     Route::resource('persona', 'PersonController', array('except' => array('show')));
     Route::get('persona/cargarcontrolpersona', 'PersonController@cargarcontrolpersona')->name('persona.cargarcontrolpersona');
-    Route::get('persona/buscarpersona', 'PersonController@buscarpersona')->name('persona.buscarpersona');
+    Route::post('persona/buscarpersona', 'PersonController@buscarpersona')->name('persona.buscarpersona');
     Route::get('persona/cambiartardanza', 'PersonController@cambiartardanza')->name('persona.cambiartardanza');
     Route::get('persona/cambiarfalta', 'PersonController@cambiarfalta')->name('persona.cambiarfalta');
     Route::get('persona/cargarpagarmulta/{id}/{listarluego}', 'PersonController@cargarpagarmulta')->name('persona.cargarpagarmulta');

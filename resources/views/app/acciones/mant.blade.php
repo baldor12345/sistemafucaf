@@ -144,9 +144,9 @@ use Illuminate\Support\Facades\DB;
 									$('#cantacciontotal').val(cantAcciones);
 								});
 
-								document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>por reglas establecidas de la empresa usted solo puede adquirir el 20% de la "+
-											"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
-                            	$('#divMensajeError{{ $entidad }}').show();
+								document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+												"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
+									$('#divMensajeError{{ $entidad }}').show();
 							});
 
 						}else{

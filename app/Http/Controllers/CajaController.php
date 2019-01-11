@@ -183,26 +183,6 @@ class CajaController extends Controller
             $caja->persona_id        = Caja::getIdPersona();
             $caja->save();
 
-            /*
-            //actualizar datos en la tabla transaccion las ganancias de las acciones
-            $findCajalast = DB::table('caja')->orderBy('id','DESC')->first();
-            
-            $caja_id = $findCajalast->id;
-            
-            $listacciones_socio = Caja::list_ganancia_acciones_persona()->get();
-            for($i=0; $i<count($listacciones_socio); $i++){
-                $transaccion = new Transaccion();
-                $transaccion->fecha =           $request->input('fecha_horaApert').date(" H:i:s");
-                $transaccion->monto =           $listacciones_socio[$i]->ganancia_accion;
-                $transaccion->ganancia_accion = $listacciones_socio[$i]->ganancia_accion;
-                $transaccion->concepto_id =     10;
-                $transaccion->persona_id =         $listacciones_socio[$i]->persona_id;
-                $transaccion->descripcion =     " ganancia accion ";
-                $transaccion->usuario_id =      Caja::getIdPersona();
-                $transaccion->caja_id =         $caja_id;
-                $transaccion->save();
-            }
-            */
 
         });
         $error =  $this->actualizardatosahorrosNuevo($request);
@@ -986,8 +966,6 @@ class CajaController extends Controller
             }
             $sum_egresos_totales_mes_actual += $sum_gasto_administrativo_mes_actual;
         }
-
-
         //calculo del total de egresos acumulados al mes anterior por persona
 
         //calculo del total de ingresos acumulados al mes anterior
@@ -1091,9 +1069,6 @@ class CajaController extends Controller
             $sum_otros_mes_actual += $sum_por_concepto_actual;
         }
         
-
-
-
         //calculo del total de ingresos acumulados al mes anterior
         //--primero identifico la fecha de la primera caja que fue aperturada
         $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
