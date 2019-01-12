@@ -4,6 +4,7 @@
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
 <div class="form-row">
+	
 	<table class="table">
 		<thead>
 			<tr>

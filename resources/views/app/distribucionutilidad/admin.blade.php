@@ -20,7 +20,7 @@
 					
 					<div class="form-group">
 						{!! Form::label('anio', 'Año:', array('class' => 'input-sm')) !!}
-						{!! Form::text('anio', '', array('class' => 'form-control input-sm', 'id' => 'anio')) !!}
+						{!! Form::text('anio', $anios, array('class' => 'form-control input-sm', 'id' => 'anio')) !!}
 					</div>
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
