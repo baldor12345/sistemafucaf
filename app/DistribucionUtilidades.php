@@ -111,7 +111,7 @@ class DistribucionUtilidades extends Model
         return $results;
     }
 
-    /**
+    /*
          SELECT SUM(cantidad) AS cantidad_mes 
         from historial_accion 
         where  extract( year from fecha) = '2019' 
