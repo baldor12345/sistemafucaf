@@ -76,8 +76,7 @@ class DistribucionUtilidades extends Model
 
     /**CALCULO DE LOS EGRESOS PARA EL CALCULO DE GASTOS*/
      //lista de egresos  del mes actual por persona
-     public static function listEgresos($anio)
-
+    public static function listEgresos($anio)
     {
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
@@ -112,6 +111,43 @@ class DistribucionUtilidades extends Model
         return $results;
     }
 
-    
+    /**
+         SELECT SUM(cantidad) AS cantidad_mes 
+        from historial_accion 
+        where  extract( year from fecha) = '2019' 
+        GROUP BY extract( month from fecha) 
+        ORDER  BY  extract( month from fecha) ASC;
+     */
+    //lista todal de acciones por mes 
+    public static function list_total_acciones_mes($anio)
+    {
+        $results = DB::table('historial_accion')
+                    ->select(
+                        DB::raw("SUM(cantidad) as cantidad_mes"),
+                        DB::raw("extract( year from fecha) as mes")
+                    )
+                    ->where(DB::raw('extract( year from fecha)'),'=',$anio)
+                    ->groupBy(DB::raw('extract( month from fecha)'))
+                    ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
+        return $results;
+    }
+
+    //lista total de acciones por persona por mes 
+    public static function list_por_persona($persona_id, $anio)
+    {
+        $rsesults = DB::table('persona')
+                    ->join('historial_accion', 'historial_accion.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres as persona_nombres'.
+                        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(cantidad) as cantidad_mes"),
+                        DB::raw("extract( year from fecha) as mes")
+                    )
+                    ->where('persona.id','=',$persona_id)
+                    ->where(DB::raw('extract( year from fecha)'),'=',$anio)
+                    ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
+        return $results;
+    }
+
 
 }

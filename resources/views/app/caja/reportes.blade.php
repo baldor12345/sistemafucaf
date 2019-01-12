@@ -11,7 +11,7 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label('mes', 'Desde:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+        {!! Form::label('mes', 'Mes:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
         <div class="col-sm-9 col-xs-12">
             <input type="month" name="mes" id="mes" step="1" min="2008-12" max="2050-12" value="2019-01" >
         </div>
