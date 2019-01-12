@@ -364,6 +364,7 @@ class AhorrosController extends Controller
                 $transaccion1 = new Transaccion();
                 $transaccion1->fecha = $nuevafecha;
                 $transaccion1->monto = $monto_retiro;
+                $transaccion1->monto_ahorro = $monto_retiro;
                 $transaccion1->id_tabla = $ahorro->id;
                 $transaccion1->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccion1->concepto_id = $idconcepto;

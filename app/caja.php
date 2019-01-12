@@ -197,7 +197,8 @@ class caja extends Model
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
                         'concepto.titulo as concepto_titulo',
-				        'transaccion.monto as transaccion_monto'
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as comentario'
                     )
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
@@ -218,7 +219,8 @@ class caja extends Model
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
                         'concepto.titulo as concepto_titulo',
-				        'transaccion.monto as transaccion_monto'
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as comentario'
                     )
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
                     ->where('concepto.tipo','=','E')
