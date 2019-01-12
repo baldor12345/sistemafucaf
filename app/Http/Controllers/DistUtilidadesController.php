@@ -14,7 +14,7 @@ class DistUtilidadesController extends Controller
 
     protected $folderview      = 'app.distribucionutilidad';
     protected $tituloAdmin     = 'Distribución de Utilidades Anual';
-    protected $tituloRegistrar = 'Compra de Acciones';
+    protected $tituloRegistrar = 'Distribución de utilidades';
   
     protected $rutas           = array('create' => 'distribucionutilidades.create', 
             'edit'   => 'distribucionutilidades.edit', 
@@ -27,14 +27,103 @@ class DistUtilidadesController extends Controller
      * @param  [type] $departamento_id [description]
      * @return [type]                  [description]
      */
-    
-    public function cboprovincia($departamento_id = null)
+    public function index()
     {
-        
+        $configuraciones = Configuraciones::all()->last();
+        $entidad = 'Distribucion';
+        $title = $this->tituloAdmin;
+        $tituloRegistrar = $this->tituloRegistrar;
+        $ruta = $this->rutas;
+        return view($this->folderview.'.admin')->with(compact('entidad','configuraciones', 'title', 'tituloRegistrar', 'ruta'));
     }
 
-    public function buscar(Request $request){
+    public function buscar(Request $request)
+    {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+        $configuraciones = Configuraciones::all()->last();
+        $pagina = $request->input('page');
+        $filas = $request->input('filas');
+       
+        $lista = $resultado->get();
+        $cabecera = array();
+        $cabecera[] = array('valor' => '#', 'numero' => '1');
+        $cabecera[] = array('valor' => 'COD. CLIENTE', 'numero' => '1');
+        $cabecera[] = array('valor' => 'NOMBRE CLIENTE', 'numero' => '1');
+        $cabecera[] = array('valor' => 'CAPITAL AHORRO S/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'Operaciones', 'numero' => '3');
         
+        $ruta             = $this->rutas;
+        if (count($lista) > 0) {
+            $clsLibreria = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion = $paramPaginacion['cadenapaginacion'];
+            $inicio = $paramPaginacion['inicio'];
+            $fin = $paramPaginacion['fin'];
+            $paginaactual = $paramPaginacion['nuevapagina'];
+            $lista = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta', 'titulo_vistaretiro','titulo_vistadetalleahorro','titulo_vistahistoricoahorro','idcaja','configuraciones'));
+        }
+        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+    }
+
+    public function create(Request $request)
+    {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+        $configuraciones = Configuraciones::all()->last();
+        $listar = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad = 'Distribucion';
+        $ruta = $this->rutas;
+        $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($request->input('anios'));
+        
+        $intereses = $sumUBAcumulado[0];
+        $otros = $sumUBAcumulado[1];
+
+        $gastadmacumulado =0;
+        $otros_acumulados=0;
+        $du_anterior=0;
+        $int_pag_acum=0;
+        $utilidad_dist =0;
+        $acciones_mensual=0;
+        $anio=0;
+        $anio_actual=0;
+        $listasocios=0;
+        $formData = array('distribucion.store');
+        $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+ 
+        return view($this->folderview.'.mant')->with(compact('intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios'));
+    }
+   /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    //Metodo para registrar deposito
+    public function store(Request $request)
+    {
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+        $error = null;
+        if($caja_id >0){
+            $listar = Libreria::getParam($request->input('listar'), 'NO');
+            
+            $validacion = Validator::make($request->all(),$reglas);
+            if ($validacion->fails()) {
+                return $validacion->messages()->toJson();
+            }
+
+            $error = DB::transaction(function() use($request, $caja_id){
+              
+                
+            });
+
+        }else{
+            $error = "Caja no aperturada, asegurese de aperturar caja primero !";
+        }
+        return is_null($error) ? "OK" : $error;
     }
 
 

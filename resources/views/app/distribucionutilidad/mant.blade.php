@@ -4,7 +4,7 @@
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
 <div class="form-row">
-	
+
 	<table class="table">
 		<thead>
 			<tr>
@@ -33,34 +33,32 @@
 				<td  rowspan="1" colspan="1">{{ $gastadmacumulado }}</td>
 				<td  rowspan="1" colspan="5"></td>
 				<td  rowspan="1" colspan="2">F Social 10%</td>
-				<td  rowspan="1" colspan="2">{{ $fsocial }}</td>
+				<td  rowspan="1" colspan="2">{{ (($intereses + $otros) -  $du_anterior) - (($gastadmacumulado + $int_pag_acum + $otros_acum) - $gast_du_anterior )*0.1 }}</td>
 				<td  rowspan="1" colspan="5"></td>
 			</tr>
 			<tr>
 				<td>Intereses</td>
 				<td>{{ $intereses }}</td>
 				<td  rowspan="1" colspan="1">I. Pag. Acum.</td>
-				<td  rowspan="1" colspan="1">{{ $ipag_acum }}</td>
-				<td  rowspan="1" colspan="1">F Social 10%</td>
-				<td  rowspan="1" colspan="1">{{ (($intereses + $otros) -  $duanterior) - (($gastadmacumulado + $ipag_acum + $otros_acum) - $gast_du_anterior )*0.1 }}</td>
+				<td  rowspan="1" colspan="1">{{ $int_pag_acum }}</td>
 			</tr>
 			<tr>
 				<td>Otros</td>
 				<td>{{ $otros }}</td>
 				<td  rowspan="1" colspan="1">Otros Acum.</td>
-				<td  rowspan="1" colspan="1">{{ $otros_acum }}</td>
-				<td  rowspan="1" colspan="3">R Social 10%</td>
-				<td  rowspan="1" colspan="3">{{ (($intereses + $otros) -  $duanterior) - (($gastadmacumulado + $ipag_acum + $otros_acum) - $gast_du_anterior )*0.1 }}</td>
+				<td  rowspan="1" colspan="1">{{ $otros_acumulados }}</td>
+				<td  rowspan="1" colspan="3">R Legal 10%</td>
+				<td  rowspan="1" colspan="3">{{ (($intereses + $otros) -  $du_anterior) - (($gastadmacumulado + $int_pag_acum + $otros_acum) - $gast_du_anterior )*0.1 }}</td>
 			</tr>
 			<tr>
 				<td>Total acumulado</td>
 				<td>{{ $intereses + $otros }}</td>
 				<td  rowspan="1" colspan="1">TOTAL ACUMULADO</td>
-				<td  rowspan="1" colspan="1">{{ ($gastadmacumulado + $ipag_acum + $otros_acum) }}</td>
+				<td  rowspan="1" colspan="1">{{ ($gastadmacumulado + $int_pag_acum + $otros_acumulados) }}</td>
 			</tr>
 			<tr>
 				<td>U.B DU Anterior</td>
-				<td>{{ $duanterior }}</td>
+				<td>{{ $du_anterior }}</td>
 				<td  rowspan="1" colspan="1">Gast. DU Anterior</td>
 				<td  rowspan="1" colspan="1">{{ $gast_du_anterior }}</td>
 			</tr>
@@ -68,15 +66,15 @@
 		<tfoot>
 			<tr>
 				<td>Utilidad Bruta DU ACTUAL</td>
-				<td>{{ ($intereses + $otros) -  $duanterior }}</td>
+				<td>{{ ($intereses + $otros) -  $du_anterior }}</td>
 				<td>menos</td>
 				<td>Gast. DU ACTUAL</td>
-				<td>{{ ($gastadmacumulado + $ipag_acum + $otros_acum) - $gast_du_anterior }}</td>
+				<td>{{ ($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior }}</td>
 				<td>=</td>
-				<td>{{ (($intereses + $otros) -  $duanterior) - (($gastadmacumulado + $ipag_acum + $otros_acum) - $gast_du_anterior ) }}</td>
+				<td>{{ (($intereses + $otros) -  $du_anterior) - (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior ) }}</td>
 				<td>menos</td>
 				<td>TOTAL</td>
-				<td>{{ ((($intereses + $otros) -  $duanterior) - (($gastadmacumulado + $ipag_acum + $otros_acum) - $gast_du_anterior )*0.1)*2 }}</td>
+				<td>{{ ((($intereses + $otros) -  $du_anterior) - (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior )*0.1)*2 }}</td>
 				<td>{{ $utilidad_dist }}</td>
 			</tr>
 		</tfoot>
@@ -97,9 +95,13 @@
 			</tr>
 			<tr>
 				<td rowspan="2">Total mensual de Acc.</td>
-				@foreach ($acciones_mensual as $num_acciones)
-					<td>{{ $num_acciones }}</td>
-				@endforeach
+				<?php
+				$total_acc_mensual  =0;
+				foreach ($acciones_mensual as $num_acciones){
+					$total_acc_mensual += $num_acciones;
+					echo("<td>".$num_acciones."</td>")
+				}
+				?>
 				<td>0</td>
 				<td>{{ $total_acc_mensual }}</td>
 			</tr>
@@ -118,7 +120,7 @@
 					$i--;
 				}
 				?>
-				<td>0</td><td>{{ $sumatotal }}</td>
+				<td>0</td><td>{{ $sumatotal_acc_mes }}</td>
 			</tr>
 			<tr><td rowspan="16"></td></tr>
 			{{-- PASO 3 --}}
