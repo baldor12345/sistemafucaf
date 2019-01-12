@@ -556,7 +556,7 @@ class CajaController extends Controller
         $entidad        = 'Transaccion';
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];
-        $boton          = 'Registrar Gasto';
+        $boton          = 'Registrar';
         return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos'));
     }
 
@@ -654,6 +654,7 @@ class CajaController extends Controller
             ->where('titulo', '!=', 'venta de acciones')
             ->where('titulo', '!=', 'Deposito de ahorros')
             ->where('titulo', '!=', 'Comision Voucher')
+            ->where('titulo', '!=', 'Multa por Inasistencia o Tardanza')
             ->get();
         $retorno .= '><option value="" selected="selected">Seleccione</option>';
 
