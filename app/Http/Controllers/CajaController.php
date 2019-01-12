@@ -713,7 +713,6 @@ class CajaController extends Controller
         $month = $fechaf[1];
 
         $lista = Caja::listIngresos($anio,$month)->get();
-        echo $lista;
         //evaluar mes 
         $mes="";
         $mesItm="";

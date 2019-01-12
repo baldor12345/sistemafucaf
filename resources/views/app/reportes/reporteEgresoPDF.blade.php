@@ -107,7 +107,7 @@
 				<td width="8%" align="center"><span class="text">-</span></td>
 				<td width="8%" align="center"><span class="text">{{$value->transaccion_monto}}</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
-				<td width="6%" align="center"><span class="text">-</span></td>
+				<td width="6%" align="center"><span class="text">{{$value->comentario }}</span></td>
 				<td width="10%" align="center"><span class="text">-</span></td>
 				<td width="10%" align="center">
 					<span class="text">

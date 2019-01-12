@@ -80,35 +80,12 @@ class DistribucionUtilidades extends Model
         return array($intereses, $sum_otros);
     }
 
-    //lista de ingresos por concepto del mes actual
-
-    public static function listIngresos_por_concepto($anio)
-    {
-        $results = DB::table('concepto')
-                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
-                    ->select(
-                        'concepto.titulo as concepto_titulo',
-				        'transaccion.monto as transaccion_monto'
-                    )
-                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
-                    ->where('concepto.tipo','=','I')
-                    ->where('concepto.titulo','!=','Compra de acciones')
-                    ->where('concepto.titulo','!=','Venta de acciones')
-                    ->where('concepto.titulo','!=','Comision Voucher')
-                    ->where('concepto.titulo','!=','Deposito de ahorros')
-                    ->where('concepto.titulo','!=','Pago de cuotas');
-        return $results;
-    }
-
-
-
 
     /**CALCULO DE LOS EGRESOS PARA EL CALCULO DE GASTOS*/
      //lista de egresos  del mes actual por persona
-    public static function listEgresos($anio)
+    public static function gastosDUactual($anio)
     {
-        $results = DB::table('persona')
-                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+        $results1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
                         DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
@@ -117,28 +94,27 @@ class DistribucionUtilidades extends Model
                     )
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','E')
-                    ->groupBy('persona.id');
-        return $results;
-    }
+                    ->groupBy(DB::raw('extract( year from transaccion.fecha)'))->get();
+        $i_pag_acum = $results1[0]->interes_ahorro;
+        $otros_acum = $results1[0]->otros_egresos;
 
-
-    //lista para calcular los gastos administrativos acumulados del año 
-    public static function listEgresos_por_concepto($anio)
-    {
-        $results = DB::table('concepto')
+        $results2 = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
-                        'concepto.titulo as concepto_titulo',
-				        'transaccion.monto as transaccion_monto'
+                        DB::raw("SUM(transaccion.monto) as gastos_adm ")
                     )
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
                     ->where('concepto.titulo','!=','Ganancia por accion')
-                    ->where('concepto.titulo','!=','Saldo Deudor');
-        return $results;
+                    ->where('concepto.titulo','!=','Saldo Deudor')
+                    ->groupBy('concepto.tipo')->get();
+        $g_adm_acum = $results2[0]->gastos_adm;
+
+        return array($i_pag_acum, $otros_acum, $g_adm_acum);
     }
+
 
     /*
         SELECT SUM(cantidad) AS cantidad_mes 
