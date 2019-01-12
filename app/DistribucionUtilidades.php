@@ -47,20 +47,37 @@ class DistribucionUtilidades extends Model
     /**CALCULO DE LOS INGRESOS */
 
     //lista de ingresos por persona del mes actual
-    public static function listIngresos($anio)
+    public static function sumUBDacumulado($anio)
     {
-        $results = DB::table('persona')
-                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+        $resultsI1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
-                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereses_recibidos"),
                         DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
                         DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
                     )
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
-                    ->groupBy('persona.id');
-        return $results;
+                    ->groupBy(DB::raw('extract( year from transaccion.fecha)'))->get();
+        $intereses = $resultsI1[0]->intereses_recibidos;
+        $sum_otros = $resultsI1[0]->intereses_recibidos+ $resultsI1[0]->comision_voucher;
+        
+        $results2 = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        DB::raw("SUM(transaccion.monto) as mas_otros"),
+                    )
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('concepto.titulo','!=','Compra de acciones')
+                    ->where('concepto.titulo','!=','Venta de acciones')
+                    ->where('concepto.titulo','!=','Comision Voucher')
+                    ->where('concepto.titulo','!=','Deposito de ahorros')
+                    ->where('concepto.titulo','!=','Pago de cuotas');
+                    ->groupBy('concepto.tipo')->get();
+        $sum_otros += $resultsI1[0]->mas_otros;
+        
+        return array($intereses, $sum_otros);
     }
 
     //lista de ingresos por concepto del mes actual
