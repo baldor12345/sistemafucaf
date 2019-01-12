@@ -87,12 +87,12 @@
 				<td width="8%" align="center"><span class="text">{{ $value->monto_credito }}</span></td>
 				<td width="8%" align="center"><span class="text">{{ $value->interes_ahorro }}</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
-				<td width="8%" align="center"><span class="text">-</span></td>
-				<td width="6%" align="center"><span class="text">-</span></td>
-				<td width="10%" align="center"><span class="text">Com. Rec.</span></td>
+				<td width="8%" align="center"><span class="text">{{ $value->utilidad_distribuida }}</span></td>
+				<td width="6%" align="center"><span class="text">{{ $value->otros_egresos }} </span></td>
+				<td width="10%" align="center"><span class="text">-</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-					{{ ($value->monto_ahorro+$value->monto_credito+$value->interes_ahorro) }}
+					{{ ($value->monto_ahorro+$value->monto_credito+$value->interes_ahorro+$value->utilidad_distribuida+$value->otros_egresos) }}
 					</span>
 				</td>
             </tr>
@@ -108,7 +108,7 @@
 				<td width="8%" align="center"><span class="text">{{$value->transaccion_monto}}</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
 				<td width="6%" align="center"><span class="text">-</span></td>
-				<td width="10%" align="center"><span class="text">Com. Rec.</span></td>
+				<td width="10%" align="center"><span class="text">-</span></td>
 				<td width="10%" align="center">
 					<span class="text">
 							{{$value->transaccion_monto}}
@@ -124,8 +124,8 @@
 				<td  cellspacing="1" width="8%" align="center" class="fondo"><strong>{{ $sum_prestamo_de_capital_mes_actual }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_interes_pagado_mes_actual }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ $sum_gasto_administrativo_mes_actual }}</strong></td>
-				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
-				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong> {{ $sum_utilidad_distribuida }} </strong></td>
+				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>{{ $sum_otros_egresos_mes_actual }}</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ $sum_egresos_totales_mes_actual }}</strong></td>
 			</tr>

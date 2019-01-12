@@ -61,6 +61,16 @@ function cargarselect2(entidad){
 </div>
 
 <div class="form-group">
+	{!! Form::label('dni', 'DNI:', array('class' => 'col-sm-3 col-xs-12 control-label dnil')) !!}
+	<div class="col-sm-9 col-xs-12">
+		{!! Form::text('dni', null, array('class' => 'form-control input-xs input-number ', 'id' => 'dni', 'placeholder' => 'Asegurese de que el DNI ya este registrado...')) !!}
+		<p id="nombres" class="" >DNI Vacio</p>
+	</div>
+	<input type="hidden" id="persona_id" name="persona_id" value="" >
+</div>
+
+
+<div class="form-group">
 	{!! Form::label('total', 'Total(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
 		{!! Form::text('total', null, array('class' => 'form-control input-xs ', 'id' => 'total', 'placeholder' => 'S/.',  'onkeypress'=>'return filterFloat(event,this);')) !!}
@@ -90,11 +100,27 @@ function cargarselect2(entidad){
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('400');
 
+		$(".dnil").html('DNI: <sup style="color: blue;">Opcional</sup>');
+		
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fecha = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 		$('#fecha').val(fecha);
+
+		$("#persona_id").val('');
+		$("input[name=dni]").change(function(event){
+        	$.get("personas/"+event.target.value+"",function(response, persona){
+				if(response.length>0){
+					$("#nombres").html(response[0].nombres +" "+ response[0].apellidos);
+					$("#persona_id").val(response[0].id);
+				}else{
+					$("#nombres").html("El DNI ingresado no existe");
+					$("#persona_id").val('');
+				}
+			});
+		});
+
 
 	}); 
 	$('.input-number').on('input', function () { 
@@ -135,4 +161,5 @@ function cargarselect2(entidad){
 		}
 		
 	}
+
 </script>

@@ -580,25 +580,50 @@ class CajaController extends Controller
        }
 
         $listar        = Libreria::getParam($request->input('listar'), 'NO');
+        $persona_id = $request->get('persona_id');
+        if($persona_id == ''){
+            $error = DB::transaction(function() use($request, $id){
+                $gastos = new Gastos();
+                $gastos->monto = $request->get('total');
+                $gastos->fecha = $request->get('fecha');
+                $gastos->concepto = $request->get('concepto_id');
+                $gastos->descripcion =  $request->get('comentario');
+                $gastos->save();
+    
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $request->get('fecha');
+                $transaccion->monto = $request->get('total');
+                $transaccion->concepto_id = $request->get('concepto_id');
+                $transaccion->descripcion =  $request->get('comentario');
+                $transaccion->usuario_id =Caja::getIdPersona();
+                $transaccion->caja_id = $id;
+                $transaccion->save();
+                 
+            });
+        }else{
+            $error = DB::transaction(function() use($request, $id){
+                $gastos = new Gastos();
+                $gastos->monto = $request->get('total');
+                $gastos->fecha = $request->get('fecha');
+                $gastos->concepto = $request->get('concepto_id');
+                $gastos->descripcion =  $request->get('comentario');
+                $gastos->save();
+    
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $request->get('fecha');
+                $transaccion->monto = $request->get('total');
+                $transaccion->otros_egresos = $request->get('total');
+                $transaccion->concepto_id = $request->get('concepto_id');
+                $transaccion->descripcion =  $request->get('comentario');
+                $transaccion->persona_id =  $request->get('persona_id');
+                $transaccion->usuario_id =Caja::getIdPersona();
+                $transaccion->caja_id = $id;
+                $transaccion->save();
+                 
+            });
+        }
 
-        $error = DB::transaction(function() use($request, $id){
-            $gastos = new Gastos();
-            $gastos->monto = $request->get('total');
-            $gastos->fecha = $request->get('fecha');
-            $gastos->concepto = $request->get('concepto_id');
-            $gastos->descripcion =  $request->get('comentario');
-            $gastos->save();
-
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $request->get('fecha');
-            $transaccion->monto = $request->get('total');
-            $transaccion->concepto_id = $request->get('concepto_id');
-            $transaccion->descripcion =  $request->get('comentario');
-            $transaccion->usuario_id =Caja::getIdPersona();
-            $transaccion->caja_id = $id;
-            $transaccion->save();
-             
-        });
+        
 
         return is_null($error) ? "OK" : $error;
     }
@@ -939,19 +964,25 @@ class CajaController extends Controller
         $sum_retiro_ahorros_mes_actual=0;
         $sum_prestamo_de_capital_mes_actual=0;
         $sum_interes_pagado_mes_actual=0;
+        $sum_otros_egresos_mes_actual =0;
+        $sum_utilidad_distribuida =0;
         $sum_egresos_totales_mes_actual=0;
         if(count($lista) >0 ){
             for($i=0; $i<count($lista); $i++){
                 $sum_retiro_ahorros_mes_actual += $lista[$i]->monto_ahorro;
                 $sum_prestamo_de_capital_mes_actual += $lista[$i]->monto_credito;
                 $sum_interes_pagado_mes_actual += $lista[$i]->interes_ahorro;
+                $sum_utilidad_distribuida += $lista[$i]->utilidad_distribuida;
+                $sum_otros_egresos_mes_actual += $lista[$i]->otros_egresos;
             }
-            $sum_egresos_totales_mes_actual=($sum_retiro_ahorros_mes_actual+$sum_prestamo_de_capital_mes_actual+$sum_interes_pagado_mes_actual);
+            $sum_egresos_totales_mes_actual=($sum_retiro_ahorros_mes_actual+$sum_prestamo_de_capital_mes_actual+$sum_interes_pagado_mes_actual+$sum_otros_egresos_mes_actual+$sum_utilidad_distribuida);
         }else{
             $sum_retiro_ahorros_mes_actual=0;
             $sum_prestamo_de_capital_mes_actual=0;
             $sum_interes_pagado_mes_actual=0;
             $sum_egresos_totales_mes_actual=0;
+            $sum_otros_egresos_mes_actual =0;
+            $sum_utilidad_distribuida =0;
         }
 
 
@@ -983,6 +1014,7 @@ class CajaController extends Controller
         $sum_prestamo_de_capital_mes_anterior=0;
         $sum_interes_pagado_mes_anterior=0;
         $sum_egresos_totales_mes_anterior=0;
+
         if(count($lista_mes_anterior) >0 ){
             for($i=0; $i<count($lista_mes_anterior); $i++){
                 $sum_retiro_ahorros_mes_anterior += $lista_mes_anterior[$i]->monto_ahorro;
@@ -1157,7 +1189,7 @@ class CajaController extends Controller
 
         $titulo = "reporte ".$mes."_Egresos";
         $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
-                                                                            'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual',
+                                                                            'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual','sum_otros_egresos_mes_actual','sum_utilidad_distribuida',
                                                                         'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior',
                                                                     'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado', 
                                                                     'saldo_del_mes_anterior','ingresos_del_mes','total_ingresos_del_mes','egresos_del_mes','saldo','sum_ingresos_totales_acumulados'));
