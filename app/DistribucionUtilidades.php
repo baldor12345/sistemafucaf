@@ -75,7 +75,7 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Deposito de ahorros')
                     ->where('concepto.titulo','!=','Pago de cuotas');
                     ->groupBy('concepto.tipo')->get();
-        $sum_otros += $resultsI1[0]->mas_otros;
+        $sum_otros += $resultsI2[0]->mas_otros;
         
         return array($intereses, $sum_otros);
     }
