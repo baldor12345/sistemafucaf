@@ -26,10 +26,22 @@ class DistribucionUtilidades extends Model
         OR persona.codigo=''
         OR persona.nombres LIKE '%Bald%'
     */
+    public function scopelistar($query, $titulo)
+    {
+        return $query->where(function($subquery) use($titulo)
+                    {
+                        if (!is_null($titulo)) {
+                            $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
+                        }
+                    })
+                    ->orderBy('fechai', 'DSC');
+    }
+
     public function persona()
     {
         return $this->belongsTo('App\Persona', 'persona_id');
     }
+    
 
 
     /**CALCULO DE LOS INGRESOS */
@@ -111,8 +123,8 @@ class DistribucionUtilidades extends Model
         return $results;
     }
 
-    /**
-         SELECT SUM(cantidad) AS cantidad_mes 
+    /*
+        SELECT SUM(cantidad) AS cantidad_mes 
         from historial_accion 
         where  extract( year from fecha) = '2019' 
         GROUP BY extract( month from fecha) 
