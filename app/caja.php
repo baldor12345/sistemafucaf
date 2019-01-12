@@ -155,7 +155,9 @@ class caja extends Model
 				        'persona.apellidos as persona_apellidos',
                         DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
                         DB::raw("SUM(transaccion.monto_credito) as monto_credito"),
-                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro")
+                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro"),
+                        DB::raw("SUM(transaccion.otros_egresos) as otros_egresos"),
+                        DB::raw("SUM(transaccion.utilidad_distribuida) as utilidad_distribuida")
                     )
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
@@ -178,7 +180,9 @@ class caja extends Model
 				        'persona.apellidos as persona_apellidos',
                         DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
                         DB::raw("SUM(transaccion.monto_credito) as monto_credito"),
-                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro")
+                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro"),
+                        DB::raw("SUM(transaccion.otros_egresos) as otros_egresos"),
+                        DB::raw("SUM(transaccion.utilidad_distribuida) as utilidad_distribuida")
                     )
                     ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
                     ->where('concepto.tipo','=','E')
@@ -200,7 +204,8 @@ class caja extends Model
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
-                    ->where('concepto.titulo','!=','Ganancia por accion');
+                    ->where('concepto.titulo','!=','Ganancia por accion')
+                    ->where('concepto.titulo','!=','Saldo Deudor');
         return $results;
     }
 
@@ -219,6 +224,7 @@ class caja extends Model
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
+                    ->where('concepto.titulo','!=','Saldo Deudor')
                     ->where('concepto.titulo','!=','Ganancia por accion');
         return $results;
     }

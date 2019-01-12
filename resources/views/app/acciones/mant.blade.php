@@ -125,40 +125,46 @@ use Illuminate\Support\Facades\DB;
 				$('#persona_id').val('');
 				if(response.length>0){
 					for(i=0; i<response.length; i++){
-						if((response[i].tipo).trim() === 'S' || (response[i].tipo).trim() === 'SC'){
-							document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-							document.getElementById("persona_id").value = response[i].id;
-							document.getElementById("tipo").value = response[i].tipo;
+						if((response[i].estado).trim() === 'A'){
+							if((response[i].tipo).trim() === 'S' || (response[i].tipo).trim() === 'SC'){
+								document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
+								document.getElementById("persona_id").value = response[i].id;
+								document.getElementById("tipo").value = response[i].tipo;
 
-							$.get("acciones/"+event.target.value+"",function(response, acciones){
-								var cantAcciones=0;
-								for(i=0; i<response.length; i++){
-									cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
-								}
+								$.get("acciones/"+event.target.value+"",function(response, acciones){
+									var cantAcciones=0;
+									for(i=0; i<response.length; i++){
+										cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
+									}
 
-								var limite_accionPor= response[0].limite_acciones;
-								var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
-								$.get("acciones/"+event.target.value+"/1", function(response, acciones){
-									var accion_persona = response;
-									$('#cantaccionpersona').val(accion_persona);
-									$('#cantacciontotal').val(cantAcciones);
+									var limite_accionPor= response[0].limite_acciones;
+									var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
+									$.get("acciones/"+event.target.value+"/1", function(response, acciones){
+										var accion_persona = response;
+										$('#cantaccionpersona').val(accion_persona);
+										$('#cantacciontotal').val(cantAcciones);
+									});
+
+									document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+													"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
+										$('#divMensajeError{{ $entidad }}').show();
 								});
 
-								document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
-												"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
-									$('#divMensajeError{{ $entidad }}').show();
-							});
-
+							}else{
+								$('#divMensajeError{{ $entidad }}').hide();
+								document.getElementById("nombresCompletos").innerHTML= "DNI ingresado no pertenece a un Socio";
+								document.getElementById("persona_id").value = "";
+								document.getElementById("tipo").value ="";
+								$('#nombres').val('');
+								$('#persona_id').val('');
+								$('#cantaccionpersona').val('');
+								$('#cantacciontotal').val('');
+							}
 						}else{
-							$('#divMensajeError{{ $entidad }}').hide();
-							document.getElementById("nombresCompletos").innerHTML= "DNI ingresado no pertenece a un Socio";
-							document.getElementById("persona_id").value = "";
-							document.getElementById("tipo").value ="";
-							$('#nombres').val('');
-							$('#persona_id').val('');
-							$('#cantaccionpersona').val('');
-							$('#cantacciontotal').val('');
-						}
+								document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >El DNI de la persona ingresada no se encuentra activa</span></div>";
+										$('#divMensajeError{{ $entidad }}').show();
+							}
+
 					}
 				}else{
 					$('#divMensajeError{{ $entidad }}').hide();
