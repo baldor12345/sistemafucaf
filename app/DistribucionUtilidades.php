@@ -65,7 +65,7 @@ class DistribucionUtilidades extends Model
         $results2 = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
-                        DB::raw("SUM(transaccion.monto) as mas_otros"),
+                        DB::raw("SUM(transaccion.monto) as mas_otros")
                     )
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
@@ -73,7 +73,7 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Venta de acciones')
                     ->where('concepto.titulo','!=','Comision Voucher')
                     ->where('concepto.titulo','!=','Deposito de ahorros')
-                    ->where('concepto.titulo','!=','Pago de cuotas');
+                    ->where('concepto.titulo','!=','Pago de cuotas')
                     ->groupBy('concepto.tipo')->get();
         $sum_otros += $resultsI2[0]->mas_otros;
         
