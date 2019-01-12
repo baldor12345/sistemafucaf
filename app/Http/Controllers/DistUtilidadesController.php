@@ -77,17 +77,22 @@ class DistUtilidadesController extends Controller
         $entidad = 'Distribucion';
         $ruta = $this->rutas;
         $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($request->input('anios'));
-        
+        $anio = $request->input('anios');
         $intereses = $sumUBAcumulado[0];
         $otros = $sumUBAcumulado[1];
+        $gastosDUActual = gastosDUactual($anio);
 
-        $gastadmacumulado =0;
-        $otros_acumulados=0;
+        $int_pag_acum= $gastosDUActual[0];
+        $otros_acumulados=$gastosDUActual[1];
+        $gastadmacumulado = $gastosDUActual[2];
+        
         $du_anterior=0;
-        $int_pag_acum=0;
-        $utilidad_dist =0;
-        $acciones_mensual=0;
-        $anio=0;
+        $gast_du_anterior=0;
+        $utilidad_neta =(($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior ));
+        $utilidad_dist = $utilidad_neta - 2*0.1*$utilidad_neta;
+
+        $acciones_mensual=list_total_acciones_mes($anio);
+       
         $anio_actual=0;
         $listasocios=0;
         $formData = array('distribucion.store');

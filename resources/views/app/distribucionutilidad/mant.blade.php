@@ -173,9 +173,9 @@
 				<td>E</td><td>F</td><td>M</td><td>A</td><td>M</td><td>J</td><td>J</td><td>A</td><td>S</td><td>O</td><td>N</td><td>D</td><td>E</td>
 			</tr>
 			<?php
-				foreach ($lista_socios as $key => $socio) {
+				/*foreach ($lista_socios as $key => $socio) {
 					
-				}
+				}*/
 			?>
 		</tbody>
 		<tfoot>
