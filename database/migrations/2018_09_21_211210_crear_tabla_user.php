@@ -17,7 +17,9 @@ class CrearTablaUser extends Migration
             $table->increments('id');
             $table->string('login',400);
             $table->string('password',100);
-            $table->date('fechai');
+            $table->date('fechai')->nullable();
+            $table->date('fechaf')->nullable();
+            $table->char('estado', 1)->nullable();
             $table->integer('usertype_id')->unsigned();
             $table->integer('persona_id')->unsigned();
             $table->rememberToken();

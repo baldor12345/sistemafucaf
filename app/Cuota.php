@@ -3,8 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Illuminate\Auth\UserInterface;
+use Illuminate\Auth\Reminders\RemindableInterface;
+use App\Librerias\Libreria;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use DateTime;
 class Cuota extends Model
 {
@@ -58,5 +63,49 @@ class Cuota extends Model
         ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')
         ->orderBy(DB::raw('extract( month from cuota.fecha_programada_pago)'), 'DSC');
         return $results;
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function($marca)
+        {
+
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'I';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id =  Auth::user()->id;
+            $binnacle->table      = 'cuota';
+            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+
+        static::updated(function($marca)
+        {
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'U';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id = Auth::user()->id;
+            $binnacle->table      = 'cuota';
+            $binnacle->detail    =$marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+        static::deleted(function($marca)
+        {
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'D';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id = Auth::user()->id;
+            $binnacle->table      = 'cuota';
+            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
     }
 }

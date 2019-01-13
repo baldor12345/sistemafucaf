@@ -1,10 +1,14 @@
 <?php
 
 namespace App;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Illuminate\Auth\UserInterface;
+use Illuminate\Auth\Reminders\RemindableInterface;
+use App\Librerias\Libreria;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Acciones extends Model
 {
@@ -139,5 +143,48 @@ class Acciones extends Model
     WHERE acciones.estado = 'C' AND (persona.tipo = 'S' OR persona.tipo ='SC')
     GROUP BY configuraciones.ganancia_accion, persona.tipo, persona.nombres,persona.apellidos;
     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function($marca)
+        {
+
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'I';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id =  Auth::user()->id;
+            $binnacle->table      = 'acciones';
+            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+
+        static::updated(function($marca)
+        {
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'U';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id = Auth::user()->id;
+            $binnacle->table      = 'acciones';
+            $binnacle->detail    =$marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+        static::deleted(function($marca)
+        {
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'D';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id = Auth::user()->id;
+            $binnacle->table      = 'acciones';
+            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+    }
 
 }

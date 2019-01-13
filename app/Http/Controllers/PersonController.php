@@ -8,12 +8,17 @@ use Validator;
 use App\Http\Requests;
 use App\Persona;
 use App\Caja;
+use App\Acciones;
+use App\Ahorros;
+use App\Credito;
+use App\Cuota;
 use App\Concepto;
 use App\ControlPersona;
 use App\Transaccion;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class PersonController extends Controller
 {
@@ -32,6 +37,9 @@ class PersonController extends Controller
             'buscarpersona'=> 'persona.buscarpersona',
             'cargarpagarmulta'   => 'persona.cargarpagarmulta',
             'guardarpagarmulta'  => 'persona.guardarpagarmulta',
+            'cargarbinnacle'  => 'persona.cargarbinnacle',
+            'generarreporte'  => 'persona.generarreporte',
+            
         );
 
     /**
@@ -68,6 +76,7 @@ class PersonController extends Controller
         $cabecera[]       = array('valor' => 'Telefono', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Email', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'E. Cuenta', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
@@ -475,6 +484,49 @@ class PersonController extends Controller
         });
         
         return is_null($error) ? "OK" : $error;
+    }
+
+    public function generarestadocuentaPDF($id, Request $request)
+    {    
+        $persona_ahorrista = DB::table('persona')->where('id', $id)->first();
+
+        //monto ahorrado y cantidad total de acciones asta la fecha
+        $monto_ahorro = Ahorros::where('persona_id', $id)->where('estado','P')->first();
+        $ahorro = (count($monto_ahorro) == 0)?0: $monto_ahorro;
+
+        if($ahorro !== 0){
+           $capital_ahorrado = $ahorro->capital;
+           $fecha_ahorro =  $ahorro->fechai;
+           $interes_ahorro = $ahorro->interes;
+        }else{
+            $capital_ahorrado = 0;
+            $fecha_ahorro =0;
+            $interes_ahorro = 0;
+        }
+
+        $CantAccionesCompradas = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+        $CantAccionesVendidas = DB::table('acciones')->where('estado', 'V')->where('persona_id',$id)->count();
+
+        //creditos pendientes de la persona
+        $credito        = Persona::creditos_por_persona($id);
+        $credito_pendiente           = $credito->get();
+
+        //$aval =   DB::table('persona')->where('id', $credito_pendiente[0]->persona_aval_id)->first();
+        //$socio_aval = (count($aval) == 0)?0: $aval;
+
+
+        $titulo = 'estado_de_cuenta_'.$persona_ahorrista->nombres;
+        $view = \View::make('app.persona.generarestadocuentaPDF')->with(compact('persona_ahorrista','fecha_ahorro','interes_ahorro','capital_ahorrado', 'CantAccionesCompradas','CantAccionesVendidas','credito_pendiente', 'socio_aval'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(110);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 
 }

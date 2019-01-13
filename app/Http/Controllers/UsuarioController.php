@@ -13,6 +13,7 @@ use App\Usertype;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class UsuarioController extends Controller
 {
@@ -20,12 +21,17 @@ class UsuarioController extends Controller
     protected $tituloAdmin     = 'Usuario';
     protected $tituloRegistrar = 'Registrar usuario';
     protected $tituloModificar = 'Modificar usuario';
+    protected $titulo_bitacora = 'Generar Reporte Bitacora';
     protected $tituloEliminar  = 'Eliminar usuario';
     protected $rutas           = array('create' => 'usuario.create', 
             'edit'   => 'usuario.edit', 
             'delete' => 'usuario.eliminar',
             'search' => 'usuario.buscar',
             'index'  => 'usuario.index',
+
+            'cargarbinnacle'  => 'usuario.cargarbinnacle',
+            'generarreporte'  => 'usuario.generarreporte',
+            'binnaclePDF' => 'usuario.binnaclePDF',
         );
 
     /**
@@ -59,10 +65,12 @@ class UsuarioController extends Controller
         $cabecera[]       = array('valor' => 'Telefono', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Email', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Tipo de usuario', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
+        $titulo_bitacora = $this->titulo_bitacora;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -73,7 +81,7 @@ class UsuarioController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta','titulo_bitacora'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -88,8 +96,9 @@ class UsuarioController extends Controller
         $entidad          = 'Usuario';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
+        $titulo_bitacora =  $this->titulo_bitacora;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','titulo_bitacora'));
     }
 
     /**
@@ -104,10 +113,11 @@ class UsuarioController extends Controller
         $usuario        = null;
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $cboTipousuario = array('' => 'Seleccione') + Usertype::pluck('name', 'id')->all();
+        $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $formData       = array('usuario.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona'));
+        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona','cboEstado'));
     }
 
     /**
@@ -136,6 +146,8 @@ class UsuarioController extends Controller
             $usuario->login        = $request->input('login');
             $usuario->password     = Hash::make($request->input('password'));
             $usuario->fechai       = $request->input('fechai');
+            $usuario->fechaf       = $request->input('fechaf');
+            $usuario->estado       = $request->input('estado');
             $usuario->usertype_id  = $request->input('usertype_id');
             $usuario->save();
         });
@@ -168,12 +180,13 @@ class UsuarioController extends Controller
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $cboTipousuario = array('' => 'Seleccione') + Usertype::pluck('name', 'id')->all();
+        $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $usuario        = User::find($id);
         $entidad        = 'Usuario';
         $formData       = array('usuario.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona'));
+        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona','cboEstado'));
     }
 
     /**
@@ -209,6 +222,8 @@ class UsuarioController extends Controller
             }
             $usuario->password     = Hash::make($request->input('password'));
             $usuario->fechai       = $request->input('fechai');
+            $usuario->fechaf       = $request->input('fechaf');
+            $usuario->estado       = $request->input('estado');
             $usuario->usertype_id = $request->input('usertype_id');
             $usuario->save();
         });
@@ -255,5 +270,43 @@ class UsuarioController extends Controller
         $formData = array('route' => array('usuario.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    /**CARGAR REPORTE */
+    public function cargarbinnacle(){
+        $entidad  = 'Usuario';
+        $ruta = $this->rutas;
+        $titulo_bitacora = $this->titulo_bitacora;
+        return view($this->folderview.'.cargarbinnacle')->with(compact('entidad', 'ruta', 'titulo_bitacora'));
+    }
+
+    /**GENERAR REPORTES DE CAJA Y EGRESOS E INGRESOS DEL MES */
+    public function generarreporte(Request $request)
+    {
+        $res = null;
+        $desde = $request->get('desde');
+        $hasta = $request->get('hasta');
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $desde, $hasta);
+        return $respuesta;
+    }
+
+    public function binnaclePDF($desde, $hasta, Request $request)
+    {    
+
+        $binnacle        = User::listBinnacle($desde, $hasta);
+        $lista           = $binnacle->get();
+        $titulo = 'bitacora_'.$desde;
+        $view = \View::make('app.usuario.binnaclePDF')->with(compact('lista','desde','hasta'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(110);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 }
