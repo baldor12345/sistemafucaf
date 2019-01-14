@@ -809,14 +809,11 @@ class CajaController extends Controller
 
         //calculo del total de ingresos acumulados al mes anterior
         //--primero identifico la fecha de la primera caja que fue aperturada
-        $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
-
-        //identifico la fecha del mes anterior 
         $fecha_completa= $fecha."-01";
-        $fechai =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
 
-        $lista_mes_anterior = Caja::listIngresosastamesanterior($fechai_caja_first, $fechai)->get();
+        //$fechai =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
+
+        $lista_mes_anterior = Caja::listIngresosastamesanterior($fecha_completa)->get();
 
 
         $sum_deposito_ahorros_asta_mes_anterior=0;
@@ -844,7 +841,7 @@ class CajaController extends Controller
         }
 
         //lista de ingresos por concepto
-        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fechai_caja_first,$fechai)->get();
+        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fecha_completa)->get();
         // calculo del total de ingresos del mes actual por concepto
         $sum_por_concepto_mes_anterior=0;
         if(count($lista_ingresos_por_concepto_mes_anterior) >0 ){
@@ -1001,15 +998,12 @@ class CajaController extends Controller
         //calculo del total de egresos acumulados al mes anterior por persona
 
         //calculo del total de ingresos acumulados al mes anterior
-        //--primero identifico la fecha de la primera caja que fue aperturada
-        $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai_caja_first_egreso =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
 
         //identifico la fecha del mes anterior 
         $fecha_completa= $fecha."-01";
-        $fechainicial =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
+        //$fechainicial =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
 
-        $lista_mes_anterior = Caja::listEgresos_asta_mes_anterior($fechai_caja_first_egreso,$fechainicial)->get();
+        $lista_mes_anterior = Caja::listEgresos_asta_mes_anterior($fecha_completa)->get();
 
         $sum_retiro_ahorros_mes_anterior=0;
         $sum_prestamo_de_capital_mes_anterior=0;
@@ -1030,7 +1024,7 @@ class CajaController extends Controller
             $sum_egresos_totales_mes_anterior=0;
         }
 
-        $lista_por_concepto_asta_mes_anterior = Caja::listEgresos_por_concepto_asta_mes_anterior($fechai_caja_first_egreso,$fechainicial)->get();
+        $lista_por_concepto_asta_mes_anterior = Caja::listEgresos_por_concepto_asta_mes_anterior($fecha_completa)->get();
 
         // calculo del total de egresos del mes actual por concepto
         $sum_gasto_administrativo_asta_mes_anterior=0;
@@ -1104,14 +1098,10 @@ class CajaController extends Controller
         
         //calculo del total de ingresos acumulados al mes anterior
         //--primero identifico la fecha de la primera caja que fue aperturada
-        $caja_asta_mes_anterior = DB::table('caja')->orderBy('id', 'asc')->get();
-        $fechai_caja_first =  date("d-m-Y",strtotime($caja_asta_mes_anterior[0]->fecha_horaApert."- 1 days"));
-
-        //identifico la fecha del mes anterior 
+        
         $fecha_completa= $fecha."-01";
-        $fechai =  date("d-m-Y",strtotime($fecha_completa."- 1 days"));
 
-        $lista_mes_anterioringreso = Caja::listIngresosastamesanterior($fechai_caja_first, $fechai)->get();
+        $lista_mes_anterioringreso = Caja::listIngresosastamesanterior($fecha_completa)->get();
 
 
         $sum_deposito_ahorros_asta_mes_anterior=0;
@@ -1139,7 +1129,7 @@ class CajaController extends Controller
         }
 
         //lista de ingresos por concepto
-        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fechai_caja_first,$fechai)->get();
+        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fecha_completa)->get();
         // calculo del total de ingresos del mes actual por concepto
         $sum_por_concepto_mes_anterior=0;
         if(count($lista_ingresos_por_concepto_mes_anterior) >0 ){
@@ -1181,7 +1171,7 @@ class CajaController extends Controller
         $saldo_del_mes_anterior =($sum_ingresos_totales_asta_mes_anterior- $sum_egresos_totales_mes_anterior);
         $ingresos_del_mes =  $sum_ingresos_totales_mes_actual;
         $total_ingresos_del_mes= ($saldo_del_mes_anterior + $ingresos_del_mes);  
-        $egresos_del_mes=   $sum_egresos_totales_acumulados;
+        $egresos_del_mes=   $sum_egresos_totales_mes_actual;
         $saldo =    ($total_ingresos_del_mes-$egresos_del_mes);
 
 
