@@ -113,6 +113,19 @@ class ConceptoSeeder extends Seeder
             'created_at'     => $now,
             'updated_at'     => $now
         ));
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Interes I',
+            'tipo'       => 'I',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
+
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Interes E',
+            'tipo'       => 'E',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
 
     }
 }

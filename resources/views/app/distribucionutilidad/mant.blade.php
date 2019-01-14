@@ -10,6 +10,13 @@ use App\Persona;
 
 {!! Form::model(null, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
+{!! Form::hidden('intereses', $intereses, array('id' => 'intereses')) !!}
+{!! Form::hidden('otros', $otros, array('id' => 'otros')) !!}
+{!! Form::hidden('ub_duactual', (($intereses + $otros) -  $du_anterior), array('id' => 'ub_duactual')) !!}
+{!! Form::hidden('gast_ad_acum', $gastadmacumulado, array('id' => 'gast_ad_acum')) !!}
+{!! Form::hidden('int_pag_acum', $int_pag_acum, array('id' => 'int_pag_acum')) !!}
+{!! Form::hidden('otros_acum', $otros_acumulados, array('id' => 'otros_acum')) !!}
+{!! Form::hidden('gast_duactual', (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior), array('id' => 'gast_duactual')) !!}
 
 <div class="form-row">
 
@@ -83,7 +90,7 @@ use App\Persona;
 			<tr>
 				<td></td>
 				<td>Utilidad Bruta DU ACTUAL</td>
-				<td>{{ ($intereses + $otros) -  $du_anterior }}</td>
+				<td>{{ ($intereses + $otros) -  $du_anterior }}</td>m
 				<td>menos</td>
 				<td>Gast. DU ACTUAL</td>
 				<td>{{ ($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior }}</td>
@@ -297,6 +304,7 @@ use App\Persona;
 		</tfoot>
 	</table>
 </div>
+
 {!! Form::close() !!}
 <script type="text/javascript">
 	$(document).ready(function() {

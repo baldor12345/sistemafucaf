@@ -80,6 +80,7 @@ class DistUtilidadesController extends Controller
 
     public function create(Request $request)
     {
+        $anio = $request->input('anio');
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
         $configuraciones = Configuraciones::all()->last();
@@ -88,7 +89,7 @@ class DistUtilidadesController extends Controller
         $ruta = $this->rutas;
       
         $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado('2019');
-        $anio = date('Y') - 1; 
+        //$anio = date('Y') - 1; 
         $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
         $otros = $sumUBAcumulado[1];
         $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
@@ -145,7 +146,18 @@ class DistUtilidadesController extends Controller
             }
 
             $error = DB::transaction(function() use($request, $caja_id){
-              
+              $distribucion = new DistribucionUtilidades();
+              $distribucion->gast_admin_acum = 
+              $distribucion->int_pag_acum = 
+              $distribucion->otros_acum = 
+              $distribucion->ub_duactual = 
+              $distribucion->intereses = 
+              $distribucion->utilidad_distribuible = 
+              $distribucion->otros = 
+              $distribucion->gastos_duactual = 
+              $distribucion->fechai = 
+              $distribucion->fechaf = 
+              $distribucion->save();
                 
             });
 

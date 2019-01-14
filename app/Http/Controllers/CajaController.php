@@ -13,6 +13,7 @@ use App\Transaccion;
 use App\Concepto;
 use App\Configuraciones;
 use App\Gastos;
+use App\Credito;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -182,9 +183,8 @@ class CajaController extends Controller
             $caja->estado        = 'A';//abierto
             $caja->persona_id        = Caja::getIdPersona();
             $caja->save();
-
-
         });
+
         $error =  $this->actualizardatosahorrosNuevo($request);
         return is_null($error) ? "OK" : $error;
     }
@@ -437,12 +437,12 @@ class CajaController extends Controller
 
             $diferencia = $fecha_inicial->diff($fecha_final);
             $NumeroMeses = ( $diferencia->y * 12 ) + $diferencia->m;
-        
-            $error1 = DB::transaction(function() use($request, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses, $fecha_actual, $arrhora, $fecha_ah){
+            $caja = Caja::all()->last();
+            $error1 = DB::transaction(function() use($request, $nuevafecha_actual, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses, $fecha_actual, $arrhora, $fecha_ah,$caja){
                 $fecha_nueva = date ( 'Y-m-d H:i:s' ,strtotime($fecha_ah ));
                 
                 if($NumeroMeses >0){
-                    for($j=0; $j <= $NumeroMeses; $j++){
+                    for($j=0; $j < $NumeroMeses; $j++){
                         
                         $fecha_nueva = date("Y-m-d",strtotime($fecha_nueva."+ 1 month")); 
                         $lista_ahorros = Ahorros::where("estado","=",'P')->get();
@@ -460,7 +460,26 @@ class CajaController extends Controller
                                 $ahorro->persona_id = $value->persona_id;
                                 $ahorro->estado = 'P';
                                 $ahorro->save();
-                                
+
+                                $transaccion = new Transaccion();
+                                $transaccion->monto = 0;
+                                $transaccion->concepto_id = 16;
+                                $transaccion->fecha = $fecha_nueva;
+                                $transaccion->interes_ahorro =$tasa_interes_ahorro * $value->capital;
+                                $transaccion->persona_id = $value->persona_id;
+                                $transaccion->caja_id = $caja->id;
+                                $transaccion->usuario_id = Credito::idUser();
+                                $transaccion->save();
+
+                                $transaccion = new Transaccion();
+                                $transaccion->monto = 0;
+                                $transaccion->concepto_id = 17;
+                                $transaccion->fecha = $fecha_nueva;
+                                $transaccion->interes_ahorro =$tasa_interes_ahorro * $value->capital;
+                                $transaccion->persona_id = $value->persona_id;
+                                $transaccion->caja_id = $caja->id;
+                                $transaccion->usuario_id = Credito::idUser();
+                                $transaccion->save();
                             }
                         }
                     }
