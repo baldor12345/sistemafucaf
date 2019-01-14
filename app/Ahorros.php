@@ -62,7 +62,7 @@ class Ahorros extends Model
 
     //Metodo para obtener el ahorro por persona 
     public static function getahorropersona($id_persona){
-        return Ahorros::where('persona_id','=',$id_persona)->where('fechaf','=',null)->get();
+        return Ahorros::where('persona_id','=',$id_persona)->where('estado','=','P')->get();
     }
 
     //Metodo para listar el historico de su capital de ahorros y sus ganancias mensuales por año
