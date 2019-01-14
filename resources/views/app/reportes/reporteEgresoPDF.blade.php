@@ -166,7 +166,7 @@
 		</tr>
 		<tr>
 			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Saldo del mes anterior</strong></td>
-			<td  width="15%" align="center" class="fondo"><strong>{{ $saldo_del_mes_anterior}}</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ round($saldo_del_mes_anterior,1) }}</strong></td>
 		</tr>
 		<tr>
 			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>INGRESOS del mes</strong></td>
@@ -182,7 +182,7 @@
 		</tr>
 		<tr>
 			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Saldo</strong></td>
-			<td  width="15%" align="center" class="fondo"><strong>{{ $saldo }}</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ round($saldo,1) }}</strong></td>
 		</tr>
 	</table>
 	
