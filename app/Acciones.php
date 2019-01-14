@@ -125,9 +125,9 @@ class Acciones extends Model
                         DB::raw("COUNT(acciones.estado) as cantidad_accion"),
                         'configuraciones.limite_acciones AS limite_accion'
                     )
-                    ->where('acciones.estado','=','C')
                     ->where('persona.tipo','=','S')
                     ->orWhere('persona.tipo', 'SC')
+                    ->where('deleted_at','=',null)
                     ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos');
         return $results;
     }
