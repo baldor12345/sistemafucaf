@@ -31,15 +31,8 @@
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td>{{ $contador }}</td>
-			<td>{{ $value->nombres.'  '.$value->apellidos }}</td>
-			<td>{{ $value->numero_cuota.'/'.$value->periodo }}</td>
-			<td>{{ $value->parte_capital +  $value->interes }}</td>
-			<td>{{ $value->interes_mora }}</td>
-			<td>{{ ($value->parte_capital +  $value->interes + $value->interes_mora) }}</td>
-			<td>{{ $value->estado }}</td>
-			<td>{{ $nomMeses[$value->mes].'-'.$value->anio }}</td>
-			<td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->cuota_id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
-			<td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnpago2', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->cuota_id, 'SI','ReciboCuota')).'\', \''.$tituloPagoCuota.'\')')) !!}</td>
+			<td>{{ $value->titulo }}</td>
+			<td>{{ $value->utilidad_distribuible }}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;

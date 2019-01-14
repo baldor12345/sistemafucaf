@@ -182,7 +182,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');
     Route::get('gastos/eliminar/{id}/{listarluego}', 'GastosController@eliminar')->name('gastos.eliminar');
     Route::resource('gastos', 'GastosController', array('except' => array('show')));
-
+    /**DISTRIBUCION */
+    
+    Route::post('distribucion_utilidades/buscar', 'DistUtilidadesController@buscar')->name('distribucion_utilidades.buscar');
+    Route::get('distribucion_utilidades/eliminar/{id}/{listarluego}', 'DistUtilidadesController@eliminar')->name('distribucion_utilidades.eliminar');
+    Route::resource('distribucion_utilidades', 'DistUtilidadesController', array('except' => array('show')));
     /*CAJA*/
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
     Route::resource('caja', 'CajaController', array('except' => array('show')));

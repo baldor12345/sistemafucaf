@@ -19,9 +19,9 @@
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 					
 					<div class="form-group">
-						{!! Form::label('anio', 'Año:', array('class' => 'input-sm')) !!}
-						{!! Form::text('anio', $anios, array('class' => 'form-control input-sm', 'id' => 'anio')) !!}
-					</div>
+							{!! Form::label('anio', 'Año:', array('class' => 'input-sm')) !!}
+							{!! Form::select('anio', $anios, $anioactual, array('class' => 'form-control input-sm', 'id' => 'anio')) !!}
+						</div>
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
@@ -39,6 +39,7 @@
 
 <script>
 	$(document).ready(function () {
+		$('#anio').val("{{ $anioactual }}");
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
 		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="anio"]').keyup(function (e) {

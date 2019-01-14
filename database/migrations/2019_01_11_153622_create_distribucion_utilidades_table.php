@@ -20,10 +20,12 @@ class CreateDistribucionUtilidadesTable extends Migration
             $table->decimal('gast_admin_acum',20,1);
             $table->decimal('int_pag_acum',20,1);
             $table->decimal('otros_acum',20,1);
+            $table->decimal('ub_duactual',20,1);
             //ingresos
             $table->decimal('intereses',20,1);
             $table->decimal('utilidad_distribuible',20,1);
             $table->decimal('otros',20,1);
+            $table->decimal('gastos_duactual',20,1);
             $table->timestamp('fechai')->nullable();
             $table->timestamp('fechaf')->nullable();
             $table->timestamps();
