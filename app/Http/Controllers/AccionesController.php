@@ -121,13 +121,14 @@ class AccionesController extends Controller
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
         $cboConcepto  =array(1=>'Compra de Acciones');
+        $cboContribucion  =array(11=>'Contribución de Ingreso');
         $entidad        = 'Acciones';
         $acciones        = null;
         $ruta = $this->rutas;
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion'));
     }
 
     /**
@@ -206,32 +207,31 @@ class AccionesController extends Controller
                 //datos de la persona
                 $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
 
-                $imprimivoucher = $request->get('imprimir_voucher');
                 //comision voucher si esque desea imprimirlo
-                if($imprimivoucher == 1){
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                $transaccion->monto = $monto_ingreso;
+                $transaccion->acciones_soles = $monto_ingreso;
+                $transaccion->concepto_id = $request->input('concepto_id');
+                $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
+                $transaccion->persona_id = $request->input('persona_id');
+                $transaccion->usuario_id =Caja::getIdPersona();
+                $transaccion->caja_id =$idCaja;
+                $transaccion->save();
+
+                $contribucion = $request->input('monto');
+                if($contribucion != ''){
                     $transaccion = new Transaccion();
                     $transaccion->fecha = $request->input('fechai').date(" H:i:s");
-                    $transaccion->monto = $monto_ingreso;
-                    $transaccion->acciones_soles = $monto_ingreso;
-                    $transaccion->concepto_id = $request->input('concepto_id');
-                    $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
-                    $transaccion->persona_id = $request->input('persona_id');
-                    $transaccion->usuario_id =Caja::getIdPersona();
-                    $transaccion->comision_voucher = 0.1;
-                    $transaccion->caja_id =$idCaja;
-                    $transaccion->save();
-                }else{
-                    $transaccion = new Transaccion();
-                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
-                    $transaccion->monto = $monto_ingreso;
-                    $transaccion->acciones_soles = $monto_ingreso;
-                    $transaccion->concepto_id = $request->input('concepto_id');
-                    $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
-                    $transaccion->persona_id = $request->input('persona_id');
+                    $transaccion->monto = $contribucion;
+                    $transaccion->concepto_id = $request->input('contribucion_id');
+                    $transaccion->descripcion = "aporte como nuevo socio";
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id =$idCaja;
                     $transaccion->save();
                 }
+                
+
 
             });
             $ultima_accion = Acciones::all()->last();
@@ -512,27 +512,14 @@ class AccionesController extends Controller
                 $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
                 //registro de venta en la transaccion
 
-                $imprimivoucher = $request->get('imprimir_voucher');
-                if($imprimivoucher == 1){
-                    $transaccion = new Transaccion();
-                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
-                    $transaccion->monto = 0.0;
-                    $transaccion->concepto_id = $request->input('concepto_id');
-                    $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
-                    $transaccion->usuario_id =Caja::getIdPersona();
-                    $transaccion->caja_id =$idCaja;
-                    $transaccion->comision_voucher = 0.1;
-                    $transaccion->save();
-                }else{
-                    $transaccion = new Transaccion();
-                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
-                    $transaccion->monto = 0.0;
-                    $transaccion->concepto_id = $request->input('concepto_id');
-                    $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
-                    $transaccion->usuario_id =Caja::getIdPersona();
-                    $transaccion->caja_id =$idCaja;
-                    $transaccion->save();
-                }
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                $transaccion->monto = 0.0;
+                $transaccion->concepto_id = $request->input('concepto_id');
+                $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
+                $transaccion->usuario_id =Caja::getIdPersona();
+                $transaccion->caja_id =$idCaja;
+                $transaccion->save();
                 
             });
 

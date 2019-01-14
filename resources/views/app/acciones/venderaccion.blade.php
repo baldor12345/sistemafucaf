@@ -78,10 +78,6 @@ use Illuminate\Support\Facades\DB;
 	</div>
 </div>
 
-<div class="form-check form-group col-12 col-md-12 col-sm-12">
-	{!! Form::label('imprimir_voucher', '¿DESEA IMPRIMIR VOUCHER?:', array('class' => 'custom-control-input')) !!}
-	{!! Form::checkbox('imprimir_voucher', '0', false, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
-</div>
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
@@ -166,9 +162,9 @@ use Illuminate\Support\Facades\DB;
 	});
 
 	$("input[name=cantidad_accion]").change(function(event){
-		var cant = event.target.value;
-		var  cant_persona = '{{ $cant_acciones }}';
-		if(cant > cant_persona){
+		var cantidad = parseInt(event.target.value);
+		var  cant_pers = parseInt('{{ $cant_acciones }}');
+		if(cantidad > cant_pers){
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones!!</span></div>";
 									$('#divMensajeError{{ $entidad }}').show();
 		}else{
@@ -181,8 +177,8 @@ use Illuminate\Support\Facades\DB;
 	});
 
 	function guardaraccionventa(entidad, rutarecibo) {
-		var  cant_persona = '{{ $cant_acciones }}';
-		var  cantidad = $('#cantidad_accion').val();
+		var  cant_persona = parseInt('{{ $cant_acciones }}');
+		var  cantidad = parseInt($('#cantidad_accion').val());
 		if(cantidad > cant_persona){
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones!!</span></div>";
 									$('#divMensajeError{{ $entidad }}').show();

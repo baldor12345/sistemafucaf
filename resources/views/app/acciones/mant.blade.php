@@ -62,20 +62,20 @@ use Illuminate\Support\Facades\DB;
 
 <div class="row" id='oculto' style="display:none;">
 	<fieldset> 
-		<legend>Aporte como nuevo socio</legend>
-		<div class="col-md-6">
+		<legend> Aporte como nuevo socio</legend>
+		<div class="col-md-8">
 			<div class="form-group">
-				{!! Form::label('concepto_id', 'Concepto:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+				{!! Form::label('contribucion_id', 'Concepto:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 				<div class="col-sm-8 col-xs-12">
-					{!! Form::select('concepto_id', $cboConcepto, null, array('class' => 'form-control input-xs', 'id' => 'concepto_id')) !!}
+					{!! Form::select('contribucion_id', $cboContribucion, null, array('class' => 'form-control input-xs', 'id' => 'contribucion_id')) !!}
 				</div>
 			</div>	
 		</div>
-		<div class="col-md-6">
+		<div class="col-md-4">
 			<div class="form-group ">
-				{!! Form::label('monto', 'Monto:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
+				{!! Form::label('monto', 'Monto S/.:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
 				<div class="col-sm-7 col-xs-12">
-					{!! Form::text('monto', 4.00, array('class' => 'form-control input-xs', 'id' => 'monto', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
+					{!! Form::text('monto', null , array('class' => 'form-control input-xs', 'id' => 'monto', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
 				</div>
 			</div>
 		</div>
@@ -88,11 +88,6 @@ use Illuminate\Support\Facades\DB;
 	<div class="col-sm-10 col-xs-12">
 		{!! Form::text('descripcion', null, array('class' => 'form-control input-xs', 'id' => 'descripcion', 'placeholder' => 'descripcion')) !!}
 	</div>
-</div>
-
-<div class="form-check form-group col-12 col-md-12 col-sm-12">
-	{!! Form::label('imprimir_voucher', '¿DESEA IMPRIMIR VOUCHER?:', array('class' => 'custom-control-input')) !!}
-	{!! Form::checkbox('imprimir_voucher', '0', false, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
 </div>
 
 <div class="form-group">
@@ -133,17 +128,22 @@ use Illuminate\Support\Facades\DB;
 
 								$.get("acciones/"+event.target.value+"",function(response, acciones){
 									var cantAcciones=0;
-									for(i=0; i<response.length; i++){
-										cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
-									}
+									
+									if(response.length !=0 ){
+										for(i=0; i<response.length; i++){
+											cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
+										}
 
-									var limite_accionPor= response[0].limite_acciones;
-									var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
-									$.get("acciones/"+event.target.value+"/1", function(response, acciones){
-										var accion_persona = response;
+										var limite_accionPor= response[0].limite_acciones;
+										var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
+									}
+									$.get("acciones/"+event.target.value+"/1", function(response2, acciones){
+										var accion_persona = response2;
 										$('#cantaccionpersona').val(accion_persona);
 										$('#cantacciontotal').val(cantAcciones);
 									});
+
+									
 
 									document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
 													"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
@@ -182,6 +182,16 @@ use Illuminate\Support\Facades\DB;
                 $("#imprimir_voucher").val(0);
             }
         });
+
+		$("input[name=cantidad_accion]").change(function(event){
+			var cantidad = parseInt($('#cantaccionpersona').val());
+			if(cantidad == 0){
+				document.getElementById('oculto').style.display = 'block';
+			}else{
+				document.getElementById('oculto').style.display = 'hide';
+			}
+		});
+        	
 		
 	}); 
 
