@@ -54,6 +54,7 @@ class DistribucionUtilidades extends Model
     //lista de ingresos por persona del mes actual
     public static function sumUBDacumulado($anio)
     {
+        
         $resultsI1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
@@ -64,8 +65,10 @@ class DistribucionUtilidades extends Model
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
                     ->groupBy(DB::raw('extract( year from transaccion.fecha)'))->get();
-        $intereses = $resultsI1[0]->intereses_recibidos;
-        $sum_otros = $resultsI1[0]->intereses_recibidos+ $resultsI1[0]->comision_voucher;
+                    
+                    
+        $intereses = (count($resultsI1)<1)? 0 :  $resultsI1[0]->intereses_recibidos;
+        $sum_otros =  (count($resultsI1)<1)? 0 : $resultsI1[0]->intereses_recibidos+ $resultsI1[0]->comision_voucher;
         
         $results2 = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
@@ -80,7 +83,8 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Deposito de ahorros')
                     ->where('concepto.titulo','!=','Pago de cuotas')
                     ->groupBy('concepto.tipo')->get();
-        $sum_otros += $resultsI2[0]->mas_otros;
+                   
+        $sum_otros += (count($results2)<1)? 0:  $results2[0]->mas_otros;
         
         return array($intereses, $sum_otros);
     }
@@ -100,8 +104,8 @@ class DistribucionUtilidades extends Model
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','E')
                     ->groupBy(DB::raw('extract( year from transaccion.fecha)'))->get();
-        $i_pag_acum = $results1[0]->interes_ahorro;
-        $otros_acum = $results1[0]->otros_egresos;
+        $i_pag_acum =(count($results1)<1)?0: $results1[0]->interes_ahorro;
+        $otros_acum = (count($results1)<1)?0: $results1[0]->otros_egresos;
 
         $results2 = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
@@ -115,7 +119,7 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Ganancia por accion')
                     ->where('concepto.titulo','!=','Saldo Deudor')
                     ->groupBy('concepto.tipo')->get();
-        $g_adm_acum = $results2[0]->gastos_adm;
+        $g_adm_acum = (count($results2)<1)?0: $results2[0]->gastos_adm;
 
         return array($i_pag_acum, $otros_acum, $g_adm_acum);
     }
@@ -134,7 +138,7 @@ class DistribucionUtilidades extends Model
         $results = DB::table('historial_accion')
                     ->select(
                         DB::raw("SUM(cantidad) as cantidad_mes"),
-                        DB::raw("extract( year from fecha) as mes")
+                        DB::raw('extract( month from fecha) as mes')
                     )
                     ->where(DB::raw('extract( year from fecha)'),'=',$anio)
                     ->groupBy(DB::raw('extract( month from fecha)'))
@@ -145,17 +149,29 @@ class DistribucionUtilidades extends Model
     //lista total de acciones por persona por mes 
     public static function list_por_persona($persona_id, $anio)
     {
-        $rsesults = DB::table('persona')
-                    ->join('historial_accion', 'historial_accion.persona_id', '=', 'persona.id')
+       
+        $results = DB::table('historial_accion')
                     ->select(
-                        'persona.nombres as persona_nombres'.
-                        'persona.apellidos as persona_apellidos',
                         DB::raw("SUM(cantidad) as cantidad_mes"),
-                        DB::raw("extract( year from fecha) as mes")
+                        DB::raw("extract( month from fecha) as mes")
                     )
-                    ->where('persona.id','=',$persona_id)
+                    ->where('persona_id','=',$persona_id)
                     ->where(DB::raw('extract( year from fecha)'),'=',$anio)
+                    ->groupBy(DB::raw('extract( month from fecha)'))
                     ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
+
+        return $results;
+    }
+
+    public static function list_enero($persona_id, $anio_anterior){
+        $results = DB::table('historial_accion')
+        ->select(
+            DB::raw("SUM(cantidad) as cantidad_total")
+        )
+        ->where('persona_id','=',$persona_id)
+        ->where(DB::raw('extract( year from fecha)'),'<=',$anio_anterior)
+        ->groupBy(DB::raw('persona_id'));
+
         return $results;
     }
 

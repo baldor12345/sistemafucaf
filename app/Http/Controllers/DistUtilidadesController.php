@@ -7,26 +7,29 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\DistribucionUtilidades;
 use App\Http\Controllers\Controller;
+use App\Configuraciones;
+use App\Caja;
+use App\Librerias\Libreria;
+use Illuminate\Support\Facades\DB;
 
 class DistUtilidadesController extends Controller
 {
-
-
     protected $folderview      = 'app.distribucionutilidad';
     protected $tituloAdmin     = 'Distribución de Utilidades Anual';
     protected $tituloRegistrar = 'Distribución de utilidades';
-  
-    protected $rutas           = array('create' => 'distribucionutilidades.create', 
-            'edit'   => 'distribucionutilidades.edit', 
-            'search' => 'distribucionutilidades.buscar',
-            'reporte' => 'distribucionutilidades.reporte',
-            'index'  => 'distribucionutilidades.index',
+    protected $rutas           = array('create' => 'distribucion_utilidades.create', 
+            'edit'   => 'distribucion_utilidades.edit', 
+            'search' => 'distribucion_utilidades.buscar',
+            'reporte' => 'distribucion_utilidades.reporte',
+            'index'  => 'distribucion_utilidades.index',
         );
+
     /**
      * Método para generar combo provincia
      * @param  [type] $departamento_id [description]
      * @return [type]                  [description]
      */
+
     public function index()
     {
         $configuraciones = Configuraciones::all()->last();
@@ -34,7 +37,14 @@ class DistUtilidadesController extends Controller
         $title = $this->tituloAdmin;
         $tituloRegistrar = $this->tituloRegistrar;
         $ruta = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad','configuraciones', 'title', 'tituloRegistrar', 'ruta'));
+        $anioactual = date('Y');
+        $anios = array();
+        $anioi =2008;
+        for($anyo=$anioactual; $anyo >=$anioi;  $anyo --){
+            $anios[$anyo] = $anyo;
+        }
+
+        return view($this->folderview.'.admin')->with(compact('entidad','configuraciones', 'title', 'tituloRegistrar', 'ruta','anios','anioactual'));
     }
 
     public function buscar(Request $request)
@@ -44,16 +54,16 @@ class DistUtilidadesController extends Controller
         $configuraciones = Configuraciones::all()->last();
         $pagina = $request->input('page');
         $filas = $request->input('filas');
-       
+        $resultado = DistribucionUtilidades::listar("");
+
         $lista = $resultado->get();
         $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
-        $cabecera[] = array('valor' => 'COD. CLIENTE', 'numero' => '1');
-        $cabecera[] = array('valor' => 'NOMBRE CLIENTE', 'numero' => '1');
-        $cabecera[] = array('valor' => 'CAPITAL AHORRO S/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'TITULO', 'numero' => '1');
+        $cabecera[] = array('valor' => 'UTILIDAD DISTRIBUIBLE', 'numero' => '1');
         $cabecera[] = array('valor' => 'Operaciones', 'numero' => '3');
         
-        $ruta             = $this->rutas;
+        $ruta = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria = new Libreria();
             $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
@@ -63,7 +73,7 @@ class DistUtilidadesController extends Controller
             $paginaactual = $paramPaginacion['nuevapagina'];
             $lista = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta', 'titulo_vistaretiro','titulo_vistadetalleahorro','titulo_vistahistoricoahorro','idcaja','configuraciones'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta','idcaja','configuraciones'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -76,29 +86,43 @@ class DistUtilidadesController extends Controller
         $listar = Libreria::getParam($request->input('listar'), 'NO');
         $entidad = 'Distribucion';
         $ruta = $this->rutas;
-        $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($request->input('anios'));
-        $anio = $request->input('anios');
-        $intereses = $sumUBAcumulado[0];
+      
+        $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado('2019');
+        $anio = date('Y') - 1; 
+        $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
         $otros = $sumUBAcumulado[1];
-        $gastosDUActual = gastosDUactual($anio);
+        $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
 
         $int_pag_acum= $gastosDUActual[0];
-        $otros_acumulados=$gastosDUActual[1];
+        $otros_acumulados= $gastosDUActual[1];
         $gastadmacumulado = $gastosDUActual[2];
         
-        $du_anterior=0;
-        $gast_du_anterior=0;
-        $utilidad_neta =(($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior ));
-        $utilidad_dist = $utilidad_neta - 2*0.1*$utilidad_neta;
+        //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+        
+       $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
 
-        $acciones_mensual=list_total_acciones_mes($anio);
-       
-        $anio_actual=0;
-        $listasocios=0;
-        $formData = array('distribucion.store');
+        $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+        $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+        $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+        $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+        $acciones_mes  =0;
+        $indice1 = 0;
+        $j1=12;
+        for($i=1; $i<=12; $i++){
+            if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                $j1--;
+                $indice1++;
+            }
+        }
+    
+        $anio_actual=$anio;
+        $formData = array('distribucion_utilidades.store');
         $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
  
-        return view($this->folderview.'.mant')->with(compact('intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios'));
+        return view($this->folderview.'.mant')->with(compact('intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
     }
    /**
      * Store a newly created resource in storage.
@@ -130,6 +154,4 @@ class DistUtilidadesController extends Controller
         }
         return is_null($error) ? "OK" : $error;
     }
-
-
 }
