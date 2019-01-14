@@ -119,6 +119,7 @@ class caja extends Model
                     ->where('concepto.titulo','!=','Venta de acciones')
                     ->where('concepto.titulo','!=','Comision Voucher')
                     ->where('concepto.titulo','!=','Deposito de ahorros')
+                    ->where('concepto.titulo','!=','Interes I')
                     ->where('concepto.titulo','!=','Pago de cuotas');
         return $results;
     }
@@ -139,6 +140,7 @@ class caja extends Model
                     ->where('concepto.titulo','!=','Venta de acciones')
                     ->where('concepto.titulo','!=','Deposito de ahorros')
                     ->where('concepto.titulo','!=','Comision Voucher')
+                    ->where('concepto.titulo','!=','Interes I')
                     ->where('concepto.titulo','!=','Pago de cuotas');
         return $results;
     }
@@ -206,6 +208,7 @@ class caja extends Model
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
+                    ->where('concepto.titulo','!=','Interes E')
                     ->where('concepto.titulo','!=','Ganancia por accion')
                     ->where('concepto.titulo','!=','Saldo Deudor');
         return $results;
@@ -227,6 +230,7 @@ class caja extends Model
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
                     ->where('concepto.titulo','!=','Saldo Deudor')
+                    ->where('concepto.titulo','!=','Interes E')
                     ->where('concepto.titulo','!=','Ganancia por accion');
         return $results;
     }

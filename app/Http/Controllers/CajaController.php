@@ -673,6 +673,8 @@ class CajaController extends Controller
             ->where('titulo', '!=', 'venta de acciones')
             ->where('titulo', '!=', 'Deposito de ahorros')
             ->where('titulo', '!=', 'Comision Voucher')
+            ->where('titulo', '!=', 'Interes I')
+            ->where('titulo', '!=', 'Interes E')
             ->where('titulo', '!=', 'Multa por Inasistencia o Tardanza')
             ->get();
         $retorno .= '><option value="" selected="selected">Seleccione</option>';
