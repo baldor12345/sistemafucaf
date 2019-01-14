@@ -30,11 +30,26 @@
 </div>
 
 <div class="form-group ">
-	{!! Form::label('fechai', 'Fecha Inicio:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('fechai', 'Inicio Periodo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
 		{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
 	</div>
 </div>
+
+<div class="form-group ">
+	{!! Form::label('fechaf', 'Fin Periodo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	<div class="col-sm-9 col-xs-12">
+		{!! Form::date('fechaf', null, array('class' => 'form-control input-xs', 'id' => 'fechaf', 'placeholder' => '')) !!}
+	</div>
+</div>
+
+<div class="form-group">
+	{!! Form::label('estado', 'Estado:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	<div class="col-sm-9 col-xs-12">
+		{!! Form::select('estado', $cboEstado, null, array('class' => 'form-control input-xs', 'id' => 'usertype_id')) !!}
+	</div>
+</div>
+
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">

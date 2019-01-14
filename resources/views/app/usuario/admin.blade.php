@@ -33,6 +33,7 @@
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-asterisk"></i> Bitacora', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["cargarbinnacle"], array('listar'=>'SI')).'\', \''.$titulo_bitacora.'\', this);')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -56,4 +57,12 @@
 			}
 		});
 	});
+
+
+	function modalrecibopdf(url_pdf, ancho_modal, titulo_modal) {
+		var a = document.createElement("a");
+		a.target = "_blank";
+		a.href = url_pdf;
+		a.click();
+	}
 </script>

@@ -111,6 +111,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('usuario/eliminar/{id}/{listarluego}', 'UsuarioController@eliminar')->name('usuario.eliminar');
     Route::resource('usuario', 'UsuarioController', array('except' => array('show')));
 
+    Route::get('usuario/cargarbinnacle', 'UsuarioController@cargarbinnacle')->name('usuario.cargarbinnacle');
+    Route::get('usuario/generarreporte', 'UsuarioController@generarreporte')->name('usuario.generarreporte');
+    Route::get('/binnaclePDF/{fechai?}/{fechaf?}', 'UsuarioController@binnaclePDF')->name('usuario.binnaclePDF');
+
     /*PERSONA*/
     Route::post('persona/buscar', 'PersonController@buscar')->name('persona.buscar');
     Route::get('persona/eliminar/{id}/{listarluego}', 'PersonController@eliminar')->name('persona.eliminar');
@@ -121,6 +125,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('persona/cambiarfalta', 'PersonController@cambiarfalta')->name('persona.cambiarfalta');
     Route::get('persona/cargarpagarmulta/{id}/{listarluego}', 'PersonController@cargarpagarmulta')->name('persona.cargarpagarmulta');
     Route::get('persona/guardarpagarmulta', 'PersonController@guardarpagarmulta')->name('persona.guardarpagarmulta');
+    Route::get('/generarestadocuentaPDF/{id}', 'PersonController@generarestadocuentaPDF')->name('generarestadocuentaPDF');
 
     /*CONFIGURACIONES*/
     Route::post('configuraciones/buscar', 'ConfiguracionesController@buscar')->name('configuraciones.buscar');

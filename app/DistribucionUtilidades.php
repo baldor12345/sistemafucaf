@@ -1,10 +1,15 @@
 <?php
 
 namespace App;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Illuminate\Auth\UserInterface;
+use Illuminate\Auth\Reminders\RemindableInterface;
+use App\Librerias\Libreria;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 class DistribucionUtilidades extends Model
 {
     use SoftDeletes;
@@ -170,5 +175,47 @@ class DistribucionUtilidades extends Model
         return $results;
     }
 
+    public static function boot()
+    {
+        parent::boot();
 
+        static::created(function($marca)
+        {
+
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'I';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id =  Auth::user()->id;
+            $binnacle->table      = 'distribucion_utilidades';
+            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+
+        static::updated(function($marca)
+        {
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'U';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id = Auth::user()->id;
+            $binnacle->table      = 'distribucion_utilidades';
+            $binnacle->detail    =$marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+        static::deleted(function($marca)
+        {
+            $binnacle             = new Binnacle();
+            $binnacle->action     = 'D';
+            $binnacle->date      = date('Y-m-d H:i:s');
+            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->user_id = Auth::user()->id;
+            $binnacle->table      = 'distribucion_utilidades';
+            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->recordid = $marca->id;
+            $binnacle->save();
+        });
+    }
 }
