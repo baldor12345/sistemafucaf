@@ -88,7 +88,7 @@ class DistUtilidadesController extends Controller
         $entidad = 'Distribucion';
         $ruta = $this->rutas;
       
-        $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado('2019');
+        $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
         //$anio = date('Y') - 1; 
         $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
         $otros = $sumUBAcumulado[1];
