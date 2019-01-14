@@ -127,7 +127,7 @@ class Acciones extends Model
                     )
                     ->where('persona.tipo','=','S')
                     ->orWhere('persona.tipo', 'SC')
-                    ->where('deleted_at','=',null)
+                    ->where('persona.deleted_at','=',null)
                     ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos');
         return $results;
     }

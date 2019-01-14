@@ -317,6 +317,8 @@ class CreditoController extends Controller{
                     }
                     //comision voucher si esque desea imprimirlo
                    // if($imprimivoucher == 1){
+//----------------------------------------------------------temporal-------------------------------------
+  /*
                         $concepto_id = 8;
                         $transaccion2 = new Transaccion();
                         $transaccion2->fecha = $fechainicio;
@@ -328,6 +330,8 @@ class CreditoController extends Controller{
                         $transaccion2->caja_id = $caja_id;
                         $transaccion2->comision_voucher = 0.2;
                         $transaccion2->save();
+*/
+//----------------------------------------------------------temporal-------------------------------------
                    // }
     
                     //registro credito en transaccion
@@ -473,6 +477,8 @@ class CreditoController extends Controller{
                 //registra la comision por voucher en caja si desea imprimirlo
                 $concepto_id = 8;
             // if($imprimir_voucher==1){
+//----------------------------------------------------------temporal-------------------------------------
+/*
                     $transaccion2 = new Transaccion();
                     $transaccion2->fecha = $fecha_pago;
                     $transaccion2->monto = $comision_voucher;
@@ -483,6 +489,10 @@ class CreditoController extends Controller{
                     $transaccion2->caja_id = $caja_id;
                     $transaccion2->comision_voucher = $comision_voucher;
                     $transaccion2->save();
+*/
+//----------------------------------------------------------temporal-------------------------------------
+
+
                // }
                 //registramos en caja el pago cuota
                 $monto = $cuota->parte_capital;

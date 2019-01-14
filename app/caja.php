@@ -79,10 +79,9 @@ class caja extends Model
     }
 
     //lista de ingresos por persona asta el mes anterior
-    public static function listIngresosastamesanterior($fechai, $fechaf)
+    public static function listIngresosastamesanterior($fecha)
     {
-        $fechai = date('Y-m-d', strtotime($fechai));
-        $fechaf = date('Y-m-d', strtotime($fechaf));
+        $fechai = date('Y-m-d', strtotime($fecha));
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
@@ -97,7 +96,7 @@ class caja extends Model
                         DB::raw("SUM(transaccion.acciones_soles) as acciones"),
                         DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
                     )
-                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('transaccion.fecha','<', $fechai)
                     ->where('concepto.tipo','=','I')
                     ->groupBy('persona.id');
         return $results;
@@ -125,17 +124,16 @@ class caja extends Model
     }
 
     //lista de ingresos por concepto aste el mes anterior 
-    public static function listIngresos_por_concepto_asta_mes_anterior($fechai, $fechaf)
+    public static function listIngresos_por_concepto_asta_mes_anterior($fecha)
     {
-        $fechai = date('Y-m-d', strtotime($fechai));
-        $fechaf = date('Y-m-d', strtotime($fechaf));
+        $fechai = date('Y-m-d', strtotime($fecha));
         $results = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
                         'concepto.titulo as concepto_titulo',
 				        'transaccion.monto as transaccion_monto'
                     )
-                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('transaccion.fecha','<',$fechai)
                     ->where('concepto.tipo','=','I')
                     ->where('concepto.titulo','!=','Compra de acciones')
                     ->where('concepto.titulo','!=','Venta de acciones')
@@ -171,11 +169,10 @@ class caja extends Model
     }
 
     //lista de egresos por persona asta el mes anterior 
-    public static function listEgresos_asta_mes_anterior($fechai, $fechaf)
+    public static function listEgresos_asta_mes_anterior($fecha)
 
     {
-        $fechai = date('Y-m-d', strtotime($fechai));
-        $fechaf = date('Y-m-d', strtotime($fechaf));
+        $fechai = date('Y-m-d', strtotime($fecha));
         $results = DB::table('persona')
                     ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
@@ -188,7 +185,7 @@ class caja extends Model
                         DB::raw("SUM(transaccion.otros_egresos) as otros_egresos"),
                         DB::raw("SUM(transaccion.utilidad_distribuida) as utilidad_distribuida")
                     )
-                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('transaccion.fecha','<',$fechai)
                     ->where('concepto.tipo','=','E')
                     ->groupBy('persona.id');
         return $results;
@@ -215,10 +212,9 @@ class caja extends Model
     }
 
     //list de egresos asta el es anterior por concepto
-    public static function listEgresos_por_concepto_asta_mes_anterior($fechai, $fechaf)
+    public static function listEgresos_por_concepto_asta_mes_anterior($fecha)
     {
-        $fechai = date('Y-m-d', strtotime($fechai));
-        $fechaf = date('Y-m-d', strtotime($fechaf));
+        $fechai = date('Y-m-d', strtotime($fecha));
         $results = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
@@ -226,7 +222,7 @@ class caja extends Model
                         'transaccion.monto as transaccion_monto',
                         'transaccion.descripcion as comentario'
                     )
-                    ->whereBetween('transaccion.fecha', [$fechai, $fechaf])
+                    ->where('transaccion.fecha','<' ,$fechai)
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
