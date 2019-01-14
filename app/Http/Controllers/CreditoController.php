@@ -472,7 +472,7 @@ class CreditoController extends Controller{
 
                 //registra la comision por voucher en caja si desea imprimirlo
                 $concepto_id = 8;
-               // if($imprimir_voucher==1){
+            // if($imprimir_voucher==1){
                     $transaccion2 = new Transaccion();
                     $transaccion2->fecha = $fecha_pago;
                     $transaccion2->monto = $comision_voucher;
@@ -485,18 +485,28 @@ class CreditoController extends Controller{
                     $transaccion2->save();
                // }
                 //registramos en caja el pago cuota
+                $monto = $cuota->parte_capital;
+                $parte_capital =  $cuota->parte_capital;
+                $cuota_interes = 0;
+                $cuota_interesMora = 0;
+                if(date('Y-m',strtotime($fecha_pago)) >= date('Y-m', strtotime($cuota->fecha_programada_pago))){
+                    $monto += $cuota->interes+ $cuota->interes_mora;
+                    $parte_capital = $cuota->parte_capital;
+                    $cuota_interes = $cuota->interes;
+                    $cuota_interesMora = $cuota->interes_mora;
+                }
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
-                $transaccion->monto = $cuota->parte_capital + $cuota->interes+ $cuota->interes_mora;
+                $transaccion->monto = $monto;
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de Cuota";
                 $transaccion->persona_id = $id_cliente;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = $cuota->parte_capital;
-                $transaccion->cuota_interes = $cuota->interes;
-                $transaccion->cuota_mora = $cuota->interes_mora;
+                $transaccion->cuota_parte_capital = $parte_capital;
+                $transaccion->cuota_interes = $cuota_interes;
+                $transaccion->cuota_mora = $cuota_interesMora ;
                 $transaccion->save();
 
                 //Modificamos el estado de credito si ya se cancelo todas las cuotas
