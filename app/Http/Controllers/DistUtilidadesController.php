@@ -9,6 +9,8 @@ use App\DistribucionUtilidades;
 use App\Http\Controllers\Controller;
 use App\Configuraciones;
 use App\Caja;
+use App\Credito;
+use App\Transaccion;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\DB;
 
@@ -138,27 +140,36 @@ class DistUtilidadesController extends Controller
         $caja_id = ($caja_id != "")?$caja_id:0;
         $error = null;
         if($caja_id >0){
+            $anio = $request->input('anio');
             $listar = Libreria::getParam($request->input('listar'), 'NO');
-            
-            $validacion = Validator::make($request->all(),$reglas);
-            if ($validacion->fails()) {
-                return $validacion->messages()->toJson();
-            }
-
-            $error = DB::transaction(function() use($request, $caja_id){
+            $error = DB::transaction(function() use($request, $caja_id, $anio){
               $distribucion = new DistribucionUtilidades();
-              $distribucion->gast_admin_acum = 
-              $distribucion->int_pag_acum = 
-              $distribucion->otros_acum = 
-              $distribucion->ub_duactual = 
-              $distribucion->intereses = 
-              $distribucion->utilidad_distribuible = 
-              $distribucion->otros = 
-              $distribucion->gastos_duactual = 
-              $distribucion->fechai = 
-              $distribucion->fechaf = 
+              $distribucion->gast_admin_acum = $request->input('gast_ad_acum');
+              $distribucion->int_pag_acum = $request->input('int_pag_acum');
+              $distribucion->otros_acum = $request->input('otros_acum');
+              //$distribucion->ub_duactual = $request->input('ub_duactual');
+              $distribucion->intereses = $request->input('intereses');
+              $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
+              $distribucion->otros = $request->input('otros');
+              //$distribucion->gastos_duactual = $request->input('gast_duactual');
+              $distribucion->fechai = date($anio.'-01-01');
+              $distribucion->fechaf =  date($anio.'-12-31');
               $distribucion->save();
-                
+
+              $num_socios = $request->input('numerosocios');
+              for($i=0;$i<$num_socios;$i++){
+                  $transaccion = new Transaccion();
+                  $transaccion->usuario_id = Credito::idUser();
+                  $transaccion->persona_id = $request->input('persona_id'.$i);
+                  $transaccion->caja_id = $caja_id;
+                  $transaccion->fecha = date('Y-m-d H:i:s');
+                  $transaccion->concepto_id = 37; // distribucion d eutilidad
+                  $transaccion->monto = 0;
+                  $transaccion->utilidad_distribuida = $request->input('monto'.$i);
+                  $transaccion->save();
+              }
+
+
             });
 
         }else{

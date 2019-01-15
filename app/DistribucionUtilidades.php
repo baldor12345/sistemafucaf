@@ -111,8 +111,9 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.tipo','=','E')
                     ->groupBy('concepto.tipo')->get();
         $i_pag_acum =(count($results1)<1)?0: $results1[0]->interes_ahorro;
-        $otros_acum = (count($results1)<1)?0: $results1[0]->otros_egresos;
-
+        $otros_acum  = 0;
+        $otros_acum += (count($results1)<1)?0: $results1[0]->otros_egresos;
+                        
         $results2 = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
