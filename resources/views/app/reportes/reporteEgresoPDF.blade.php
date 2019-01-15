@@ -92,7 +92,7 @@
 				<td width="10%" align="center"><span class="text">-</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-					{{ ($value->monto_ahorro+$value->monto_credito+$value->interes_ahorro+$value->utilidad_distribuida+$value->otros_egresos) }}
+					{{ round(($value->monto_ahorro+$value->monto_credito+$value->interes_ahorro+$value->utilidad_distribuida+$value->otros_egresos),1) }}
 					</span>
 				</td>
             </tr>
@@ -170,7 +170,7 @@
 		</tr>
 		<tr>
 			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>INGRESOS del mes</strong></td>
-			<td  width="15%" align="center" class="fondo"><strong>{{ $ingresos_del_mes }}</strong></td>
+			<td  width="15%" align="center" class="fondo"><strong>{{ number_format($ingresos_del_mes) }}</strong></td>
 		</tr>
 		<tr>
 			<td cellspacing="4" width="25%" align="left" class="fondo"><strong>Total de INGRESOS del mes</strong></td>
