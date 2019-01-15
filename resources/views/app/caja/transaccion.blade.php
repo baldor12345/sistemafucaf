@@ -42,7 +42,7 @@
 						</tr>
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Saldo :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ $diferencia }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ round($diferencia,1) }}</font></font></th>
 						</tr>
 					</tbody>
 				</table>

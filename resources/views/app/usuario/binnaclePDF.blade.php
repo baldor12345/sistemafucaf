@@ -37,7 +37,7 @@
     </style>
 </head>
 <body>
-	<div class="contenedor">
+	<div >
 		<table width="100%" border="0px" class="">
             <tr>
                 <td align="center" style="font-size: 11px" colspan="9" >BITACORA DESDE {{ $desde }} hasta {{ $hasta }}</td>
@@ -64,7 +64,13 @@
                 @endif
                 <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">{{ $value->tabla }}</td>
                 <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">{{ $value->fecha_hora }}</td>
-                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">{{ $value->detalle }}</td>
+                @if($value->accion == 'I')
+                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">se hizo un nuevo registro en {{ $value->tabla }} </td>
+                @elseif($value->accion == 'U')
+                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">ha modificado un registro en {{ $value->tabla }}</td>
+                @else
+                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">ha eliminado un regitro en {{ $value->tabla }}</td>
+                @endif
             </tr>
             @endforeach
 

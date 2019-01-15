@@ -94,7 +94,7 @@
 				@endif
 				<td width="10%" align="center">
 					<span class="text">
-					{{ ($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro + $value->comision_voucher) }}
+					{{ round(($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro + $value->comision_voucher),1) }}
 					</span>
 				</td>
             </tr>

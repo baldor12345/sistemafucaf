@@ -223,7 +223,7 @@ class CajaController extends Controller
 
         $diferencia= $ingresos-$egresos;
         $monto_cierre=0;
-        $monto_cierre = ($result->monto_iniciado-$diferencia);
+        $monto_cierre = round(($result->monto_iniciado-$diferencia),1);
 
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true){

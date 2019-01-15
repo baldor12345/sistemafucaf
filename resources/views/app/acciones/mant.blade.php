@@ -236,7 +236,7 @@ use Illuminate\Support\Facades\DB;
 				}
 			});
 		}else{
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la cantidad maxima que puede adquirir es '"+(lmite-accion_persona1)+"'</span></div>";
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
 			$('#divMensajeError{{ $entidad }}').show();
 		}
         
