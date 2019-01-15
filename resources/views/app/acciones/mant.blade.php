@@ -200,36 +200,46 @@ use Illuminate\Support\Facades\DB;
 	});
 
 	function guardaraccion(entidad, rutarecibo) {
-        var idformulario = IDFORMMANTENIMIENTO + entidad;
-        var data         = submitForm(idformulario);
-        var respuesta    = null;
-        var listar       = 'NO';
-        if ($(idformulario + ' :input[id = "listar"]').length) {
-            var listar = $(idformulario + ' :input[id = "listar"]').val()
-        };
-        data.done(function(msg) {
-            respuesta = msg;
-        }).fail(function(xhr, textStatus, errorThrown) {
-            respuesta = 'ERROR';
-        }).always(function() {
-            
-            if(respuesta[0] === 'ERROR'){
-            }else{
-                
-                if (respuesta[0] === 'OK') {
-                    cerrarModal();
-                    modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3], '100', 'recibo accion');
-                    if (listar === 'SI') {
-                        if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-                            entidad = entidad2;
-                        }
-                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                    }        
-                } else {
-                    mostrarErrores(respuesta, idformulario, entidad);
-                }
-            }
-        });
+		var cantidad_limite = parseInt($('#cantacciontotal').val()*0.2);
+		var accion_persona1 = parseInt($('#cantaccionpersona').val());
+		var lmite = (cantidad_limite-accion_persona1);
+		var cantid = $('#cantidad_accion').val();
+		if(lmite>=cantid){
+			var idformulario = IDFORMMANTENIMIENTO + entidad;
+			var data         = submitForm(idformulario);
+			var respuesta    = null;
+			var listar       = 'NO';
+			if ($(idformulario + ' :input[id = "listar"]').length) {
+				var listar = $(idformulario + ' :input[id = "listar"]').val()
+			};
+			data.done(function(msg) {
+				respuesta = msg;
+			}).fail(function(xhr, textStatus, errorThrown) {
+				respuesta = 'ERROR';
+			}).always(function() {
+				
+				if(respuesta[0] === 'ERROR'){
+				}else{
+					
+					if (respuesta[0] === 'OK') {
+						cerrarModal();
+						modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3], '100', 'recibo accion');
+						if (listar === 'SI') {
+							if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+								entidad = entidad2;
+							}
+							buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+						}        
+					} else {
+						mostrarErrores(respuesta, idformulario, entidad);
+					}
+				}
+			});
+		}else{
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la cantidad maxima que puede adquirir es '"+(lmite-accion_persona1)+"'</span></div>";
+			$('#divMensajeError{{ $entidad }}').show();
+		}
+        
 	}
 	
 	
