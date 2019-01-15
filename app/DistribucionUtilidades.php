@@ -54,7 +54,9 @@ class DistribucionUtilidades extends Model
     //lista de ingresos por persona del mes actual
     public static function sumUBDacumulado($anio)
     {
-        
+        $fechai = date($anio.'-01-01');
+        $fechaf = date(($anio+1).'-01-31');
+
         $resultsI1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
@@ -62,20 +64,22 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
                         DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
                     )
-                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('transaccion.fecha','>=',$fechai)
+                    ->where('transaccion.fecha','<=',$fechaf)
                     ->where('concepto.tipo','=','I')
-                    ->groupBy(DB::raw('extract( year from transaccion.fecha)'))->get();
+                    ->groupBy('concepto.tipo')->get();
                     
                     
         $intereses = (count($resultsI1)<1)? 0 :  $resultsI1[0]->intereses_recibidos;
-        $sum_otros =  (count($resultsI1)<1)? 0 : $resultsI1[0]->intereses_recibidos+ $resultsI1[0]->comision_voucher;
+        $sum_otros =  (count($resultsI1)<1)? 0 : $resultsI1[0]->comision_voucher;
         
         $results2 = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
                         DB::raw("SUM(transaccion.monto) as mas_otros")
                     )
-                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('transaccion.fecha','>=',$fechai)
+                    ->where('transaccion.fecha','<=',$fechaf)
                     ->where('concepto.tipo','=','I')
                     ->where('concepto.titulo','!=','Compra de acciones')
                     ->where('concepto.titulo','!=','Venta de acciones')
@@ -83,7 +87,6 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Deposito de ahorros')
                     ->where('concepto.titulo','!=','Pago de cuotas')
                     ->groupBy('concepto.tipo')->get();
-                   
         $sum_otros += (count($results2)<1)? 0:  $results2[0]->mas_otros;
         
         return array($intereses, $sum_otros);
@@ -94,6 +97,8 @@ class DistribucionUtilidades extends Model
      //lista de egresos  del mes actual por persona
     public static function gastosDUactual($anio)
     {
+        $fechai = date($anio.'-01-01');
+        $fechaf = date(($anio+1).'-01-31');
         $results1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
@@ -101,9 +106,10 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro"),
                         DB::raw("SUM(transaccion.otros_egresos) as otros_egresos")
                     )
-                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('transaccion.fecha','>=',$fechai)
+                    ->where('transaccion.fecha','<=',$fechaf)
                     ->where('concepto.tipo','=','E')
-                    ->groupBy(DB::raw('extract( year from transaccion.fecha)'))->get();
+                    ->groupBy('concepto.tipo')->get();
         $i_pag_acum =(count($results1)<1)?0: $results1[0]->interes_ahorro;
         $otros_acum = (count($results1)<1)?0: $results1[0]->otros_egresos;
 
@@ -112,7 +118,8 @@ class DistribucionUtilidades extends Model
                     ->select(
                         DB::raw("SUM(transaccion.monto) as gastos_adm ")
                     )
-                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('transaccion.fecha','>=',$fechai)
+                    ->where('transaccion.fecha','<=',$fechaf)
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
