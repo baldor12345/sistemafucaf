@@ -57,8 +57,9 @@ class DistUtilidadesController extends Controller
         $pagina = $request->input('page');
         $filas = $request->input('filas');
         $resultado = DistribucionUtilidades::listar("");
-
+        $entidad = 'Distribucion';
         $lista = $resultado->get();
+        
         $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
         $cabecera[] = array('valor' => 'TITULO', 'numero' => '1');
@@ -148,6 +149,7 @@ class DistUtilidadesController extends Controller
               $distribucion->int_pag_acum = $request->input('int_pag_acum');
               $distribucion->otros_acum = $request->input('otros_acum');
               //$distribucion->ub_duactual = $request->input('ub_duactual');
+              $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
               $distribucion->intereses = $request->input('intereses');
               $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
               $distribucion->otros = $request->input('otros');
