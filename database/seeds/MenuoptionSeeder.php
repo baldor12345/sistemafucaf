@@ -51,6 +51,10 @@ class MenuoptionSeeder extends Seeder
 
 		$datos = array(
 				array(
+					'name' => 'Control de Asistencia',
+					'link'   => 'controlpersona'
+				),
+				array(
 					'name' => 'Caja',
 					'link'   => 'caja'
 				),
@@ -68,6 +72,10 @@ class MenuoptionSeeder extends Seeder
 				array(
 					'name' => 'Deposito y Retiro de Ahorros',
 					'link'   => 'ahorros'
+				),
+				array(
+					'name' => 'Recibos de Cuotas a la fecha',
+					'link'   => 'recibocuotas'
 				),
 				array(
 					'name' => 'Distribucion de Utilidades',
@@ -105,10 +113,7 @@ class MenuoptionSeeder extends Seeder
 					'link'   => 'persona'
 				),
 
-				array(
-					'name' => 'Recibos de Cuotas a la fecha',
-					'link'   => 'recibocuotas'
-				),
+				
 				
 			);
 

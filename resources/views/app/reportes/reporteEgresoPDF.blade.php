@@ -83,12 +83,33 @@
             <tr>
 				<td width="6%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
 				<td width="28%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
+				@if($value->monto_ahorro != '')
 				<td width="8%" align="center"><span class="text">{{ $value->monto_ahorro }}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->monto_credito }}</span></td>
-				<td width="8%" align="center"><span class="text">{{ $value->interes_ahorro }}</span></td>
+				@else
 				<td width="8%" align="center"><span class="text">-</span></td>
+				@endif
+				@if($value->monto_credito != '')
+				<td width="8%" align="center"><span class="text">{{ $value->monto_credito }}</span></td>
+				@else
+				<td width="8%" align="center"><span class="text"></span>-</td>
+				@endif
+				@if($value->interes_ahorro)
+				<td width="8%" align="center"><span class="text">{{ $value->interes_ahorro }}</span></td>
+				@else
+				<td width="8%" align="center"><span class="text">-</span></td>
+				@endif
+				
+				<td width="8%" align="center"><span class="text">-</span></td>
+				@if($value->utilidad_distribuida != '')
 				<td width="8%" align="center"><span class="text">{{ $value->utilidad_distribuida }}</span></td>
+				@else
+				<td width="8%" align="center"><span class="text">-</span></td>
+				@endif
+				@if($value->otros_egresos != '')
 				<td width="6%" align="center"><span class="text">{{ $value->otros_egresos }} </span></td>
+				@else
+				<td width="6%" align="center"><span class="text">-</span></td>
+				@endif
 				<td width="10%" align="center"><span class="text">-</span></td>
 				<td width="10%" align="center">
 					<span class="text">

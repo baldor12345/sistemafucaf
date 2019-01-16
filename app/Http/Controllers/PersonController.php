@@ -511,12 +511,11 @@ class PersonController extends Controller
         $credito        = Persona::creditos_por_persona($id);
         $credito_pendiente           = $credito->get();
 
-        //$aval =   DB::table('persona')->where('id', $credito_pendiente[0]->persona_aval_id)->first();
-        //$socio_aval = (count($aval) == 0)?0: $aval;
+        $moras_acumuladas = Persona::moras_acumuladas_persona($id)->get();
 
 
         $titulo = 'estado_de_cuenta_'.$persona_ahorrista->nombres;
-        $view = \View::make('app.persona.generarestadocuentaPDF')->with(compact('persona_ahorrista','fecha_ahorro','interes_ahorro','capital_ahorrado', 'CantAccionesCompradas','CantAccionesVendidas','credito_pendiente', 'socio_aval'));
+        $view = \View::make('app.persona.generarestadocuentaPDF')->with(compact('persona_ahorrista','fecha_ahorro','interes_ahorro','capital_ahorrado', 'CantAccionesCompradas','CantAccionesVendidas','credito_pendiente', 'socio_aval','moras_acumuladas'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
