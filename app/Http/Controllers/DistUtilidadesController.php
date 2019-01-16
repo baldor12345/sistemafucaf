@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Configuraciones;
 use App\Caja;
 use App\Credito;
+use App\Ahorros;
 use App\Transaccion;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\DB;
@@ -139,6 +140,7 @@ class DistUtilidadesController extends Controller
     {
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
+
         $error = null;
         if($caja_id >0){
             $anio = $request->input('anio');
@@ -148,32 +150,61 @@ class DistUtilidadesController extends Controller
               $distribucion->gast_admin_acum = $request->input('gast_ad_acum');
               $distribucion->int_pag_acum = $request->input('int_pag_acum');
               $distribucion->otros_acum = $request->input('otros_acum');
-              //$distribucion->ub_duactual = $request->input('ub_duactual');
+              $distribucion->ub_duactual = $request->input('ub_duactual');
               $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
               $distribucion->intereses = $request->input('intereses');
               $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
               $distribucion->otros = $request->input('otros');
-              //$distribucion->gastos_duactual = $request->input('gast_duactual');
+              $distribucion->gastos_duactual = $request->input('gast_duactual');
               $distribucion->fechai = date($anio.'-01-01');
               $distribucion->fechaf =  date($anio.'-12-31');
               $distribucion->save();
 
               $num_socios = $request->input('numerosocios');
               for($i=0;$i<$num_socios;$i++){
+                $caja = Caja::where("estado","=","A")->get()[0];
                   $transaccion = new Transaccion();
                   $transaccion->usuario_id = Credito::idUser();
                   $transaccion->persona_id = $request->input('persona_id'.$i);
                   $transaccion->caja_id = $caja_id;
-                  $transaccion->fecha = date('Y-m-d H:i:s');
+                  $transaccion->fecha = $caja->fecha_horaApert;
                   $transaccion->concepto_id = 37; // distribucion d eutilidad
-                  $transaccion->monto = 0;
+                  $transaccion->monto = $request->input('monto'.$i);
                   $transaccion->utilidad_distribuida = $request->input('monto'.$i);
                   $transaccion->save();
+                  if($request->input('ahorrar'.$i) == '1'){
+                    $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
+                   $ahorro=null;
+                    if(count($resultado) >0){
+                        $ahorro = $resultado[0];
+                        $capital = $ahorro->capital + $request->input('monto'.$i);
+                        $ahorro->capital = $capital;
+                        $ahorro->estado = 'P';
+                        $ahorro->save();
+                    }else{
+                        $ahorro = new Ahorros();
+                        $ahorro->capital = $request->input('monto'.$i);
+                        $ahorro->interes = 0;
+                        $ahorro->estado = 'P';
+                        $ahorro->fechai = $caja->fecha_horaApert;
+                        $ahorro->persona_id = $request->input('persona_id'.$i);
+                        $ahorro->save();
+                    }
+
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $caja->fecha_horaApert;
+                    $transaccion->monto = $request->input('monto'.$i);
+                    $transaccion->monto_ahorro= $request->input('monto'.$i);
+                    $transaccion->id_tabla = $ahorro->id;
+                    $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                    $transaccion->concepto_id = 5;
+                    $transaccion->persona_id = $request->input('persona_id'.$i);
+                    $transaccion->usuario_id = Credito::idUser();
+                    $transaccion->caja_id =  $caja->id;
+                    $transaccion->save();
+                  }
               }
-
-
             });
-
         }else{
             $error = "Caja no aperturada, asegurese de aperturar caja primero !";
         }

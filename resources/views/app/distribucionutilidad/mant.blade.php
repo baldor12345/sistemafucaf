@@ -251,9 +251,10 @@ use App\Persona;
 		<table class="table table-sm table-bordered  table-condensed table-hover table-responsive">
 			<thead>
 				<tr  class="table-active"><th scope="row" class="table-active" colspan="19" align="center">PASO 6: Se sumasn estas utilidades mensuales y se obtiene  la UTILIDAD TOTAL del socio en el año (última columna de la derecha).</th></tr>
-				<tr  class="table-active"><th scope="row" class="table-active" rowspan="2" align="center">N°</th><th rowspan="2" colspan="2" align="center">SOCIOS</th><th colspan="12" align='center'>{{ $anio }}</th><th align='center'>{{ $anio +1 }}</th><th rowspan="2" align='center'>TOTAL</th><th rowspan="2" colspan="2" align='center'>OPPERACION</th></tr>
+				<tr  class="table-active"><th scope="row" class="table-active" rowspan="2" align="center">N°</th><th rowspan="2" colspan="2" align="center">SOCIOS</th><th colspan="12" align='center'>{{ $anio }}</th><th align='center'>{{ $anio +1 }}</th><th rowspan="2" align='center'>TOTAL</th><th colspan="2" align='center'>OPPERACION</th></tr>
 				<tr  class="table-active">
 					<th align='center'>E</th align='center'><th align='center'>F</th><th align='center'>M</th><th align='center'>A</th><th align='center'>M</th><th align='center'>J</th><th align='center'>J</th><th align='center'>A</th><th align='center'>S</th><th align='center'>O</th><th align='center'>N</th><th align='center'>D</th><th align='center'>E</th>
+					<th align='center'>REITRAR</th><th align='center'>AHORRAR</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -295,8 +296,10 @@ use App\Persona;
 						}
 						echo("<td align='center'>0</td><td>".round($sumtotal_util,1)."</td>");
 						?>
-							<td id="botones">{!! Form::button('<i class="fa fa-check fa-lg"></i> RE', array('class' => 'btn btn-warning btn-xs btnDist', 'id' => 'btnrecibo', 'onclick' => '', 'persona_id'=>''.$socios[$i]->id,'utilidad'=>''.round($sumtotal_util,1))) !!}</td>
-							<td >{!! Form::button('<i class="fa fa-check fa-lg"></i> AH', array('class' => 'btn btn-success btn-xs', 'id' => 'btnpago2', 'onclick' => '', 'persona_id'=>''.$socios[$i]->id,'utilidad'=>''.round($sumtotal_util,1))) !!}</td>
+						
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-sm btnretirar ','vr'=>'1','num'=>''.$i ,'id' => 'btn'.$i, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,1))) !!}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-sm btnahorrar','vr'=>'0', 'num'=>''.$i , 'id' => 'btna'.$i , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,1))) !!}</td>
+
 						<?php
 						echo("</tr>");
 					}
@@ -324,7 +327,7 @@ use App\Persona;
 					?>
 					<th>0</th>
 					<th>{{ $total_acc_mensual }}</th>
-					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> RETIRAR TODO', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => '')) !!}</th>
+					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> RETIRAR TODO', array('class' => 'btn btn-warning btn-xs', 'accion'=>'retirar',  'id' => 'btnrecibo', 'onclick' => 'marcartodo(this)')) !!}</th>
 				</tr>
 				<tr>
 					<th>Utilidades</th>
@@ -346,7 +349,7 @@ use App\Persona;
 						
 						?>
 					<th>0</th><th>{{ round($sumatotal_utilidades, 1) }}</th>
-					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> AHORRAR TODO', array('class' => 'btn btn-success btn-xs', 'id' => 'btnrecibo', 'onclick' => '')) !!}</th>
+					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> AHORRAR TODO', array('class' => 'btn btn-success btn-xs','accion'=>'ahorrar', 'id' => 'btnrecibo', 'onclick' => 'marcartodo(this)')) !!}</th>
 
 				</tr>
 				<tr>
@@ -411,8 +414,8 @@ use App\Persona;
 	function submitFormDistr(idformulario) {
 		var parametros = $(idformulario).serialize();
 		var i=0;
-		$('.btnDist').each(function() {
-			parametros += "&persona_id"+i+"="+$(this).attr('persona_id')+"&monto"+i+"="+$(this).attr('utilidad');
+		$('.btnahorrar').each(function() {
+			parametros += "&persona_id"+i+"="+$(this).attr('persona_id')+"&monto"+i+"="+$(this).attr('utilidad')+"&ahorrar"+i+"="+$(this).attr('vr');
 			i++;
 		});
 		parametros += "&numerosocios="+i;
@@ -428,4 +431,62 @@ use App\Persona;
 		console.log('Respuesta: '+respuesta);
 		return respuesta;
 	}
+	function btnclieck(btn){
+		var num = $(btn).attr('num');
+		if( $(btn).attr("vr") == '0'){
+			bootbox.confirm("¿Seguro que desea Retirar?", function(result){ 
+				if(result){
+					$(btn).attr("vr",'1');
+					$(btn).removeClass( "btn-light" ).addClass("btn-primary");
+
+					$('#btna'+num).attr("vr",'0');
+					$('#btna'+num).removeClass('btn-primary').addClass('btn-light');
+				}
+				$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});   
+			});
+			
+		}
+	}
+	function btncli(btn){
+		var num = $(btn).attr('num');
+		if( $(btn).attr("vr") == '0'){
+			bootbox.confirm("¿Seguro que desea Ahorrar?", function(result){ 
+				if(result){
+					$(btn).attr("vr",'1');
+					$(btn).removeClass( "btn-light" ).addClass("btn-primary");
+
+					$('#btn'+num).attr("vr",'0');
+					$('#btn'+num).removeClass('btn-primary').addClass('btn-light');
+				}
+				$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});   
+			});
+		}
+	}
+	function marcartodo(btn){
+		if($(btn).attr('accion')=='retirar'){
+			bootbox.confirm("¿Retirar todos?", function(result){ 
+				$('.btnretirar').each(function() {
+					var num = $(this).attr('num');
+					$(this).attr("vr",'1');
+					$(this).removeClass( "btn-light" ).addClass("btn-primary");
+					$('#btna'+num).attr("vr",'0');
+					$('#btna'+num).removeClass('btn-primary').addClass('btn-light');
+				});
+			});
+			$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});
+		}else{
+			bootbox.confirm("¿Ahorrar todos?", function(result){ 
+				$('.btnahorrar').each(function() {
+					var num = $(this).attr('num');
+					$(this).attr("vr",'1');
+					$(this).removeClass( "btn-light" ).addClass("btn-primary");
+					$('#btn'+num).attr("vr",'0');
+					$('#btn'+num).removeClass('btn-primary').addClass('btn-light');
+				});
+			});
+			$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});
+		}
+	}
+	
+	
 </script>

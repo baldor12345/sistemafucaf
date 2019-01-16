@@ -33,6 +33,7 @@
 			<td>{{ $contador }}</td>
 			<td>{{ $value->titulo }}</td>
 			<td>{{ $value->utilidad_distribuible }}</td>
+			<td>{{-- -  {!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Cálculo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnCalcular', 'onclick' => 'mostrarditribucion(\''.URL::route($ruta["mostrar"], array('listar'=>'SI')).'\', \''.'Distribucion de utilidades en el año '.'\', this);')) !!}} --}}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;
