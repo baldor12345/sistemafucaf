@@ -1,11 +1,96 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Validator;
 use Illuminate\Http\Request;
+use App\Persona;
+use App\Caja;
+use App\Acciones;
+use App\Ahorros;
+use App\Credito;
+use App\Cuota;
+use App\Concepto;
+use App\ControlPersona;
+use App\Transaccion;
+use App\Librerias\Libreria;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use PDF;
 
 class ControlPersonaController extends Controller
 {
+    protected $folderview      = 'app.controlpersona';
+    protected $tituloAdmin     = 'Control de Asistencia de Socios';
+    protected $tituloRegistrar = 'Registrar concepto';
+    protected $tituloModificar = 'Modificar concepto';
+    protected $tituloEliminar  = 'Eliminar concepto';
+    protected $titulo_pagarmulta = 'Pago de Multa por Tardanza o Inasistencia';
+    protected $rutas           = array('create' => 'controlpersona.create', 
+            'edit'   => 'controlpersona.edit', 
+            'delete' => 'controlpersona.eliminar',
+            'search' => 'controlpersona.buscar',
+            'index'  => 'controlpersona.index',
+            'cargarpagarmulta'   => 'controlpersona.cargarpagarmulta',
+            'guardarpagarmulta'  => 'controlpersona.guardarpagarmulta',
+            'generarreporteasistenciaPDF'  => 'controlpersona.generarreporteasistenciaPDF'
+        );
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Mostrar el resultado de búsquedas
+     * 
+     * @return Response 
+     */
+    public function buscar(Request $request)
+    {
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $entidad          = 'ControlPersona';
+        $fecha             = Libreria::getParam($request->input('fecha'));
+        $tipo              = Libreria:: getParam($request->input('tipo'));
+        $resultado        = ControlPersona::listar($fecha,$tipo);
+        $lista            = $resultado->get();
+        
+        $caja = Caja::where("estado","=","A")->get();
+        $idCaja = count($caja) == 0 ?0: $caja[0]->id;
+
+
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Socio o Socio Cliente', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Asistencia', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'estado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
+
+        $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','J'=>'Falta Justificada','L'=>'Tardanza Justificada');
+        
+        $titulo_modificar = $this->tituloModificar;
+        $titulo_eliminar  = $this->tituloEliminar;
+        $titulo_pagarmulta = "Pagar Multa";
+        $ruta             = $this->rutas;
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta','titulo_pagarmulta','cboAsistencia','idCaja'));
+        }
+        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +98,31 @@ class ControlPersonaController extends Controller
      */
     public function index()
     {
-        //
+        $fecha = date("Y-m-d");
+
+        $listaControl = DB::table('control_socio')->where('fecha','=',$fecha)->count();
+
+        if($listaControl == 0){
+            $resultado        = ControlPersona::listSocioCliente();
+            $lista =  $resultado->get();
+            $error = DB::transaction(function() use($lista){
+                for($i=0; $i<count($lista); $i++){
+                    $control_socio               = new ControlPersona();
+                    $control_socio->persona_id        = $lista[$i]->id;
+                    $control_socio->asistencia = 'A';
+                    $control_socio->estado = 'A';
+                    $control_socio->fecha        = date ("Y-m-d");
+                    $control_socio->save();
+                }
+            });
+        }
+
+        $entidad          = 'ControlPersona';
+        $title            = $this->tituloAdmin;
+        $titulo_registrar = $this->tituloRegistrar;
+        $cboTipo        = [''=>'Todo']+ array('I'=>'Inasistencias','E'=>'Faltas','J'=>'Faltas Justificadas','L'=>'Tardanzas Justificadas');
+        $ruta             = $this->rutas;
+        return view($this->folderview.'.admin')->with(compact('entidad','cboTipo' ,'title', 'titulo_registrar', 'ruta'));
     }
 
     /**
@@ -21,9 +130,19 @@ class ControlPersonaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $fecha = $request->input("fecha");
+        echo "fecha que viene: ".$fecha;
+        echo $request;
+        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad        = 'ControlPersona';
+        $concepto        = null;
+        $formData       = array('controlpersona.store');
+        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
+        $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton          = 'Registrar'; 
+        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -34,7 +153,22 @@ class ControlPersonaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $listar     = Libreria::getParam($request->input('listar'), 'NO');
+        $reglas = array(
+            'titulo'         => 'required',
+            'tipo'         => 'required'
+            );
+        $validacion = Validator::make($request->all(),$reglas);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $error = DB::transaction(function() use($request){
+            $concepto               = new ControlPersona();
+            $concepto->titulo        = $request->input('titulo');
+            $concepto->tipo        = $request->input('tipo');
+            $concepto->save();
+        });
+        return is_null($error) ? "OK" : $error;
     }
 
     /**
@@ -54,9 +188,20 @@ class ControlPersonaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        //
+        $existe = Libreria::verificarExistencia($id, 'controlpersona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        $concepto        = ControlPersona::find($id);
+        $entidad        = 'ControlPersona';
+        $formData       = array('controlpersona.update', $id);
+        $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
+        $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton          = 'Modificar';
+        return view($this->folderview.'.mant')->with(compact('concepto','cboTipo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -68,7 +213,25 @@ class ControlPersonaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $existe = Libreria::verificarExistencia($id, 'controlpersona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $reglas = array(
+            'titulo'       => 'required|max:20|unique:concepto,titulo,'.$id.',id,deleted_at,NULL',
+            'tipo'         => 'required'
+            );
+        $validacion = Validator::make($request->all(),$reglas);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        } 
+        $error = DB::transaction(function() use($request, $id){
+            $concepto                 = ControlPersona::find($id);
+            $concepto->titulo        = $request->input('titulo');
+            $concepto->tipo        = $request->input('tipo');
+            $concepto->save();
+        });
+        return is_null($error) ? "OK" : $error;
     }
 
     /**
@@ -79,6 +242,121 @@ class ControlPersonaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $existe = Libreria::verificarExistencia($id, 'controlpersona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $error = DB::transaction(function() use($id){
+            $concepto = ControlPersona::find($id);
+            $concepto->delete();
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
+    /**
+     * Función para confirmar la eliminación de un registrlo
+     * @param  integer $id          id del registro a intentar eliminar
+     * @param  string $listarLuego consultar si luego de eliminar se listará
+     * @return html              se retorna html, con la ventana de confirmar eliminar
+     */
+    public function eliminar($id, $listarLuego)
+    {
+        $existe = Libreria::verificarExistencia($id, 'controlpersona');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar = "NO";
+        if (!is_null(Libreria::obtenerParametro($listarLuego))) {
+            $listar = $listarLuego;
+        }
+        $modelo   = ControlPersona::find($id);
+        $entidad  = 'ControlPersona';
+        $formData = array('route' => array('concepto.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton    = 'Eliminar';
+        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function cambiartardanza(Request $request) {
+        $idpersona         = $request->get('idpersona');
+        $asistencia_id  =$request->get('asistencia');
+
+        $persona = DB::table('control_socio')->where('id',$idpersona)->first();
+        $error = DB::transaction(function() use($request, $idpersona, $asistencia_id){
+            $control_socio            = ControlPersona::find($idpersona);
+            $control_socio->asistencia = $asistencia_id;
+            $control_socio->estado = 'N';
+            $control_socio->save();
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
+
+    public function cargarpagarmulta($id, $listarLuego){
+
+        $caja_id = Caja::where("estado","=","A")->value('id');
+
+        $cboMulta        = array('12'=>'Multa Por Tardanza o Insistencia');
+        $entidad  = 'ControlPersona';
+        $ruta = $this->rutas;
+        $titulo_pagarmulta = "Pagar Multa por Tardanza o Inasistencia";
+        return view($this->folderview.'.pagarmulta')->with(compact('entidad', 'ruta', 'titulo_pagarmulta','cboMulta','caja_id','id'));
+    }
+
+    public function guardarpagarmulta(Request $request)
+    {
+        $concepto_id = Libreria::getParam($request->input('concepto_id'));
+        $monto = Libreria::getParam($request->input('monto'));
+        $fecha_pago = Libreria::getParam($request->input('fecha_pago'));
+        $caja_id = Libreria::getParam($request->input('caja_id'));
+        $control_id = Libreria::getParam($request->input('control_id'));
+
+        $existe = Libreria::verificarExistencia($control_id, 'control_socio');
+        if ($existe !== true) {
+            return $existe;
+        }
+        
+        $error = DB::transaction(function() use($request, $concepto_id, $monto, $fecha_pago, $caja_id, $control_id){
+
+            $control_socio            = ControlPersona::find($control_id);
+
+            $control_socio->fecha_pago = $fecha_pago;
+            $control_socio->monto = $monto;
+            $control_socio->concepto_id = $concepto_id;
+            $control_socio->estado = 'P';
+            $control_socio->caja_id =  $caja_id;
+            $control_socio->save();
+
+            $transaccion = new Transaccion();
+            $transaccion->fecha = $fecha_pago;
+            $transaccion->monto = $monto;
+            $transaccion->concepto_id = $concepto_id;
+            $transaccion->descripcion =  "multa por tardanza o falta";
+            $transaccion->usuario_id =Caja::getIdPersona();
+            $transaccion->caja_id = $caja_id;
+            $transaccion->save();
+        });
+        
+        return is_null($error) ? "OK" : $error;
+    }
+
+    public function generarreporteasistenciaPDF($fecha, Request $request)
+    {    
+
+        $control_socio = ControlPersona::listAsistencia($fecha);
+        $lista = $control_socio->get();
+
+        $titulo = "reporte_control_asistencia_hasta".$fecha;
+        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('lista', 'fecha'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('A','A4',0);
+        PDF::SetTopMargin(5);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+ 
+        PDF::Output($titulo.'.pdf', 'I');
     }
 }

@@ -34,14 +34,19 @@ class ControlPersona extends Model
         return $this->belongsTo('App\Caja', 'caja_id');
     }
 
-    public function scopelistar($query, $fecha){
+    public function scopelistar($query, $fecha,$tipo){
 
         return $query->where(function($subquery) use($fecha)
 		            {
 		            	if (!is_null($fecha)) {
 		            		$subquery->where('fecha', '=',$fecha );
 		            	}
-		            })
+		            })->where(function($subquery) use($tipo)
+                    {
+                        if (!is_null($tipo)) {
+		            		$subquery->where('asistencia','=',$tipo);
+		            	}
+                    })
         			->orderBy('persona_id', 'ASC');
     }
 
@@ -50,6 +55,26 @@ class ControlPersona extends Model
     public static function listSocioCliente(){
         return  DB::table('persona')->where('tipo', 'S')->orWhere('tipo','SC');
     }
+
+    //lista de ingresos por persona del mes actual
+    public static function listAsistencia($fecha)
+    {
+        $fecha = date('Y-m-d',strtotime($fecha));
+        $results = DB::table('persona')
+                    ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.codigo as persona_codigo',
+                        'persona.nombres as persona_nombres',
+                        'persona.apellidos as persona_apellidos',
+                        DB::raw("count(control_socio.asistencia) as control_tardanzas"),
+                        DB::raw("count(control_socio.asistencia) as control_faltas")
+                    )
+                    ->where('control_socio.estado','N')
+                    ->where('control_socio.fecha','<=',$fecha)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
 
     public static function boot()
     {

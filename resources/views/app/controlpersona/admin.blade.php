@@ -23,29 +23,24 @@
 					{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
+
 					<div class="form-group">
-						{!! Form::label('codigo', 'Código:', array('class' => 'input-sm')) !!}
-						{!! Form::text('codigo', '', array('class' => 'form-control input-sm', 'id' => 'codigo')) !!}
-					</div>
-					<div class="form-group">
-						{!! Form::label('dni', 'Dni:', array('class' => 'input-sm')) !!}
-						{!! Form::text('dni', '', array('class' => 'form-control input-sm', 'id' => 'dni')) !!}
-					</div>
-					<div class="form-group">
-						{!! Form::label('nombres', 'Nombre:', array('class' => 'input-sm')) !!}
-						{!! Form::text('nombres', '', array('class' => 'form-control input-sm', 'id' => 'nombres')) !!}
-					</div>
-					<div class="form-group">
-						{!! Form::label('tipoi', 'Tipo:', array('class' => 'input-sm')) !!}
-						{!! Form::select('tipoi', $cboTipo, null, array('class' => 'form-control input-sm', 'id' => 'tipoi')) !!}
+						{!! Form::label('fecha', 'Fecha de reunion:', array('class' => 'input-sm')) !!}
+						{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						
 					</div>
 
+					<div class="form-group">
+						{!! Form::label('tipo', 'Tipo:', array('class' => 'input-sm')) !!}
+						{!! Form::select('tipo', $cboTipo, null, array('class' => 'form-control input-sm', 'id' => 'tipo')) !!}
+					</div>
+					
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+					{!! Form::button('<i class="fa fa-check fa-lg"></i> Generar Reporte', array('class' => 'btn btn-success btn-md', 'id' => 'btnGuardar', 'onclick' => 'reporteasistencia(\''.$entidad.'\', \''.URL::route($ruta["generarreporteasistenciaPDF"], array()).'\')')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -68,5 +63,27 @@
 				buscar('{{ $entidad }}');
 			}
 		});
+
+		var fechaActual = new Date();
+        var day = ("0" + fechaActual.getDate()).slice(-2);
+        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
+        var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+        $('#fecha').val(fechaactualr);
 	});
+
+
+	function reporteasistencia(entidad, rutarecibo) {
+
+		var fechai = $('#fecha').val();
+		var tipo = $('#tipo').val();
+		modalrecibopdf(rutarecibo+"/"+fechai, '100', 'recibo credito');
+    }
+
+
+	function modalrecibopdf(url_pdf, ancho_modal, titulo_modal) {
+		var a = document.createElement("a");
+		a.target = "_blank";
+		a.href = url_pdf;
+		a.click();
+	}
 </script>
