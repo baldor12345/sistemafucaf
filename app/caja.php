@@ -210,6 +210,7 @@ class caja extends Model
                     ->where('concepto.titulo','!=','Crédito')
                     ->where('concepto.titulo','!=','Interes E')
                     ->where('concepto.titulo','!=','Ganancia por accion')
+                    ->where('concepto.titulo', '!=', 'Distribución de utilidad')
                     ->where('concepto.titulo','!=','Saldo Deudor');
         return $results;
     }
@@ -231,6 +232,7 @@ class caja extends Model
                     ->where('concepto.titulo','!=','Crédito')
                     ->where('concepto.titulo','!=','Saldo Deudor')
                     ->where('concepto.titulo','!=','Interes E')
+                    ->where('concepto.titulo', '!=', 'Distribución de utilidad')
                     ->where('concepto.titulo','!=','Ganancia por accion');
         return $results;
     }
