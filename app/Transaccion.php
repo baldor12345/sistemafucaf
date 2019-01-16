@@ -48,6 +48,24 @@ class Transaccion extends Model
 		            })
                     ->orderBy('concepto_id', 'ASC');
     }
+    public static function listar($caja_id){
+        $query = DB::table('transaccion')
+            ->join('persona', 'transaccion.persona_id', '=', 'persona.id')
+            ->join('concepto', 'transaccion.concepto_id', '=', 'concepto.id')
+            ->select( 
+                    'persona.nombres as persona_nombres',
+                    'persona.apellidos as persona_apellidos',
+                    'concepto.titulo AS concepto_titulo',
+                    'concepto.tipo AS concepto_tipo',
+                    'transaccion.fecha as transaccion_fecha',
+                    'transaccion.monto as transaccion_monto',
+                    'transaccion.descripcion as transaccion_descripcion'
+                    )
+            ->where('concepto.titulo','!=','Interes I')
+            ->where('concepto.titulo','!=','Interes E')
+            ->where('transaccion.caja_id', '=', $caja_id);
+        return $query;
+    }
  
 
 /*

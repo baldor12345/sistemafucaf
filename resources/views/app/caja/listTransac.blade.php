@@ -17,20 +17,20 @@
 								@foreach ($lista as $key => $value)
 							<tr>
 								<td>{{ $contador }}</td>
-                                <td>{{ Date::parse($value->fecha )->format('Y/m/d')  }}</td>
-                                <td>{{ $value->monto }}</td>
-                                <td>{{ $value->concepto->titulo }}</td>
-								@if ($value->concepto->tipo === 'I')
+                                <td>{{ Date::parse($value->transaccion_fecha )->format('Y/m/d')  }}</td>
+                                <td>{{ $value->transaccion_monto }}</td>
+                                <td>{{ $value->concepto_titulo }}</td>
+								@if ($value->concepto_tipo === 'I')
 								<td style="color:green;font-weight: bold;" >Ingreso</td>
 								@else
 								<td style="color:red;font-weight: bold;" >Egreso</td>
 								@endif
-								@if ($value->persona !== null)
-								<td>{{ $value->persona->nombres.' '.$value->persona->apellidos }}</td>
+								@if ($value->persona_nombres !== null)
+								<td>{{ $value->persona_nombres.' '.$value->persona_apellidos }}</td>
 								@else
 								<td > - - -</td>
 								@endif
-                                <td>{{ $value->descripcion }}</td>
+                                <td>{{ $value->transaccion_descripcion }}</td>
                             </tr>
 							<?php
 								$contador = $contador + 1;
