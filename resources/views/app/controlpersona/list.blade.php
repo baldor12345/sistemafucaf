@@ -17,6 +17,7 @@
     @foreach ($lista as $key => $value)
     <tr>
         <td>{{ $contador }}</td>
+        <td>{{ $value->persona->codigo}}</td>
         <td>{{ $value->persona->nombres.' '.$value->persona->apellidos }} </td>
         @if($value->estado == 'P')
         <td>{!! Form::select('asistencia'.$value->id, $cboAsistencia, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');','disabled')) !!}</td>

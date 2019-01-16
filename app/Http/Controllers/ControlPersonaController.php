@@ -66,6 +66,7 @@ class ControlPersonaController extends Controller
 
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Socio o Socio Cliente', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Asistencia', 'numero' => '1');
         $cabecera[]       = array('valor' => 'estado', 'numero' => '1');

@@ -81,6 +81,19 @@ class Persona extends Model
         return $results;
     }
 
+    public static function moras_acumuladas_persona($persona_id){
+        $results = DB::table('persona')
+                    ->join('credito', 'credito.persona_id','=','persona.id')
+                    ->join('cuota', 'cuota.credito_id','=','credito.id')
+                    ->select(
+                        DB::raw('COUNT(cuota.interes_mora) as cant_mora')
+                    )
+                    ->where('cuota.interes_mora','!=','0')
+                    ->where('credito.persona_id','=',$persona_id)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
 
     /*
      	SELECT SUM(capital) AS cantidad_ahorro FROM ahorros WHERE persona_id =1;

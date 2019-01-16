@@ -115,6 +115,34 @@
             </tr>
             @endforeach
 
+            <tr><td align="center" style="font-size: 12px" colspan="5" ></td></tr>
+            <tr>
+                <td align="center" style="font-size: 10px" colspan="9" >ANALISIS DE MORAS DE CREDITOS GENERADAS HASTA LA FECHA </td>
+            </tr>
+            <tr>
+                <td align="center" colspan="1" style="font-size: 8px"></td>
+                <td align="center" colspan="1" style="font-size: 8px" ></td>
+                <td align="center" colspan="2" style="font-size: 8px" class="linebordercenter" >CANTIDAD DE VECES</td>
+                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter" >ESTADO</td>
+            </tr>
+            <tr>
+                <td align="center" colspan="1" style="font-size: 8px"></td>
+                <td align="center" colspan="1" style="font-size: 8px" ></td>
+                @if(count($moras_acumuladas) != 0)
+                    <td align="center" colspan="2" style="font-size: 8px" class="linebordercenter" >{{ $moras_acumuladas[0]->cant_mora }}</td>
+                    @if($moras_acumuladas[0]->cant_mora <= 5)
+                    <td align="center" colspan="1" style="font-size: 8px; background-color: yellow;" class="linebordercenter" ></td>
+                    @elseif($moras_acumuladas[0]->cant_mora > 5)
+                    <td align="center" colspan="1" style="font-size: 8px; background-color: red;" class="linebordercenter" ></td>
+                    @elseif($moras_acumuladas[0]->cant_mora == '')
+                    <td align="center" colspan="1" style="font-size: 8px; background-color: green;" class="linebordercenter" ></td>
+                    @endif
+                @else
+                <td align="center" colspan="2" style="font-size: 8px" class="linebordercenter" >0</td>
+                <td align="center" colspan="1" style="font-size: 8px; background-color: green;" class="linebordercenter" ></td>
+                @endif
+            </tr>
+
 		</table>
 
         
