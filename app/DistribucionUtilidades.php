@@ -126,6 +126,7 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Crédito')
                     ->where('concepto.titulo','!=','Ganancia por accion')
                     ->where('concepto.titulo','!=','Saldo Deudor')
+                    ->where('concepto.titulo', '!=', 'Distribución de utilidad')
                     ->groupBy('concepto.tipo')->get();
         $g_adm_acum = (count($results2)<1)?0: $results2[0]->gastos_adm;
 
