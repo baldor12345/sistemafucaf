@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\DistribucionUtilidades;
 use App\Persona;
 ?>
+@if($existe === 0)
 <div id="divMensajeError{!! $entidad !!}"></div>
 
 {!! Form::model(null, $formData) !!}
@@ -361,6 +362,7 @@ use App\Persona;
 		</table>
 	</div>
 </div>
+
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
 		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarDist', 'onclick' => 'guardar_distribucion(\''.$entidad.'\', this)')) !!}
@@ -368,6 +370,7 @@ use App\Persona;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
 </div>
+
 
 {!! Form::close() !!}
 <script type="text/javascript">
@@ -405,7 +408,9 @@ use App\Persona;
 						buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
 					}        
 				} else {
-					mostrarErrores(respuesta, idformulario, entidad);
+					bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Ya existe una distribución para el año indicado por lo que solo puede ver el detalle.!</div>", function(){ 
+						$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"}); 
+					});	
 				}
 			}
 		});
@@ -487,6 +492,15 @@ use App\Persona;
 			$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});
 		}
 	}
-	
-	
 </script>
+
+@else
+	<div class="form-group">
+		<div class='alert alert-danger'><strong>¡Error!</strong> Ya existe una distribucion para la fecha seleccionada.!</div>
+	</div>
+	<div class="form-group">
+			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+			</div>
+		</div>
+@endif

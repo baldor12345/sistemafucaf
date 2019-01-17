@@ -85,49 +85,55 @@ class DistUtilidadesController extends Controller
     public function create(Request $request)
     {
         $anio = $request->input('anio');
-        $caja = Caja::where("estado","=","A")->get();
-        $idcaja = count($caja) == 0? 0: $caja[0]->id;
-        $configuraciones = Configuraciones::all()->last();
-        $listar = Libreria::getParam($request->input('listar'), 'NO');
         $entidad = 'Distribucion';
-        $ruta = $this->rutas;
-      
-        $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
-        //$anio = date('Y') - 1; 
-        $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
-        $otros = $sumUBAcumulado[1];
-        $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
-
-        $int_pag_acum= $gastosDUActual[0];
-        $otros_acumulados= $gastosDUActual[1];
-        $gastadmacumulado = $gastosDUActual[2];
+       /* $ditr = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio))->get();
+        if(count($ditr)<=0){*/
+            $caja = Caja::where("estado","=","A")->get();
+            $idcaja = count($caja) == 0? 0: $caja[0]->id;
+            $configuraciones = Configuraciones::all()->last();
+            $listar = Libreria::getParam($request->input('listar'), 'NO');
+            
+            $ruta = $this->rutas;
         
-        //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
-        
-       $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
+            //$anio = date('Y') - 1; 
+            $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = $sumUBAcumulado[1];
+            $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
 
-        $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
-        $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
-        $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+            $int_pag_acum= $gastosDUActual[0];
+            $otros_acumulados= $gastosDUActual[1];
+            $gastadmacumulado = $gastosDUActual[2];
+            
+            //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            
+            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
-        $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
-        $acciones_mes  =0;
-        $indice1 = 0;
-        $j1=12;
-        for($i=1; $i<=12; $i++){
-            if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
-                $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
-                $j1--;
-                $indice1++;
+            $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+            $acciones_mes  =0;
+            $indice1 = 0;
+            $j1=12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
             }
-        }
-    
-        $anio_actual=$anio;
-        $formData = array('distribucion_utilidades.store');
-        $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
- 
-        return view($this->folderview.'.mant')->with(compact('intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+            $existe = 0;
+            $anio_actual=$anio;
+            $formData = array('distribucion_utilidades.store');
+            $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+       /* }else{
+            $existe = 1;
+            return view($this->folderview.'.mant')->with(compact('existe','entidad'));
+        }*/
+        
     }
    /**
      * Store a newly created resource in storage.
@@ -142,71 +148,78 @@ class DistUtilidadesController extends Controller
         $caja_id = ($caja_id != "")?$caja_id:0;
 
         $error = null;
-        if($caja_id >0){
-            $anio = $request->input('anio');
-            $listar = Libreria::getParam($request->input('listar'), 'NO');
-            $error = DB::transaction(function() use($request, $caja_id, $anio){
-              $distribucion = new DistribucionUtilidades();
-              $distribucion->gast_admin_acum = $request->input('gast_ad_acum');
-              $distribucion->int_pag_acum = $request->input('int_pag_acum');
-              $distribucion->otros_acum = $request->input('otros_acum');
-              $distribucion->ub_duactual = $request->input('ub_duactual');
-              $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
-              $distribucion->intereses = $request->input('intereses');
-              $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
-              $distribucion->otros = $request->input('otros');
-              $distribucion->gastos_duactual = $request->input('gast_duactual');
-              $distribucion->fechai = date($anio.'-01-01');
-              $distribucion->fechaf =  date($anio.'-12-31');
-              $distribucion->save();
+        $anio = $request->input('anio');
+         $ditr = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio))->get();
+        if(count($ditr)<=0){
+            if($caja_id >0){
+              
+                $listar = Libreria::getParam($request->input('listar'), 'NO');
+                $error = DB::transaction(function() use($request, $caja_id, $anio){
+                $distribucion = new DistribucionUtilidades();
+                $distribucion->gast_admin_acum = $request->input('gast_ad_acum');
+                $distribucion->int_pag_acum = $request->input('int_pag_acum');
+                $distribucion->otros_acum = $request->input('otros_acum');
+                $distribucion->ub_duactual = $request->input('ub_duactual');
+                $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
+                $distribucion->intereses = $request->input('intereses');
+                $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
+                $distribucion->otros = $request->input('otros');
+                $distribucion->gastos_duactual = $request->input('gast_duactual');
+                $distribucion->fechai = date($anio.'-01-01');
+                $distribucion->fechaf =  date($anio.'-12-31');
+                $distribucion->save();
 
-              $num_socios = $request->input('numerosocios');
-              for($i=0;$i<$num_socios;$i++){
-                $caja = Caja::where("estado","=","A")->get()[0];
-                  $transaccion = new Transaccion();
-                  $transaccion->usuario_id = Credito::idUser();
-                  $transaccion->persona_id = $request->input('persona_id'.$i);
-                  $transaccion->caja_id = $caja_id;
-                  $transaccion->fecha = $caja->fecha_horaApert;
-                  $transaccion->concepto_id = 37; // distribucion d eutilidad
-                  $transaccion->monto = $request->input('monto'.$i);
-                  $transaccion->utilidad_distribuida = $request->input('monto'.$i);
-                  $transaccion->save();
-                  if($request->input('ahorrar'.$i) == '1'){
-                    $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
-                   $ahorro=null;
-                    if(count($resultado) >0){
-                        $ahorro = $resultado[0];
-                        $capital = $ahorro->capital + $request->input('monto'.$i);
-                        $ahorro->capital = $capital;
-                        $ahorro->estado = 'P';
-                        $ahorro->save();
-                    }else{
-                        $ahorro = new Ahorros();
-                        $ahorro->capital = $request->input('monto'.$i);
-                        $ahorro->interes = 0;
-                        $ahorro->estado = 'P';
-                        $ahorro->fechai = $caja->fecha_horaApert;
-                        $ahorro->persona_id = $request->input('persona_id'.$i);
-                        $ahorro->save();
-                    }
-
+                $num_socios = $request->input('numerosocios');
+                for($i=0;$i<$num_socios;$i++){
+                    $caja = Caja::where("estado","=","A")->get()[0];
                     $transaccion = new Transaccion();
-                    $transaccion->fecha = $caja->fecha_horaApert;
-                    $transaccion->monto = $request->input('monto'.$i);
-                    $transaccion->monto_ahorro= $request->input('monto'.$i);
-                    $transaccion->id_tabla = $ahorro->id;
-                    $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
-                    $transaccion->concepto_id = 5;
-                    $transaccion->persona_id = $request->input('persona_id'.$i);
                     $transaccion->usuario_id = Credito::idUser();
-                    $transaccion->caja_id =  $caja->id;
+                    $transaccion->persona_id = $request->input('persona_id'.$i);
+                    $transaccion->caja_id = $caja_id;
+                    $transaccion->fecha = $caja->fecha_horaApert;
+                    $transaccion->concepto_id = 37; // distribucion d eutilidad
+                    $transaccion->monto = $request->input('monto'.$i);
+                    $transaccion->utilidad_distribuida = $request->input('monto'.$i);
                     $transaccion->save();
-                  }
-              }
-            });
+                    if($request->input('ahorrar'.$i) == '1'){
+                        $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
+                    $ahorro=null;
+                        if(count($resultado) >0){
+                            $ahorro = $resultado[0];
+                            $capital = $ahorro->capital + $request->input('monto'.$i);
+                            $ahorro->capital = $capital;
+                            $ahorro->estado = 'P';
+                            $ahorro->save();
+                        }else{
+                            $ahorro = new Ahorros();
+                            $ahorro->capital = $request->input('monto'.$i);
+                            $ahorro->interes = 0;
+                            $ahorro->estado = 'P';
+                            $ahorro->fechai = $caja->fecha_horaApert;
+                            $ahorro->persona_id = $request->input('persona_id'.$i);
+                            $ahorro->save();
+                        }
+
+                        $transaccion = new Transaccion();
+                        $transaccion->fecha = $caja->fecha_horaApert;
+                        $transaccion->monto = $request->input('monto'.$i);
+                        $transaccion->monto_ahorro= $request->input('monto'.$i);
+                        $transaccion->id_tabla = $ahorro->id;
+                        $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                        $transaccion->concepto_id = 5;
+                        $transaccion->persona_id = $request->input('persona_id'.$i);
+                        $transaccion->usuario_id = Credito::idUser();
+                        $transaccion->caja_id =  $caja->id;
+                        $transaccion->save();
+                    }
+                }
+                });
+            }else{
+                $error = "Caja no aperturada, asegurese de aperturar caja primero !";
+            }
+
         }else{
-            $error = "Caja no aperturada, asegurese de aperturar caja primero !";
+            $error = "Ya existe una distribucion de utilidades para el año indicado.!";
         }
         return is_null($error) ? "OK" : $error;
     }
