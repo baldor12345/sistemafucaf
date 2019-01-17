@@ -14,6 +14,7 @@ use App\Ahorros;
 use App\Transaccion;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class DistUtilidadesController extends Controller
 {
@@ -25,6 +26,8 @@ class DistUtilidadesController extends Controller
             'search' => 'distribucion_utilidades.buscar',
             'reporte' => 'distribucion_utilidades.reporte',
             'index'  => 'distribucion_utilidades.index',
+            'verdistribucion' => 'distribucion_utilidades.verdistribucion',
+            'reportedistribucionPDF'=>'distribucion_utilidades.reportedistribucionPDF',
         );
 
     /**
@@ -222,5 +225,97 @@ class DistUtilidadesController extends Controller
             $error = "Ya existe una distribucion de utilidades para el año indicado.!";
         }
         return is_null($error) ? "OK" : $error;
+    }
+
+    public function verdistribucion($distribucion_id){
+        
+        $distribucion = DistribucionUtilidades::find($distribucion_id);
+
+        $anio =date('Y',strtotime($distribucion->fechai));
+        $entidad = 'Distribucion';
+      
+            $ruta = $this->rutas;
+        
+            $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = $distribucion->otros;//$sumUBAcumulado[1];
+            $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
+
+            $int_pag_acum= $distribucion->int_pag_acum; //$gastosDUActual[0];
+            $otros_acumulados=  $distribucion->otros_acum;// $gastosDUActual[1];
+            $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
+         
+            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+            $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+            $acciones_mes  =0;
+            $indice1 = 0;
+            $j1=12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
+            }
+            $existe = 0;
+            $reporte =0;
+            $anio_actual=$anio+1;
+        return view($this->folderview.'.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+      
+    }
+
+    public function reportedistribucionPDF($distribucion_id=0)
+    {   
+
+        $distribucion = DistribucionUtilidades::find($distribucion_id);
+
+        $anio =date('Y',strtotime($distribucion->fechai));
+        $entidad = 'Distribucion';
+    
+        $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+        $otros = $distribucion->otros;//$sumUBAcumulado[1];
+        $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
+
+        $int_pag_acum= $distribucion->int_pag_acum; //$gastosDUActual[0];
+        $otros_acumulados=  $distribucion->otros_acum;// $gastosDUActual[1];
+        $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
+        
+        $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+        $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+        $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+        $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+        $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+        $acciones_mes  =0;
+        $indice1 = 0;
+        $j1=12;
+        for($i=1; $i<=12; $i++){
+            if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                $j1--;
+                $indice1++;
+            }
+        }
+        $existe = 0;
+        $reporte =1;
+        $anio_actual=$anio+1;
+
+        $titulo =$distribucion->titulo;
+        $view = \View::make('app.distribucionutilidad.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 }
