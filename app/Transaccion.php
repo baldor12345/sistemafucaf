@@ -38,7 +38,7 @@ class Transaccion extends Model
     {
         return $this->belongsTo('App\Caja', 'caja_id');
     }
-
+    /*
     public function scopelistar($query, $caja_id){
         return $query->where(function($subquery) use($caja_id)
 		            {
@@ -47,7 +47,7 @@ class Transaccion extends Model
 		            	}
 		            })
                     ->orderBy('concepto_id', 'ASC');
-    }
+    }*/
     public static function listar($caja_id){
         $query = DB::table('transaccion')
             ->join('persona', 'transaccion.persona_id', '=', 'persona.id')
