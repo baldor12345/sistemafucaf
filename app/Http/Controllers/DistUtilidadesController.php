@@ -11,6 +11,7 @@ use App\Configuraciones;
 use App\Caja;
 use App\Credito;
 use App\Ahorros;
+use App\Persona;
 use App\Transaccion;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,15 @@ class DistUtilidadesController extends Controller
             'verdistribucion' => 'distribucion_utilidades.verdistribucion',
             'reportedistribucionPDF'=>'distribucion_utilidades.reportedistribucionPDF',
         );
+/**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     /**
      * Método para generar combo provincia
@@ -305,12 +315,71 @@ class DistUtilidadesController extends Controller
         $reporte =1;
         $anio_actual=$anio+1;
 
+
+        $j=12;
+        $indice=0;
+        $sumatotal_acc_mes = 0;
+        
+        for($i=1; $i<=12; $i++){
+            if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
+                $sumatotal_acc_mes += $acciones_mensual[$indice]->cantidad_mes * $j;
+                $j--;
+                $indice++;
+            }
+        }
+        $factores_mes=array();
+        $f=0;
+        $factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
+        for ($i=12; $i >0 ; $i--) { 
+            $factores_mes[$f] = $i * $factor;
+            $f++;
+        }
+
+        $distrib_util = "";
+        $socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
+        for($i=0; $i< count($socios); $i++){
+            
+            $listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
+            $num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
+            
+            $utilidades = array();
+            if(count($listaAcciones)>0){
+               $distrib_util = $distrib_util.'<tr><td rowspan="2">'.($i+1).'</td><td rowspan="2" colspan="2">'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>';
+                $l=0;
+                $sumtotalAcciones =0;
+                for($j=1; $j<=12; $j++){
+                    $numaccciones = 0;
+                    if($j == 1){
+                        $numaccciones = count($num_accionesenero)>0?$num_accionesenero[0]->cantidad_total:0;
+                    }
+                        
+                    if(((($l)<count($listaAcciones))?$listaAcciones[$l]->mes:"") == $j){
+                        $numaccciones += $listaAcciones[$l]->cantidad_mes;
+                        $distrib_util = $distrib_util."<td>".$numaccciones."</td>";
+                        $utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
+                        $sumtotalAcciones += $numaccciones;
+                        $l++;
+                    }else{
+                        $distrib_util = $distrib_util."<td>0</td>";
+                        $utilidades[$j-1] = 0;
+                    }
+                }
+                $distrib_util = $distrib_util."<td>0</td><td>".round($sumtotalAcciones,1)."</td></tr><tr>";
+                    $sumtotal_util = 0;
+                for($j=1; $j<=12; $j++){
+                    $distrib_util = $distrib_util."<td>".round($utilidades[$j-1],1)."</td>";
+                    $sumtotal_util += $utilidades[$j-1];
+                }
+                
+                $distrib_util = $distrib_util."<td>0</td><td>".round($sumtotal_util,1)."</td></tr>";
+            }
+        }
         $titulo =$distribucion->titulo;
-        $view = \View::make('app.distribucionutilidad.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+        $view = \View::make('app.distribucionutilidad.reportedist')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta', 'distrib_util'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
-        PDF::AddPage('P', 'A4', 'es');
+        PDF::AddPage('L', 'A4', 'es');
         PDF::SetTopMargin(5);
         PDF::SetLeftMargin(5);
         PDF::SetRightMargin(5);

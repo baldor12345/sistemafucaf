@@ -280,7 +280,6 @@ use App\Persona;
 							$sumtotal_util += $utilidades[$j-1];
 						}
 						echo("<td align='center'>0</td><td>".round($sumtotal_util,1)."</td>");
-					
 						echo("</tr>");
 					}
 				}

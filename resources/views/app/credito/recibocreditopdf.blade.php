@@ -14,7 +14,7 @@
 
 </head>
 <body>
-	<div >
+	<div>
 		<table width ="50%" class="table table-striped contenedor">
 			<tr>
 				<td style="font-size: 10px" colspan="4"><strong>FUCAF</strong></td>
