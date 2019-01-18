@@ -87,7 +87,7 @@ class AhorrosController extends Controller
         $lista = $resultado->get();
         $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
-        $cabecera[] = array('valor' => 'COD. CLIENTE', 'numero' => '1');
+        $cabecera[] = array('valor' => 'DNI', 'numero' => '1');
         $cabecera[] = array('valor' => 'NOMBRE CLIENTE', 'numero' => '1');
         $cabecera[] = array('valor' => 'CAPITAL AHORRO S/.', 'numero' => '1');
         

@@ -70,7 +70,7 @@ class CreditoController extends Controller{
         $lista = $resultado->get();
         $cabecera = array();
         $cabecera[]  = array('valor' => '#', 'numero' => '1');
-        $cabecera[]  = array('valor' => 'CODIGO', 'numero' => '1');
+        $cabecera[]  = array('valor' => 'DNI', 'numero' => '1');
         $cabecera[]  = array('valor' => 'NOMBRE', 'numero' => '1');
         $cabecera[]  = array('valor' => 'MONTO CRÉDITO S/.', 'numero' => '1');
         $cabecera[]  = array('valor' => 'PERIODO', 'numero' => '1');
