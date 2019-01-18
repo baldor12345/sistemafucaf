@@ -75,49 +75,4 @@ class ControlPersona extends Model
         return $results;
     }
 
-
-    public static function boot()
-    {
-        parent::boot();
-
-        static::created(function($marca)
-        {
-
-            $binnacle             = new Binnacle();
-            $binnacle->action     = 'I';
-            $binnacle->date      = date('Y-m-d H:i:s');
-            $binnacle->ip         = Libreria::get_client_ip();
-            $binnacle->user_id =  Auth::user()->id;
-            $binnacle->table      = 'control_socio';
-            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
-            $binnacle->recordid = $marca->id;
-            $binnacle->save();
-        });
-
-        static::updated(function($marca)
-        {
-            $binnacle             = new Binnacle();
-            $binnacle->action     = 'U';
-            $binnacle->date      = date('Y-m-d H:i:s');
-            $binnacle->ip         = Libreria::get_client_ip();
-            $binnacle->user_id = Auth::user()->id;
-            $binnacle->table      = 'control_socio';
-            $binnacle->detail    =$marca->toJson(JSON_UNESCAPED_UNICODE);
-            $binnacle->recordid = $marca->id;
-            $binnacle->save();
-        });
-        static::deleted(function($marca)
-        {
-            $binnacle             = new Binnacle();
-            $binnacle->action     = 'D';
-            $binnacle->date      = date('Y-m-d H:i:s');
-            $binnacle->ip         = Libreria::get_client_ip();
-            $binnacle->user_id = Auth::user()->id;
-            $binnacle->table      = 'control_socio';
-            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
-            $binnacle->recordid = $marca->id;
-            $binnacle->save();
-        });
-    }
-    
 }

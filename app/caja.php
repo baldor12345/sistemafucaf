@@ -115,12 +115,12 @@ class caja extends Model
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
-                    ->where('concepto.titulo','!=','Compra de acciones')
-                    ->where('concepto.titulo','!=','Venta de acciones')
-                    ->where('concepto.titulo','!=','Comision Voucher')
-                    ->where('concepto.titulo','!=','Deposito de ahorros')
-                    ->where('concepto.titulo','!=','Interes I')
-                    ->where('concepto.titulo','!=','Pago de cuotas');
+                    ->where('concepto.id','!=',1)
+                    ->where('concepto.id','!=',2)
+                    ->where('concepto.id','!=',8)
+                    ->where('concepto.id','!=',5)
+                    ->where('concepto.id','!=',16)
+                    ->where('concepto.id','!=',4);
         return $results;
     }
 
@@ -136,12 +136,12 @@ class caja extends Model
                     )
                     ->where('transaccion.fecha','<',$fechai)
                     ->where('concepto.tipo','=','I')
-                    ->where('concepto.titulo','!=','Compra de acciones')
-                    ->where('concepto.titulo','!=','Venta de acciones')
-                    ->where('concepto.titulo','!=','Deposito de ahorros')
-                    ->where('concepto.titulo','!=','Comision Voucher')
-                    ->where('concepto.titulo','!=','Interes I')
-                    ->where('concepto.titulo','!=','Pago de cuotas');
+                    ->where('concepto.id','!=',1)
+                    ->where('concepto.id','!=',2)
+                    ->where('concepto.id','!=',8)
+                    ->where('concepto.id','!=',5)
+                    ->where('concepto.id','!=',16)
+                    ->where('concepto.id','!=',4);
         return $results;
     }
 
@@ -206,12 +206,12 @@ class caja extends Model
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','E')
-                    ->where('concepto.titulo','!=','Retiro de ahorros')
-                    ->where('concepto.titulo','!=','Crédito')
-                    ->where('concepto.titulo','!=','Interes E')
-                    ->where('concepto.titulo','!=','Ganancia por accion')
-                    ->where('concepto.titulo', '!=', 'Distribución de utilidad')
-                    ->where('concepto.titulo','!=','Saldo Deudor');
+                    ->where('concepto.id','!=',6)
+                    ->where('concepto.id','!=',3)
+                    ->where('concepto.id','!=',17)
+                    ->where('concepto.id','!=',10)
+                    ->where('concepto.id', '!=', 37)
+                    ->where('concepto.id','!=',15);
         return $results;
     }
 
@@ -228,12 +228,12 @@ class caja extends Model
                     )
                     ->where('transaccion.fecha','<' ,$fechai)
                     ->where('concepto.tipo','=','E')
-                    ->where('concepto.titulo','!=','Retiro de ahorros')
-                    ->where('concepto.titulo','!=','Crédito')
-                    ->where('concepto.titulo','!=','Saldo Deudor')
-                    ->where('concepto.titulo','!=','Interes E')
-                    ->where('concepto.titulo', '!=', 'Distribución de utilidad')
-                    ->where('concepto.titulo','!=','Ganancia por accion');
+                    ->where('concepto.id','!=',6)
+                    ->where('concepto.id','!=',3)
+                    ->where('concepto.id','!=',17)
+                    ->where('concepto.id','!=',10)
+                    ->where('concepto.id', '!=', 37)
+                    ->where('concepto.id','!=',15);
         return $results;
     }
 

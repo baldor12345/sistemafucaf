@@ -51,7 +51,7 @@ class MenuoptionSeeder extends Seeder
 
 		$datos = array(
 				array(
-					'name' => 'Control de Asistencia',
+					'name' => 'Control de Asistencia y Certificado',
 					'link'   => 'controlpersona'
 				),
 				array(

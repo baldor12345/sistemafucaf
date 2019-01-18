@@ -33,16 +33,16 @@
 					<tbody>
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Ingresos :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ $ingresos }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ number_format($ingresos,1) }}</font></font></th>
 						</tr>
 
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Egresos :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ $egresos }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ number_format($egresos,1) }}</font></font></th>
 						</tr>
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Saldo :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ round($diferencia,1) }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ number_format($diferencia,1) }}</font></font></th>
 						</tr>
 					</tbody>
 				</table>

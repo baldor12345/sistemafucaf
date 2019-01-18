@@ -79,10 +79,10 @@
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="1">
-					<b>Monto inicio:</b> {{ $caja->monto_iniciado }} 
+					<b>Monto inicio:</b> {{ number_format($caja->monto_iniciado,1) }} 
 				</td>
 				<td align="left" style="font-size: 10px" colspan="1">
-					<b>Monto cierre:</b> {{ $caja->monto_cierre }}
+					<b>Monto cierre:</b> {{ number_format($caja->monto_cierre,1) }}
 				</td>
 				<td align="left" style="font-size: 10px" colspan="1">
 					<b>Cajero:</b> {{ $persona->nombres.' '.$persona->apellidos }}
@@ -104,20 +104,20 @@
             @foreach($lista as $value )
             <tr>
                 <td width="4%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
-                <td width="8%" align="center"><span class="text">{{ Date::parse($value->fecha )->format('Y/m/d')}}</span></td>
-                <td width="8%" align="center"><span class="text">{{ $value->monto }}</span></td>
-                <td width="20%" align="left"><span class="text">{{ $value->concepto->titulo }}</span></td>
-				@if ($value->concepto->tipo === 'I')
+                <td width="8%" align="center"><span class="text">{{ Date::parse($value->transaccion_fecha )->format('Y/m/d')}}</span></td>
+                <td width="8%" align="center"><span class="text">{{ number_format($value->transaccion_monto,1) }}</span></td>
+                <td width="20%" align="left"><span class="text">{{ $value->concepto_titulo }}</span></td>
+				@if ($value->concepto_tipo === 'I')
                 <td width="6%" align="center"><span class="text" style="color:green;font-weight: bold;">Ingreso</span></td>
 				@else
 				<td width="6%" align="center"><span class="text" style="color:red;font-weight: bold;">Egreso</span></td>
 				@endif
-				@if ($value->persona !== null)
-				<td width="25%" align="left"><span class="text">{{ $value->persona->nombres.' '.$value->persona->apellidos }}</span></td>
+				@if ($value->persona_nombres !== null)
+				<td width="25%" align="left"><span class="text">{{ $value->persona_nombres.' '.$value->persona_apellidos }}</span></td>
 				@else
 				<td width="25%" align="left"><span class="text">---</span></td>
 				@endif
-				<td width="30%" align="left"><span class="text">{{ $value->descripcion }}</span></td>
+				<td width="30%" align="left"><span class="text">{{ $value->transaccion_descripcion }}</span></td>
             </tr>
             @endforeach
     </table>
@@ -130,15 +130,15 @@
 					
 					<tr>
 						<td width="20%" align="center" class="fondo"><strong>Ingresos: </strong></td>
-						<td width="20%" align="center" ><strong>{{ $ingresos }}</strong></td>
+						<td width="20%" align="center" ><strong>{{ number_format($ingresos,1) }}</strong></td>
 					</tr>
 					<tr>
 						<td width="20%" align="center" class="fondo"><strong>Egresos: </strong></td>
-						<td width="20%" align="center" ><strong>{{ $egresos }}</strong></td>
+						<td width="20%" align="center" ><strong>{{ number_format($egresos,1) }}</strong></td>
 					</tr>
 					<tr>
 						<td width="20%" align="center" class="fondo"><strong>Saldo: </strong></td>
-						<td width="20%" align="center" ><strong>{{ $diferencia }}</strong></td>
+						<td width="20%" align="center" ><strong>{{ number_format($diferencia,1) }}</strong></td>
 					</tr>
 
 				</table>
