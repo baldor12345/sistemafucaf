@@ -88,8 +88,8 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Monto Dif.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Movimiento', 'numero' => '2');
-        $cabecera[]       = array('valor' => 'Reportes', 'numero' => '3');
-        $cabecera[]       = array('valor' => '', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'Reporte', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
         $caja_last = Caja::all()->last();
 
