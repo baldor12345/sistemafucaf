@@ -11,9 +11,11 @@ use App\Configuraciones;
 use App\Caja;
 use App\Credito;
 use App\Ahorros;
+use App\Persona;
 use App\Transaccion;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class DistUtilidadesController extends Controller
 {
@@ -25,7 +27,18 @@ class DistUtilidadesController extends Controller
             'search' => 'distribucion_utilidades.buscar',
             'reporte' => 'distribucion_utilidades.reporte',
             'index'  => 'distribucion_utilidades.index',
+            'verdistribucion' => 'distribucion_utilidades.verdistribucion',
+            'reportedistribucionPDF'=>'distribucion_utilidades.reportedistribucionPDF',
         );
+/**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     /**
      * Método para generar combo provincia
@@ -222,5 +235,156 @@ class DistUtilidadesController extends Controller
             $error = "Ya existe una distribucion de utilidades para el año indicado.!";
         }
         return is_null($error) ? "OK" : $error;
+    }
+
+    public function verdistribucion($distribucion_id){
+        
+        $distribucion = DistribucionUtilidades::find($distribucion_id);
+
+        $anio =date('Y',strtotime($distribucion->fechai));
+        $entidad = 'Distribucion';
+      
+            $ruta = $this->rutas;
+        
+            $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = $distribucion->otros;//$sumUBAcumulado[1];
+            $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
+
+            $int_pag_acum= $distribucion->int_pag_acum; //$gastosDUActual[0];
+            $otros_acumulados=  $distribucion->otros_acum;// $gastosDUActual[1];
+            $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
+         
+            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+            $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+            $acciones_mes  =0;
+            $indice1 = 0;
+            $j1=12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
+            }
+            $existe = 0;
+            $reporte =0;
+            $anio_actual=$anio+1;
+        return view($this->folderview.'.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+      
+    }
+
+    public function reportedistribucionPDF($distribucion_id=0)
+    {   
+
+        $distribucion = DistribucionUtilidades::find($distribucion_id);
+
+        $anio =date('Y',strtotime($distribucion->fechai));
+        $entidad = 'Distribucion';
+    
+        $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+        $otros = $distribucion->otros;//$sumUBAcumulado[1];
+        $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
+
+        $int_pag_acum= $distribucion->int_pag_acum; //$gastosDUActual[0];
+        $otros_acumulados=  $distribucion->otros_acum;// $gastosDUActual[1];
+        $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
+        
+        $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+        $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+        $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+        $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+        $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+        $acciones_mes  =0;
+        $indice1 = 0;
+        $j1=12;
+        for($i=1; $i<=12; $i++){
+            if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                $j1--;
+                $indice1++;
+            }
+        }
+        $existe = 0;
+        $reporte =1;
+        $anio_actual=$anio+1;
+
+
+        $j=12;
+        $indice=0;
+        $sumatotal_acc_mes = 0;
+        
+        for($i=1; $i<=12; $i++){
+            if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
+                $sumatotal_acc_mes += $acciones_mensual[$indice]->cantidad_mes * $j;
+                $j--;
+                $indice++;
+            }
+        }
+        $factores_mes=array();
+        $f=0;
+        $factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
+        for ($i=12; $i >0 ; $i--) { 
+            $factores_mes[$f] = $i * $factor;
+            $f++;
+        }
+
+        $distrib_util = "";
+        $socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
+        for($i=0; $i< count($socios); $i++){
+            
+            $listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
+            $num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
+            
+            $utilidades = array();
+            if(count($listaAcciones)>0){
+               $distrib_util = $distrib_util.'<tr><td rowspan="2">'.($i+1).'</td><td rowspan="2" colspan="2">'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>';
+                $l=0;
+                $sumtotalAcciones =0;
+                for($j=1; $j<=12; $j++){
+                    $numaccciones = 0;
+                    if($j == 1){
+                        $numaccciones = count($num_accionesenero)>0?$num_accionesenero[0]->cantidad_total:0;
+                    }
+                        
+                    if(((($l)<count($listaAcciones))?$listaAcciones[$l]->mes:"") == $j){
+                        $numaccciones += $listaAcciones[$l]->cantidad_mes;
+                        $distrib_util = $distrib_util."<td>".$numaccciones."</td>";
+                        $utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
+                        $sumtotalAcciones += $numaccciones;
+                        $l++;
+                    }else{
+                        $distrib_util = $distrib_util."<td>0</td>";
+                        $utilidades[$j-1] = 0;
+                    }
+                }
+                $distrib_util = $distrib_util."<td>0</td><td>".round($sumtotalAcciones,1)."</td></tr><tr>";
+                    $sumtotal_util = 0;
+                for($j=1; $j<=12; $j++){
+                    $distrib_util = $distrib_util."<td>".round($utilidades[$j-1],1)."</td>";
+                    $sumtotal_util += $utilidades[$j-1];
+                }
+                
+                $distrib_util = $distrib_util."<td>0</td><td>".round($sumtotal_util,1)."</td></tr>";
+            }
+        }
+        $titulo =$distribucion->titulo;
+        $view = \View::make('app.distribucionutilidad.reportedist')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta', 'distrib_util'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 }
