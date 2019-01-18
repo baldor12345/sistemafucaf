@@ -26,8 +26,8 @@
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
-					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Cálculo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnCalcular', 'onclick' => 'abrirmodal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.'Distribucion de utilidades en el año '.'\', this);')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Cálculo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnCalcular', 'onclick' => 'abrirmodal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.'Distribucion de utilidades en el año '.'\', this);')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>

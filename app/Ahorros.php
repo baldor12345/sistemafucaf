@@ -51,6 +51,7 @@ class Ahorros extends Model
             'persona.apellidos as apellidos',
             'persona.tipo as tipo',
             'persona.codigo as codigo',
+            'persona.dni as dni',
             'ahorros.capital as capital',
             'ahorros.fechai as fechai'
         )

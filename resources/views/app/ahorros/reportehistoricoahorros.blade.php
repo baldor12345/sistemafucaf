@@ -65,8 +65,8 @@
             <tbody>
                 @foreach ($lista as $value)
                     <tr >
-                        <td style="font-size: 8px" colspan="1">{{ $value->capital }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->interes }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->capital,1) }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->interes,1) }}</td>
                         <td style="font-size: 8px" colspan="1">{{ $nombremes[$value->mes] }}</td>
                     </tr>
                 @endforeach

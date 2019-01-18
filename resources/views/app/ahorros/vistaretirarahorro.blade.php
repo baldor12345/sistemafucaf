@@ -8,7 +8,7 @@
                 {!! Form::label('cliente', 'Cliente: '.$persona->nombres.' '.$persona->apellidos)!!}
             </div>
              <div class="form-group col-12 col-md-12 col-sm-12" >
-                {!! Form::label('maxretiro', 'Máximo a retirar: '.$ahorro->capital)!!}
+                {!! Form::label('maxretiro', 'Máximo a retirar: '.round($ahorro->capital,1))!!}
                 {!! Form::hidden('ahorro_id', $ahorro->id, array('id' => 'ahorro_id')) !!}
                 {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
             </div>

@@ -58,8 +58,8 @@
 			</tr>
             <tr >
                 <td style="font-size: 10px" colspan="2"><strong>MONTO AHORRADO S/.</strong></td>
-                <td style="font-size: 10px">{{$montoahorrado}}</td>
-                <td style="font-size: 10px">{{ $ahorroactual }}</td>
+                <td style="font-size: 10px">{{ round($montoahorrado,1)}}</td>
+                <td style="font-size: 10px">{{ round($ahorroactual,1) }}</td>
 			</tr>
             <tr >
                 <td style="font-size: 10px" colspan="2"><strong>A CUANTOS MESES</strong></td>

@@ -58,7 +58,7 @@
 			</tr>
             <tr >
                 <td style="font-size: 10px" colspan="2"><strong>MONTO CREDITO S/.:</strong></td>
-                <td style="font-size: 10px" colspan="2">{{$credito->valor_credito}}</td>
+                <td style="font-size: 10px" colspan="2">{{  round($credito->valor_credito,1)}}</td>
 			</tr>
             <tr >
                 <td style="font-size: 10px" colspan="2"><strong>PERIODO: </strong></td>

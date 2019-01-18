@@ -34,10 +34,10 @@
             <thead>
                 <tr>
                     <td style="font-size: 8px" colspan="2">Monto Préstamo: </td>
-                    <td style="font-size: 8px" colspan="1">{{ $credito->valor_credito }}</td>
+                    <td style="font-size: 8px" colspan="1">{{ round($credito->valor_credito, 1) }}</td>
                     <td style="font-size: 8px" colspan="1"> </td>
                     <td style="font-size: 8px" colspan="2">Tasa Efectiva Mensual: </td>
-                    <td style="font-size: 8px" colspan="1">{{ $credito->tasa_interes }} %</td>
+                    <td style="font-size: 8px" colspan="1">{{ round($credito->tasa_interes, 1) }} %</td>
                     <td style="font-size: 8px" colspan="4"> </td>
                     
                 </tr>
@@ -74,7 +74,7 @@
                     <td style="font-size: 8px" colspan="1"></td>
                     <td style="font-size: 8px" colspan="1"></td>
                     <td style="font-size: 8px" colspan="1"></td>
-                    <td style="font-size: 8px" colspan="1">{{ $credito->valor_credito }}</td>
+                    <td style="font-size: 8px" colspan="1">{{ round($credito->valor_credito, 1) }}</td>
                     <td style="font-size: 8px" colspan="1">--</td>
                 </tr>
                 @foreach ($lista as $value)
@@ -82,13 +82,13 @@
                         <td style="font-size: 8px" colspan="1"></td>
                         <td style="font-size: 8px" colspan="1">{{ Date::parse($value->fecha_programada_pago)->format('d/m/Y') }}</td>
                         <td style="font-size: 8px" colspan="1">{{ $value->numero_cuota }}/{{ $credito->periodo }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->interes + $value->parte_capital }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->parte_capital }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->interes }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->interes + $value->parte_capital, 1) }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->parte_capital, 1) }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->interes, 1) }}</td>
                         <td style="font-size: 8px" colspan="1">{{ ($value->fecha_pago != null)?Date::parse($value->fecha_pago)->format('d/m/Y'):""}}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->interes_mora }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->parte_capital + $value->interes + $value->interes_mora }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ $value->saldo_restante }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->interes_mora, 1) }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->parte_capital + $value->interes + $value->interes_mora, 1) }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ round($value->saldo_restante, 1) }}</td>
                         <td style="font-size: 8px" colspan="1">{{ ($value->estado != 0 )?'P':'-' }}</td>
                     </tr>
                 @endforeach

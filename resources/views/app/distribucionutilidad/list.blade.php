@@ -32,9 +32,9 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			<td>{{ $value->titulo }}</td>
-			<td>{{ $value->utilidad_distribuible }}</td>
-			<td>{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Ver', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnVer', 'onclick' => 'modal(\''.URL::route($ruta["verdistribucion"], array($value->id)).'\', \''.$value->titulo.'\', this);')) !!} </td>
-		<td>{!! Form::button('<i class="fa fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["reportedistribucionPDF"], array($value->id)).'\')')) !!}
+			<td>{{ round($value->utilidad_distribuible, 1) }}</td>
+			<td>{!! Form::button('<i class="glyphicon glyphicon-eyes"></i> Ver', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-xs', 'id' => 'btnVer', 'onclick' => 'modal(\''.URL::route($ruta["verdistribucion"], array($value->id)).'\', \''.$value->titulo.'\', this);')) !!} </td>
+		<td>{!! Form::button('<i class="fa fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-xs','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["reportedistribucionPDF"], array($value->id)).'\')')) !!}
 		</td>
 		</tr>
 		<?php
