@@ -286,6 +286,8 @@ class AhorrosController extends Controller
 
         $titulo_vistahistoricoahorro = $this->titulo_vistahistoricoahorro;
         $entidad = "Detallehistorico";
+        
+
         return view($this->folderview.'.vistadetallehistorico')->with(compact('ruta','persona_id', 'entidad','cboanio','titulo_vistahistoricoahorro'));
     }
 
@@ -325,13 +327,39 @@ class AhorrosController extends Controller
     //Metodo para abrir modal de retiro
     public function vistaretiro($persona_id, $listarLuego){
         $resultado = Ahorros::getahorropersona($persona_id);
-        $ahorro = $resultado[0];
+        
+        if(count($resultado)>0){
+            $ahorro = $resultado[0];
+        }else{
+            $ahorro = null;
+        }
         $persona = Persona::find($persona_id);
         //$ahorro   = Ahorros::find($id);
         $entidad  = 'Ahorros';
         $ruta = $this->rutas;
         $titulo_vistaretiro = $this->titulo_vistaretiro;
-        return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro'));
+
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+        $saldo_en_caja = 0;
+        if($caja_id != 0){
+            $caja = DB::table('caja')->where('id', $caja_id)->first();
+            //calculos
+            $ingresos =$caja->monto_iniciado;
+            $egresos=0;
+            $saldo_en_caja =0;
+            $saldo = Transaccion::getsaldo($caja_id)->get();
+            for($i=0; $i<count($saldo); $i++){
+                if(($saldo[$i]->concepto_tipo)=="I"){
+                    $ingresos  += $saldo[$i]->monto; 
+                }else if(($saldo[$i]->concepto_tipo)=="E"){
+                    $egresos += $saldo[$i]->monto;
+                }
+            }
+            $saldo_en_caja= $ingresos-$egresos;
+        }
+
+        return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id'));
     }
     //Metodo para registrar el retiro
     public function retiro(Request $request){
@@ -356,7 +384,15 @@ class AhorrosController extends Controller
 
                 $ahorro = Ahorros::find($ahorro_id);
                 $capital = $ahorro->capital - $monto_retiro;
-                $ahorro->capital = $capital;
+                
+               
+                if(round($capital,1) <= 0.09){
+                    $ahorro->estado = 'C';
+                    $ahorro->fechaf =  $nuevafecha;
+                    $ahorro->capital = 0;
+                }else{
+                    $ahorro->capital = $capital;
+                }
                 $ahorro->save();
             
                 $idconcepto = 6;
