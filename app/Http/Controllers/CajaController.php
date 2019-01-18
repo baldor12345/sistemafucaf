@@ -1030,19 +1030,22 @@ class CajaController extends Controller
         $sum_retiro_ahorros_mes_anterior=0;
         $sum_prestamo_de_capital_mes_anterior=0;
         $sum_interes_pagado_mes_anterior=0;
+        $sum_utilidad_distribuida_mes_anterior=0;
         $sum_egresos_totales_mes_anterior=0;
 
         if(count($lista_mes_anterior) >0 ){
             for($i=0; $i<count($lista_mes_anterior); $i++){
                 $sum_retiro_ahorros_mes_anterior += $lista_mes_anterior[$i]->monto_ahorro;
                 $sum_prestamo_de_capital_mes_anterior += $lista_mes_anterior[$i]->monto_credito;
+                $sum_utilidad_distribuida_mes_anterior += $lista_mes_anterior[$i]->utilidad_distribuida;
                 $sum_interes_pagado_mes_anterior += $lista_mes_anterior[$i]->interes_ahorro;
             }
-            $sum_egresos_totales_mes_anterior=($sum_retiro_ahorros_mes_anterior+$sum_prestamo_de_capital_mes_anterior+$sum_interes_pagado_mes_anterior);
+            $sum_egresos_totales_mes_anterior=($sum_retiro_ahorros_mes_anterior+$sum_prestamo_de_capital_mes_anterior+$sum_interes_pagado_mes_anterior+$sum_utilidad_distribuida_mes_anterior);
         }else{
             $sum_retiro_ahorros_mes_anterior=0;
             $sum_prestamo_de_capital_mes_anterior=0;
             $sum_interes_pagado_mes_anterior=0;
+            $sum_utilidad_distribuida_mes_anterior =0;
             $sum_egresos_totales_mes_anterior=0;
         }
 

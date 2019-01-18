@@ -18,7 +18,7 @@
 							<tr>
 								<td>{{ $contador }}</td>
                                 <td>{{ Date::parse($value->transaccion_fecha )->format('Y/m/d')  }}</td>
-                                <td>{{ $value->transaccion_monto }}</td>
+                                <td>{{ number_format($value->transaccion_monto,1) }}</td>
                                 <td>{{ $value->concepto_titulo }}</td>
 								@if ($value->concepto_tipo === 'I')
 								<td style="color:green;font-weight: bold;" >Ingreso</td>
