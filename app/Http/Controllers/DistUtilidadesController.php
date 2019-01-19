@@ -123,8 +123,8 @@ class DistUtilidadesController extends Controller
             $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
             $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
             $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
-            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),4);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 4);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
             $acciones_mes  =0;
@@ -183,8 +183,9 @@ class DistUtilidadesController extends Controller
                 $distribucion->save();
 
                 $num_socios = $request->input('numerosocios');
+                $caja = Caja::where("estado","=","A")->get()[0];
                 for($i=0;$i<$num_socios;$i++){
-                    $caja = Caja::where("estado","=","A")->get()[0];
+                    //$caja = Caja::where("estado","=","A")->get()[0];
                     $transaccion = new Transaccion();
                     $transaccion->usuario_id = Credito::idUser();
                     $transaccion->persona_id = $request->input('persona_id'.$i);
@@ -226,6 +227,89 @@ class DistUtilidadesController extends Controller
                         $transaccion->save();
                     }
                 }
+                /***Fondo Social */
+                $fsocial = Persona::personas('11111111');
+                $resultS = Ahorros::getahorropersona($fsocial[0]->id);
+                $ahorroS = null;
+                
+                if(count($resultS) >0){
+                    $ahorroS = $resultS[0];
+                    $capital = $ahorroS->capital + $request->input('fsocial');
+                    $ahorroS->capital = $capital;
+                    $ahorroS->estado = 'P';
+                    $ahorroS->save();
+                }else{
+                    $ahorroS = new Ahorros();
+                    $ahorroS->capital = $request->input('fsocial');
+                    $ahorroS->interes = 0;
+                    $ahorroS->estado = 'P';
+                    $ahorroS->fechai = $caja->fecha_horaApert;
+                    $ahorroS->persona_id = $fsocial[0]->id;
+                    $ahorroS->save();
+                }
+                $transaccionS = new Transaccion();
+                $transaccionS->fecha = $caja->fecha_horaApert;
+                $transaccionS->monto = $request->input('fsocial');
+                $transaccionS->monto_ahorro= $request->input('fsocial');
+                $transaccionS->id_tabla = $ahorroS->id;
+                $transaccionS->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                $transaccionS->concepto_id = 5;
+                $transaccionS->persona_id = $fsocial[0]->id;
+                $transaccionS->usuario_id = Credito::idUser();
+                $transaccionS->caja_id =  $caja->id;
+                $transaccionS->save();
+
+                $transaccionF = new Transaccion();
+                $transaccionF->usuario_id = Credito::idUser();
+                $transaccionF->persona_id = $fsocial[0]->id;
+                $transaccionF->caja_id =$caja->id;
+                $transaccionF->fecha = $caja->fecha_horaApert;
+                $transaccionF->concepto_id = 37; // distribucion d eutilidad
+                $transaccionF->monto = $request->input('fsocial');
+                $transaccionF->utilidad_distribuida = $request->input('fsocial');
+                $transaccionF->save();
+
+                /***Reserva Legal */
+                $rlegal = Persona::personas('22222222');
+                $resultR = Ahorros::getahorropersona($rlegal[0]->id);
+                $ahorroL = null;
+                if(count($resultR) >0){
+                    $ahorroL = $resultR[0];
+                    $capital = $ahorroS->capital + $request->input('rlegal');
+                    $ahorroL->capital = $capital;
+                    $ahorroL->estado = 'P';
+                    $ahorroL->save();
+                }else{
+                    $ahorroL = new Ahorros();
+                    $ahorroL->capital = $request->input('rlegal');
+                    $ahorroL->interes = 0;
+                    $ahorroL->estado = 'P';
+                    $ahorroL->fechai = $caja->fecha_horaApert;
+                    $ahorroL->persona_id = $rlegal[0]->id;
+                    $ahorroL->save();
+                }
+                $transaccionL = new Transaccion();
+                $transaccionL->fecha = $caja->fecha_horaApert;
+                $transaccionL->monto = $request->input('rlegal');
+                $transaccionL->monto_ahorro= $request->input('rlegal');
+                $transaccionL->id_tabla = $ahorroL->id;
+                $transaccionL->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                $transaccionL->concepto_id = 5;
+                $transaccionL->persona_id = $rlegal[0]->id;
+                $transaccionL->usuario_id = Credito::idUser();
+                $transaccionL->caja_id =  $caja->id;
+                $transaccionL->save();
+
+                $transaccionR = new Transaccion();
+                $transaccionR->usuario_id = Credito::idUser();
+                $transaccionR->persona_id = $rlegal[0]->id;
+                $transaccionR->caja_id =$caja->id;
+                $transaccionR->fecha = $caja->fecha_horaApert;
+                $transaccionR->concepto_id = 37; // distribucion d eutilidad
+                $transaccionR->monto = $request->input('rlegal');
+                $transaccionR->utilidad_distribuida = $request->input('rlegal');
+                $transaccionR->save();
+
                 });
             }else{
                 $error = "Caja no aperturada, asegurese de aperturar caja primero !";

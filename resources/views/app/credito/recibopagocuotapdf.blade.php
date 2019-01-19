@@ -134,9 +134,9 @@
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">Local FUCAF</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">PERU</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->numero_cuota }}/{{ $periodocredito }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->parte_capital }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->interes }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->parte_capital + $cuota->interes }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($cuota->parte_capital, 1) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($cuota->interes, 1) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($cuota->parte_capital + $cuota->interes, 1) }}</td>
             </tr>
             <tr>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->fecha_pago}}</td>
@@ -191,16 +191,16 @@
                 <td style="font-size: 8px" colspan="1" class="linebordercenter"><strong>CUOTAS</strong></td>
                 <td style="font-size: 8px" colspan="1" class="linebordercenter"><strong>Comisiones</strong></td>
                 <td style="font-size: 8px" colspan="1" class="linebordercenter"><strong>TOTAL</strong></td>
-                <td style="font-size: 8px" colspan="2" class="linebordercenter">{{ $cuota->saldo_restante }}</td>
+                <td style="font-size: 8px" colspan="2" class="linebordercenter">{{ round($cuota->saldo_restante, 1) }}</td>
             </tr>
             <tr>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ $cuota->parte_capital + $cuota->interes }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes, 1) }}</td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">0.2</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ $cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2 }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ $cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2   }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2,1) }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2, 1)   }}</td>
                 <td class=""></td>
                 <td class=""></td>
             </tr>

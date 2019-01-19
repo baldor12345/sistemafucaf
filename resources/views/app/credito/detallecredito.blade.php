@@ -13,7 +13,7 @@
     </div>
     <div class="form-row lbldatos">
         <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
-            {!! Form::label('', 'Monto S/.: '.$credito->valor_credito, array('id'=>'montocredito','class' => '')) !!}
+            {!! Form::label('', 'Monto S/.: '.round($credito->valor_credito,1), array('id'=>'montocredito','class' => '')) !!}
         </div>
         <div class="form-group col-6 col-md-6 col-sm-6 lbldatos">
             {!! Form::label('', 'Tasa interes mensual (%): '.$credito->tasa_interes, array('id'=>'interesmes','class' => '')) !!}

@@ -1,4 +1,5 @@
 
+<div id="divinfo"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -73,6 +74,7 @@
         init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
         $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
         configurarAnchoModal('650');
+        $('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $saldo_en_caja }}</div>');
 
         $("input[name=dnicliente]").keyup(function(event){
             var dnicli = event.target.value+"";
@@ -222,7 +224,10 @@
                 mensaje = "¡El Socio o Cliente no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
                 valida = false;
             }
-            valid
+            if("{{ $saldo_en_caja }}" < $('#valor_credito').val()){
+                mensaje = "¡El monto de crédito ingresado, supera el saldo actual en caja!";
+                valida = false;
+            }
 
             if(valida){
                 var val_aval = true;

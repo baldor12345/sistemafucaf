@@ -39,6 +39,7 @@ class Credito extends Model
             'persona.apellidos as apellidos',
             'persona.tipo as tipo',
             'persona.codigo as codigo',
+            'persona.dni as dni',
             'credito.id as credito_id',
             'credito.valor_credito as valor_credito',
             'credito.periodo as periodo',

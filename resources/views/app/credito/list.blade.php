@@ -19,9 +19,9 @@
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td>{{ $contador }}</td>
-			<td>{{ $value->codigo }}</td>
+			<td>{{ $value->dni }}</td>
 			<td>{{ $value->nombres." ".$value->apellidos}} </td>
-			<td>{{ $value->valor_credito }}</td>
+			<td>{{ round($value->valor_credito,1) }}</td>
 			<td>{{ $value->periodo }}</td>
 			@if ($value->estado === '0')
 			<td>Pendiente</td>

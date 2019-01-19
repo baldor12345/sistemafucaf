@@ -59,7 +59,7 @@
 			</tr>
             <tr >
                 <td style="font-size: 10px" colspan="2"><strong>MONTO RETIRADO S/.: </strong></td>
-                <td style="font-size: 10px">{{$montoretirado}}</td>
+                <td style="font-size: 10px">{{  round($montoretirado,1)}}</td>
                 <td style="font-size: 10px"></td>
 			</tr>
             <tr >

@@ -31,8 +31,8 @@
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td>{{ $contador }}</td>
-			<td>{{ $value->capital }}</td>
-			<td>{{ $value->interes}} </td>
+			<td>{{ round($value->capital,1) }}</td>
+			<td>{{ round($value->interes,1)}} </td>
 			<td>{{ $meses[$value->mes]}}</td>
 		</tr>
 		<?php

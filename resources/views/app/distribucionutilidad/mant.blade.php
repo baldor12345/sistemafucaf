@@ -20,7 +20,8 @@ use App\Persona;
 {!! Form::hidden('int_pag_acum', $int_pag_acum, array('id' => 'int_pag_acum')) !!}
 {!! Form::hidden('otros_acum', $otros_acumulados, array('id' => 'otros_acum')) !!}
 {!! Form::hidden('gast_duactual', (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior), array('id' => 'gast_duactual')) !!}
-
+{!! Form::hidden('fsocial', round($utilidad_neta*0.1,4), array('id' => 'fsocial')) !!}
+{!! Form::hidden('rlegal', round($utilidad_neta*0.1,4), array('id' => 'rlegal')) !!}
 <div class="form-row">
 	<div class="table-responsive">
 		<table class="table table-bordered table-sm table-condensed table-hover">
@@ -298,8 +299,8 @@ use App\Persona;
 						echo("<td align='center'>0</td><td>".round($sumtotal_util,1)."</td>");
 						?>
 						
-						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-sm btnretirar ','vr'=>'1','num'=>''.$i ,'id' => 'btn'.$i, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,1))) !!}</td>
-						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-sm btnahorrar','vr'=>'0', 'num'=>''.$i , 'id' => 'btna'.$i , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,1))) !!}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirar ','vr'=>'1','num'=>''.$i ,'id' => 'btn'.$i, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,4))) !!}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrar','vr'=>'0', 'num'=>''.$i , 'id' => 'btna'.$i , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,4))) !!}</td>
 
 						<?php
 						echo("</tr>");
@@ -408,7 +409,7 @@ use App\Persona;
 						buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
 					}        
 				} else {
-					bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Ya existe una distribución para el año indicado por lo que solo puede ver el detalle.!</div>", function(){ 
+					bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> "+respuesta+"</div>", function(){ 
 						$('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"}); 
 					});	
 				}
