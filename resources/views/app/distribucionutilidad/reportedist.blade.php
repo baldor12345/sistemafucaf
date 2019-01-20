@@ -15,6 +15,7 @@
         font-weight:bold;
         background-color: #dee1e5;
         font-size: 12px;
+        
         }
         table th {
         color: #000000;
