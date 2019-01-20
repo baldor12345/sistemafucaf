@@ -61,12 +61,12 @@ use App\Persona;
 					<td  colspan="2" rowspan="1">U. B. Acumulada</td>
 					<td rowspan="5"></td>
 					<td  colspan="1" rowspan="1">G. Adm. Acum.</td>
-					<td  colspan="1" rowspan="1">{{ $gastadmacumulado }}</td>
+					<td  colspan="1" rowspan="1">{{ round($gastadmacumulado, 1) }}</td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 					<td  colspan="1" rowspan="2">F Social 10%</td>
-					<td  colspan="1" rowspan="2">{{ $utilidad_neta*0.1 }}</td>
+					<td  colspan="1" rowspan="2">{{ round($utilidad_neta*0.1, 1) }}</td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 				</tr>
@@ -75,30 +75,30 @@ use App\Persona;
 					<td>Intereses</td>
 					<td>{{ $intereses }}</td>
 					<td  colspan="1" rowspan="1">I. Pag. Acum.</td>
-					<td  colspan="1" rowspan="1">{{ $int_pag_acum }}</td>
+					<td  colspan="1" rowspan="1">{{ round($int_pag_acum, 1) }}</td>
 				</tr>
 				<tr>
 						
 					<td>Otros</td>
 					<td>{{ $otros }}</td>
 					<td  colspan="1" rowspan="1">Otros Acum.</td>
-					<td  colspan="1" rowspan="1">{{ $otros_acumulados }}</td>
+					<td  colspan="1" rowspan="1">{{ round($otros_acumulados, 1) }}</td>
 					<td  colspan="1" rowspan="3">R Legal 10%</td>
-					<td  colspan="1" rowspan="3">{{ $utilidad_neta*0.1 }}</td>
+					<td  colspan="1" rowspan="3">{{ round($utilidad_neta*0.1, 1) }}</td>
 				</tr>
 				<tr>
 						
 					<td>Total acumulado</td>
 					<td>{{ $intereses + $otros }}</td>
 					<td  rowspan="1" colspan="1">TOTAL ACUMULADO</td>
-					<td  rowspan="1" colspan="1">{{ ($gastadmacumulado + $int_pag_acum + $otros_acumulados) }}</td>
+					<td  rowspan="1" colspan="1">{{ round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) }}</td>
 				</tr>
 				<tr>
 						
 					<td>U.B DU Anterior</td>
 					<td>{{ $du_anterior }}</td>
 					<td  rowspan="1" colspan="1">Gast. DU Anterior</td>
-					<td  rowspan="1" colspan="1">{{ $gast_du_anterior }}</td>
+					<td  rowspan="1" colspan="1">{{ round($gast_du_anterior, 1) }}</td>
 				</tr>
 			</tbody>
 			<tfoot>
