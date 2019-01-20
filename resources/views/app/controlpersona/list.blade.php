@@ -15,33 +15,41 @@
         $contador = $inicio + 1;
     ?>
     @foreach ($lista as $key => $value)
+    @if($value->estado == 'N')
     <tr>
         <td>{{ $contador }}</td>
         <td>{{ $value->persona->codigo}}</td>
         <td>{{ $value->persona->nombres.' '.$value->persona->apellidos }} </td>
-        @if($value->estado == 'P')
-        <td>{!! Form::select('asistencia'.$value->id, $cboAsistencia, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');','disabled')) !!}</td>
+        <td>{{ Date::parse($value->persona_fecha)->format('d/m/y') }}</td>
+        <?php
+            $cboasist = array();
+            if($value->asistencia == 'T'){
+                $cboasist['T'] = 'Tardanza';
+                $cboasist['J'] = 'Tardanza Justificada';
+            }else{
+                $cboasist['F'] = 'Falta';
+                $cboasist['J'] = 'Falta Justificada';
+            }
+        ?>
+        @if($value->asistencia != 'J')
+        <td>{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');')) !!}</td>
         @else
-        <td>{!! Form::select('asistencia'.$value->id, $cboAsistencia, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');')) !!}</td>
+        <td>{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');','disabled')) !!}</td>
+        @endif
+        @if($value->asistencia != 'J')
+        <td style='color:red;font-weight: bold;' >No Pagó</td>
+        @else
+        <td style='color:green;font-weight: bold;' >Justificada</td>
         @endif
 
-        <?php if($value->asistencia != 'A'){ if($value->estado == 'N'){?>
-            <td style='color:red;font-weight: bold;' >No Pagó</td>
-        <?php } if($value->estado == 'P'){?>
-            <td style='color:green;font-weight: bold;'>Pagó</td>
-        <?php }}else{ if($value->asistencia == 'A'){?>
-            <td style='color:green;font-weight: bold;'>--</td>
-        <?php }}?>
-
-        <?php if($value->asistencia != 'A'){ if($value->estado == 'N'){?>
-            <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning')) !!}</td>
-        <?php } if($value->estado == 'P'){?>
+        @if($value->asistencia != 'J')
+        <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning')) !!}</td>
+        @else
         <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning', 'disabled')) !!}</td>
-        <?php }}else{ if($value->asistencia == 'A'){?>
-        <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning', 'disabled')) !!}</td>
-        <?php }}?>
+        @endif
         
     </tr>
+ @endif
     <?php
         $contador = $contador + 1;
     ?>

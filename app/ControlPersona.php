@@ -36,15 +36,15 @@ class ControlPersona extends Model
 
     public function scopelistar($query, $fecha,$tipo){
 
-        return $query->where(function($subquery) use($fecha)
+        return $query->where(function($subquery) use($tipo)
 		            {
-		            	if (!is_null($fecha)) {
-		            		$subquery->where('fecha', '=',$fecha );
+		            	if (!is_null($tipo)) {
+		            		$subquery->where('asistencia', '=',$tipo );
 		            	}
-		            })->where(function($subquery) use($tipo)
+		            })->where(function($subquery) use($fecha)
                     {
-                        if (!is_null($tipo)) {
-		            		$subquery->where('asistencia','=',$tipo);
+                        if (!is_null($fecha)) {
+		            		$subquery->where('fecha','<=',$fecha);
 		            	}
                     })
         			->orderBy('persona_id', 'ASC');
@@ -72,6 +72,16 @@ class ControlPersona extends Model
                     ->where('control_socio.estado','N')
                     ->where('control_socio.fecha','<=',$fecha)
                     ->groupBy('persona.id');
+        return $results;
+    }
+
+    public static function listSocios(){
+        $results =DB::table('persona')
+                    ->select('id','codigo','nombres','apellidos')
+                    ->where('tipo','S ')
+                    ->orwhere('tipo','SC')
+                    ->where('id','!=',53)
+                    ->where('id','!=',54);
         return $results;
     }
 
