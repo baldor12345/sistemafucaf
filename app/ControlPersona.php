@@ -57,7 +57,7 @@ class ControlPersona extends Model
     }
 
     //lista de ingresos por persona del mes actual
-    public static function listAsistencia($fecha)
+    public static function listAsistenciaF($fecha)
     {
         $fecha = date('Y-m-d',strtotime($fecha));
         $results = DB::table('persona')
@@ -66,10 +66,28 @@ class ControlPersona extends Model
                         'persona.codigo as persona_codigo',
                         'persona.nombres as persona_nombres',
                         'persona.apellidos as persona_apellidos',
-                        DB::raw("count(control_socio.asistencia) as control_tardanzas"),
                         DB::raw("count(control_socio.asistencia) as control_faltas")
                     )
                     ->where('control_socio.estado','N')
+                    ->where('control_socio.asistencia','F')
+                    ->where('control_socio.fecha','<=',$fecha)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
+    public static function listAsistenciaT($fecha)
+    {
+        $fecha = date('Y-m-d',strtotime($fecha));
+        $results = DB::table('persona')
+                    ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.codigo as persona_codigo',
+                        'persona.nombres as persona_nombres',
+                        'persona.apellidos as persona_apellidos',
+                        DB::raw("count(control_socio.asistencia) as control_tardanzas")
+                    )
+                    ->where('control_socio.estado','N')
+                    ->where('control_socio.asistencia','T')
                     ->where('control_socio.fecha','<=',$fecha)
                     ->groupBy('persona.id');
         return $results;
