@@ -21,7 +21,7 @@ class ControlPersonaController extends Controller
 {
     protected $folderview      = 'app.controlpersona';
     protected $tituloAdmin     = 'Control de Asistencia de Socios';
-    protected $tituloRegistrar = 'Registrar concepto';
+    protected $tituloRegistrar = 'Nuevo Control de Asistencia';
     protected $tituloModificar = 'Modificar concepto';
     protected $tituloEliminar  = 'Eliminar concepto';
     protected $titulo_pagarmulta = 'Pago de Multa por Tardanza o Inasistencia';
@@ -68,11 +68,12 @@ class ControlPersonaController extends Controller
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Socio o Socio Cliente', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Asistencia', 'numero' => '1');
         $cabecera[]       = array('valor' => 'estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
 
-        $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','J'=>'Falta Justificada','L'=>'Tardanza Justificada');
+        $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','T'=>'Tardanza','J'=>'Falta Justificada','J'=>'Tardanza Justificada');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -100,7 +101,7 @@ class ControlPersonaController extends Controller
     public function index()
     {
         $fecha = date("Y-m-d");
-
+        /*
         $listaControl = DB::table('control_socio')->where('fecha','=',$fecha)->count();
 
         if($listaControl == 0){
@@ -116,12 +117,12 @@ class ControlPersonaController extends Controller
                     $control_socio->save();
                 }
             });
-        }
+        }*/
 
         $entidad          = 'ControlPersona';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
-        $cboTipo        = [''=>'Todo']+ array('I'=>'Inasistencias','E'=>'Faltas','J'=>'Faltas Justificadas','L'=>'Tardanzas Justificadas');
+        $cboTipo        = [''=>'Todo']+ array('F'=>'Faltas','T'=>'Tardanzas','J'=>'Faltas Justificadas','J'=>'Tardanzas Justificadas');
         $ruta             = $this->rutas;
         return view($this->folderview.'.admin')->with(compact('entidad','cboTipo' ,'title', 'titulo_registrar', 'ruta'));
     }
@@ -134,16 +135,26 @@ class ControlPersonaController extends Controller
     public function create(Request $request)
     {
         $fecha = $request->input("fecha");
-        echo "fecha que viene: ".$fecha;
-        echo $request;
+
+        $fecha             = Libreria::getParam($request->input('fecha'));
+        $resultado        = ControlPersona::listSocios();
+        $lista            = $resultado->get();
+        $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','T'=>'Tardanza');
+
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Socio o Socio Cliente', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Asistencia', 'numero' => '1');
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'ControlPersona';
-        $concepto        = null;
+        $controlpersona        = null;
         $formData       = array('controlpersona.store');
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar','lista','cboAsistencia','cabecera','fecha'));
     }
 
     /**
@@ -154,21 +165,22 @@ class ControlPersonaController extends Controller
      */
     public function store(Request $request)
     {
+
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas = array(
-            'titulo'         => 'required',
-            'tipo'         => 'required'
-            );
-        $validacion = Validator::make($request->all(),$reglas);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
+        $cantidad = $request->input('cantidad');
+        $error = null;
+       if($cantidad >0){
+            $error = DB::transaction(function() use($request,$cantidad){
+                for($i=0;$i<$cantidad; $i++){
+                    $control_socio = new ControlPersona();
+                    $control_socio->persona_id = $request->input("persona_id".$i);
+                    $control_socio->fecha= $request->input("fecha");
+                    $control_socio->estado = 'N';
+                    $control_socio->asistencia = $request->input("asist".$i);
+                    $control_socio->save();
+                }
+            });
         }
-        $error = DB::transaction(function() use($request){
-            $concepto               = new ControlPersona();
-            $concepto->titulo        = $request->input('titulo');
-            $concepto->tipo        = $request->input('tipo');
-            $concepto->save();
-        });
         return is_null($error) ? "OK" : $error;
     }
 
