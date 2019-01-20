@@ -355,11 +355,14 @@ class ControlPersonaController extends Controller
     public function generarreporteasistenciaPDF($fecha, Request $request)
     {    
 
-        $control_socio = ControlPersona::listAsistencia($fecha);
-        $lista = $control_socio->get();
+        $control_socioT = ControlPersona::listAsistenciaT($fecha);
+        $listaT = $control_socioT->get();
+
+        $control_socioF = ControlPersona::listAsistenciaF($fecha);
+        $listaF = $control_socioF->get();
 
         $titulo = "reporte_control_asistencia_hasta".$fecha;
-        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('lista', 'fecha'));
+        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('listaT','listaF', 'fecha'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
