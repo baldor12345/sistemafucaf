@@ -192,7 +192,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/generareciboahorroPDF1/{transaccion_id?}', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF1');
     
     Route::get('/generareciboretiroPDF/{transaccion_id?}', 'AhorrosController@generareciboretiroPDF')->name('ahorros.generareciboretiroPDF');
-    Route::get('/generareportehistoricoahorrosPDF/{persona_id?}/{anio?}', 'AhorrosController@generareportehistoricoahorrosPDF')->name('ahorros.generareportehistoricoahorrosPDF');
+    Route::get('/generareportehistoricoahorrosPDF/{persona_id?}/{anyo?}', 'AhorrosController@generareportehistoricoahorrosPDF')->name('ahorros.generareportehistoricoahorrosPDF');
     
     /*GASTOS*/
     Route::post('gastos/buscar', 'GastosController@buscar')->name('gastos.buscar');

@@ -16,7 +16,7 @@
             </div>
             <div class="form-group" >
                 &nbsp;
-                {!! Form::button('<i class="fa fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte'.$entidad, 'onclick' => 'imprimirpdf(\''.URL::route($ruta["generareportehistoricoahorrosPDF"], array($persona_id)).'\')')) !!}
+                {!! Form::button('<i class="fa fa-file-pdf-o fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte'.$entidad, 'onclick' => 'reportehistoricopdf(\''.URL::route($ruta["generareportehistoricoahorrosPDF"], array($persona_id)).'\')')) !!}
             </div>
             {!! Form::close() !!}
         </div>
@@ -39,10 +39,7 @@
     });
 
     function reportehistoricopdf(ruta){
-        var anyo = $('#cboanio').val();
-        console.log('AÑO: '+anyo);
-        var rutareporte = ruta+"/"+anyo;
-        imprimirpdf(rutareporte);
+        imprimirpdf(ruta+"/"+$('#cboanio').val());
     }
 
 </script>

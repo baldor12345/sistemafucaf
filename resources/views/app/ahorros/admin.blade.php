@@ -75,6 +75,7 @@
 		}
 	}
 	function imprimirpdf(url_pdf) {
+		console.log("ruta: "+url_pdf);
 		var a = document.createElement("a");
 		a.target = "_blank";
 		a.href = url_pdf;
