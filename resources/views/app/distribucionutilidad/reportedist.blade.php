@@ -6,8 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
         .linebordercenter tr th, td{
-            border: 0.9px solid #3f3f3f;
             text-align : center;
+            border: 0.9px solid #3f3f3f;
+            
             font-size: 10px;
         }
         table thead {
@@ -23,11 +24,6 @@
         background-color: #dee1e5;
         }
 
-        table tr:first-child {
-        color: #000000;
-        font-weight:bold;
-        background-color: #dee1e5;
-        }
         </style>
 </head>
 <body>
@@ -61,12 +57,12 @@
                 <td  colspan="2" rowspan="1" align="center">U. B. Acumulada</td>
                 <td rowspan="5"></td>
                 <td  colspan="1" rowspan="1">G. Adm. Acum.</td>
-                <td  colspan="1" rowspan="1">{{ $gastadmacumulado }}</td>
+                <td  colspan="1" rowspan="1">{{ round($gastadmacumulado,1) }}</td>
                 <td rowspan="5"></td>
                 <td rowspan="5"></td>
                 <td rowspan="5"></td>
                 <td  colspan="1" rowspan="2">F Social 10%</td>
-                <td  colspan="1" rowspan="2">{{ $utilidad_neta*0.1 }}</td>
+                <td  colspan="1" rowspan="2">{{ round($utilidad_neta*0.1,1) }}</td>
                 <td rowspan="5"></td>
                 <td rowspan="5"></td>
             </tr>
@@ -75,47 +71,47 @@
                 <td>Intereses</td>
                 <td>{{ $intereses }}</td>
                 <td  colspan="1" rowspan="1">I. Pag. Acum.</td>
-                <td  colspan="1" rowspan="1">{{ $int_pag_acum }}</td>
+                <td  colspan="1" rowspan="1">{{ round($int_pag_acum,1) }}</td>
             </tr>
             <tr>
                     
                 <td>Otros</td>
                 <td>{{ $otros }}</td>
                 <td  colspan="1" rowspan="1">Otros Acum.</td>
-                <td  colspan="1" rowspan="1">{{ $otros_acumulados }}</td>
+                <td  colspan="1" rowspan="1">{{ round($otros_acumulados,1) }}</td>
                 <td  colspan="1" rowspan="3">R Legal 10%</td>
-                <td  colspan="1" rowspan="3">{{ $utilidad_neta*0.1 }}</td>
+                <td  colspan="1" rowspan="3">{{ round($utilidad_neta*0.1, 1) }}</td>
             </tr>
             <tr>
                     
                 <td>Total acumulado</td>
                 <td>{{ $intereses + $otros }}</td>
                 <td  rowspan="1" colspan="1">TOTAL ACUMULADO</td>
-                <td  rowspan="1" colspan="1">{{ ($gastadmacumulado + $int_pag_acum + $otros_acumulados) }}</td>
+                <td  rowspan="1" colspan="1">{{ round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) }}</td>
             </tr>
             <tr>
                     
                 <td>U.B DU Anterior</td>
                 <td>{{ $du_anterior }}</td>
                 <td  rowspan="1" colspan="1">Gast. DU Anterior</td>
-                <td  rowspan="1" colspan="1">{{ $gast_du_anterior }}</td>
+                <td  rowspan="1" colspan="1">{{ round($gast_du_anterior,1) }}</td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
                 <td></td>
                 <td>Utilidad Bruta DU ACTUAL</td>
-                <td>{{ ($intereses + $otros) -  $du_anterior }}</td>
+                <td>{{ round(($intereses + $otros) -  $du_anterior, 1) }}</td>
                 <td>menos</td>
                 <td>Gast. DU ACTUAL</td>
-                <td>{{ ($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior }}</td>
+                <td>{{ round(($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior,1) }}</td>
                 <td>=</td>
-                <td>{{ (($intereses + $otros) -  $du_anterior) - (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior ) }}</td>
+                <td>{{ round((($intereses + $otros) -  $du_anterior) - (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior),1) }}</td>
                 <td>menos</td>
                 <td>TOTAL</td>
-                <td>{{ 2*$utilidad_neta*0.1 }}</td>
+                <td>{{ round(2*$utilidad_neta*0.1, 1) }}</td>
                 <td>=</td>
-                <td>{{ $utilidad_dist }}</td>
+                <td>{{ round($utilidad_dist,1) }}</td>
             </tr>
         </tfoot>
     </table>
