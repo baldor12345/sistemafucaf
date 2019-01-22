@@ -51,10 +51,11 @@ class ConfiguracionesController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Precio Accion', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Ganancia por accion', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Precio', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Limite', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Interes', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Mora', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Interes', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
         
@@ -116,7 +117,6 @@ class ConfiguracionesController extends Controller
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
             'precio_accion'         => 'required',
-            'ganancia_accion'        => 'required',
             'limite_acciones'      => 'required',
             'fecha'      => 'required',
             );
@@ -128,7 +128,7 @@ class ConfiguracionesController extends Controller
             $configuraciones               = new Configuraciones();
             $configuraciones->codigo        = $request->input('codigo');
             $configuraciones->precio_accion        = $request->input('precio_accion');
-            $configuraciones->ganancia_accion        = $request->input('ganancia_accion');
+            $configuraciones->ganancia_accion        = 0.0;
             $configuraciones->limite_acciones        = $request->input('limite_acciones');
 
             $configuraciones->tasa_interes_credito        = $request->input('tasa_interes_credito');
@@ -189,7 +189,6 @@ class ConfiguracionesController extends Controller
         }
         $reglas = array(
             'precio_accion'         => 'required',
-            'ganancia_accion'        => 'required',
             'limite_acciones'      => 'required',
             'fecha'      => 'required',
             );
@@ -201,7 +200,7 @@ class ConfiguracionesController extends Controller
             $configuraciones                 = Configuraciones::find($id);
             $configuraciones->codigo        = $request->input('codigo');
             $configuraciones->precio_accion        = $request->input('precio_accion');
-            $configuraciones->ganancia_accion        = $request->input('ganancia_accion');
+            $configuraciones->ganancia_accion        = 0.0;
             $configuraciones->limite_acciones        = $request->input('limite_acciones');
             $configuraciones->tasa_interes_credito        = $request->input('tasa_interes_credito');
             $configuraciones->tasa_interes_multa        = $request->input('tasa_interes_multa');

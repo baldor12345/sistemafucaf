@@ -104,31 +104,5 @@ function submitForm_control (idformulario) {
 	return respuesta;
 }
 
-function guardar(){
-	var i=0;
-	var datos="";
-	$('.select_asist').each(function() {
-		if($(this).attr("asist") != "A"){
-			console.log(i);
-			datos += "&persona_id"+i+"="+$(this).attr("persona_id")+"&asist"+i+"="+$(this).attr("asist");
-			i++;
-		}
-	});
-		
-	$.ajax({
-		url: 'controlpersona/cambiartardanza?fecha='+fecha+datos+"&cantidad="+i,
-		headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-		type: 'GET',
-		beforeSend: function(){
-			
-		},
-		success: function(res){
-			mostrarMensaje ("Asistencia!", "OK");
-			buscar("{{$entidad}}");
-		}
-	}).fail(function(){
-		alert('Ocurrió un error');
-	});
-}
 
 </script>

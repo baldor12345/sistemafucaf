@@ -20,7 +20,7 @@
 			<td>{{ $contador }}</td>
 			<td>{{ $value->codigo }}</td>
 			<td>{{ $value->dni }}</td>
-			<td>{{ $value->nombres.'  '.$value->apellidos }}</td>
+			<td>{{ $value->apellidos.'  '.$value->nombres }}</td>
 			<td>{{ $value->telefono_fijo }}</td>
 			<td>{{ $value->email }}</td>
 			@if ($value->estado === 'A')

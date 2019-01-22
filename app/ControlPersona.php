@@ -47,6 +47,8 @@ class ControlPersona extends Model
 		            		$subquery->where('fecha','<=',$fecha);
 		            	}
                     })
+                    ->where('estado','=','N')
+                    ->where('asistencia','!=','J')
         			->orderBy('persona_id', 'ASC');
     }
 

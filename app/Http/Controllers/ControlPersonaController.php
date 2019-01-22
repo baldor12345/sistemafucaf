@@ -101,23 +101,6 @@ class ControlPersonaController extends Controller
     public function index()
     {
         $fecha = date("Y-m-d");
-        /*
-        $listaControl = DB::table('control_socio')->where('fecha','=',$fecha)->count();
-
-        if($listaControl == 0){
-            $resultado        = ControlPersona::listSocioCliente();
-            $lista =  $resultado->get();
-            $error = DB::transaction(function() use($lista){
-                for($i=0; $i<count($lista); $i++){
-                    $control_socio               = new ControlPersona();
-                    $control_socio->persona_id        = $lista[$i]->id;
-                    $control_socio->asistencia = 'A';
-                    $control_socio->estado = 'A';
-                    $control_socio->fecha        = date ("Y-m-d");
-                    $control_socio->save();
-                }
-            });
-        }*/
 
         $entidad          = 'ControlPersona';
         $title            = $this->tituloAdmin;
@@ -297,7 +280,7 @@ class ControlPersonaController extends Controller
         $error = DB::transaction(function() use($request, $idpersona, $asistencia_id){
             $control_socio            = ControlPersona::find($idpersona);
             $control_socio->asistencia = $asistencia_id;
-            $control_socio->estado = 'N';
+            $control_socio->estado = 'P';
             $control_socio->save();
         });
         return is_null($error) ? "OK" : $error;

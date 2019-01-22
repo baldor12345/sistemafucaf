@@ -43,7 +43,7 @@ class Persona extends Model
 		            		$subquery->where('tipo', 'LIKE', '%'.$tipo.'%');
 		            	}
                     })
-        			->orderBy('nombres', 'ASC');
+                    ->orderBy('tipo', 'DSC');
     }
 
     public static function personas($dni){

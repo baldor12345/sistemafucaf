@@ -525,8 +525,8 @@ class CajaController extends Controller
         $filas            = $request->input('filas');
         $entidad ='Transaccion';
         $idcaja  = Libreria::getParam($request->input('idcaja'));
-        $concepto_id      = Libreria::getParam(-1);
-        $resultado        = Transaccion::listar( $idcaja);
+        $concepto_id      = Libreria::getParam($request->input('concepto_id1'));
+        $resultado        = Transaccion::listar1( $idcaja, $concepto_id);
         $lista            = $resultado->get();
      
 
