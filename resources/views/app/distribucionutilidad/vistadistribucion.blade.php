@@ -29,7 +29,7 @@ use App\Persona;
 	background-color: #f2f6f7;
 	border: 0.9px solid #b4bdc1;
 	}
-
+	
 	
 	
 </style>
