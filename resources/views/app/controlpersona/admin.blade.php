@@ -25,8 +25,13 @@
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 
 					<div class="form-group">
-						{!! Form::label('fecha', 'Fecha de reunion:', array('class' => 'input-sm')) !!}
-						{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::label('fechai', 'Desde:', array('class' => 'input-sm')) !!}
+						{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						
+					</div>
+					<div class="form-group">
+						{!! Form::label('fechaf', 'Hasta:', array('class' => 'input-sm')) !!}
+						{!! Form::date('fechaf', null, array('class' => 'form-control input-xs', 'id' => 'fechaf',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 						
 					</div>
 
@@ -36,12 +41,12 @@
 					</div>
 					
 					<div class="form-group">
-						{!! Form::label('filas', 'Filas a mostrar:')!!}
-						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::label('filas', 'Filas a mostrar:', array('class'=>'input-sm'))!!}
+						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
-					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Asistencia', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'modalnuevo (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\');')) !!}
-					{!! Form::button('<i class="fa fa-check fa-lg"></i> Generar Reporte', array('class' => 'btn btn-success btn-md', 'id' => 'btnGuardar', 'onclick' => 'reporteasistencia(\''.$entidad.'\', \''.URL::route($ruta["generarreporteasistenciaPDF"], array()).'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-xs', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-xs', 'id' => 'btnNuevo', 'onclick' => 'modalnuevo (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\');')) !!}
+					{!! Form::button('<i class="fa fa-check fa-lg"></i> Generar Reporte', array('class' => 'btn btn-success btn-xs', 'id' => 'btnGuardar', 'onclick' => 'reporteasistencia(\''.$entidad.'\', \''.URL::route($ruta["generarreporteasistenciaPDF"], array()).'\')')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -56,7 +61,17 @@
 
 <script>
 	$(document).ready(function () {
-		buscar('{{ $entidad }}');
+		
+		var fechaActual = new Date();
+        var day = ("0" + fechaActual.getDate()).slice(-2);
+        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
+        var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+		var fechai = (fechaActual.getFullYear()) +"-"+month+"-01";
+		//fecha inicial
+		$('#fechaf').val(fechaactualr);
+		//fecha final
+        $('#fechai').val(fechai);
+
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
 		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="login"]').keyup(function (e) {
 			var key = window.event ? e.keyCode : e.which;
@@ -64,25 +79,21 @@
 				buscar('{{ $entidad }}');
 			}
 		});
-
-		var fechaActual = new Date();
-        var day = ("0" + fechaActual.getDate()).slice(-2);
-        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
-        var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#fecha').val(fechaactualr);
+		buscar('{{ $entidad }}');
 	});
 
 	function modalnuevo(ruta, titulo){
-		var rutamodal = ruta+'&fecha='+$('#fecha').val();
+		var rutamodal = ruta+'&fecha='+$('#fechaf').val();
 		modal(rutamodal, titulo);
 	}
 
 
 	function reporteasistencia(entidad, rutarecibo) {
 
-		var fechai = $('#fecha').val();
+		var fechai = $('#fechai').val();
+		var fechaf = $('#fechaf').val();
 		var tipo = $('#tipo').val();
-		modalrecibopdf(rutarecibo+"/"+fechai, '100', 'recibo credito');
+		modalrecibopdf(rutarecibo+"/"+fechai+"/"+fechaf, '100', 'recibo credito');
     }
 
 
