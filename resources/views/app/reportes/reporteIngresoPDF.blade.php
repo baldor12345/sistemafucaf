@@ -123,7 +123,7 @@
 				<td width="8%" align="center"><span class="text">-</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
 				<td width="8%" align="center"><span class="text">{{ number_format($value->transaccion_monto,1) }}</span></td>
-				<td width="16%" align="center"><span class="text">-</span></td>
+				<td width="16%" align="center"><span class="text">{{ $value->transaccion_descrpcion }}</span></td>
 				<td width="10%" align="center">
 					<span class="text">
 							{{ number_format($value->transaccion_monto,1) }}

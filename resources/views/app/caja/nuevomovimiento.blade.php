@@ -69,6 +69,16 @@ function cargarselect2(entidad){
 	<input type="hidden" id="persona_id" name="persona_id" value="" >
 </div>
 
+<div class="form-group" id="btnOculto">
+	<div class="col-sm-6 col-xs-12 control-label form-check form-check-inline">
+		<input checked class="form-check-input" type="radio" name="editable" id="editableno" value="1">
+		<label class="form-check-label" for="editableno">Administrativo</label>
+	</div>
+	<div class="col-sm-6 col-xs-12 control-label form-check form-check-inline">
+		<input class="form-check-input" type="radio" name="editable" id="editablesi" value="0">
+		<label class="form-check-label" for="editablesi">Otros</label>
+	</div>
+</div>
 
 <div class="form-group">
 	{!! Form::label('total', 'Total(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
@@ -99,7 +109,7 @@ function cargarselect2(entidad){
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('400');
-
+		$("#btnOculto").hide();
 		$(".dnil").html('DNI: <sup style="color: blue;">Opcional</sup>');
 		
 		var fechaActual = new Date();
@@ -161,5 +171,20 @@ function cargarselect2(entidad){
 		}
 		
 	}
+
+	$(function() {
+		$("#tipo_id").on('change', function() {
+			var valor = $(this).val();
+			switch (valor) {
+				case "E":
+				$("#btnOculto").show();
+				break;
+
+				case "I":
+				$("#btnOculto").hide();
+				break;
+			}
+		}).change();
+	});
 
 </script>

@@ -119,7 +119,7 @@
             </tr>
 			@endforeach
 
-			@foreach($lista_por_concepto as $value )
+			@foreach($lista_por_conceptoAdmin as $value )
             <tr>
 				<td width="6%" align="center"><span class="text">-</span></td>
 				<td width="28%" align="left"><span class="text">{{ $value->concepto_titulo }}</span></td>
@@ -129,6 +129,25 @@
 				<td width="8%" align="center"><span class="text">{{ number_format($value->transaccion_monto,1) }}</span></td>
 				<td width="8%" align="center"><span class="text">-</span></td>
 				<td width="6%" align="center"><span class="text">-</span></td>
+				<td width="10%" align="center"><span class="text">{{$value->comentario }}</span></td>
+				<td width="10%" align="center">
+					<span class="text">
+							{{$value->transaccion_monto}}
+					</span>
+				</td>
+            </tr>
+			@endforeach
+
+			@foreach($lista_por_conceptoOthers as $value )
+            <tr>
+				<td width="6%" align="center"><span class="text">-</span></td>
+				<td width="28%" align="left"><span class="text">{{ $value->concepto_titulo }}</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="8%" align="center"><span class="text">-</span></td>
+				<td width="6%" align="center"><span class="text">{{ number_format($value->transaccion_monto,1) }}</span></td>
 				<td width="10%" align="center"><span class="text">{{$value->comentario }}</span></td>
 				<td width="10%" align="center">
 					<span class="text">
@@ -158,7 +177,7 @@
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ number_format($sum_interes_pagado_mes_anterior,1) }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>{{ number_format($sum_gasto_administrativo_asta_mes_anterior,1) }}</strong></td>
 				<td  cellspacing="2" width="8%" align="center" class="fondo"><strong>-</strong></td>
-				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>-</strong></td>
+				<td  cellspacing="2" width="6%" align="center" class="fondo"><strong>{{ number_format($sum_otros_egresos_asta_mes_anterior,1)}}</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="10%" align="center" class="fondo"><strong>{{ number_format($sum_egresos_totales_mes_anterior,1) }}</strong></td>
 			</tr>

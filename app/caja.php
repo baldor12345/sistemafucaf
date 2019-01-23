@@ -110,7 +110,8 @@ class caja extends Model
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
                         'concepto.titulo as concepto_titulo',
-				        'transaccion.monto as transaccion_monto'
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as transaccion_descrpcion'
                     )
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
@@ -132,7 +133,8 @@ class caja extends Model
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
                     ->select(
                         'concepto.titulo as concepto_titulo',
-				        'transaccion.monto as transaccion_monto'
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as transaccion_descrpcion'
                     )
                     ->where('transaccion.fecha','<',$fechai)
                     ->where('concepto.tipo','=','I')
@@ -193,8 +195,8 @@ class caja extends Model
         return $results;
     }
 
-    //list de egresos del mes actual por concepto
-    public static function listEgresos_por_concepto($anio, $month)
+    //list de egresos del mes actual por concepto(gastos administrativos)
+    public static function listEgresos_por_conceptoAdmin($anio, $month)
     {
         $results = DB::table('concepto')
                     ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
@@ -211,12 +213,13 @@ class caja extends Model
                     ->where('concepto.id','!=',17)
                     ->where('concepto.id','!=',10)
                     ->where('concepto.id', '!=', 37)
-                    ->where('concepto.id','!=',15);
+                    ->where('concepto.id','!=',15)
+                    ->where('transaccion.tipo_egreso','=',1);
         return $results;
     }
 
     //list de egresos asta el es anterior por concepto
-    public static function listEgresos_por_concepto_asta_mes_anterior($fecha)
+    public static function listEgresos_por_concepto_asta_mes_anteriorAdmin($fecha)
     {
         $fechai = date('Y-m-d', strtotime($fecha));
         $results = DB::table('concepto')
@@ -233,10 +236,56 @@ class caja extends Model
                     ->where('concepto.id','!=',17)
                     ->where('concepto.id','!=',10)
                     ->where('concepto.id', '!=', 37)
-                    ->where('concepto.id','!=',15);
+                    ->where('transaccion.tipo_egreso','=',1);
         return $results;
     }
 
+
+    //lista de egresos por concepto(Otros gastos de la empres financiera)
+
+    public static function listEgresos_por_conceptoOthers($anio, $month)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as comentario'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','E')
+                    ->where('concepto.id','!=',6)
+                    ->where('concepto.id','!=',3)
+                    ->where('concepto.id','!=',17)
+                    ->where('concepto.id','!=',10)
+                    ->where('concepto.id', '!=', 37)
+                    ->where('transaccion.tipo_egreso','=',0);
+        //echo "datos por concepto   ".$results->get();
+        return $results;
+    }
+
+    //list de egresos asta el es anterior por concepto
+    public static function listEgresos_por_concepto_asta_mes_anteriorOthers($fecha)
+    {
+        $fechai = date('Y-m-d', strtotime($fecha));
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as comentario'
+                    )
+                    ->where('transaccion.fecha','<' ,$fechai)
+                    ->where('concepto.tipo','=','E')
+                    ->where('concepto.id','!=',6)
+                    ->where('concepto.id','!=',3)
+                    ->where('concepto.id','!=',17)
+                    ->where('concepto.id','!=',10)
+                    ->where('concepto.id', '!=', 37)
+                    ->where('transaccion.tipo_egreso','=',0);
+        return $results;
+    }
 
 
     //busqueda de cantidad de acciones por personas para actualizar las ganancias por mes
