@@ -85,6 +85,7 @@ class Credito extends Model
    
         return $results->get();
     }
+    
     public static function getpersonacredito($dni){
         $persona = Persona::where('dni','=',$dni)->get();
         $numerocreditos = null;
