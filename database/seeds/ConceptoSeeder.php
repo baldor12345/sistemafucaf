@@ -126,6 +126,12 @@ class ConceptoSeeder extends Seeder
             'created_at'     => $now,
             'updated_at'     => $now
         ));
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Contribucion por Certificado de Propiedad de acciones',
+            'tipo'       => 'I',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
 
     }
 }

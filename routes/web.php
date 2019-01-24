@@ -225,18 +225,25 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/cargarreporte', 'CajaController@cargarreporte')->name('caja.cargarreporte');
     Route::get('caja/generarreportes', 'CajaController@generarreportes')->name('caja.generarreportes');
 
-   /*CONCEPTO*/
-   Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');
-   Route::get('concepto/eliminar/{id}/{listarluego}', 'ConceptoController@eliminar')->name('concepto.eliminar');
-   Route::resource('concepto', 'ConceptoController', array('except' => array('show')));
+    /*CONCEPTO*/
+    Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');
+    Route::get('concepto/eliminar/{id}/{listarluego}', 'ConceptoController@eliminar')->name('concepto.eliminar');
+    Route::resource('concepto', 'ConceptoController', array('except' => array('show')));
 
 
 
-   /*TRANSACCIONES*/
-   Route::post('transaccion/buscar', 'TransaccionController@buscar')->name('transaccion.buscar');
-   Route::get('transaccion/eliminar/{id}/{listarluego}', 'TransaccionController@eliminar')->name('transaccion.eliminar');
-   Route::resource('transaccion', 'TransaccionController', array('except' => array('show')));
-  
+    /*TRANSACCIONES*/
+    Route::post('transaccion/buscar', 'TransaccionController@buscar')->name('transaccion.buscar');
+    Route::get('transaccion/eliminar/{id}/{listarluego}', 'TransaccionController@eliminar')->name('transaccion.eliminar');
+    Route::resource('transaccion', 'TransaccionController', array('except' => array('show')));
+
+    /*CERTIFICADOS */
+    Route::post('certificado/buscar','CertificadoController@buscar')->name('certificado.buscar');
+    Route::get('certificado/eliminar/{id}/{listarluego}','CertificadoController@eliminar')->name('certificado.eliminar');
+    Route::resource('certificado', 'CertificadoController', array('except' => array('show')));
+    Route::get('certificado/cargarpagarcontribucion/{id}/{listarluego}', 'CertificadoController@cargarpagarcontribucion')->name('certificado.cargarpagarcontribucion');
+    Route::get('certificado/guardarpagarcontribucion', 'CertificadoController@guardarpagarcontribucion')->name('certificado.guardarpagarcontribucion');
+    Route::get('/reportecertificadoPDF/{id}', 'CertificadoController@reportecertificadoPDF')->name('reportecertificadoPDF');
 
 });
 

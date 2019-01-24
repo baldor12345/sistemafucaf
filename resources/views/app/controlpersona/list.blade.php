@@ -78,7 +78,8 @@
                     alert('Ocurrió un error');
                 });
             }
-            $('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});   
+            $('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"}); 
+            buscar("{{$entidad}}");  
 		});
 
     }
