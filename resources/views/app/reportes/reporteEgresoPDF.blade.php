@@ -65,7 +65,7 @@
 
 	<table width="100%" class="tabla3">
             <tr>
-                <td rowspan="2" cellspacing="1" width="6%" align="center" class="fondo"><strong>#</strong></td>
+                <td rowspan="2" cellspacing="1" width="6%" align="center" class="fondo"><strong>Item</strong></td>
 				<td rowspan="2" cellspacing="1" width="28%" align="center" class="fondo"><strong>Concepto y/o Nombre del Socio o Cliente</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Retiros Ahorros S/.</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Préstamos S/.</strong></td>

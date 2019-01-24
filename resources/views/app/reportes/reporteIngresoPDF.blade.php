@@ -65,7 +65,7 @@
 
 	<table width="100%" class="tabla3">
             <tr>
-                <td rowspan="2" cellspacing="1" width="5%" align="center" class="fondo"><strong>#</strong></td>
+                <td rowspan="2" cellspacing="1" width="5%" align="center" class="fondo"><strong>Item</strong></td>
 				<td rowspan="2" cellspacing="1" width="29%" align="center" class="fondo"><strong>Nombre del Socio o Cliente</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Deposito Ahorros</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" class="fondo"><strong>Pagos de Capital S/.</strong></td>
