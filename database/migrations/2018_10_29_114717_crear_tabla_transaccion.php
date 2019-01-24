@@ -28,6 +28,7 @@ class CrearTablaTransaccion extends Migration
             $table->decimal('ganancia_accion',20,1)->nullable();
             $table->decimal('otros_egresos',20,1)->nullable();
             $table->decimal('utilidad_distribuida',20,1)->nullable();
+            $table->char('tipo_egreso', 1)->nullable();
             $table->integer('id_tabla')->nullable();
             $table->char('inicial_tabla',2)->nullable();
             $table->integer('concepto_id')->unsigned()->nullable();

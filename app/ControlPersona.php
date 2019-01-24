@@ -34,19 +34,19 @@ class ControlPersona extends Model
         return $this->belongsTo('App\Caja', 'caja_id');
     }
 
-    public function scopelistar($query, $fecha,$tipo){
-
+    public function scopelistar($query, $fechai,$fechaf,$tipo){
+        $fecha1 = date('Y-m-d', strtotime($fechai));
+        $fecha2 = date('Y-m-d', strtotime($fechaf));
         return $query->where(function($subquery) use($tipo)
 		            {
 		            	if (!is_null($tipo)) {
 		            		$subquery->where('asistencia', '=',$tipo );
 		            	}
-		            })->where(function($subquery) use($fecha)
-                    {
-                        if (!is_null($fecha)) {
-		            		$subquery->where('fecha','<=',$fecha);
-		            	}
                     })
+                    ->where('fecha','>=',$fecha1)
+                    ->where('fecha','<=',$fecha2)
+                    ->where('estado','=','N')
+                    ->where('asistencia','!=','J')
         			->orderBy('persona_id', 'ASC');
     }
 
@@ -57,9 +57,10 @@ class ControlPersona extends Model
     }
 
     //lista de ingresos por persona del mes actual
-    public static function listAsistenciaF($fecha)
+    public static function listAsistenciaF($fechai, $fechaf)
     {
-        $fecha = date('Y-m-d',strtotime($fecha));
+        $fecha1 = date('Y-m-d', strtotime($fechai));
+        $fecha2 = date('Y-m-d', strtotime($fechaf));
         $results = DB::table('persona')
                     ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
                     ->select(
@@ -70,14 +71,16 @@ class ControlPersona extends Model
                     )
                     ->where('control_socio.estado','N')
                     ->where('control_socio.asistencia','F')
-                    ->where('control_socio.fecha','<=',$fecha)
+                    ->where('control_socio.fecha','>=',$fecha1)
+                    ->where('control_socio.fecha','<=',$fecha2)
                     ->groupBy('persona.id');
         return $results;
     }
 
-    public static function listAsistenciaT($fecha)
+    public static function listAsistenciaT($fechai, $fechaf)
     {
-        $fecha = date('Y-m-d',strtotime($fecha));
+        $fecha1 = date('Y-m-d', strtotime($fechai));
+        $fecha2 = date('Y-m-d', strtotime($fechaf));
         $results = DB::table('persona')
                     ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
                     ->select(
@@ -88,7 +91,8 @@ class ControlPersona extends Model
                     )
                     ->where('control_socio.estado','N')
                     ->where('control_socio.asistencia','T')
-                    ->where('control_socio.fecha','<=',$fecha)
+                    ->where('control_socio.fecha','>=',$fecha1)
+                    ->where('control_socio.fecha','<=',$fecha2)
                     ->groupBy('persona.id');
         return $results;
     }

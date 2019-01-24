@@ -24,7 +24,6 @@
             {!! Form::date('fecha_pago', null, array('class' => 'form-control input-xs', 'id' => 'fecha_pago', 'placeholder' => 'Ingrese titulo')) !!}
         </div>
     </div>
-
     {!! Form::hidden('caja_id', $caja_id, array('id' => 'caja_id')) !!}
     {!! Form::hidden('control_id', $id, array('id' => 'control_id')) !!}
     {!! Form::close() !!}

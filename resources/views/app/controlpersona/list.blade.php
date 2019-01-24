@@ -20,7 +20,7 @@
         <td>{{ $contador }}</td>
         <td>{{ $value->persona->codigo}}</td>
         <td>{{ $value->persona->nombres.' '.$value->persona->apellidos }} </td>
-        <td>{{ Date::parse($value->persona_fecha)->format('d/m/y') }}</td>
+        <td>{{ Date::parse($value->fecha )->format('d/m/y') }}</td>
         <?php
             $cboasist = array();
             if($value->asistencia == 'T'){
@@ -59,22 +59,28 @@
 @endif
 <script>
     function cambiartardanza(idpersona) {
-        var asistencia = $('#asistencia' + idpersona).val();
-        
-        $.ajax({
-            url: 'controlpersona/cambiartardanza?idpersona='+idpersona+"&asistencia="+asistencia,
-            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            type: 'GET',
-            beforeSend: function(){
-                
-            },
-            success: function(res){
-                mostrarMensaje ("Asistencia!", "OK");
-                buscar("{{$entidad}}");
+        bootbox.confirm("Por favor tenga la amabilidad de confirmar la justificacion de la asistencia, Gracias!", function(result){ 
+            if(result){
+                var asistencia = $('#asistencia' + idpersona).val();
+    
+                $.ajax({
+                    url: 'controlpersona/cambiartardanza?idpersona='+idpersona+"&asistencia="+asistencia,
+                    headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    type: 'GET',
+                    beforeSend: function(){
+                        
+                    },
+                    success: function(res){
+                        mostrarMensaje ("Asistencia!", "OK");
+                        buscar("{{$entidad}}");
+                    }
+                }).fail(function(){
+                    alert('Ocurrió un error');
+                });
             }
-        }).fail(function(){
-            alert('Ocurrió un error');
-        });
+            $('#modal'+(contadorModal - 1)).css({ "overflow-y": "scroll"});   
+		});
+
     }
 
     function abrirmodalpagomulta(controlador, titulo, idcaja){

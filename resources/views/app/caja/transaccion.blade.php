@@ -8,8 +8,8 @@
 						{!! Form::hidden('idcaja', $id, array('id' => 'idcaja')) !!}
 						{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 						<div class="form-group">
-                            {!! Form::label('concepto_id', 'Concepto:', array('class' => 'input-sm')) !!}
-                            {!! Form::select('concepto_id', $cboConcepto, null, array('class' => 'form-control input-sm', 'id' => 'concepto_id')) !!}
+                            {!! Form::label('concepto_id1', 'Concepto:', array('class' => 'input-sm')) !!}
+                            {!! Form::select('concepto_id1', $cboConcepto, null, array('class' => 'form-control input-sm', 'id' => 'concepto_id1')) !!}
                         </div>
 						<div class="form-group">
                             {!! Form::label('filas', 'Filas a mostrar:')!!}

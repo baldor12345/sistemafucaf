@@ -1,10 +1,20 @@
+@if($validList == 0)
 <div id="divMensajeError{!! $entidad !!}"></div>
 <?php 
 	$inicio =0;
 ?>
 {!! Form::model($controlpersona, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-	{!! Form::hidden('fecha', $fecha, array('id' => 'fecha')) !!}
+	<div class="row">
+		<div class="col-md-8">
+			<div class="form-group ">
+				{!! Form::label('fecha', 'Fecha de Reunion:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
+				<div class="col-sm-5 col-xs-12">
+					{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
+				</div>
+			</div>		
+		</div>
+	</div>
 	<table id="example1" class="table table-bordered table-striped table-condensed table-hover">
 		<thead>
 			<tr>
@@ -42,6 +52,12 @@
 $(document).ready(function() {
 	configurarAnchoModal('650');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+
+	var dateA = new Date();
+	var day = ("0"+dateA.getDate()).slice(-2);
+	var month = ("0"+(dateA.getMonth()+1)).slice(-2);
+	var date = (dateA.getFullYear())+"-"+month+"-"+day+"";
+	$('#fecha').val(date);
 }); 
 
 function cambiartardanza(elemento) {
@@ -104,31 +120,8 @@ function submitForm_control (idformulario) {
 	return respuesta;
 }
 
-function guardar(){
-	var i=0;
-	var datos="";
-	$('.select_asist').each(function() {
-		if($(this).attr("asist") != "A"){
-			console.log(i);
-			datos += "&persona_id"+i+"="+$(this).attr("persona_id")+"&asist"+i+"="+$(this).attr("asist");
-			i++;
-		}
-	});
-		
-	$.ajax({
-		url: 'controlpersona/cambiartardanza?fecha='+fecha+datos+"&cantidad="+i,
-		headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-		type: 'GET',
-		beforeSend: function(){
-			
-		},
-		success: function(res){
-			mostrarMensaje ("Asistencia!", "OK");
-			buscar("{{$entidad}}");
-		}
-	}).fail(function(){
-		alert('Ocurrió un error');
-	});
-}
 
 </script>
+@else
+<h3 class="text-warning">Ya se tomó asistencia en esta fecha, Gracias!.</h3>
+@endif

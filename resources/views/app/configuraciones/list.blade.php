@@ -6,9 +6,22 @@
 
 	<thead>
 		<tr>
-			@foreach($cabecera as $key => $value)
-				<th @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
-			@endforeach
+			<td colspan="2" align="center"></td>
+			<td colspan="2" align="center">ACCIONES</td>
+			<td colspan ="2" align="center">CREDITO</td>
+			<td colspan ="1" align="center">AHORROS</td>
+			<td rowspan="2" colspan ="1" align="center">FECHA</td>
+			<td rowspan="2" colspan ="1" align="center">DESCRIPCION</td>
+			<td rowspan="2" colspan="2" align="center">OPERACIONES</td>
+		</tr>
+		<tr>
+			<td colspan="1" align="center">#</td>
+			<td colspan="1" align="center">Codigo</td>
+			<td colspan="1" align="center">Precio</td>
+			<td colspan="1" align="center">Limite</td>
+			<td colspan="1" align="center">Interes</td>
+			<td colspan="1" align="center">Mora</td>
+			<td colspan="1" align="center">Interes</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,8 +33,10 @@
 			<td>{{ $contador }}</td>
 			<td>{{ $value->codigo }}</td>
 			<td>{{ $value->precio_accion }}</td>
-			<td>{{ $value->ganancia_accion }}</td>
-			<td>{{ $value->limite_acciones }}</td>
+			<td>{{ ($value->limite_acciones*100) .'%' }}</td>
+			<td>{{ number_format($value->tasa_interes_credito,3) }}</td>
+			<td>{{ number_format($value->tasa_interes_multa,3) }}</td>
+			<td>{{ number_format($value->tasa_interes_ahorro,3) }}</td>
 			<td>{{ $value->fecha }}</td>
 			<td>{{ $value->descripcion }}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>

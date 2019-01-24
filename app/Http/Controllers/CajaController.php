@@ -525,8 +525,8 @@ class CajaController extends Controller
         $filas            = $request->input('filas');
         $entidad ='Transaccion';
         $idcaja  = Libreria::getParam($request->input('idcaja'));
-        $concepto_id      = Libreria::getParam(-1);
-        $resultado        = Transaccion::listar( $idcaja);
+        $concepto_id      = Libreria::getParam($request->input('concepto_id1'));
+        $resultado        = Transaccion::listar1( $idcaja, $concepto_id);
         $lista            = $resultado->get();
      
 
@@ -598,52 +598,98 @@ class CajaController extends Controller
             return $validacion->messages()->toJson();
        }
 
-        $listar        = Libreria::getParam($request->input('listar'), 'NO');
-        $persona_id = $request->get('persona_id');
-        if($persona_id == ''){
-            $error = DB::transaction(function() use($request, $id){
-                $gastos = new Gastos();
-                $gastos->monto = $request->get('total');
-                $gastos->fecha = $request->get('fecha');
-                $gastos->concepto = $request->get('concepto_id');
-                $gastos->descripcion =  $request->get('comentario');
-                $gastos->save();
-    
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $request->get('fecha');
-                $transaccion->monto = $request->get('total');
-                $transaccion->concepto_id = $request->get('concepto_id');
-                $transaccion->descripcion =  $request->get('comentario');
-                $transaccion->usuario_id =Caja::getIdPersona();
-                $transaccion->caja_id = $id;
-                $transaccion->save();
-                 
-            });
-        }else{
-            $error = DB::transaction(function() use($request, $id){
-                $gastos = new Gastos();
-                $gastos->monto = $request->get('total');
-                $gastos->fecha = $request->get('fecha');
-                $gastos->concepto = $request->get('concepto_id');
-                $gastos->descripcion =  $request->get('comentario');
-                $gastos->save();
-    
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $request->get('fecha');
-                $transaccion->monto = $request->get('total');
-                $transaccion->otros_egresos = $request->get('total');
-                $transaccion->concepto_id = $request->get('concepto_id');
-                $transaccion->descripcion =  $request->get('comentario');
-                $transaccion->persona_id =  $request->get('persona_id');
-                $transaccion->usuario_id =Caja::getIdPersona();
-                $transaccion->caja_id = $id;
-                $transaccion->save();
-                 
-            });
-        }
+       $listar        = Libreria::getParam($request->input('listar'), 'NO');
 
+       $tipo_id = $request->input('tipo_id');
+       $persona_id = $request->get('persona_id');
+       if($tipo_id == 'I'){
+           if($persona_id != ''){
+                $persona = Persona::find($persona_id);
+                $error = DB::transaction(function() use($request, $id, $persona){
+                    $gastos = new Gastos();
+                    $gastos->monto = $request->get('total');
+                    $gastos->fecha = $request->get('fecha');
+                    $gastos->concepto = $request->get('concepto_id');
+                    $gastos->descripcion =  $request->get('comentario');
+                    $gastos->save();
         
-
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->get('fecha');
+                    $transaccion->monto = $request->get('total');
+                    $transaccion->concepto_id = $request->get('concepto_id');
+                    $transaccion->descripcion =  $request->get('comentario')." ".$persona->nombres;
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id = $id;
+                    $transaccion->save();
+                });
+           }else{
+                $error = DB::transaction(function() use($request, $id){
+                    $gastos = new Gastos();
+                    $gastos->monto = $request->get('total');
+                    $gastos->fecha = $request->get('fecha');
+                    $gastos->concepto = $request->get('concepto_id');
+                    $gastos->descripcion =  $request->get('comentario');
+                    $gastos->save();
+        
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->get('fecha');
+                    $transaccion->monto = $request->get('total');
+                    $transaccion->concepto_id = $request->get('concepto_id');
+                    $transaccion->descripcion =  $request->get('comentario');
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id = $id;
+                    $transaccion->save();
+                });
+           }
+            
+       }
+       if($tipo_id == 'E'){
+            $persona_id = $request->get('persona_id');
+            if($persona_id != ''){
+                $persona = Persona::find($persona_id);
+                $error = DB::transaction(function() use($request, $id, $persona){
+                    $gastos = new Gastos();
+                    $gastos->monto = $request->get('total');
+                    $gastos->fecha = $request->get('fecha');
+                    $gastos->concepto = $request->get('concepto_id');
+                    $gastos->descripcion =  $request->get('comentario');
+                    $gastos->save();
+    
+    
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->get('fecha');
+                    $transaccion->monto = $request->get('total');
+                    $transaccion->concepto_id = $request->get('concepto_id');
+                    $transaccion->tipo_egreso = $request->get('editable');
+                    $transaccion->descripcion =  $request->get('comentario')." ".$persona->nombres;
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id = $id;
+                    $transaccion->save();
+                });
+            }else{
+                $error = DB::transaction(function() use($request, $id){
+                    $gastos = new Gastos();
+                    $gastos->monto = $request->get('total');
+                    $gastos->fecha = $request->get('fecha');
+                    $gastos->concepto = $request->get('concepto_id');
+                    $gastos->descripcion =  $request->get('comentario');
+                    $gastos->save();
+    
+    
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->get('fecha');
+                    $transaccion->monto = $request->get('total');
+                    $transaccion->concepto_id = $request->get('concepto_id');
+                    $transaccion->tipo_egreso = $request->get('editable');
+                    $transaccion->descripcion =  $request->get('comentario');
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id = $id;
+                    $transaccion->save();
+                });
+            }
+            
+            
+       }      
         return is_null($error) ? "OK" : $error;
     }
 
@@ -1006,17 +1052,30 @@ class CajaController extends Controller
         }
 
 
-        //lista de egresos por concepto
-        $lista_por_concepto = Caja::listEgresos_por_concepto($anio,$month)->get();
+        //lista de egresos por concepto(gastos administrativos)
+        $lista_por_conceptoAdmin = Caja::listEgresos_por_conceptoAdmin($anio,$month)->get();
 
         // calculo del total de egresos del mes actual por concepto
         $sum_gasto_administrativo_mes_actual=0;
-        if(count($lista_por_concepto) >0 ){
-            for($i=0; $i<count($lista_por_concepto); $i++){
-                $sum_gasto_administrativo_mes_actual += $lista_por_concepto[$i]->transaccion_monto;
+        if(count($lista_por_conceptoAdmin) >0 ){
+            for($i=0; $i<count($lista_por_conceptoAdmin); $i++){
+                $sum_gasto_administrativo_mes_actual += $lista_por_conceptoAdmin[$i]->transaccion_monto;
             }
             $sum_egresos_totales_mes_actual += $sum_gasto_administrativo_mes_actual;
         }
+
+        //lista de egresos por concepto(otros gastos)
+        $lista_por_conceptoOthers = Caja::listEgresos_por_conceptoOthers($anio,$month)->get();
+
+        // calculo del total de egresos del mes actual por concepto
+
+        if(count($lista_por_conceptoOthers) >0 ){
+            for($i=0; $i<count($lista_por_conceptoOthers); $i++){
+                $sum_otros_egresos_mes_actual += $lista_por_conceptoOthers[$i]->transaccion_monto;
+            }
+            $sum_egresos_totales_mes_actual += $sum_otros_egresos_mes_actual;
+        }
+
         //calculo del total de egresos acumulados al mes anterior por persona
 
         //calculo del total de ingresos acumulados al mes anterior
@@ -1049,15 +1108,26 @@ class CajaController extends Controller
             $sum_egresos_totales_mes_anterior=0;
         }
 
-        $lista_por_concepto_asta_mes_anterior = Caja::listEgresos_por_concepto_asta_mes_anterior($fecha_completa)->get();
+        $lista_por_concepto_asta_mes_anteriorAdmin = Caja::listEgresos_por_concepto_asta_mes_anteriorAdmin($fecha_completa)->get();
 
         // calculo del total de egresos del mes actual por concepto
         $sum_gasto_administrativo_asta_mes_anterior=0;
-        if(count($lista_por_concepto_asta_mes_anterior) >0 ){
-            for($i=0; $i<count($lista_por_concepto_asta_mes_anterior); $i++){
-                $sum_gasto_administrativo_asta_mes_anterior += $lista_por_concepto_asta_mes_anterior[$i]->transaccion_monto;
+        if(count($lista_por_concepto_asta_mes_anteriorAdmin) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anteriorAdmin); $i++){
+                $sum_gasto_administrativo_asta_mes_anterior += $lista_por_concepto_asta_mes_anteriorAdmin[$i]->transaccion_monto;
             }
             $sum_egresos_totales_mes_anterior += $sum_gasto_administrativo_asta_mes_anterior;
+        }
+
+        $lista_por_concepto_asta_mes_anteriorOthers = Caja::listEgresos_por_concepto_asta_mes_anteriorOthers($fecha_completa)->get();
+        //echo "lista ".$lista_por_concepto_asta_mes_anteriorOthers;
+        // calculo del total de egresos del mes actual por concepto
+        $sum_otros_egresos_asta_mes_anterior =0;
+        if(count($lista_por_concepto_asta_mes_anteriorOthers) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anteriorOthers); $i++){
+                $sum_otros_egresos_asta_mes_anterior += $lista_por_concepto_asta_mes_anteriorOthers[$i]->transaccion_monto;
+            }
+            $sum_egresos_totales_mes_anterior += $sum_otros_egresos_asta_mes_anterior;
         }
 
 
@@ -1204,9 +1274,9 @@ class CajaController extends Controller
         //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
         $titulo = "reporte ".$mes."_Egresos";
-        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_concepto', 'id', 'caja','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
+        $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_conceptoAdmin','lista_por_conceptoOthers' ,'id', 'caja','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
                                                                             'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual','sum_otros_egresos_mes_actual','sum_utilidad_distribuida',
-                                                                        'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior',
+                                                                        'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior','sum_otros_egresos_asta_mes_anterior',
                                                                     'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado', 
                                                                     'saldo_del_mes_anterior','ingresos_del_mes','total_ingresos_del_mes','egresos_del_mes','saldo','sum_ingresos_totales_acumulados'));
         $html_content = $view->render();      

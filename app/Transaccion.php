@@ -38,16 +38,23 @@ class Transaccion extends Model
     {
         return $this->belongsTo('App\Caja', 'caja_id');
     }
-    /*
-    public function scopelistar($query, $caja_id){
+    public function scopelistar1($query, $caja_id, $concepto_id){
         return $query->where(function($subquery) use($caja_id)
 		            {
 		            	if (!is_null($caja_id)) {
 		            		$subquery->where('caja_id', '=', $caja_id);
 		            	}
-		            })
+		            })->where(function($subquery) use($concepto_id)
+                    {
+                        if (!is_null($concepto_id)) {
+		            		$subquery->where('concepto_id','=',$concepto_id);
+		            	}
+                    })
+                    ->where('concepto_id', '!=', 16)
+                    ->where('concepto_id','!=',17)
                     ->orderBy('concepto_id', 'ASC');
-    }*/
+    }
+
     public static function listar($caja_id){
         $query = DB::table('transaccion')
             ->join('persona', 'transaccion.persona_id', '=', 'persona.id')

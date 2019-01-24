@@ -55,9 +55,10 @@ class ControlPersonaController extends Controller
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'ControlPersona';
-        $fecha             = Libreria::getParam($request->input('fecha'));
+        $fechai             = Libreria::getParam($request->input('fechai'));
+        $fechaf             = Libreria::getParam($request->input('fechaf'));
         $tipo              = Libreria:: getParam($request->input('tipo'));
-        $resultado        = ControlPersona::listar($fecha,$tipo);
+        $resultado        = ControlPersona::listar($fechai,$fechaf,$tipo);
         $lista            = $resultado->get();
         
         $caja = Caja::where("estado","=","A")->get();
@@ -101,23 +102,6 @@ class ControlPersonaController extends Controller
     public function index()
     {
         $fecha = date("Y-m-d");
-        /*
-        $listaControl = DB::table('control_socio')->where('fecha','=',$fecha)->count();
-
-        if($listaControl == 0){
-            $resultado        = ControlPersona::listSocioCliente();
-            $lista =  $resultado->get();
-            $error = DB::transaction(function() use($lista){
-                for($i=0; $i<count($lista); $i++){
-                    $control_socio               = new ControlPersona();
-                    $control_socio->persona_id        = $lista[$i]->id;
-                    $control_socio->asistencia = 'A';
-                    $control_socio->estado = 'A';
-                    $control_socio->fecha        = date ("Y-m-d");
-                    $control_socio->save();
-                }
-            });
-        }*/
 
         $entidad          = 'ControlPersona';
         $title            = $this->tituloAdmin;
@@ -134,12 +118,13 @@ class ControlPersonaController extends Controller
      */
     public function create(Request $request)
     {
-        $fecha = $request->input("fecha");
 
         $fecha             = Libreria::getParam($request->input('fecha'));
         $resultado        = ControlPersona::listSocios();
         $lista            = $resultado->get();
         $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','T'=>'Tardanza');
+
+        $validList = DB::table('control_socio')->where('fecha', $fecha)->count();
 
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
@@ -154,7 +139,7 @@ class ControlPersonaController extends Controller
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar','lista','cboAsistencia','cabecera','fecha'));
+        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar','lista','cboAsistencia','cabecera','fecha','validList'));
     }
 
     /**
@@ -297,7 +282,7 @@ class ControlPersonaController extends Controller
         $error = DB::transaction(function() use($request, $idpersona, $asistencia_id){
             $control_socio            = ControlPersona::find($idpersona);
             $control_socio->asistencia = $asistencia_id;
-            $control_socio->estado = 'N';
+            $control_socio->estado = 'P';
             $control_socio->save();
         });
         return is_null($error) ? "OK" : $error;
@@ -307,7 +292,6 @@ class ControlPersonaController extends Controller
     public function cargarpagarmulta($id, $listarLuego){
 
         $caja_id = Caja::where("estado","=","A")->value('id');
-
         $cboMulta        = array('12'=>'Multa Por Tardanza o Insistencia');
         $entidad  = 'ControlPersona';
         $ruta = $this->rutas;
@@ -323,12 +307,15 @@ class ControlPersonaController extends Controller
         $caja_id = Libreria::getParam($request->input('caja_id'));
         $control_id = Libreria::getParam($request->input('control_id'));
 
+        $control = ControlPersona::find($control_id);
+        $persona = Persona::find($control->persona_id);
+
         $existe = Libreria::verificarExistencia($control_id, 'control_socio');
         if ($existe !== true) {
             return $existe;
         }
         
-        $error = DB::transaction(function() use($request, $concepto_id, $monto, $fecha_pago, $caja_id, $control_id){
+        $error = DB::transaction(function() use($request, $concepto_id, $monto, $fecha_pago, $caja_id, $control_id, $persona){
 
             $control_socio            = ControlPersona::find($control_id);
 
@@ -343,7 +330,7 @@ class ControlPersonaController extends Controller
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
             $transaccion->concepto_id = $concepto_id;
-            $transaccion->descripcion =  "multa por tardanza o falta";
+            $transaccion->descripcion =  "pagó ".$persona->nombres." ";
             $transaccion->usuario_id =Caja::getIdPersona();
             $transaccion->caja_id = $caja_id;
             $transaccion->save();
@@ -352,16 +339,15 @@ class ControlPersonaController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
-    public function generarreporteasistenciaPDF($fecha, Request $request)
+    public function generarreporteasistenciaPDF($fechai, $fechaf, Request $request)
     {    
-
-        $control_socioT = ControlPersona::listAsistenciaT($fecha);
+        $control_socioT = ControlPersona::listAsistenciaT($fechai, $fechaf);
         $listaT = $control_socioT->get();
 
-        $control_socioF = ControlPersona::listAsistenciaF($fecha);
+        $control_socioF = ControlPersona::listAsistenciaF($fechai, $fechaf);
         $listaF = $control_socioF->get();
-
-        $titulo = "reporte_control_asistencia_hasta".$fecha;
+        $fecha = $fechaf;
+        $titulo = "reporte_control_asistencia_hasta".$fechaf;
         $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('listaT','listaF', 'fecha'));
         $html_content = $view->render();      
  

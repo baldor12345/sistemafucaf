@@ -18,16 +18,8 @@
 					{!! Form::text('precio_accion', null, array('class' => 'form-control input-xs', 'id' => 'precio_accion', 'placeholder' => 'Ingrese precio',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 				</div>
 			</div>
-	
 			<div class="form-group ">
-				{!! Form::label('ganancia_accion', 'Ganancia por Unidad:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
-				<div class="col-sm-9 col-xs-12">
-					{!! Form::text('ganancia_accion', null, array('class' => 'form-control input-xs', 'id' => 'ganancia_accion', 'placeholder' => 'en % cada accion por mes.',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
-				</div>
-			</div>
-	
-			<div class="form-group ">
-				{!! Form::label('limite_acciones', 'Limite por Socio:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+				{!! Form::label('limite_acciones', 'Limite:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 				<div class="col-sm-9 col-xs-12">
 					{!! Form::text('limite_acciones', null, array('class' => 'form-control input-xs', 'id' => 'limite_acciones', 'placeholder' => 'en % del total',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 				</div>
@@ -40,14 +32,14 @@
 		<legend>Crédito</legend>
 		<div class="panel panel-default">
 			<div class="form-group">
-				{!! Form::label('tasa_interes_credito', 'Tasa de Interes:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+				{!! Form::label('tasa_interes_credito', 'Interes:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 				<div class="col-sm-9 col-xs-12">
 					{!! Form::text('tasa_interes_credito', null, array('class' => 'form-control input-xs', 'id' => 'tasa_interes_credito', 'placeholder' => 'en % cada credito por mes.',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 				</div>
 			</div>
 
 			<div class="form-group ">
-				{!! Form::label('tasa_interes_multa', 'Tasa de Interes Multa:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+				{!! Form::label('tasa_interes_multa', 'Interes Multa:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 				<div class="col-sm-9 col-xs-12">
 					{!! Form::text('tasa_interes_multa', null, array('class' => 'form-control input-xs', 'id' => 'tasa_interes_multa', 'placeholder' => 'en % multa por periodo.',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 				</div>

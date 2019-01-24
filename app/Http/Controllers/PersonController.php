@@ -23,7 +23,7 @@ use PDF;
 class PersonController extends Controller
 {
     protected $folderview      = 'app.persona';
-    protected $tituloAdmin     = 'Persona';
+    protected $tituloAdmin     = 'Relacion de Socios y Clientes';
     protected $tituloRegistrar = 'Registrar persona';
     protected $tituloModificar = 'Modificar persona';
     protected $titulo_control = 'Control de Asistencia Reunion Socios';
@@ -108,7 +108,7 @@ class PersonController extends Controller
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $titulo_control = $this->titulo_control;
-        $cboTipo        = [''=>'Todo']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
+        $cboTipo        = [''=>'Todo']+ array('S'=>'Socio','C'=>'Cliente');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
         $ruta             = $this->rutas;
@@ -236,7 +236,7 @@ class PersonController extends Controller
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
         $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
-        $cboTipo        = [''=>'Seleccione']+ array('S '=>'Socio','C '=>'Cliente' ,'SC' => 'Socio/Cliente');
+        $cboTipo        = [''=>'Seleccione']+ array('S '=>'Socio','C '=>'Cliente');
         $persona        = Persona::find($id);
         $entidad        = 'Persona';
         $formData       = array('persona.update', $id);
