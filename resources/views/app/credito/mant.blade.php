@@ -1,23 +1,24 @@
 
 <div id="divinfo"></div>
+<div id="divInfo{!! $entidad !!}"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('numcreditos', 0, array('id' => 'numcreditos')) !!}
 {!! Form::hidden('estado', 'I', array('id' => 'estado')) !!}
 <div class="form-row">
-    <div id='txtcliente' class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('dnicliente', 'DNI del Socio o Cliente: ', array('class' => 'dnicli')) !!}
-        {!! Form::text('dnicliente', null, array('class' => 'form-control input-xs', 'id' => 'dnicliente', 'placeholder' => 'Ingrese el DNI del cliente', 'onkeypress'=>'return filterFloat(event,this);')) !!}
-        <p id="nombrescliente" class="" >DNI Cliente Vacio</p>
+    <div class="form-group col-6 col-md-6 col-sm-12">
+        {!! Form::label('selectnom', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
+        {!! Form::select('selectnom[]', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
         <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
     </div>
-    <div id='txtaval' class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
-        {!! Form::label('dniaval', 'DNI del Aval:', array('id' => 'lblavl', 'class' => 'dniavl')) !!}
-        {!! Form::text('dniaval', 	null, array('class' => 'form-control input-xs', 'id' => 'dniaval', 'placeholder' => 'Ingrese el DNI del Aval', 'onkeypress'=>'return filterFloat(event,this);')) !!}
-        <p id="nombresaval" class="" >DNI Aval Vacio</p>
+
+    <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
+        {!! Form::label('selectaval', 'Aval: ', array('class' => 'aval')) !!}
+        {!! Form::select('selectaval[]', $cboPers, 0, array('class' => 'form-control input-sm', 'id' => 'selectaval')) !!}
         <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="0" tipoavl=''>
     </div>
+
     <div class="form-group col-6 col-md-6 col-sm-12">
         {!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => 'valor_cred')) !!}
         {!! Form::text('valor_credito', null, array('class' => 'form-control input-xs', 'id' => 'valor_credito', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
@@ -40,10 +41,6 @@
         {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descrip')) !!}
         {!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
     </div>
-    {{--  <div class="form-check form-group col-6 col-md-6 col-sm-6">
-        {!! Form::label('imprimir_voucher', '¿IMPRIMIR VOUCHER?:', array('class' => 'custom-control-input')) !!}
-        {!! Form::checkbox('imprimir_voucher', '1', true, array('class' => 'custom-control-input', 'id' => 'imprimir_voucher')) !!}
-    </div> --}}
     <div class="form-group col-6 col-md-6 col-sm-6" >
         {!! Form::button('<i class="fa fa-check fa-lg"></i>Ver Cronograma Cuotas', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
     </div>
@@ -65,110 +62,109 @@
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualcredito = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
         $('#fechacredito').val(fechaactualcredito);
-        //$("#dniaval").prop('disabled', true);
-        $(".dnicli").html('DNI del Socio o Cliente: <sup style="color: red;">Obligatorio</sup>');
-        $(".valor_cred").html('Valor de Crédito: <sup style="color: red;">Obligatorio</sup>');
-        $(".period").html('Periodo (N° Meses): <sup style="color: red;">Obligatorio</sup>');
-        $(".fechacred").html('Fecha: <sup style="color: red;">Obligatorio</sup>');
-        $('.descrip').html(' Descripción: <sup style="color: blue;">Opcional</sup>');
-        $(".dniavl").html('DNI del Aval: <sup style="color: blue;">Opcional</sup>');
-        init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-        $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
-        configurarAnchoModal('650');
-        $('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $saldo_en_caja }}</div>');
-
-        $("input[name=dnicliente]").keyup(function(event){
-            var dnicli = event.target.value+"";
-            if(dnicli.length > 6){
-                $.get("creditos/"+event.target.value+"",function(response, facultad){
-                    $('#nombrescliente').val('');
-                    $('#persona_id').val('');
-                    $('#pers_aval_id').val('');
-                    var persona = response[0];
-                    var numCreditos = response[1];
-                    if(persona.length>0){
-                    
-                        $("#nombrescliente").html(persona[0].nombres +" "+ persona[0].apellidos);
-                        $("#persona_id").val(persona[0].id);
-                        if( persona[0].tipo.trim() == 'S'){
-                            $("#persona_id").attr('tipocl','S');
-                            //$("#dniaval").prop('disabled', true);
-                            //$("#lblavl").html('DNI del Aval: <sup style="color: blue;">Opcional</sup>');
-                            if(numCreditos == '1'){
-                                $('#numcreditos').val(1);
-                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+persona[0].nombres+" "+persona[0].apellidos+" ya cuenta con 1 credito activo, por lo cual solo tiene opcion a uno mas, a una sola cuota.!</div>";
-                                $('#divMensajeError{{ $entidad }}').html(msj);
-                                $('#divMensajeError{{ $entidad }}').show();
-                                $("#persona_id").attr('tipocl','S');
-                            }else if(numCreditos >= '2'){
-                                $('#numcreditos').val(numCreditos);
-                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+persona[0].nombres+" "+persona[0].apellidos+" ya cuenta con 2 creditos activos, por lo cual no podrá obtener otro.!</div>";
-                                $('#divMensajeError{{ $entidad }}').html(msj);
-                                $('#divMensajeError{{ $entidad }}').show();
-                               
-                            }else{
-                                $('#numcreditos').val(0);
-                                $('#divMensajeError{{ $entidad }}').html("");
-                                $('#divMensajeError{{ $entidad }}').hide();
-                                $("#persona_id").attr('tipocl','s');
-                            }
-                        }else{
-                            if(numCreditos == '1'){
-                                $('#numcreditos').val(1);
-                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+persona[0].nombres+" "+persona[0].apellidos+" ya cuenta con 1 credito activo, por lo cual solo tiene opcion a uno mas, a una sola cuota.!</div>";
-                                $('#divMensajeError{{ $entidad }}').html(msj);
-                                $('#divMensajeError{{ $entidad }}').show();
-                                $("#persona_id").attr('tipocl','C');
-                                //$("#dniaval").prop('disabled', false);
-                                $("#lblavl").html('DNI del Aval: <sup style="color: blue;">Opcional</sup>');
-                            }else if(numCreditos >= '2'){
-                                $('#numcreditos').val(numCreditos);
-                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> EL Socio "+persona[0].nombres+" "+persona[0].apellidos+" ya cuenta con 2 creditos activos, por lo cual no podrá obtener otro.!</div>";
-                                $('#divMensajeError{{ $entidad }}').html(msj);
-                                $('#divMensajeError{{ $entidad }}').show();
-                            }else{
-                                var msj = "<div class='alert alert-success'><strong>¡Aviso!</strong> ¡Se recomienda un aval o garante para el cliente "+persona[0].nombres+" "+persona[0].apellidos+" si fuese mecesario (El aval debe de ser un socio).!</div>";
-                                $('#divMensajeError{{ $entidad }}').html(msj);
-                                $('#divMensajeError{{ $entidad }}').show();
-                                $('#numcreditos').val(0);
-                                $("#persona_id").attr('tipocl','C');
-                                //$("#dniaval").prop('disabled', false);
-                                $("#lblavl").html('DNI del Aval: <sup style="color: blue;">Opcional</sup>');
-                            }
-                        }
-                    }else{
-                       // $("#dniaval").prop('disabled', true);
-                        $("#lblavl").html('DNI del Aval: <sup style="color: blue;">Opcional</sup>');
-                        $("#nombrescliente").html("El DNI ingresado no existe");
-                    }
-                });
+        
+        $('#selectnom').select2({
+            dropdownParent: $("#modal"+(contadorModal-1)),
+            
+            minimumInputLenght: 2,
+            ajax: {
+               
+                url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params){
+                    return{
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data){
+                    return{
+                        results: data
+                    };
+                },
+                cache: true
             }
         });
-        $("input[name=dniaval]").keyup(function(event){
-            $.get("personas/"+event.target.value+"",function(response, facultad){
-                $('#nombresaval').val('');
-                $('#pers_aval_id').val('');
-                
-                if(response.length>0){
-                    $("#nombresaval").html(response[0].nombres +" "+ response[0].apellidos);
-                    $("#pers_aval_id").val(response[0].id);
-                    $('#pers_aval_id').attr('tipoavl', ''+(response[0].tipo).trim());
+
+
+        $('#selectnom').change(function(){
+            $('#selectaval').select2("val", "0");
+            $.get("creditos/"+$(this).val()+"",function(response, facultad){
+                var persona = response[0];
+                var numCreditos = response[1];
+                var numAcciones = response[2];
+
+                if(persona.length>0){
+                    $("#persona_id").val(persona[0].id);
+                    var msj = "<div class='alert alert-success'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li><li>Tipo: "+(persona[0].tipo.trim() == 'C'? "Cliente": "Socio")+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li></ul> </div>";
+                        $('#divInfo{{ $entidad }}').html(msj);
+                        $('#divInfo{{ $entidad }}').show();
+                        $('#numcreditos').val(numCreditos);
+                    if( persona[0].tipo.trim() == 'S'){
+                        $("#persona_id").attr('tipocl','S');
+                    }else{
+                        $("#persona_id").attr('tipocl','C');
+                    }
                 }else{
-                    $("#pers_aval_id").val(0);
-                    $('#pers_aval_id').attr('tipoavl', '0');
-                    $("#nombresaval").html("El DNI ingresado no existe");
+                    $("#persona_id").val(0);
                 }
             });
         });
 
-        $("#imprimir_voucher").change(function(event) {
-            var checkbox = event.target;
-            if (checkbox.checked) {
-                $("#imprimir_voucher").val(1);
-            } else {
-                $("#imprimir_voucher").val(0);
+        $('#selectaval').select2({
+            dropdownParent: $("#modal"+(contadorModal-1)),
+            minimumInputLenght: 2,
+            ajax: {
+                url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params){
+                    return{
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data){
+                    return{
+                        results: data
+                    };
+                },
+                cache: true
             }
         });
+        $('#selectaval').change(function(){
+            $.get("creditos/"+$(this).val()+"",function(response, facultad){
+                var persona = response[0];
+                var numCreditos = response[1];
+                var numAcciones = response[2];
+                $('#pers_aval_id').val('');
+                if(persona.length>0){
+                    $("#pers_aval_id").val(persona[0].id);
+                    $('#pers_aval_id').attr('tipoavl', ''+(persona[0].tipo).trim());
+                }else{
+                    $("#pers_aval_id").val(0);
+                    $('#pers_aval_id').attr('tipoavl', '0');
+                }
+                if($('#selectnom').val() == $('#selectaval').val()){
+                    var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
+                    $('#divMensajeError{{ $entidad }}').html(msj);
+                    $('#divMensajeError{{ $entidad }}').show();
+                }else{
+                    $('#divMensajeError{{ $entidad }}').html("");
+                    $('#divMensajeError{{ $entidad }}').hide();
+                }
+            });
+        });
+        $(".cliente").html('Socio o Cliente: <sup style="color: red;">Obligatorio</sup>');
+        $(".aval").html('Socio o Cliente: <sup style="color: blue;">Opcional</sup>');
+        $(".valor_cred").html('Valor de Crédito: <sup style="color: red;">Obligatorio</sup>');
+        $(".period").html('Periodo (N° Meses): <sup style="color: red;">Obligatorio</sup>');
+        $(".fechacred").html('Fecha: <sup style="color: red;">Obligatorio</sup>');
+        $('.descrip').html(' Descripción: <sup style="color: blue;">Opcional</sup>');
+        init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+        $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
+        configurarAnchoModal('650');
+        $('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $saldo_en_caja }}</div>');
+    
     });
     function filterFloat(evt,input){
 		// Backspace = 8, Enter = 13, ‘0′ = 48, ‘9′ = 57, ‘.’ = 46, ‘-’ = 43
@@ -205,10 +201,9 @@
 	}
     function valid(){
        var res = true;
-        if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#persona_id').val() == 0 || $('#valor_credito').val().length <= 0 || $('#periodo').val() <= 0 || $('#valor_credito').val() <= 0){
+        if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#persona_id').val() == 0 || $('#valor_credito').val().length <= 0 || $('#periodo').val() <= 0 || $('#valor_credito').val() <= 0 || $('#selectnom').val() == '0'){
             res = false;
         }
-       
         return  res;
     }
 
@@ -225,7 +220,9 @@
                 mensaje = "¡El Socio o Cliente no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
                 valida = false;
             }
-            if("{{ $saldo_en_caja }}" < $('#valor_credito').val()){
+            if({{ $saldo_en_caja }} < $('#valor_credito').val()){
+                console.log("saldo en caja: "+{{ $saldo_en_caja }});
+                console.log("valor credito: "+$('#valor_credito').val());
                 mensaje = "¡El monto de crédito ingresado, supera el saldo actual en caja!";
                 valida = false;
             }
@@ -240,36 +237,43 @@
                 }
                 
                 if(val_aval){
-                    var idformulario = IDFORMMANTENIMIENTO + entidad;
-                    var data = submitForm(idformulario);
-                    var respuesta = null;
-                    var listar = 'NO';
-                    if ($(idformulario + ' :input[id = "listar"]').length) {
-                        var listar = $(idformulario + ' :input[id = "listar"]').val()
-                    };
-                    data.done(function(msg) {
-                        respuesta = msg;
-                    }).fail(function(xhr, textStatus, errorThrown) {
-                        respuesta = 'ERROR';
-                    }).always(function() {
-                        
-                        if(respuesta[0] === 'ERROR'){
-                        }else{
+                    if($('#selectnom').val() != $('#selectaval').val()){
+                        var idformulario = IDFORMMANTENIMIENTO + entidad;
+                        var data = submitForm(idformulario);
+                        var respuesta = null;
+                        var listar = 'NO';
+                        if ($(idformulario + ' :input[id = "listar"]').length) {
+                            var listar = $(idformulario + ' :input[id = "listar"]').val()
+                        };
+                        data.done(function(msg) {
+                            respuesta = msg;
+                        }).fail(function(xhr, textStatus, errorThrown) {
+                            respuesta = 'ERROR';
+                        }).always(function() {
                             
-                            if (respuesta[0] === 'OK') {
-                                cerrarModal();
-                                modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
-                                if (listar === 'SI') {
-                                    if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-                                        entidad = entidad2;
-                                    }
-                                    buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                                }        
-                            } else {
-                                mostrarErrores(respuesta, idformulario, entidad);
+                            if(respuesta[0] === 'ERROR'){
+                            }else{
+                                
+                                if (respuesta[0] === 'OK') {
+                                    cerrarModal();
+                                    modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');
+                                    if (listar === 'SI') {
+                                        if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+                                            entidad = entidad2;
+                                        }
+                                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                                    }        
+                                } else {
+                                    mostrarErrores(respuesta, idformulario, entidad);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }else{
+                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
+                        $('#divMensajeError{{ $entidad }}').html(msj);
+                        $('#divMensajeError{{ $entidad }}').show();
+                    }
+                    
                 }
                 
             }else{
@@ -352,7 +356,7 @@
                 var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
                 montInteres =  (Interes/100)*CapitalInicial;
                 interesAcumulado = montInteres + interesAcumulado;
-                montCapital= (RoundDecimal(montCuota,1)) - (RoundDecimal( montInteres,1));
+                montCapital= (montCuota - montInteres);
                 CapitalInicial = CapitalInicial - montCapital;
                 capitalTotal += montCapital;
                 sumacuotas += montCuota;
@@ -366,8 +370,8 @@
             }
             
             interesAcumulado = interesAcumulado;
-            fila += "<tr><td>TOTAL</td><td>"+RoundDecimal(interesAcumulado,2)+"</td><td>"+
-                    RoundDecimal(capitalTotal,2)+"</td><td>"+RoundDecimal(sumacuotas,2)+"</td></tr>";
+            fila += "<tr><td>TOTAL</td><td>"+RoundDecimal(interesAcumulado,1)+"</td><td>"+
+                    RoundDecimal(capitalTotal,1)+"</td><td>"+RoundDecimal(sumacuotas,1)+"</td></tr>";
             
             $("#filasTcuotas").append(fila);
             $('#interesToal').empty();

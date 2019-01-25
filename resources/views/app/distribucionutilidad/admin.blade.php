@@ -39,6 +39,7 @@
 
 <script>
 	$(document).ready(function () {
+		$('#anio').select2();
 		$('#anio').val("{{ $anioactual }}");
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
@@ -48,6 +49,7 @@
 				buscar('{{ $entidad }}');
 			}
 		});
+		
 	});
 	function abrirmodal(ruta, titulo){
 		titulo = "Distribucion de Utilidades al año "+$('#anio').val(); 

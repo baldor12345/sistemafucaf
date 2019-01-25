@@ -85,14 +85,16 @@ class Credito extends Model
    
         return $results->get();
     }
-    
-    public static function getpersonacredito($dni){
-        $persona = Persona::where('dni','=',$dni)->get();
+
+    public static function getpersonacredito($persona_id){
+        $persona = Persona::where('id','=',$persona_id)->get();
         $numerocreditos = null;
+        $numeroacciones = null;
         if(count($persona) > 0){
-            $numerocreditos = Credito::where('estado', '=', '0')->where('persona_id','=',$persona[0]->id)->count();
+            $numerocreditos = Credito::where('estado', '=', '0')->where('persona_id','=',$persona_id)->count();
+            $numeroacciones = Acciones::where('estado','=','C')->where('persona_id','=',$persona_id)->count();
         }
-        $res = array($persona,$numerocreditos);
+        $res = array($persona, $numerocreditos, $numeroacciones);
 
         return  $res;
     }

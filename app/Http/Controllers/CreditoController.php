@@ -37,7 +37,8 @@ class CreditoController extends Controller{
         'generareportecuotasPDF' => 'creditos.generareportecuotasPDF',
         'generarecibopagocuotaPDF' => 'creditos.generarecibopagocuotaPDF',
         'generarecibocreditoPDF' => 'creditos.generarecibocreditoPDF',
-        'abrirpdf' => 'creditos.abrirpdf'
+        'abrirpdf' => 'creditos.abrirpdf',
+        'listpersonas' => 'creditos.listpersonas'
     );
 
     public function __construct(){
@@ -120,9 +121,8 @@ class CreditoController extends Controller{
             }
         }
         $saldo_en_caja= $ingresos-$egresos;
-
-        return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja'));
-    
+        $cboPers = array(0=>'Seleccione...');
+        return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja', 'cboPers'));
     }
 
     public function store(Request $request){
@@ -130,7 +130,7 @@ class CreditoController extends Controller{
         $caja_id = ($caja_id != "")?$caja_id:0;
         $res = null;
         if($caja_id != 0){
-            $numCreditos = Credito::where('estado','=','0')->where('persona_id','=', $request->get('persona_id'))->get();
+            $numCreditos = Credito::where('estado','=','0')->where('persona_id','=', $request->get('selectnom'))->get();
             $valid = true;
             if(count($numCreditos) >= 2){
                 $valid=false;
@@ -143,12 +143,10 @@ class CreditoController extends Controller{
                     $res = "El socio o Cliente ya cuenta con un crédito, solo se le permite un crédito mas a una sola cuota.!";
                 }
             }
-            //if($valid){
                 $reglas =array(
                     'valor_credito' => 'required|max:20',
                     'periodo' => 'required|max:50|integer',
-                    'tasa_interes' => 'required|max:20',
-                    'persona_id' => 'required|max:20'
+                    'tasa_interes' => 'required|max:20'
                 );
                 $validacion = Validator::make($request->all(),$reglas);
                 if ($validacion->fails()) {
@@ -163,10 +161,9 @@ class CreditoController extends Controller{
                     $fechafinal = date( 'Y-m-d' , $fechafinal);
                     $valorcredito = $request->get('valor_credito');
                     $descripcion = $request->get('descripcion');
-                    $persona_id = $request->get('persona_id');
-                    $pers_aval_id= $request->get('pers_aval_id');
+                    $persona_id = $request->get('selectnom');
+                    $pers_aval_id= $request->get('selectaval');
                     $tasa_interes = $request->input('tasa_interes');
-                    //$imprimivoucher = $request->get('imprimir_voucher');
                     $tasa_multa = $configuraciones->tasa_interes_multa;
     
                     $credito = new Credito();
@@ -212,25 +209,7 @@ class CreditoController extends Controller{
                         $cuota->credito_id = $credito->id;
                         $cuota->save();
                     }
-                    //comision voucher si esque desea imprimirlo
-                   // if($imprimivoucher == 1){
-    //---------------------------------------temporal----------------------------------------
-    /*
-                            $concepto_id = 8;
-                            $transaccion2 = new Transaccion();
-                            $transaccion2->fecha = $fechainicio;
-                            $transaccion2->monto = 0.2;
-                            $transaccion2->concepto_id = $concepto_id;
-                            $transaccion2->descripcion ='Comision por recibo credito';
-                            $transaccion2->persona_id = $persona_id;
-                            $transaccion2->usuario_id = Credito::idUser();
-                            $transaccion2->caja_id = $caja_id;
-                            $transaccion2->comision_voucher = 0.2;
-                            $transaccion2->save();
-    */
-    //---------------------------------------temporal----------------------------------------
-                  // }
-    
+         
                     //registro credito en transaccion
                     $transaccion = new Transaccion();
                     $transaccion->fecha = $fechainicio;
@@ -245,8 +224,6 @@ class CreditoController extends Controller{
                 });
                 $ultimo_credito = Credito::all()->last();
                 $res = $error;
-            //}
-            
         }else{
             $res = 'Caja no aperturada, asegurece de aperturar primero para registrar alguna transacción.!';
         }
@@ -568,9 +545,9 @@ class CreditoController extends Controller{
     }
 
 //listar el objeto persona por dni
-    public function getPersona(Request $request, $dni){
+    public function getPersona(Request $request, $persona_id){
         if($request->ajax()){
-            $res = Credito::getpersonacredito($dni);
+            $res = Credito::getpersonacredito($persona_id);
             return response()->json($res);
         }
     }
@@ -668,4 +645,19 @@ class CreditoController extends Controller{
 
 
     }
+
+    public function listpersonas(Request $request){
+        $term = trim($request->q);
+        if (empty($term)) {
+            return \Response::json([]);
+        }
+        $tags = Persona::where("dni",'ILIKE', '%'.$term.'%')->orwhere("nombres",'ILIKE', '%'.$term.'%')->orwhere("apellidos",'ILIKE', '%'.$term.'%')->limit(5)->get();
+        $formatted_tags = [];
+        foreach ($tags as $tag) {
+            $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
+        }
+
+        return \Response::json($formatted_tags);
+    }
+
 }

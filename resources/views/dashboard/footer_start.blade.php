@@ -300,6 +300,8 @@
 
 {!! Html::script('assets/js/jquery.core.js') !!}
 {!! Html::script('assets/js/jquery.app.js') !!}
+{!! Html::script('assets/js/select2.min.js') !!}
+{!! Html::script('assets/js/select2.full.min.js') !!}
 
 {!! Html::script('js/funciones.js') !!}
 
