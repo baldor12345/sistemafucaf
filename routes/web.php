@@ -168,7 +168,7 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('/generarecibopagocuotaPDF/{cuota_id?}', 'CreditoController@generarecibopagocuotaPDF')->name('creditos.generarecibopagocuotaPDF');
      Route::get('/generareportecuotasPDF/{credito_id?}', 'CreditoController@generareportecuotasPDF')->name('creditos.generareportecuotasPDF');
      Route::get('/generarecibocreditoPDF/{credito_id?}', 'CreditoController@generarecibocreditoPDF')->name('creditos.generarecibocreditoPDF');
-     
+     Route::get('creditos/listpersonas',  'CreditoController@listpersonas')->name('creditos.listpersonas');
      //Route::get('creditos/abrirpdf', 'CreditoController@abrirpdf')->name('creditos.abrirpdf');
      /*RECIBOCREDITOS*/
      Route::post('recibocuotas/buscar', 'RecibocuotasController@buscar')->name('recibocuotas.buscar');
@@ -243,7 +243,7 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('personas/{dni?}','AccionesController@getPersona');
 Route::get('acciones/{id?}','AccionesController@getListCantAcciones');
 Route::get('acciones/{id?}/{dni?}','AccionesController@getListCantAccionesPersona');
-Route::get('creditos/{dnipersona?}','CreditoController@getPersona');
+Route::get('creditos/{persona_id?}','CreditoController@getPersona');
 Route::get('provincia/cboprovincia/{id?}', array('as' => 'provincia.cboprovincia', 'uses' => 'ProvinciaController@cboprovincia'));
 Route::get('distrito/cbodistrito/{id?}', array('as' => 'distrito.cbodistrito', 'uses' => 'DistritoController@cbodistrito'));
 
