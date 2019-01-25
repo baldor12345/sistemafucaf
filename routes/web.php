@@ -243,7 +243,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('certificado', 'CertificadoController', array('except' => array('show')));
     Route::get('certificado/cargarpagarcontribucion/{id}/{listarluego}', 'CertificadoController@cargarpagarcontribucion')->name('certificado.cargarpagarcontribucion');
     Route::get('certificado/guardarpagarcontribucion', 'CertificadoController@guardarpagarcontribucion')->name('certificado.guardarpagarcontribucion');
-    Route::get('/reportecertificadoPDF/{id}', 'CertificadoController@reportecertificadoPDF')->name('reportecertificadoPDF');
+    Route::get('/reportecertificadoPDF/{id?}', 'CertificadoController@reportecertificadoPDF')->name('certificado.reportecertificadoPDF');
 
 });
 

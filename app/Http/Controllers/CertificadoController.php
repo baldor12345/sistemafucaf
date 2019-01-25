@@ -357,30 +357,26 @@ class CertificadoController extends Controller
         $monto = Libreria::getParam($request->input('monto'));
         $fecha_pago = Libreria::getParam($request->input('fecha_pago'));
         $caja_id = Libreria::getParam($request->input('caja_id'));
-        $control_id = Libreria::getParam($request->input('control_id'));
+        $certificado_id = Libreria::getParam($request->input('certificado_id'));
 
-        $control = ControlPersona::find($control_id);
-        $persona = Persona::find($control->persona_id);
+        $cert = Certificado::find($certificado_id);
+        $persona = Persona::find($cert->persona_id);
 
-        $existe = Libreria::verificarExistencia($control_id, 'control_socio');
+        $existe = Libreria::verificarExistencia($certificado_id, 'certificado');
         if ($existe !== true) {
             return $existe;
         }
-        
-        $error = DB::transaction(function() use($request, $concepto_id, $monto, $fecha_pago, $caja_id, $control_id, $persona){
+        $res = null;
+        $error = DB::transaction(function() use($request, $concepto_id, $monto, $fecha_pago, $caja_id, $certificado_id, $persona){
 
-            $control_socio            = ControlPersona::find($control_id);
-
-            $control_socio->fecha_pago = $fecha_pago;
-            $control_socio->monto = $monto;
-            $control_socio->concepto_id = $concepto_id;
-            $control_socio->estado = 'P';
-            $control_socio->caja_id =  $caja_id;
-            $control_socio->save();
+            $certificado            = Certificado::find($certificado_id);
+            $certificado->estado = 'C';
+            $certificado->save();
 
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
+            $transaccion->otros_egresos = $monto;
             $transaccion->concepto_id = $concepto_id;
             $transaccion->descripcion =  "pagó ".$persona->nombres." ";
             $transaccion->usuario_id =Caja::getIdPersona();
@@ -388,29 +384,27 @@ class CertificadoController extends Controller
             $transaccion->save();
         });
         
-        return is_null($error) ? "OK" : $error;
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $certificado_id);
+        return $respuesta;
     }
 
-    public function reportecertificadoPDF($fechai, $fechaf, Request $request)
-    {    
-        $control_socioT = ControlPersona::listAsistenciaT($fechai, $fechaf);
-        $listaT = $control_socioT->get();
+    public function reportecertificadoPDF($id){  
 
-        $control_socioF = ControlPersona::listAsistenciaF($fechai, $fechaf);
-        $listaF = $control_socioF->get();
-        $fecha = $fechaf;
-        $titulo = "reporte_control_asistencia_hasta".$fechaf;
-        $view = \View::make('app.certificado.reportecertificadoPDF')->with(compact('listaT','listaF', 'fecha'));
-        $html_content = $view->render();      
- 
+        $certificado = Certificado::find($id);
+        $persona = Persona::find($certificado->persona_id);
+
+        $titulo = "Certificado_".$persona->nombres;
+        $view = \View::make('app.certificado.reportecertificadoPDF')->with(compact('lista', 'id', 'fecha','certificado','persona'));
+        $html_content = $view->render();
+
         PDF::SetTitle($titulo);
-        PDF::AddPage('A','A4',0);
-        PDF::SetTopMargin(5);
-        //PDF::SetLeftMargin(40);
-        //PDF::SetRightMargin(40);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        PDF::SetLeftMargin(25);
+        PDF::SetRightMargin(25);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
- 
         PDF::Output($titulo.'.pdf', 'I');
     }
 }
