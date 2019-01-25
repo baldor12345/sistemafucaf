@@ -9,13 +9,13 @@
 <div class="form-row">
     <div class="form-group col-6 col-md-6 col-sm-12">
         {!! Form::label('selectnom', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
-        {!! Form::select('selectnom[]', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
+        {!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
         <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
     </div>
 
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
         {!! Form::label('selectaval', 'Aval: ', array('class' => 'aval')) !!}
-        {!! Form::select('selectaval[]', $cboPers, 0, array('class' => 'form-control input-sm', 'id' => 'selectaval')) !!}
+        {!! Form::select('selectaval', $cboPers, 0, array('class' => 'form-control input-sm', 'id' => 'selectaval')) !!}
         <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="0" tipoavl=''>
     </div>
 
@@ -81,8 +81,8 @@
                     return{
                         results: data
                     };
-                },
-                cache: true
+                }
+                
             }
         });
 

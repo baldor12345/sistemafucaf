@@ -158,11 +158,11 @@ class CreditoController extends Controller{
                     $periodo = $request->input('periodo');
                     $fechainicio = $request->input('fechacredito').date(" H:i:s");//**** */
                     $fechafinal = strtotime ( '+'.$periodo.' month' , strtotime ( $fechainicio));
-                    $fechafinal = date( 'Y-m-d' , $fechafinal);
+                    $fechafinal = date( 'Y-m-d' , $fechafinal).date(" H:i:s");
                     $valorcredito = $request->get('valor_credito');
                     $descripcion = $request->get('descripcion');
-                    $persona_id = $request->get('selectnom');
-                    $pers_aval_id= $request->get('selectaval');
+                    $persona_id = $request->input('selectnom');
+                    $pers_aval_id = $request->input('selectaval');
                     $tasa_interes = $request->input('tasa_interes');
                     $tasa_multa = $configuraciones->tasa_interes_multa;
     
@@ -176,11 +176,14 @@ class CreditoController extends Controller{
                     $credito->estado = '0';
                     $credito->descripcion = $descripcion;
                     $credito->persona_id = $persona_id;
-                    if($pers_aval_id != 0){
+                   
+                    if($pers_aval_id != '0'){
+
                         $credito->pers_aval_id = $pers_aval_id;
                     }
+
                     $credito->save();
-    
+                   
                     $montorestante =  $valorcredito;
                     $valor_cuota =  (($tasa_interes/100) * $valorcredito) / (1 - (pow(1/(1+($tasa_interes/100)), $periodo)));
                     $fecha_actual = $fechainicio;
@@ -209,7 +212,7 @@ class CreditoController extends Controller{
                         $cuota->credito_id = $credito->id;
                         $cuota->save();
                     }
-         
+                  
                     //registro credito en transaccion
                     $transaccion = new Transaccion();
                     $transaccion->fecha = $fechainicio;
@@ -221,6 +224,7 @@ class CreditoController extends Controller{
                     $transaccion->caja_id = $caja_id;
                     $transaccion->monto_credito = $valorcredito;
                     $transaccion->save();
+                 
                 });
                 $ultimo_credito = Credito::all()->last();
                 $res = $error;
@@ -230,6 +234,7 @@ class CreditoController extends Controller{
         $ultimo_credito = Credito::all()->last();
         $res = is_null($res) ? "OK" : $res;
         $respuesta = array($res, $ultimo_credito->id);
+        
         return $respuesta;
     }
 
