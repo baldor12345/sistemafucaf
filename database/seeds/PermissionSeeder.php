@@ -99,7 +99,7 @@ class PermissionSeeder extends Seeder
 				'updated_at'     => $now
 				)
 		));
-		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Control de Asistencia y Certificado')->first()->id;
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Control de Asistencia Socios')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,
@@ -109,6 +109,16 @@ class PermissionSeeder extends Seeder
 				)
 		));
 		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Distribucion de Utilidades')->first()->id;
+		DB::table('permission')->insert(array(
+			array(
+				'usertype_id' => $usertype_id,
+				'menuoption_id'  => $menuoption_id,
+				'created_at'     => $now,
+				'updated_at'     => $now
+				)
+		));
+
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Certificados')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,
