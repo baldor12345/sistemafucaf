@@ -50,6 +50,7 @@ class Transaccion extends Model
 		            		$subquery->where('concepto_id','=',$concepto_id);
 		            	}
                     })
+                    ->where('deleted_at','=',null)
                     ->where('concepto_id', '!=', 16)
                     ->where('concepto_id','!=',17)
                     ->where('deleted_at',null)
@@ -69,6 +70,7 @@ class Transaccion extends Model
                     'transaccion.monto as transaccion_monto',
                     'transaccion.descripcion as transaccion_descripcion'
                     )
+                    ->where('transaccion.deleted_at','=',null)
             ->where('concepto.titulo','!=','Interes I')
             ->where('concepto.titulo','!=','Interes E')
             ->where('transaccion.caja_id', '=', $caja_id);

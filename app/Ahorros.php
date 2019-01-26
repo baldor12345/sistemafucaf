@@ -57,6 +57,7 @@ class Ahorros extends Model
         )
         ->where('persona.nombres','LIKE', '%'.$nombre.'%')
         ->where('ahorros.fechaf','=',null)
+        ->where('ahorros.deleted_at','=',null)
         ->orderBy('persona.nombres', 'ASC');
         return $results;
     }

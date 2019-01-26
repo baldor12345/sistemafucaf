@@ -119,7 +119,7 @@ class ConceptoSeeder extends Seeder
             'created_at'     => $now,
             'updated_at'     => $now
         ));
-
+        
         DB::table('concepto')->insert(array(
             'titulo'          => 'Interes E',
             'tipo'       => 'E',
@@ -127,11 +127,18 @@ class ConceptoSeeder extends Seeder
             'updated_at'     => $now
         ));
         DB::table('concepto')->insert(array(
-            'titulo'          => 'Contribucion por Certificado de Propiedad de acciones',
+            'titulo'          => 'Contribución por Certificado de Propiedad de acciones',
             'tipo'       => 'I',
             'created_at'     => $now,
             'updated_at'     => $now
         ));
+        DB::table('concepto')->insert(array(
+            'titulo'          => 'Distribución de utilidades',
+            'tipo'       => 'E',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
+
 
     }
 }

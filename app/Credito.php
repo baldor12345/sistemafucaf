@@ -53,6 +53,7 @@ class Credito extends Model
         ->where('persona.nombres','ILIKE', '%'.$nombreAcreditado.'%')
         ->where('credito.fechai','>=',$fechai)
         ->where('credito.estado','=',$estado)
+        ->where('credito.deleted_at','=', null)
         ->orderBy('credito.fechai', 'DSC');
         return $results;
     }
@@ -91,8 +92,8 @@ class Credito extends Model
         $numerocreditos = null;
         $numeroacciones = null;
         if(count($persona) > 0){
-            $numerocreditos = Credito::where('estado', '=', '0')->where('persona_id','=',$persona_id)->count();
-            $numeroacciones = Acciones::where('estado','=','C')->where('persona_id','=',$persona_id)->count();
+            $numerocreditos = Credito::where('estado', '=', '0')->where('persona_id','=',$persona_id)->where('deleted_at','=', null)->count();
+            $numeroacciones = Acciones::where('estado','=','C')->where('persona_id','=',$persona_id)->where('deleted_at','=', null)->count();
         }
         $res = array($persona, $numerocreditos, $numeroacciones);
 
