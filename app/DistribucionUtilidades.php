@@ -66,6 +66,7 @@ class DistribucionUtilidades extends Model
                     )
                     ->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','I')
                     ->groupBy('concepto.tipo')->get();
                     
@@ -80,6 +81,7 @@ class DistribucionUtilidades extends Model
                     )
                     ->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','I')
                     ->where('concepto.titulo','!=','Compra de acciones')
                     ->where('concepto.titulo','!=','Venta de acciones')
@@ -108,6 +110,7 @@ class DistribucionUtilidades extends Model
                     )
                     ->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','E')
                     ->groupBy('concepto.tipo')->get();
         $i_pag_acum =(count($results1)<1)?0: $results1[0]->interes_ahorro;
@@ -121,6 +124,7 @@ class DistribucionUtilidades extends Model
                     )
                     ->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
                     ->where('concepto.titulo','!=','Crédito')
@@ -149,6 +153,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(cantidad) as cantidad_mes"),
                         DB::raw('extract( month from fecha) as mes')
                     )
+                    ->where('deleted_at','=', null)
                     ->where(DB::raw('extract( year from fecha)'),'=',$anio)
                     ->groupBy(DB::raw('extract( month from fecha)'))
                     ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
@@ -165,6 +170,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("extract( month from fecha) as mes")
                     )
                     ->where('persona_id','=',$persona_id)
+                    ->where('deleted_at','=',null)
                     ->where(DB::raw('extract( year from fecha)'),'=',$anio)
                     ->groupBy(DB::raw('extract( month from fecha)'))
                     ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
@@ -178,6 +184,7 @@ class DistribucionUtilidades extends Model
             DB::raw("SUM(cantidad) as cantidad_total")
         )
         ->where('persona_id','=',$persona_id)
+        ->where('deleted_at','=',null)
         ->where(DB::raw('extract( year from fecha)'),'<=',$anio_anterior)
         ->groupBy(DB::raw('persona_id'));
 

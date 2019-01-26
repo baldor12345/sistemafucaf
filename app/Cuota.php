@@ -27,6 +27,7 @@ class Cuota extends Model
     public function scopelistar($query,$idcredito){
         $results = DB::table('cuota')
         ->where('cuota.credito_id','=',$idcredito)
+        ->where('cuota.deleted_at','=',null)
         ->orderBy('cuota.fecha_programada_pago', 'ASC');
         return $results;
     }
@@ -59,6 +60,7 @@ class Cuota extends Model
         )
         ->where('persona.nombres','ILIKE', '%'.$nombre.'%')
         ->where('cuota.estado','=', '0')
+        ->where('cuota.deleted_at','=', null)
         ->where('cuota.fecha_programada_pago','<=',$fecha_p)
         ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')
         ->orderBy(DB::raw('extract( month from cuota.fecha_programada_pago)'), 'DSC');
