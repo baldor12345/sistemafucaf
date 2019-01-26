@@ -119,8 +119,8 @@ class Transaccion extends Model
                     'concepto.tipo as concepto_tipo',
                     DB::raw('sum(transaccion.monto) as monto')
                     )->where('transaccion.caja_id','=',$id)
-                    ->groupBy('concepto.titulo',
-                                'concepto.tipo');
+                    ->where('transaccion.deleted_at','=',null)
+                    ->groupBy('concepto.titulo', 'concepto.tipo');
         return $results;
     }    
 

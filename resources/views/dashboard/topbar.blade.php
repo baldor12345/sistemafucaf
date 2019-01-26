@@ -17,7 +17,7 @@ $menu2                  = generarMenuHorizontal($tipousuario_id);
                 <!-- LOGO -->
                 <div class="topbar-left">
                     <div class="text-center">
-                        <a href="index.html" class="logo"><i class="md md-equalizer"></i> <span>SIST. FUCAF</span> </a>
+                        <a href="#" class="logo"><i class="md md-equalizer"></i> <span>SIST. FUCAF</span> </a>
                     </div>
                 </div>
 
