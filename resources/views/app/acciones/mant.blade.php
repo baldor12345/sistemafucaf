@@ -8,15 +8,14 @@ use Illuminate\Support\Facades\DB;
 {!! Form::model($acciones, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
-<div class="form-group">
-	{!! Form::label('dni', 'Dni:', array('class' => 'col-sm-2 col-xs-12 control-label')) !!}
+<div>
+	{!! Form::label('dni', 'Socio:', array('class' => 'col-sm-2 col-xs-12 control-label')) !!}
 	<div class="col-sm-10 col-xs-12">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs input-number', 'id' => 'dni', 'placeholder' => 'asegurese de que el dni ya este registrado...', 'maxlength' => '8' )) !!}
-		<p id="nombresCompletos" class="" ></p>
+		{!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
 		<input type="hidden" id="persona_id", name="persona_id" value="">
 	</div>
 </div>
-<input type="hidden" id="tipo", name="tipo" value="">
+
 <input type="hidden" id="cantaccionpersona", name="cantaccionpersona" value="">
 <input type="hidden" id="cantacciontotal", name="cantacciontotal" value="">
 
@@ -112,67 +111,51 @@ use Illuminate\Support\Facades\DB;
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 		$('#fechai').val(fechai);
 
+		$('#selectnom').select2({
+            dropdownParent: $("#modal"+(contadorModal-1)),
+            
+            minimumInputLenght: 2,
+            ajax: {
+               
+                url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params){
+                    return{
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data){
+                    return{
+                        results: data
+                    };
+                },
+                cache: true
+            }
+        });
 
-		//funcion para los datos de la persona
-		$("input[name=dni]").change(function(event){
-        	$.get("personas/"+event.target.value+"",function(response, persona){
-				$('#nombres').val('');
-				$('#persona_id').val('');
-				if(response.length>0){
+		$('#selectnom').change(function(event){
+			$.get("acciones/"+$(this).val()+"", function(response, acciones){
+				var cantAcciones=0;			
+				if(response.length !=0 ){
 					for(i=0; i<response.length; i++){
-						if((response[i].estado).trim() === 'A'){
-							if((response[i].tipo).trim() === 'S' || (response[i].tipo).trim() === 'SC'){
-								document.getElementById("nombresCompletos").innerHTML = response[i].nombres +" "+ response[i].apellidos;
-								document.getElementById("persona_id").value = response[i].id;
-								document.getElementById("tipo").value = response[i].tipo;
-
-								$.get("acciones/"+event.target.value+"",function(response, acciones){
-									var cantAcciones=0;
-									
-									if(response.length !=0 ){
-										for(i=0; i<response.length; i++){
-											cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
-										}
-
-										var limite_accionPor= response[0].limite_acciones;
-										var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
-									}
-									$.get("acciones/"+event.target.value+"/1", function(response2, acciones){
-										var accion_persona = response2;
-										$('#cantaccionpersona').val(accion_persona);
-										$('#cantacciontotal').val(cantAcciones);
-									});
-
-									
-
-									document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
-													"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
-										$('#divMensajeError{{ $entidad }}').show();
-								});
-
-							}else{
-								$('#divMensajeError{{ $entidad }}').hide();
-								document.getElementById("nombresCompletos").innerHTML= "DNI ingresado no pertenece a un Socio";
-								document.getElementById("persona_id").value = "";
-								document.getElementById("tipo").value ="";
-								$('#nombres').val('');
-								$('#persona_id').val('');
-								$('#cantaccionpersona').val('');
-								$('#cantacciontotal').val('');
-							}
-						}else{
-								document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >El DNI de la persona ingresada no se encuentra activa</span></div>";
-										$('#divMensajeError{{ $entidad }}').show();
-							}
-
+						cantAcciones+=  parseInt(response[i].cantidad_accion_acumulada);
 					}
-				}else{
-					$('#divMensajeError{{ $entidad }}').hide();
-					document.getElementById("nombresCompletos").innerHTML= "DNI ingresado no existe";
-				}	
+
+					var limite_accionPor= response[0].limite_acciones;
+					var cantidad_limite = parseInt(cantAcciones*limite_accionPor);
+				}
+				$.get("acciones/"+event.target.value+"/1",function(response2, acciones){
+					$('#cantaccionpersona').val(response2);
+					$('#cantacciontotal').val(cantAcciones);
+				});
 				
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+								"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
 			});
-    	});
+		});
+
 		
 		$("#imprimir_voucher").change(function(event) {
             var checkbox = event.target;
@@ -204,7 +187,7 @@ use Illuminate\Support\Facades\DB;
 		var accion_persona1 = parseInt($('#cantaccionpersona').val());
 		var lmite = (cantidad_limite-accion_persona1);
 		var cantid = $('#cantidad_accion').val();
-		if(lmite>=cantid){
+		if(lmite<=cantid){
 			var idformulario = IDFORMMANTENIMIENTO + entidad;
 			var data         = submitForm(idformulario);
 			var respuesta    = null;

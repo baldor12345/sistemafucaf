@@ -52,6 +52,7 @@ class Transaccion extends Model
                     })
                     ->where('concepto_id', '!=', 16)
                     ->where('concepto_id','!=',17)
+                    ->where('deleted_at',null)
                     ->orderBy('concepto_id', 'ASC');
     }
 
@@ -119,6 +120,7 @@ class Transaccion extends Model
                     'concepto.tipo as concepto_tipo',
                     DB::raw('sum(transaccion.monto) as monto')
                     )->where('transaccion.caja_id','=',$id)
+                    ->where('transaccion.deleted_at',null)
                     ->groupBy('concepto.titulo',
                                 'concepto.tipo');
         return $results;

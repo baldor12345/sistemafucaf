@@ -541,6 +541,19 @@ class CajaController extends Controller
       
         $ruta             = $this->rutas;
         $inicio           = 0;
+
+        $month = array(1=>'Enero',
+                        2=>'Febrero',
+                        3=>'Marzo',
+                        4=>'Abril',
+                        5=>'Mayo',
+                        6=>'Junio',
+                        7=>'Julio',
+                        8=>'Agosto',
+                        9=>'Septiembre',
+                        10=>'Octubre',
+                        11=>'Noviembre',
+                        12=>'Diciembre');
         
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -551,9 +564,9 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.listTransac')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'idcaja'));
+            return view($this->folderview.'.listTransac')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'idcaja','month'));
         }
-        return view($this->folderview.'.listTransac')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'idcaja'));
+        return view($this->folderview.'.listTransac')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'idcaja','month'));
     
     }
 
