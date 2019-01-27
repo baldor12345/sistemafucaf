@@ -14,7 +14,7 @@ a.disabled {
 	<thead>
 		<tr>
 			@foreach($cabecera as $key => $value)
-				<th @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
+				<th style="font-size: 14px" @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
 			@endforeach
 		</tr>
 	</thead>
@@ -24,23 +24,23 @@ a.disabled {
 		?>
 		@foreach ($lista as $key => $value)
 		<tr>
-			<td>{{ $contador }}</td>
-			<td>{{ $value->titulo }}</td>	
-			<td>{{ Date::parse( $value->fecha_horaApert )->format('Y-m-d  H:i')  }}</td>
+			<td style="font-size: 14px">{{ $contador }}</td>
+			<td style="font-size: 14px">{{ $value->titulo }}</td>	
+			<td style="font-size: 14px">{{ Date::parse( $value->fecha_horaApert )->format('Y-m-d  H:i')  }}</td>
 			@if ($value->fecha_horaCierre !== null)
-			<td>{{ Date::parse( $value->fecha_horaCierre )->format('Y-m-d H:i')  }}</td>
+			<td style="font-size: 14px">{{ Date::parse( $value->fecha_horaCierre )->format('Y-m-d H:i')  }}</td>
 			@else
-			<td id="cerrado" >-</td>
+			<td id="cerrado" style="font-size: 14px" >-</td>
 			@endif
-			<td>{{ $value->monto_iniciado }}</td>
-			<td>{{ $value->monto_cierre or '-' }}</td>
-			<td>{{ $value->diferencia_monto  or '-'}}</td>
+			<td style="font-size: 14px">{{ $value->monto_iniciado }}</td>
+			<td style="font-size: 14px">{{ $value->monto_cierre or '-' }}</td>
+			<td style="font-size: 14px">{{ $value->diferencia_monto  or '-'}}</td>
 			@if ($value->estado === 'A')
-			<td style="color:green;font-weight: bold;" >Abierto</td>
+			<td style="color:green;font-weight: bold; font-size: 14px;" >Abierto</td>
 			@else
-			<td style="color:red;font-weight: bold;" >Cerrado</td>
+			<td style="color:red;font-weight: bold; font-size: 14px;" >Cerrado</td>
 			@endif
-			<td>{!! Form::button('<div class="glyphicon  glyphicon-list"></div> Ver', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_transaccion.'\', this);', 'class' => 'btn  btn-xs btn-success')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon  glyphicon-list" ></div> Ver', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_transaccion.'\', this);', 'class' => 'btn  btn-xs btn-success')) !!}</td>
 			
 			@if ($value->estado === 'C')
 			<td>{!! Form::button('<div class="glyphicon  glyphicon-plus"></div> Nuevo', array('onclick' => 'modal (\''.URL::route($ruta["nuevomovimiento"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_nuevomovimiento.'\', this);', 'class' => 'btn  btn-xs btn-info','disabled' )) !!}</td>

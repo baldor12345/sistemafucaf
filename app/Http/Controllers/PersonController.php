@@ -131,7 +131,7 @@ class PersonController extends Controller
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Persona';
         $persona        = null;
-        $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente' ,'SC' => 'Socio/Cliente');
+        $cboTipo        = [''=>'Seleccione']+ array('S'=>'Socio','C'=>'Cliente');
         $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');

@@ -37,6 +37,8 @@ class AccionesController extends Controller
             'reciboaccionpdf' => 'acciones.reciboaccionpdf',
             'reciboaccionventapdf' => 'acciones.reciboaccionventapdf',
             'index'  => 'acciones.index',
+            'listpersonas' => 'acciones.listpersonas',
+            'buscaraccion'=> 'acciones.buscaraccion'
         );
 
     /**
@@ -119,16 +121,17 @@ class AccionesController extends Controller
 
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
-        $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
+        $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
         $cboConcepto  =array(1=>'Compra de Acciones');
         $cboContribucion  =array(11=>'Contribución de Ingreso');
         $entidad        = 'Acciones';
         $acciones        = null;
         $ruta = $this->rutas;
+        $cboPers = array(0=>'Seleccione...');
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers'));
     }
 
     /**
@@ -149,20 +152,13 @@ class AccionesController extends Controller
         $res = null;
         if(count($caja_id) != 0){//validamos si existe caja aperturada
             $reglas = array(
-                'dni'        => 'required',
-                'persona_id' => 'required',
+                'selectnom'        => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'fechai'        => 'required|max:100',
                 'configuraciones_id'        => 'required|max:100'
             );
-            $messages = [
-                'dni.required' => 'El dni ingresado no es de un socio',
-                'persona_id.required' => 'El dni ingresado no es de un socio',
-                'cantidad_accion.required' => 'ingrese cantidad de acciones',
-                'configuraciones_id.required' => 'El campo concepto no debe ser vacio'
-            ];
 
-            $validacion = Validator::make($request->all(),$reglas, $messages);
+            $validacion = Validator::make($request->all(),$reglas);
             if ($validacion->fails()) {
                 return $validacion->messages()->toJson();
             }
@@ -171,12 +167,28 @@ class AccionesController extends Controller
                 $idCaja = DB::table('caja')->where('estado', "A")->value('id');
                 $cantidad_accion= $request->input('cantidad_accion');
                 if($cantidad_accion !== ''){
+
+                    $can_moment = DB::table('acciones')->where('estado','C')->count();
+                    $codigo = (count($can_moment) ==0)?0:$can_moment;
                     for($i=0; $i< $cantidad_accion; $i++){
+                        $codigo++;
                         $acciones               = new Acciones();    
                         $acciones->estado        = 'C';
                         $acciones->fechai        = $request->input('fechai').date(" H:i:s");
+                        if(strlen($codigo) == 1){
+                            $acciones->codigo = "000000".($codigo);
+                        }
+                        if(strlen($codigo) == 2){
+                            $acciones->codigo = "00000".($codigo);
+                        }
+                        if(strlen($codigo) == 3){
+                            $acciones->codigo = "0000".($codigo);
+                        }
+                        if(strlen($codigo) == 4){
+                            $acciones->codigo = "000".($codigo);
+                        }
                         $acciones->descripcion        = $request->input('descripcion');
-                        $acciones->persona_id        = $request->input('persona_id');
+                        $acciones->persona_id        = $request->input('selectnom');
                         $acciones->configuraciones_id        = $request->input('configuraciones_id');
                         $acciones->caja_id = $idCaja;
                         $acciones->concepto_id        = $request->input('concepto_id');
@@ -190,7 +202,7 @@ class AccionesController extends Controller
                     $historial_accion->estado        = 'C';
                     $historial_accion->fecha        = $request->input('fechai');
                     $historial_accion->descripcion        = $request->input('descripcion');
-                    $historial_accion->persona_id        = $request->input('persona_id');
+                    $historial_accion->persona_id        = $request->input('selectnom');
                     $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
                     $historial_accion->caja_id = $idCaja;
                     $historial_accion->concepto_id        = $request->input('concepto_id');
@@ -205,7 +217,7 @@ class AccionesController extends Controller
                 $precio = $result->precio_accion;
                 $monto_ingreso = ($cantidad_accion*$precio);
                 //datos de la persona
-                $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
+                $persona_nombre = DB::table('persona')->where('id', $request->input('selectnom'))->value('nombres');
 
                 //comision voucher si esque desea imprimirlo
                 $transaccion = new Transaccion();
@@ -214,7 +226,8 @@ class AccionesController extends Controller
                 $transaccion->acciones_soles = $monto_ingreso;
                 $transaccion->concepto_id = $request->input('concepto_id');
                 $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
-                $transaccion->persona_id = $request->input('persona_id');
+                $transaccion->persona_id = $request->input('selectnom');
+                $transaccion->inicial_tabla ="AC";
                 $transaccion->usuario_id =Caja::getIdPersona();
                 $transaccion->caja_id =$idCaja;
                 $transaccion->save();
@@ -227,6 +240,7 @@ class AccionesController extends Controller
                     $transaccion->concepto_id = $request->input('contribucion_id');
                     $transaccion->descripcion = "aporte como nuevo socio";
                     $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->inicial_tabla ="AC";
                     $transaccion->caja_id =$idCaja;
                     $transaccion->save();
                 }
@@ -329,24 +343,70 @@ class AccionesController extends Controller
 
     public function listacciones($persona_id, Request $request)
     {
-        $listAcciones        = Acciones::listAcciones($persona_id);
-        $lista           = $listAcciones->get();
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
 
-        $cabecera         = array();
-        $cabecera[]       = array('valor' => '#', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Cantidad', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Voucher', 'numero' => '1');
+        $entidad = "Accion1";
         $titulo_detalle = $this->tituloDetalle;
         $ruta             = $this->rutas;
         $inicio           = 0;
-        if (count($lista) > 0) {
-            return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'cabecera',  'ruta', 'inicio', 'persona_id'));
-        }
-        return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta'));
+    
+        return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta','idcaja','titulo_detalle'));
     }
+
+    public function buscaraccion(Request $request){
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $entidad ='Accion1';
+        $persona_id      = Libreria::getParam($request->input('persona_id'));
+        $resultado        = Acciones::listAcciones($persona_id);
+        $lista            = $resultado->get();
+     
+
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Voucher', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
+      
+        $titulo_eliminar  = $this->tituloEliminar;
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+
+        $Month = array(1=>'Enero',
+                        2=>'Febrero',
+                        3=>'Marzo',
+                        4=>'Abril',
+                        5=>'Mayo',
+                        6=>'Junio',
+                        7=>'Julio',
+                        8=>'Agosto',
+                        9=>'Septiembre',
+                        10=>'Octubre',
+                        11=>'Noviembre',
+                        12=>'Diciembre');
+        
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar'));
+        }
+        return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar'));
+    
+    }
+
+
+
+
     //listar el objeto persona por dni
     public function getPersona(Request $request, $dni){
         
@@ -365,10 +425,10 @@ class AccionesController extends Controller
     }
 
     //listar la cantidad de acciones acumuladas por persona
-    public function getListCantAccionesPersona(Request $request, $dni, $n){
+    public function getListCantAccionesPersona(Request $request, $persona_id, $n){
+        $id_persona = intval($persona_id);
         if($request->ajax()){
-            $persona_id = DB::table('persona')->where('dni', $dni)->pluck('id');
-            $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$persona_id)->count();
+            $CantAcciones = DB::table('acciones')->where('persona_id',$id_persona)->where('estado', 'C')->count();
             return response()->json($CantAcciones);
         }
     }
@@ -388,20 +448,21 @@ class AccionesController extends Controller
         if (isset($listarParam)) {
             $listar = $listarParam;
         }
+        $cboPers = array(0=>'Seleccione...');
         $nom = '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos;
-        $cboConfiguraciones = array('' => 'Seleccione') + Configuraciones::pluck('precio_accion', 'id')->all();
+        $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
         $cboConcepto  =array(2=>'Venta de Acciones');
         $acciones        = Acciones::find($id);
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones','cboPers'));
     }
 
     public function guardarventa(Request $request, $id)
     {
         $idpropietario= $request->input('idpropietario');
-        $idcomprador= $request->input('idcomprador');
+        $idcomprador= $request->input('selectnom');
 
         $existe = Libreria::verificarExistencia($id, 'persona');
         if ($existe !== true) {
@@ -415,19 +476,12 @@ class AccionesController extends Controller
         if(count($caja_id) != 0){//validamos si existe caja aperturada
 
             $reglas = array(
-                'dni'        => 'required',
-                'idcomprador' => 'required',
+                'selectnom'        => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'configuraciones_id'        => 'required|max:100'
             );
-            $messages = [
-                'dni.required' => 'El dni ingresado no es de un socio',
-                'idcomprador.required' => 'El dni ingresado no es de un socio',
-                'cantidad_accion.required' => 'ingrese cantidad de acciones',
-                'configuraciones_id.required' => 'El campo concepto no debe ser vacio'
-            ];
 
-            $validacion = Validator::make($request->all(),$reglas, $messages);
+            $validacion = Validator::make($request->all(),$reglas);
             if ($validacion->fails()) {
                     return $validacion->messages()->toJson();
             }
@@ -441,39 +495,31 @@ class AccionesController extends Controller
 
             $res = null;
 
-
-            if($cantidad_accion !== ''){            
-                for($i=0; $i< $cantidad_accion; $i++){
-                    $idaccion= $acciones_por_persona[$i]->id;
-                    $error  = DB::transaction(function() use ($idaccion,$descripcion_venta, $fechaf, $concepto_id){
-                        $acciones                 = Acciones::find($idaccion); 
-                        $acciones->estado        = 'V';
-                        $acciones->descripcion        = $descripcion_venta;
-                        $acciones->fechaf = $fechaf;
-                        $acciones->concepto_id        = $concepto_id;
-                        $acciones->save();
-                    });
-                }
-            }
-
-
             //funcion para registrar las acciones del comprador
-            
-            $error = DB::transaction(function() use($request){
-                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+            $vendidas = Acciones::where('estado','C')->where('persona_id',$request->input('idpropietario'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'ASC')->get();
+
+            $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+            $error = DB::transaction(function() use($request, $vendidas, $descripcion_venta, $fechaf, $concepto_id, $idCaja ){
                 $cantidad_accion= $request->input('cantidad_accion');
-                if($cantidad_accion !== ''){
-                    for($i=0; $i< $cantidad_accion; $i++){
-                        $acciones               = new Acciones();    
-                        $acciones->estado        = 'C';
-                        $acciones->fechai        = $request->input('fechai').date(" H:i:s");
-                        $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
-                        $acciones->persona_id        = $request->input('idcomprador');
-                        $acciones->configuraciones_id        = $request->input('configuraciones_id');
-                        $acciones->caja_id =$idCaja;
-                        $acciones->concepto_id        =  1;
-                        $acciones->save();
-                    }
+
+                foreach($vendidas as $value){
+                    $acciones                 = Acciones::find($value->id); 
+                    $acciones->estado        = 'V';
+                    $acciones->descripcion        = $descripcion_venta;
+                    $acciones->fechaf = $fechaf;
+                    $acciones->concepto_id        = $concepto_id;
+                    $acciones->save();
+
+                    $acciones               = new Acciones();    
+                    $acciones->estado        = 'C';
+                    $acciones->fechai        = $request->input('fechai').date(" H:i:s");
+                    $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $value->persona_id)->value('nombres');
+                    $acciones->persona_id        = $request->input('selectnom');
+                    $acciones->codigo               =$value->codigo;
+                    $acciones->configuraciones_id        = $request->input('configuraciones_id');
+                    $acciones->caja_id =$idCaja;
+                    $acciones->concepto_id        =  1;
+                    $acciones->save();
                 }
 
                 if($cantidad_accion !== ''){
@@ -496,7 +542,7 @@ class AccionesController extends Controller
                     $historial_accion->estado        = 'C';
                     $historial_accion->fecha        = $request->input('fechai');
                     $historial_accion->descripcion        = $request->input('descripcion');
-                    $historial_accion->persona_id        = $request->input('idcomprador');
+                    $historial_accion->persona_id        = $request->input('selectnom');
                     $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
                     $historial_accion->caja_id = $idCaja;
                     $historial_accion->concepto_id        = $request->input('concepto_id');
@@ -508,7 +554,7 @@ class AccionesController extends Controller
                 $idCaja = DB::table('caja')->where('estado', "A")->value('id');
                 $cant_tranferencia= $request->input('cantidad_accion');
                 //datos de la persona
-                $persona_comprador = DB::table('persona')->where('id', $request->input('idcomprador'))->value('nombres');
+                $persona_comprador = DB::table('persona')->where('id', $request->input('selectnom'))->value('nombres');
                 $persona_vendedor = DB::table('persona')->where('id', $request->input('idpropietario'))->value('nombres');
                 //registro de venta en la transaccion
 
@@ -518,6 +564,7 @@ class AccionesController extends Controller
                 $transaccion->concepto_id = $request->input('concepto_id');
                 $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
                 $transaccion->usuario_id =Caja::getIdPersona();
+                $transaccion->inicial_tabla ="AC";
                 $transaccion->caja_id =$idCaja;
                 $transaccion->save();
                 
@@ -526,7 +573,7 @@ class AccionesController extends Controller
             $cant = $request->input('cantidad_accion');
             $fecha = $request->input('fechai').date(" H:i:s");
             $id_vendedor = $request->input('idpropietario');
-            $id_comprador = $request->input('idcomprador');
+            $id_comprador = $request->input('selectnom');
             $res = $error;
         }else{
             $res = "No hay una caja aperturada, por favor aperture una caja ...!";
@@ -539,13 +586,14 @@ class AccionesController extends Controller
     //metodo para generar voucher en pdf
     public function generarvoucheraccionPDF($id, $cant, $fecha, Request $request)
     {    
-        $detalle        = Acciones::listAcciones($id);
-        $lista           = $detalle->get();
+
+        $cantidad =  Acciones::where('estado','C')->where('persona_id',$id)->where('fechai',$fecha)->where('deleted_at','=',null)->count();
+
         $persona = DB::table('persona')->where('id', $id)->first();
         $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
-        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
-        $titulo = $persona->nombres.$cant;
-        $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->where('deleted_at','=',null)->count();
+        $titulo = $persona->nombres.$cantidad;
+        $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cantidad', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -561,13 +609,13 @@ class AccionesController extends Controller
     //metodo para generar voucher en pdf
     public function generarvoucheraccionventaPDF($id, $cant, $fecha, Request $request)
     {    
-        $detalle        = Acciones::listAcciones($id);
-        $lista           = $detalle->get();
+        $cantidad =  Acciones::where('estado','C')->where('persona_id',$id)->where('fechai',$fecha)->where('deleted_at','=',null)->count();
+
         $persona = DB::table('persona')->where('id', $id)->first();
         $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
-        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+        $CantAcciones = DB::table('acciones')->where('estado', 'V')->where('persona_id',$id)->where('deleted_at','=',null)->count();
         $titulo = $persona->nombres.$cant;
-        $view = \View::make('app.acciones.generarvoucheraccionventaPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
+        $view = \View::make('app.acciones.generarvoucheraccionventaPDF')->with(compact('lista', 'id', 'persona','cantidad', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -657,4 +705,89 @@ class AccionesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    public function listpersonas(Request $request){
+        $term = trim($request->q);
+        if (empty($term)) {
+            return \Response::json([]);
+        }
+        $tags = Persona::where("dni",'ILIKE', '%'.$term.'%')->orwhere("nombres",'ILIKE', '%'.$term.'%')->orwhere("apellidos",'ILIKE', '%'.$term.'%')->limit(5)->get();
+        $formatted_tags = [];
+        foreach ($tags as $tag) {
+            if($tag->tipo == 'S '){
+                $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
+            }else{
+                //$formatted_tags[] = ['id'=> '', 'text'=>"seleccione socio"];
+            }
+        }
+
+        return \Response::json($formatted_tags);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $existe = Libreria::verificarExistencia($id, 'acciones');
+        if ($existe !== true) {
+            return $existe;
+        }
+
+        $error = DB::transaction(function() use($id){
+            $acciones = Acciones::find($id);
+            $fecha = $acciones->fechai;
+            $configuraciones = Configuraciones::find($acciones->configuraciones_id);
+
+            $concepto_id = $acciones->concepto_id;
+            $persona_id = $acciones->persona_id;
+
+            $transacciones = Transaccion::where('persona_id',$acciones->persona_id)->where('fecha',$acciones->fechai)->where('inicial_tabla','AC')->get();
+            $cantidad = ((($transacciones[0]->monto)/($configuraciones->precio_accion))-1);
+            $caja_id =$transacciones[0]->caja_id;
+
+            $transacciones[0]->delete();
+            $acciones->delete();
+
+            $transaccion = new Transaccion();
+            $transaccion->fecha = $fecha;
+            $transaccion->monto = ($cantidad*($configuraciones->precio_accion));
+            $transaccion->acciones_soles = ($cantidad*($configuraciones->precio_accion));
+            $transaccion->concepto_id = $concepto_id;
+            $transaccion->descripcion = " compro ".$cantidad." acciones";
+            $transaccion->persona_id = $persona_id;
+            $transaccion->inicial_tabla ="AC";
+            $transaccion->usuario_id =Caja::getIdPersona();
+            $transaccion->caja_id =$caja_id;
+            $transaccion->save();
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
+    /**
+     * Función para confirmar la eliminación de un registrlo
+     * @param  integer $id          id del registro a intentar eliminar
+     * @param  string $listarLuego consultar si luego de eliminar se listará
+     * @return html              se retorna html, con la ventana de confirmar eliminar
+     */
+    public function eliminar($id, $listarLuego)
+    {
+        $existe = Libreria::verificarExistencia($id, 'acciones');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar = "NO";
+        if (!is_null(Libreria::obtenerParametro($listarLuego))) {
+            $listar = $listarLuego;
+        }
+        $modelo   = Acciones::find($id);
+        $entidad  = 'Accion1';
+        $formData = array('route' => array('acciones.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton    = 'Eliminar';
+        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
 }

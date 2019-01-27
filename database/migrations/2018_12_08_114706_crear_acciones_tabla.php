@@ -18,6 +18,7 @@ class CrearAccionesTabla extends Migration
             $table->char('estado',1)->nullable();//C=compra V=venta
             $table->timestamp('fechai')->nullable();
             $table->timestamp('fechaf')->nullable();
+            $table->string('codigo', 400)->nullable();
             $table->string('descripcion', 400)->nullable();
             $table->integer('persona_id')->unsigned();
             $table->integer('configuraciones_id')->unsigned();

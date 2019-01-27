@@ -71,7 +71,7 @@
 					<b>MONTO PAGADO S/.:</b>
 				</td>
 				<td align="left" style="font-size: 10px" colspan="1">
-					<b> {{ $cant*10 }}</b>
+					<b> {{ $cantidad*10 }}</b>
 				</td>
 				<td rowspan="2" align="center" >Ahorro Total: <br><b> {{ $monto_ahorro }}</b></td>
 			</tr>
@@ -80,7 +80,7 @@
 					<b>CANTIDAD DE ACCIONES:</b>
 				</td>
 				<td align="left" style="font-size: 10px" colspan="1">
-					<b> {{ $cant }}</b>
+					<b> {{ $cantidad }}</b>
 				</td>
 			</tr>
 		</table>

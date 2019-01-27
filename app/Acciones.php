@@ -68,6 +68,7 @@ class Acciones extends Model
                     DB::raw('count(acciones.estado) as cantidad_accion_comprada')
                     )
             ->where('acciones.estado', '=', 'C')
+            ->where('acciones.deleted_at',null)
             ->groupBy('persona.id','persona.codigo','persona.dni','persona.nombres',
                                 'persona.apellidos','configuraciones.codigo','acciones.persona_id',
                                 'acciones.estado','configuraciones.precio_accion');
@@ -77,32 +78,27 @@ class Acciones extends Model
 
     public static function listAcciones($persona_id){
         $results = DB::table('acciones')
-            ->join('persona', 'acciones.persona_id', '=', 'persona.id')
-            ->select( 
-                    'acciones.estado as acciones_estado',
-                    'acciones.fechai as acciones_fecha',
-                    'acciones.descripcion as acciones_descripcion',
-                    'acciones.persona_id as acciones_persona_id',
-                    'persona.id',
-                    'persona.codigo AS persona_codigo',
-                    'persona.dni as persona_dni',
-                    'persona.nombres as persona_nombres',
-                    'persona.apellidos as persona_apellidos',
-                    DB::raw('count(acciones.estado) as cantidad_accion_comprada')
-                    )
+                    ->select( 
+                        'acciones.estado as accion_estado',
+                        'acciones.fechai as accion_fecha',
+                        'acciones.descripcion as accion_descripcion',
+                        'acciones.persona_id as accion_persona_id',
+                        'acciones.codigo as accion_codigo',
+                        'acciones.id as accion_id'
+                        )
                     ->where('acciones.persona_id', '=', $persona_id)
-                    ->groupBy('acciones.estado','acciones.fechai', 'acciones.descripcion', 'acciones.persona_id',
-                                'persona.id');
+                    ->where('acciones.deleted_at',null)
+                    ->orderBy('acciones.codigo','DSC');
         return $results;
         			
     }
 
-    public static function cant_acciones_acumuladas($persona_dni){
-        $persona_id = DB::table('persona')->where('dni', $persona_dni)->pluck('id');
+    public static function cant_acciones_acumuladas($persona_id){
         return  DB::table('acciones')
                 ->join('persona', 'acciones.persona_id', '=', 'persona.id')
                 ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
-                ->select( 
+                ->select(
+                        'persona.id as persona_id', 
                         'persona.nombres as persona_nombres',
                         'persona.tipo as persona_tipo',
                         'configuraciones.limite_acciones as limite_acciones',
@@ -110,7 +106,8 @@ class Acciones extends Model
                 )
                 ->where('acciones.persona_id', '!=', $persona_id)
                 ->where('acciones.estado', '=', 'C')
-                ->groupBy('configuraciones.limite_acciones','persona.tipo', 'persona.nombres')->get();
+                ->where('acciones.deleted_at',null)
+                ->groupBy('configuraciones.limite_acciones','persona.tipo', 'persona.nombres','persona.id')->get();
     }
 
     //metodo listar cantidad de acciones por socio para el calculo de las normas 
@@ -127,6 +124,7 @@ class Acciones extends Model
                     )
                     ->where('persona.tipo','=','S')
                     ->orWhere('persona.tipo', 'SC')
+                    ->where('acciones.deleted_at',null)
                     ->where('persona.deleted_at','=',null)
                     ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos');
         return $results;

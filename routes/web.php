@@ -145,16 +145,19 @@ Route::group(['middleware' => 'auth'], function () {
 
     /*ACCIONES*/
     Route::post('acciones/buscar', 'AccionesController@buscar')->name('acciones.buscar');
+    Route::get('acciones/eliminar/{id}/{listarluego}','AccionesController@eliminar')->name('acciones.eliminar');
     Route::resource('acciones', 'AccionesController', array('except' => array('show')));
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
+    Route::get('acciones/buscaraccion', 'AccionesController@buscaraccion')->name('acciones.buscaraccion');
     Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
     Route::post('acciones/guardarventa/{id}', 'AccionesController@guardarventa')->name('acciones.guardarventa');
     Route::get('/generarvoucheraccionPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionPDF')->name('generarvoucheraccionPDF');
     Route::get('/generarvoucheraccionventaPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionventaPDF')->name('generarvoucheraccionventaPDF');
     Route::get('/generarnormasaccionPDF', 'AccionesController@generarnormasaccionPDF')->name('generarnormasaccionPDF');
-    
+    Route::get('acciones/listpersonas',  'AccionesController@listpersonas')->name('acciones.listpersonas');
     Route::get('/reciboaccionpdf/{accion_id?}/{cant?}/{fecha?}', 'AccionesController@reciboaccionpdf')->name('acciones.reciboaccionpdf');
     Route::get('/reciboaccionventapdf/{id_comprador?}/{id_vendedor?}/{cant?}/{fecha?}', 'AccionesController@reciboaccionventapdf')->name('acciones.reciboaccionventapdf');
+
 
      /*CREDITO*/
      Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
@@ -247,7 +250,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 });
 
-Route::get('personas/{dni?}','AccionesController@getPersona');
+//Route::get('personas/{dni?}','AccionesController@getPersona');
 Route::get('acciones/{id?}','AccionesController@getListCantAcciones');
 Route::get('acciones/{id?}/{dni?}','AccionesController@getListCantAccionesPersona');
 Route::get('creditos/{persona_id?}','CreditoController@getPersona');

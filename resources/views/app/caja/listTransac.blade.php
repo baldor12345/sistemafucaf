@@ -6,7 +6,7 @@
 	<thead>
 		<tr>
 			@foreach($cabecera as $key => $value)
-			<th @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
+			<th style="font-size: 13px" @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
 			@endforeach
 		</tr>
 	</thead>
@@ -16,21 +16,21 @@
 		?>
 		@foreach ($lista as $key => $value)
 		<tr>
-			<td>{{ $contador }}</td>
-			<td>{{ Date::parse($value->fecha )->format('Y/m/d')  }}</td>
-			<td>{{ number_format($value->monto,1) }}</td>
-			<td>{{ $value->concepto->titulo }}</td>
+			<td style="font-size: 13px">{{ $contador }}</td>
+			<td style="font-size: 13px">{{ $month[intval(Date::parse($value->fecha )->format('m'))].' - '.Date::parse($value->fecha )->format('Y')  }}</td>
+			<td style="font-size: 13px">{{ number_format($value->monto,1) }}</td>
+			<td style="font-size: 13px">{{ $value->concepto->titulo }}</td>
 			@if ($value->concepto->tipo === 'I')
 			<td style="color:green;font-weight: bold;" >Ingreso</td>
 			@else
 			<td style="color:red;font-weight: bold;" >Egreso</td>
 			@endif
 			@if ($value->persona != null)
-			<td>{{ $value->persona->nombres.' '.$value->persona->apellidos }}</td>
+			<td style="font-size: 13px">{{ $value->persona->nombres.' '.$value->persona->apellidos }}</td>
 			@else
-			<td > - - -</td>
+			<td style="font-size: 13px"> - - -</td>
 			@endif
-			<td>{{ $value->descripcion }}</td>
+			<td style="font-size: 13px">{{ $value->descripcion }}</td>
 		</tr>
 		<?php
 			$contador = $contador + 1;

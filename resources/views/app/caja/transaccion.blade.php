@@ -27,22 +27,22 @@
 				<table class="table-bordered table-striped table-condensed" align="center">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="2"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Resumen de Caja</font></font></th>
+							<th class="text-center" colspan="2"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Resumen de Caja</font></font></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Ingresos :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ number_format($ingresos,1) }}</font></font></th>
+							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Ingresos :</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ number_format($ingresos,1) }}</font></font></th>
 						</tr>
 
 						<tr>
-							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Egresos :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ number_format($egresos,1) }}</font></font></th>
+							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Egresos :</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ number_format($egresos,1) }}</font></font></th>
 						</tr>
 						<tr>
-							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Saldo :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ number_format($diferencia,1) }}</font></font></th>
+							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Saldo :</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ number_format($diferencia,1) }}</font></font></th>
 						</tr>
 					</tbody>
 				</table>
