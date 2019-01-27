@@ -1,19 +1,16 @@
+<div id="divInfo{!! $entidad !!}"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($ahorros, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	<div class="row">
 	<div class="card-box table-responsive crbox">
 		<div class="form-group">
-			<div class="form-group col-6 col-md-6 col-sm-6">
-				{!! Form::label('dnicl', 'DNI del Cliente: *', array('class' => 'control-label')) !!}
-				@if($ahorros = null)
-				{!! Form::text('dnicl', null, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente','onkeypress'=>'return filterFloat(event,this);')) !!}
-				@else
-				{!! Form::text('dnicl', $dni, array('class' => 'form-control input-xs', 'id' => 'dnicl', 'placeholder' => 'Ingrese el DNI del cliente','onkeypress'=>'return filterFloat(event,this);')) !!}
-				@endif
-				<p id="nombrescl" class="" >DNI Cliente Vacio</p>
-				<input type="hidden" id="persona_id" name="persona_id" value="" >
+			<div class="form-group col-6 col-md-6 col-sm-12">
+				{!! Form::label('selectpersona', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
+				{!! Form::select('selectpersona', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectpersona')) !!}
+				<input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
 			</div>
+			
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px">
 				{!! Form::label('capital', 'Importe S/.: *', array('class' => '')) !!}
 				{!! Form::text('capital', null, array('class' => 'form-control input-md', 'id' => 'capital', 'placeholder' => 'Ingrese el monto de ahorro', 'onkeypress'=>'return filterFloat(event,this);')) !!}
@@ -40,7 +37,6 @@
 				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 			</div>
 		</div>
-		
 	</div>
 	</div>
 {!! Form::close() !!}
@@ -51,51 +47,52 @@ $(document).ready(function() {
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day;
 		$('#fechai').val(fechai);
-
-	if($('#dnicl').val() != ''){
-		$.get("personas/"+$('#dnicl').val()+"",function(response, facultad){
-			if(response.length>0){
-				$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
-				$("#persona_id").val(response[0].id);
-			}else{
-				$("#nombrescl").html("El DNI ingresado no existe");
-			}
-		});
-	}
-
 	configurarAnchoModal('650');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-	$("input[name=dnicl]").keyup(function(event){
-		var valdni = event.target.value;
-		if(!isNaN(valdni) && valdni.length >6){
-			$.get("personas/"+event.target.value+"",function(response, facultad){
-				$('#nombrescl').val('');
-				$('#persona_id').val('');
-				if(response.length>0){
-					$("#nombrescl").html(response[0].nombres +" "+ response[0].apellidos);
-					$("#persona_id").val(response[0].id);
-				}else{
-					$("#nombrescl").html("El DNI ingresado no existe");
-				}
-			});
+	$('#selectpersona').select2({
+		dropdownParent: $("#modal"+(contadorModal-1)),
+		
+		minimumInputLenght: 2,
+		ajax: {
+			url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+			dataType: 'json',
+			delay: 250,
+			data: function(params){
+				return{
+					q: $.trim(params.term)
+				};
+			},
+			processResults: function(data){
+				return{
+					results: data
+				};
+			}
 		}
 	});
-}); 
-/*
-function guardarahorro1(entidad, rutarecibo){
-	if(isNaN($('#capital').val()) == false){
-		if($('#capital').val() != ''){
-			guardar(entidad);
-		}else{
-			var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de Monto vacio.!</strong></div>';
-			$('#divMensajeErrorAhorros').html(mensaje);
-		}
-	}else{
-		var mensaje = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Valor de monto no válido.!</strong></div>';
-        $('#divMensajeErrorAhorros').html(mensaje);
-	}
-}*/
+	$('#selectpersona').change(function(){
 
+		$.get("creditos/"+$(this).val()+"",function(response, facultad){
+			var persona = response[0];
+			var numCreditos = response[1];
+			var numAcciones = response[2];
+
+			if(persona.length>0){
+				$("#persona_id").val(persona[0].id);
+				var msj = "<div class='alert alert-success'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li><li>Tipo: "+(persona[0].tipo.trim() == 'C'? "Cliente": "Socio")+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li></ul> </div>";
+					$('#divInfo{{ $entidad }}').html(msj);
+					$('#divInfo{{ $entidad }}').show();
+					
+				if( persona[0].tipo.trim() == 'S'){
+					$("#persona_id").attr('tipocl','S');
+				}else{
+					$("#persona_id").attr('tipocl','C');
+				}
+			}else{
+				$("#persona_id").val(0);
+			}
+		});
+	});
+}); 
 function guardarahorro(entidad,rutarecibo) {
 	var idformulario = IDFORMMANTENIMIENTO + entidad;
 	var data         = submitForm(idformulario);

@@ -59,7 +59,7 @@
     function retirar(id,rutarecibo){
         
         if($('#montoretiro').val() != ''){
-            if(isNaN($('#montoretiro').val()) == false){
+            if(isNaN($('#montoretiro').val()) == false && $('#montoretiro').val() > 0){
                 if($('#montoretiro').val() <= {{ round($ahorro->capital,1) }}){
                     if($('#montoretiro').val() <= {{ round($saldo_en_caja,1) }}){
                         $.ajax({

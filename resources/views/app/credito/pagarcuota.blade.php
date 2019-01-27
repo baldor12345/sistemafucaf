@@ -12,10 +12,6 @@
         {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
         {!! Form::date('fecha_pago', null, array('class' => 'form-control input-xs', 'id' => 'fecha_pago')) !!}
     </div>
-   {{-- <div class="form-check form-group col-12 col-md-12 col-sm-12">
-        {!! Form::checkbox('imprimir_voucherpago', '0', false, array('class' => 'form-check-input', 'id' => 'imprimir_voucherpago')) !!}
-        {!! Form::label('imprimir_voucherpago', 'IMPRIMIR VOUCHER:', array('class' => 'form-check-label')) !!}
-    </div>--}}
 </div>
 
 <div class="form-group">
@@ -27,6 +23,9 @@
 </div>
 
 {!! Form::close() !!}
+<?php
+$fecha_pago = null;
+?>
 <script>
     $(document).ready(function(){
         var fechaActual = new Date();
@@ -55,42 +54,51 @@
 
     
     function guardarPagoCuota (entidad, idboton) {
-        var idformulario = IDFORMMANTENIMIENTO + entidad;
-        var data = submitForm(idformulario);
-        var respuesta  = '';
-        var btn = $(idboton);
-        btn.button('loading');
-        data.done(function(msg) {
-            respuesta = msg;
-        }).fail(function(xhr, textStatus, errorThrown) {
-            respuesta = 'ERROR';
-        }).always(function() {
-            btn.button('reset');
-            if(respuesta === 'ERROR'){
-            }else{
-                if (respuesta === 'OK') {
-                    cerrarModal();
-                    if("{{ $entidad_recibo }}" == "nan"){
-                        buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                        buscar('{{ $entidad_credito }}');
-                    }else{
-                        buscar('{{ $entidad_recibo }}');
+        var fechap = new Date($('#fecha_pago').val());
+        var anio_mes = fechap.getFullYear()+"-"+fechap.getMonth();
+        if(anio_mes >= "{{ date('Y-m',strtotime($cuota->fecha_programada_pago)) }}"){
+
+            var idformulario = IDFORMMANTENIMIENTO + entidad;
+            var data = submitForm(idformulario);
+            var respuesta  = '';
+            var btn = $(idboton);
+            btn.button('loading');
+            data.done(function(msg) {
+                respuesta = msg;
+            }).fail(function(xhr, textStatus, errorThrown) {
+                respuesta = 'ERROR';
+            }).always(function() {
+                btn.button('reset');
+                if(respuesta === 'ERROR'){
+                }else{
+                    if (respuesta === 'OK') {
+                        cerrarModal();
+                        if("{{ $entidad_recibo }}" == "nan"){
+                            buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                            buscar('{{ $entidad_credito }}');
+                        }else{
+                            buscar('{{ $entidad_recibo }}');
+                        }
+                        
+                        if($("#imprimir_voucherpago").val() == 1){
+                            var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array($cuota->id))}}";
+                            //window.open(rutarecibopagocuota+"/{{ $cuota->id }}", "Voucher credito", "width=700, height=500, left=50, top=20");
+                            var anchoModal = '700';
+                            modalrecibopdf(rutarecibopagocuota,anchoModal);
+                        }  
+                    } else {
+                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+respuesta+"</div>";
+                        $('#divMensajeError{{ $entidad_cuota }}1').html(msj);
+                        $('#divMensajeError{{ $entidad_cuota }}1').show();
+                    // mostrarErrores(respuesta, idformulario, entidad);
                     }
-                    
-                    if($("#imprimir_voucherpago").val() == 1){
-                        var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array($cuota->id))}}";
-                        //window.open(rutarecibopagocuota+"/{{ $cuota->id }}", "Voucher credito", "width=700, height=500, left=50, top=20");
-                        var anchoModal = '700';
-                        modalrecibopdf(rutarecibopagocuota,anchoModal);
-                    }  
-                } else {
-                    var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+respuesta+"</div>";
-                    $('#divMensajeError{{ $entidad_cuota }}1').html(msj);
-                    $('#divMensajeError{{ $entidad_cuota }}1').show();
-                   // mostrarErrores(respuesta, idformulario, entidad);
                 }
-            }
-        });
+            });
+        }else{
+            var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> La fecha seleccionada es menor a la fecha de pago.!</div>";
+            $('#divMensajeError{{ $entidad_cuota }}1').html(msj);
+            $('#divMensajeError{{ $entidad_cuota }}1').show();
+        }
     }
 
 </script>

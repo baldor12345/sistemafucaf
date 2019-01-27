@@ -44,7 +44,8 @@ class AhorrosController extends Controller
             'generareciboretiroPDF' => 'ahorros.generareciboretiroPDF',
             
             'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion',
-            'generareportehistoricoahorrosPDF' => 'ahorros.generareportehistoricoahorrosPDF'
+            'generareportehistoricoahorrosPDF' => 'ahorros.generareportehistoricoahorrosPDF',
+            'listpersonas' => 'creditos.listpersonas'
         );
 
     /**
@@ -130,12 +131,13 @@ class AhorrosController extends Controller
         $dni = null;
         $idopcion = null;
         $ruta = $this->rutas;
+        $cboPers = array(0=>'Seleccione...');
         $resultado = Concepto::listar('I');
         $cboConcepto = array(5=>'Deposito de ahorros');// Concepto::pluck('titulo', 'id')->all();
         $formData = array('ahorros.store');
         $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto'));
+        return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto','cboPers'));
     }
    /**
      * Store a newly created resource in storage.
@@ -163,31 +165,44 @@ class AhorrosController extends Controller
             }
 
             $error = DB::transaction(function() use($request, $caja_id){
-                $resultado = Ahorros::getahorropersona($request->input('persona_id'));
-                $fechahora_actual = date("Y-m-d H:i:s");
-                $hora_actual= date("H:i:s", strtotime($fechahora_actual));
-                $arrhora = explode(':',$hora_actual);
-                $fechainit = date ( 'Y-m-d H:i:s' ,strtotime($request->input('fechai')));
-
-                $nuevafecha = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fechainit ) ) ;
-                $nuevafecha = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha ) ;
-                $nuevafecha = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha ) ;
-                $nuevafecha = date ( 'Y-m-d H:i:s' , $nuevafecha );
-
+                $resultado = Ahorros::getahorropersona($request->input('selectpersona'));
+                $nuevafecha = $request->input('fechai')." ".date ( 'H:i:s');
+                $id_ahorro=null;
                 if(count($resultado) >0){
-                    $ahorro = $resultado[0];
-                    $capital = $ahorro->capital + $request->input('capital');
-                    $ahorro->capital = $capital;
-                    $ahorro->estado = 'P';
-                    $ahorro->save();
+                    $anio_mes = date('Y-m', strtotime($nuevafecha));
+                    $ahorro_actual = $resultado[0];
+                    $anio_mes2 =  date('Y-m', strtotime($ahorro_actual->fechai));
+                   
+                    if($anio_mes > $anio_mes2){
+                        $ahorro = new Ahorros();
+                        $ahorro->capital = $request->input('capital');
+                        $ahorro->interes = 0;
+                        $ahorro->estado = 'P';
+                        $ahorro->fechai = $nuevafecha;
+                        $ahorro->persona_id = $request->input('selectpersona');
+                        $ahorro->save();
+                        $id_ahorro = $ahorro->id;
+
+                        $ahorro_actual->estado = 'C';
+                        $ahorro_actual->fechaf = $nuevafecha;
+                        $ahorro_actual->save();
+
+                    }else{
+                        $capital = $ahorro->capital + $request->input('capital');
+                        $ahorro_actual->capital = $capital;
+                        $ahorro_actual->estado = 'P';
+                        $ahorro_actual->save();
+                        $id_ahorro = $ahorro->id;
+                    }
                 }else{
                     $ahorro = new Ahorros();
                     $ahorro->capital = $request->input('capital');
                     $ahorro->interes = 0;
                     $ahorro->estado = 'P';
                     $ahorro->fechai = $nuevafecha;
-                    $ahorro->persona_id = $request->input('persona_id');
+                    $ahorro->persona_id = $request->input('selectpersona');
                     $ahorro->save();
+                    $id_ahorro = $ahorro->id;
                 }
                 
                 //Guardar en tabla transacciones **********
@@ -196,10 +211,10 @@ class AhorrosController extends Controller
                 $transaccion->fecha = $nuevafecha;
                 $transaccion->monto = $request->input('capital');
                 $transaccion->monto_ahorro= $request->input('capital');
-                $transaccion->id_tabla = $ahorro->id;
+                $transaccion->id_tabla = $id_ahorro;
                 $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccion->concepto_id = $idconcepto;
-                $transaccion->persona_id = $ahorro->persona_id;
+                $transaccion->persona_id = $request->input('selectpersona');
                 $transaccion->usuario_id = Ahorros::idUser();
                 $transaccion->caja_id =  $caja_id;
                 $transaccion->save();
@@ -365,6 +380,7 @@ class AhorrosController extends Controller
     public function retiro(Request $request){
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
+        
         $error = null;
         if($caja_id != 0){
             $ahorro_id = $request->get('ahorro_id');
@@ -372,23 +388,12 @@ class AhorrosController extends Controller
             $persona_id = Libreria::getParam($request->input('persona_id'));
             
             $error = DB::transaction(function() use($ahorro_id,$monto_retiro, $persona_id,$request, $caja_id){
-                $fechahora_actual = date("Y-m-d H:i:s");
-                $hora_actual= date("H:i:s", strtotime($fechahora_actual));
-                $arrhora = explode(':',$hora_actual);
-                $fechainit = date ( 'Y-m-d H:i:s' ,strtotime($request->input('fechar')));
-
-                $nuevafecha = strtotime ( '+'.$arrhora[0].' hour' , strtotime ( $fechainit ) ) ;
-                $nuevafecha = strtotime ( '+'.$arrhora[1].' minute' , $nuevafecha ) ;
-                $nuevafecha = strtotime ( '+'.$arrhora[2].' second' , $nuevafecha ) ;
-                $nuevafecha = date ( 'Y-m-d H:i:s' , $nuevafecha );
-
+              
+                $fechafin = $request->input('fechar')." ".date('H:i:s');
                 $ahorro = Ahorros::find($ahorro_id);
                 $capital = $ahorro->capital - $monto_retiro;
-                
                
                 if(round($capital,1) <= 0.09){
-                    $ahorro->estado = 'C';
-                    $ahorro->fechaf =  $nuevafecha;
                     $ahorro->capital = 0;
                 }else{
                     $ahorro->capital = $capital;
@@ -396,9 +401,8 @@ class AhorrosController extends Controller
                 $ahorro->save();
             
                 $idconcepto = 6;
-                //Guarda el valor de retiro en caja
                 $transaccion1 = new Transaccion();
-                $transaccion1->fecha = $nuevafecha;
+                $transaccion1->fecha = $fechafin;
                 $transaccion1->monto = $monto_retiro;
                 $transaccion1->monto_ahorro = $monto_retiro;
                 $transaccion1->id_tabla = $ahorro->id;
@@ -724,28 +728,27 @@ class AhorrosController extends Controller
         }
         $error = null;
         $transact = Transaccion::find($id);
-        $list = Transaccion::getTransaccion($transact->id_tabla,'AH');
-        $caja = Caja::find($list[0]->caja_id);
+        $caja = Caja::find($transact->caja_id);
 
         if($caja->estado == 'A'){
-            $error = DB::transaction(function() use($id, $list ){
-
-                foreach ($list as $key => $value) {
-                    if($value->concepto_id == 8 || $value->concepto_id == 5 ){
-                        if($value->concepto_id == 5){
-                            $ahorros = Ahorros::find($value->id_tabla);
-                            $ahorros->capital = ($ahorros->capital - $value->monto);
-                            $ahorros->save();
-                        }
-                    }else{
-                        $ahorros = Ahorros::find($value->id_tabla);
-                        $ahorros->capital = ($ahorros->capital + $value->monto);
-                        $ahorros->save();
+            $error = DB::transaction(function() use($id, $transact ){
+                if($transact->concepto_id == 5 ){
+                    $ahorros = Ahorros::find($transact->id_tabla);
+                    $ahorros->capital = ($ahorros->capital - $transact->monto);
+                    if($ahorros->capital < 0.1){
+                        $ahorros->estado = 'P';
+                        $ahorros->capital = 0; 
                     }
-                    //$value->delete();
-                    $transaccion = Transaccion::find($value->id);
-                    $transaccion->delete();
+                    $ahorros->save();
+                    
+                }else{
+                    $ahorros = Ahorros::find($transact->id_tabla);
+                    $ahorros->capital = ($ahorros->capital + $transact->monto);
+                    $ahorros->save();
                 }
+                
+                $transaccion = Transaccion::find($transact->id);
+                $transaccion->delete();
             });   
         
         }else{
@@ -776,10 +779,37 @@ class AhorrosController extends Controller
 
         $modelo = Ahorros::find($id);
         $entidad = 'Ahorros';
+
         $formData = array('route' => array('ahorros.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton = 'Eliminar';
-        $mensaje = "¡Error! El registro no se puede aliminar, está asociado a una caja actualmente cerrada.";
-        if($caja->estado == 'A'){
+        $mensaje = "¡Error! El registro no se puede eliminar, está asociado a una caja actualmente cerrada.";
+        //saldo en caja
+        $ingresos =$caja->monto_iniciado;
+        $egresos=0;
+        $saldo_en_caja =0;
+        $saldo = Transaccion::getsaldo($caja->id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $saldo_en_caja= $ingresos-$egresos;
+        //*************************** */
+        $ahorro = Ahorros::where('estado','=', 'P')->get();
+        $confirm = true;
+        if($transaccion->id_tabla != $ahorro[0]->id){
+            $confirm=false;
+            $mensaje = "¡Error! El registro no se puede eliminar, Existen ahorros o retiros mas actuales que modificaron el monto actual.!";
+        }
+        if($transaccion->concepto_id == 5 ){
+            if($transaccion->monto > $saldo_en_caja){
+                $confirm=false;
+                $mensaje = "¡Error! El registro no se puede eliminar, debido a que el saldo en caja (S/.: ".$saldo_en_caja.") es menor al monto de ahorro (S/.: ".$transaccion->monto.") que intenta eliminar.";
+            }
+        }
+        if($caja->estado == 'A' && $confirm){
             return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar'));
         }else{
             return view($this->folderview.'.mensajealerta')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar','mensaje'));

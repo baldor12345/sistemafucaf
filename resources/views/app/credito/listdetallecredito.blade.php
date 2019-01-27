@@ -17,13 +17,35 @@
         <?php
             $contador = 1;
             $saldo_restante = $credito->valor_credito;
+            $nombremes = array('1'=>'Ene',
+            '1'=>'Ene',
+            '01'=>'Ene',
+            '2'=>'Feb',
+            '02'=>'Feb',
+            '3'=>'Mar',
+            '03'=>'Mar',
+            '4'=>'Abr',
+            '04'=>'Abr',
+            '5'=>'May',
+            '05'=>'May',
+            '6'=>'Jun',
+            '06'=>'Jun',
+            '7'=>'Jul',
+            '07'=>'Jul',
+            '8'=>'Ago',
+            '08'=>'Ago',
+            '9'=>'Sep',
+            '09'=>'Sep',
+            '10'=>'Oct',
+            '11'=>'Nov',
+            '12'=>'Dic',);
         ?>
         <tr>
             <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td><td></td>
         </tr>
         @foreach ($lista as $key => $value)
             <tr>
-                <td>{{ Date::parse($value->fecha_programada_pago)->format('d/m/Y')}}</td>
+                <td>{{  $nombremes[date('m',strtotime($value->fecha_programada_pago))]."-". date('Y',strtotime($value->fecha_programada_pago)) }}</td>
                 <td>{{$value->numero_cuota}}/{{$credito->periodo}}</td>
                 <td>{{  round($value->interes + $value->parte_capital,1)}}</td>
                 <td>{{  round($value->parte_capital,1)}}</td>

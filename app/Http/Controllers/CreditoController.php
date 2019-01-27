@@ -80,6 +80,7 @@ class CreditoController extends Controller{
 
         $ruta = $this->rutas;
         $titulo_detalle = $this->tituloDetallecredito;
+        $titulo_eliminar = $this->tituloEliminar;
         if (count($lista) > 0) {
             $clsLibreria = new Libreria();
             $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
@@ -89,7 +90,7 @@ class CreditoController extends Controller{
             $paginaactual = $paramPaginacion['nuevapagina'];
             $lista = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera','titulo_detalle', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera','titulo_detalle','titulo_eliminar', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad','titulo_detalle'));
     }
@@ -223,6 +224,8 @@ class CreditoController extends Controller{
                     $transaccion->usuario_id = Credito::idUser();
                     $transaccion->caja_id = $caja_id;
                     $transaccion->monto_credito = $valorcredito;
+                    $transaccion->inicial_tabla = 'CR';
+                    $transaccion->id_tabla = $credito->id;
                     $transaccion->save();
                  
                 });
@@ -248,11 +251,22 @@ class CreditoController extends Controller{
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
+        $transaccion_credito = Transaccion::where("id_tabla",'=',$id)->where('inicial_tabla','=','CR')->get();
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+       
+
         $modelo = Credito::find($id);
         $entidad = 'Credito';
-        $formData = array('route' => array('credito.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton = 'Eliminar';
-        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        $formData = array('route' => array('creditos.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+       $boton = "Eliminar";
+        if($caja_id == $transaccion_credito[0]->caja_id){
+            return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }else{
+            $mensaje = "¡Error! El registro no se puede eliminar, pertenece a una caja anterior.!";
+            return view('app.ahorros.mensajealerta')->with(compact('modelo', 'formData', 'entidad', 'listar','mensaje'));
+        }
+        
     }
 /*************--BORRAR CREDITO--***************** */
     public function destroy($id){
@@ -260,7 +274,17 @@ class CreditoController extends Controller{
         if ($existe !== true) {
             return $existe;
         }
-        $error = DB::transaction(function() use($id){
+        $cuotas = Cuota::where('credito_id','=',$id)->get();
+
+        $error = DB::transaction(function() use($id, $cuotas){
+           /* for($i=0; $i<count($cuotas); $i++){
+                $cuotas[$i]->delete();
+            }*/
+            foreach($cuotas as $cuota){
+                $cuota->delete();
+            }
+            $transaccion_credito = Transaccion::where("id_tabla",'=',$id)->where('inicial_tabla','=','CR')->get()[0];
+            $transaccion_credito->delete();
             $credito = Credito::find($id);
             $credito->delete();
         });
