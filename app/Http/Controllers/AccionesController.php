@@ -686,7 +686,7 @@ class AccionesController extends Controller
         $list        = Acciones::list_acciones_persona();
         $lista           = $list->get();
 
-        $cant = DB::table('acciones')->where('estado', 'C')->count();
+        $cant = DB::table('acciones')->where('estado', 'C')->where('deleted_at',null)->count();
 
         $year = date("Y");
         $month = date("m");
