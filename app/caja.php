@@ -74,6 +74,7 @@ class caja extends Model
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
         return $results;
     }
@@ -98,6 +99,7 @@ class caja extends Model
                     )
                     ->where('transaccion.fecha','<', $fechai)
                     ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
         return $results;
     }
@@ -121,7 +123,8 @@ class caja extends Model
                     ->where('concepto.id','!=',8)
                     ->where('concepto.id','!=',5)
                     ->where('concepto.id','!=',16)
-                    ->where('concepto.id','!=',4);
+                    ->where('concepto.id','!=',4)
+                    ->where('transaccion.deleted_at',null);
         return $results;
     }
 
@@ -143,7 +146,8 @@ class caja extends Model
                     ->where('concepto.id','!=',8)
                     ->where('concepto.id','!=',5)
                     ->where('concepto.id','!=',16)
-                    ->where('concepto.id','!=',4);
+                    ->where('concepto.id','!=',4)
+                    ->where('transaccion.deleted_at',null);
         return $results;
     }
 
@@ -168,6 +172,7 @@ class caja extends Model
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','E')
+                    ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
         return $results;
     }
@@ -191,6 +196,7 @@ class caja extends Model
                     )
                     ->where('transaccion.fecha','<',$fechai)
                     ->where('concepto.tipo','=','E')
+                    ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
         return $results;
     }
@@ -214,7 +220,8 @@ class caja extends Model
                     ->where('concepto.id','!=',10)
                     ->where('concepto.id', '!=', 37)
                     ->where('concepto.id','!=',15)
-                    ->where('transaccion.tipo_egreso','=',1);
+                    ->where('transaccion.tipo_egreso','=',1)
+                    ->where('transaccion.deleted_at',null);
         return $results;
     }
 
@@ -236,7 +243,8 @@ class caja extends Model
                     ->where('concepto.id','!=',17)
                     ->where('concepto.id','!=',10)
                     ->where('concepto.id', '!=', 37)
-                    ->where('transaccion.tipo_egreso','=',1);
+                    ->where('transaccion.tipo_egreso','=',1)
+                    ->where('transaccion.deleted_at',null);
         return $results;
     }
 
@@ -260,7 +268,8 @@ class caja extends Model
                     ->where('concepto.id','!=',17)
                     ->where('concepto.id','!=',10)
                     ->where('concepto.id', '!=', 37)
-                    ->where('transaccion.tipo_egreso','=',0);
+                    ->where('transaccion.tipo_egreso','=',0)
+                    ->where('transaccion.deleted_at',null);
         //echo "datos por concepto   ".$results->get();
         return $results;
     }
@@ -283,7 +292,8 @@ class caja extends Model
                     ->where('concepto.id','!=',17)
                     ->where('concepto.id','!=',10)
                     ->where('concepto.id', '!=', 37)
-                    ->where('transaccion.tipo_egreso','=',0);
+                    ->where('transaccion.tipo_egreso','=',0)
+                    ->where('transaccion.deleted_at',null);
         return $results;
     }
 

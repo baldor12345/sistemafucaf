@@ -52,7 +52,8 @@ class CajaController extends Controller
             'buscartransaccion'=> 'caja.buscartransaccion',
 
             'reporteingresosPDF' => 'caja.reporteingresosPDF',
-            'reporteegresosPDF' => 'caja.reporteegresosPDF'
+            'reporteegresosPDF' => 'caja.reporteegresosPDF',
+            'listpersonas' =>'caja.listpersonas'
         );
 
     /**
@@ -584,12 +585,14 @@ class CajaController extends Controller
         if (isset($listarParam)) {
             $listar = $listarParam;
         }
+        $cboPers = array(0=>'Seleccione...');
 
         $entidad        = 'Transaccion';
+        $ruta = $this->rutas;
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];
         $boton          = 'Registrar';
-        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos'));
+        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos','cboPers','ruta'));
     }
 
 
@@ -614,7 +617,7 @@ class CajaController extends Controller
        $listar        = Libreria::getParam($request->input('listar'), 'NO');
 
        $tipo_id = $request->input('tipo_id');
-       $persona_id = $request->get('persona_id');
+       $persona_id = $request->get('selectnom');
        if($tipo_id == 'I'){
            if($persona_id != ''){
                 $persona = Persona::find($persona_id);
@@ -657,7 +660,7 @@ class CajaController extends Controller
             
        }
        if($tipo_id == 'E'){
-            $persona_id = $request->get('persona_id');
+            $persona_id = $request->get('selectnom');
             if($persona_id != ''){
                 $persona = Persona::find($persona_id);
                 $error = DB::transaction(function() use($request, $id, $persona){
@@ -1308,6 +1311,20 @@ class CajaController extends Controller
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
+    }
+
+    public function listpersonas(Request $request){
+        $term = trim($request->q);
+        if (empty($term)) {
+            return \Response::json([]);
+        }
+        $tags = Persona::where("dni",'ILIKE', '%'.$term.'%')->orwhere("nombres",'ILIKE', '%'.$term.'%')->orwhere("apellidos",'ILIKE', '%'.$term.'%')->limit(5)->get();
+        $formatted_tags = [];
+        foreach ($tags as $tag) {
+            $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
+        }
+
+        return \Response::json($formatted_tags);
     }
 
 }
