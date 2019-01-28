@@ -31,6 +31,7 @@ class CreditoController extends Controller{
         'search' => 'creditos.buscar',
         'index' => 'creditos.index',
         'detallecredito' => 'creditos.detallecredito',
+        'vistaaccion' => 'creditos.vistaaccion',
         'listardetallecuotas' => 'creditos.listardetallecuotas',
         'vistapagocuota' => 'creditos.vistapagocuota',
         'pagarcuota' => 'creditos.pagarcuota',
@@ -38,7 +39,8 @@ class CreditoController extends Controller{
         'generarecibopagocuotaPDF' => 'creditos.generarecibopagocuotaPDF',
         'generarecibocreditoPDF' => 'creditos.generarecibocreditoPDF',
         'abrirpdf' => 'creditos.abrirpdf',
-        'listpersonas' => 'creditos.listpersonas'
+        'listpersonas' => 'creditos.listpersonas',
+        'cuotasalafecha' => 'creditos.cuotasalafecha'
     );
 
     public function __construct(){
@@ -76,7 +78,7 @@ class CreditoController extends Controller{
         $cabecera[]  = array('valor' => 'MONTO CRÉDITO S/.', 'numero' => '1');
         $cabecera[]  = array('valor' => 'PERIODO', 'numero' => '1');
         $cabecera[]  = array('valor' => 'ESTADO', 'numero' => '1');
-        $cabecera[]  = array('valor' => 'Operaciones', 'numero' => '2');
+        $cabecera[]  = array('valor' => 'Operaciones', 'numero' => '3');
 
         $ruta = $this->rutas;
         $titulo_detalle = $this->tituloDetallecredito;
@@ -448,6 +450,48 @@ class CreditoController extends Controller{
         $ruta = $this->rutas;
         return view($this->folderview.'.detallecredito')->with(compact('credito','credito_id', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona'));
     }
+/*************--MODAL Realizar accion--********** */
+    public function vistaaccion(Request $request, $credito_id){
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+        $configuraciones = configuraciones::all()->last();
+        $credito = Credito::find($credito_id);
+        $persona = Persona::find($credito->persona_id);
+        $entidad_cuota = 'Cuota';
+        $entidad_credito = 'Credito';
+        $cboacciones = array('1'=>'Pago de cuotas pendientes',//pago de cuota pendiente a la fecha
+            '2'=>'Pago de interes (Cuota/Pendiente)',//pagar solo el interes de la cuota pendiente
+            '3'=>'Amortizar cuotas',//cancelacion de cuotas para reducir interes y acortar el plazo
+            '4'=>'Ampliar cuotas',//Despues de pagar la cuota pendiente si lo hay, ampliar el numero de cuotas
+            '5'=>'Cancelar todo'//despues de cancelar la cuota pendiente si lo hay, cancelar toda la deuda del credito
+        );
+        $meses = array(
+            '01'=>'Enero',
+            '02'=>'Febrero',
+            '03'=>'Marzo',
+            '04'=>'Abril',
+            '05'=>'Mayo',
+            '06'=>'Junio',
+            '07'=>'Julio',
+            '08'=>'Agosto',
+            '09'=>'Septiembre',
+            '10'=>'Octubre',
+            '11'=>'Noviembre',
+            '12'=>'Diciembre');
+    
+            $anios = array();
+            $anioInicio = 2007;
+            $anioactual = explode('-',date('Y-m-d'))[0];
+            $mesactual = explode('-',date('Y-m-d'))[1];
+            for($anyo=$anioactual; $anyo>=$anioInicio; $anyo --){
+                $anios[$anyo] = $anyo;
+            }
+        $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
+        $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
+        $ruta = $this->rutas;
+        return view($this->folderview.'.vistaoperacion')->with(compact('credito','anios','meses','anioactual','mesactual','credito_id','cboacciones', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona'));
+    }
+
 /*************--LISTAR DETALLE CUOTAS--********** */
     public function listardetallecuotas(Request $request){
         $credito_id =  $request->input('credito_id');
@@ -687,6 +731,16 @@ class CreditoController extends Controller{
         }
 
         return \Response::json($formatted_tags);
+    }
+    public function cuotasalafecha(Request $request){
+        $persona_id = $request->input('persona_id');
+        $credito_id = $request->input('credito_id');
+        $anio = $request->input('anio');
+        $mes = $request->input('mes');
+        $cuotas  = Cuota::listarCuotasAlafechaPersona($anio,$mes, $persona_id, $credito_id)->get();
+
+        //return $cuotas->toJson();
+        return response()->json($cuotas);
     }
 
 }

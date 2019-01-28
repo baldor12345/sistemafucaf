@@ -55,7 +55,7 @@
                 <td>{{  round($value->parte_capital + $value->interes + $value->interes_mora,1)}}</td>
                 <td>{{  round($value->saldo_restante,1)}}</td>
                 @if($value->estado != 0 )
-                <td >P</td>
+                <td >P  @if($value->interes_mora != 0) <button class="btn btn-danger btn-sm"></button>@endif</td>
                 <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagado', array('class' => 'btn btn-light btn-xs', 'id' => 'btnGuardar', 'onclick' => '')) !!}</td>
                 {{--  <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnrecibo', 'onclick' => 'generaRecibo(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\')')) !!}</td>--}}
                 <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
