@@ -60,14 +60,14 @@ function cargarselect2(entidad){
 	</div>
 </div>
 
-<div class="form-group">
-	{!! Form::label('dni', 'DNI:', array('class' => 'col-sm-3 col-xs-12 control-label dnil')) !!}
+
+<div>
+	{!! Form::label('selectnom', 'Socio:', array('class' => 'col-sm-3 col-xs-12 control-label ')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs input-number ', 'id' => 'dni', 'placeholder' => 'Asegurese de que el DNI ya este registrado...')) !!}
-		<p id="nombres" class="" >DNI Vacio</p>
+		{!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
 	</div>
-	<input type="hidden" id="persona_id" name="persona_id" value="" >
 </div>
+
 
 <div class="form-group" id="btnOculto">
 	<div class="col-sm-6 col-xs-12 control-label form-check form-check-inline">
@@ -110,7 +110,7 @@ function cargarselect2(entidad){
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('400');
 		$("#btnOculto").hide();
-		$(".dnil").html('DNI: <sup style="color: blue;">Opcional</sup>');
+		$(".dni").html('DNI: <sup style="color: blue;">Opcional</sup>');
 		
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
@@ -118,19 +118,45 @@ function cargarselect2(entidad){
 		var fecha = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 		$('#fecha').val(fecha);
 
-		$("#persona_id").val('');
-		$("input[name=dni]").change(function(event){
-        	$.get("personas/"+event.target.value+"",function(response, persona){
-				if(response.length>0){
-					$("#nombres").html(response[0].nombres +" "+ response[0].apellidos);
-					$("#persona_id").val(response[0].id);
-				}else{
-					$("#nombres").html("El DNI ingresado no existe");
-					$("#persona_id").val('');
-				}
-			});
-		});
+		$('#selectnom').select2({
+            dropdownParent: $("#modal"+(contadorModal-1)),
+            
+            minimumInputLenght: 2,
+            ajax: {
+               
+                url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params){
+                    return{
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data){
+                    return{
+                        results: data
+                    };
+                }
+                
+            }
+        });
 
+		$('#selectnom').change(function(){
+            $.get("creditos/"+$(this).val()+"",function(response, facultad){
+                var persona = response[0];
+                var numCreditos = response[1];
+                var numAcciones = response[2];
+
+                if(persona.length>0){
+                    $("#persona_id").val(persona[0].id);
+                    var msj = "<div class='alert alert-success'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li><li>Tipo: "+(persona[0].tipo.trim() == 'C'? "Cliente": "Socio")+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li></ul> </div>";
+                        $('#divInfo{{ $entidad }}').html(msj);
+                        $('#divInfo{{ $entidad }}').show();
+                }else{
+                    $("#persona_id").val(0);
+                }
+            });
+        });
 
 	}); 
 	$('.input-number').on('input', function () { 

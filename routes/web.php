@@ -227,6 +227,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/guardarreapertura', 'CajaController@guardarreapertura')->name('caja.guardarreapertura');
     Route::get('caja/cargarreporte', 'CajaController@cargarreporte')->name('caja.cargarreporte');
     Route::get('caja/generarreportes', 'CajaController@generarreportes')->name('caja.generarreportes');
+    Route::get('caja/listpersonas',  'CajaController@listpersonas')->name('caja.listpersonas');
 
     /*CONCEPTO*/
     Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');

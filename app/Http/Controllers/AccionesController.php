@@ -21,7 +21,7 @@ use PDF;
 class AccionesController extends Controller
 {
     protected $folderview      = 'app.acciones';
-    protected $tituloAdmin     = 'Acciones';
+    protected $tituloAdmin     = 'Compra y Venta de Acciones';
     protected $tituloRegistrar = 'Compra de Acciones';
     protected $tituloModificar = 'Modificar acciones';
     protected $tituloDetalle = 'Detalle de Acciones';
