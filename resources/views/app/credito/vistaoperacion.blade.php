@@ -39,9 +39,15 @@
                 {!! Form::label('accioncredito', 'Operación a realizar: ', array('class' => '')) !!}
                 {!! Form::select('accioncredito', $cboacciones, 0, array('class' => 'form-control input-sm', 'id' => 'accioncredito',  'onchange' => 'realizaoperacion(this)')) !!}
              </div>
-             <div id="cuotas_pendiente"></div>
+            
              
          </div>
+         <div class="card-box crbox">
+             <div id="cuotas_pendiente">
+
+             </div>
+         </div>
+
          <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
              &nbsp;
              {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad_cuota, 'onclick' => 'cerrarModal();')) !!}
@@ -53,46 +59,82 @@
      $(document).ready(function() {
          configurarAnchoModal('650');
          $('.lbldatos').css({'padding':'0px','margin':'2px 0px'});
-         $('.crbox').css({'padding':'0px 15px 0px 15px','margin':'10px 0px 0px 10px'});
-         $('.contbtn').css({'padding': '10px 0'});
+         $('.crbox').css({'padding':'5px 15px'});
+         $('.contbtn').css({'padding': '10px 5'});
         // buscar('{{ $entidad_cuota }}');
          init(IDFORMBUSQUEDA+'{{ $entidad_cuota }}', 'B', '{{ $entidad_cuota }}');
          listarcuotasalafecha();
          
      });
+
      function listarcuotasalafecha(){
-        $.ajax({
-            url: "creditos/cuotasalafecha",
-            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            type: 'GET',
-            data: $('#formBusquedaCuotas').serialize(),
-            beforeSend: function(){
-            },
-            success: function(res){
-                var length = Object.keys(res).length;
-                
-                var tabla = "<label>Cuotas a pagar a la fecha: </label>";
-                if(length >0){
-                    tabla += '<table class="table table-bordered table-striped table-condensed table-hover"><thead>'+
-                    '<tr><th>Fecha</th><th>Numero</th><th>Monto S/.</th><th>Mora S/.</th><th>TOTAL</th><th>Operación</th></tr></thead><tbody>';
-                    for(i=0;i<length;i++){
-                        tabla += "<tr><td>"+res[i].mes+"-"+res[i].anio+"</td><td>"+res[i].numero_cuota+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+"</td><td>"+res[i].interes_mora+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)+parseFloat(res[i].interes_mora)).toFixed(1)+"</td>"+
-                        '<td><button class="btn btn-success btn-xs" cuota_id="'+res[i].cuota_id+'" onclick ="abirmodal(this);"><i class="fa fa-money fa-lg"></i> Pagar</button></td>';
+         if($('#accioncredito').val() == '1' || $('#accioncredito').val() == '2'){
+            $.ajax({
+                url: "creditos/cuotasalafecha",
+                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                type: 'GET',
+                data: $('#formBusquedaCuotas').serialize(),
+                beforeSend: function(){
+                },
+                success: function(res){
+                    var tabla="";
+                    $('#cuotas_pendiente').empty();
+                    switch ($('#accioncredito').val()) {
+                        case '1':
+                            var length = Object.keys(res).length;
+                            tabla = "<label>Cuotas a pagar a la fecha: </label>";
+                            if(length >0){
+                                tabla += '<table class="table table-bordered table-striped table-condensed table-hover"><thead>'+
+                                '<tr><th>Fecha</th><th>Numero</th><th>Monto S/.</th><th>Mora S/.</th><th>TOTAL</th><th>Operación</th></tr></thead><tbody>';
+                                for(i=0;i<length;i++){
+                                    tabla += "<tr><td>"+res[i].mes+"-"+res[i].anio+"</td><td>"+res[i].numero_cuota+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+"</td><td>"+res[i].interes_mora+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)+parseFloat(res[i].interes_mora)).toFixed(1)+"</td>"+
+                                    '<td><button class="btn btn-success btn-xs" cuota_id="'+res[i].cuota_id+'" onclick ="abirmodal(this);"><i class="fa fa-money fa-lg"></i> Pagar</button></td>';
+                                }
+                                tabla += "</tbody></table>";
+                            
+                            }else{
+                                tabla += "<div>No se encontraron cuotas pendientes ...</div>";
+                            }
+                            $('#cuotas_pendiente').html(tabla);
+                            break;
+                        case '2':
+                            var length = Object.keys(res).length;
+                            tabla = "<label>Cuotas a pagar a la fecha: </label>";
+                            if(length >0){
+                                tabla += '<table class="table table-bordered table-striped table-condensed table-hover"><thead>'+
+                                '<tr><th>Fecha</th><th>Numero</th><th>Monto S/.</th><th>Mora S/.</th><th>TOTAL</th><th>Operación</th></tr></thead><tbody>';
+                                for(i=0;i<length;i++){
+                                    tabla += "<tr><td>"+res[i].mes+"-"+res[i].anio+"</td><td>"+res[i].numero_cuota+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+"</td><td>"+res[i].interes_mora+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)+parseFloat(res[i].interes_mora)).toFixed(1)+"</td>"+
+                                    '<td><button class="btn btn-success btn-xs" cuota_id="'+res[i].cuota_id+'" onclick ="abirmodal(this);"><i class="fa fa-money fa-lg"></i> Pagar Interes</button></td>';
+                                }
+                                tabla += "</tbody></table>";
+                            
+                            }else{
+                                tabla += "<div>No se encontraron cuotas pendientes ...</div>";
+                            }
+                            $('#cuotas_pendiente').html(tabla);
+                            break;
+                        default:
+                            
                     }
-                    tabla += "</tbody></table>";
-                   
-                }else{
-                    tabla += "<div>No se encontraron cuotas pendientes ...</div>";
+
+                    //$('#cuotas_pendiente').html(tabla);
                 }
-                $('#cuotas_pendiente').html(tabla);
-            }
-        }).fail(function(){
-            mostrarMensaje ("Error de consulta..", "ERROR");
-        });
+            }).fail(function(){
+                mostrarMensaje ("Error de consulta..", "ERROR");
+            });
+         }
+        
      }
 
     function abirmodal(btn){
-        ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"'NO'/'ReciboCuota'";
+        if($('#accioncredito').val() == '1'){
+            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/0";
+        }else{
+            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/2";
+        }
+        
+        console.log("RUTA: "+ruta);
         modal(ruta, "Pago de Cuota");
         $('#modal'+(contadorModal-1)).on('hidden.bs.modal', function (e) {
             listarcuotasalafecha();
@@ -105,14 +147,13 @@
         switch (numoperacion) {
            
             case '1':
-            
-               
+                listarcuotasalafecha();
+                break;
+            case '2':
 
+                listarcuotasalafecha();
                 break;
-            case 2:
-                
-                break;
-            case 3:
+            case '3':
                 
                 break;
             case 4:
@@ -125,6 +166,7 @@
             default:
                 
         }
+
      }
    
  </script>

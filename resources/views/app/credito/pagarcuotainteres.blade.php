@@ -73,7 +73,7 @@ $fecha_pago = null;
                 }else{
                     if (respuesta === 'OK') {
                         cerrarModal();
-                        if("{{ $entidad_recibo }}" != "0" || "{{ $entidad_recibo }}" != "2"){
+                        if("{{ $entidad_recibo }}" != "0" || "{{ $entidad_recibo }}" != "0"){
                             if("{{ $entidad_recibo }}" == "nan"){
                                 buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
                                 buscar('{{ $entidad_credito }}');

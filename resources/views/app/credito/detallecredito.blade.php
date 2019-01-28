@@ -69,8 +69,10 @@
             <ul>
                 <li>P: Pagado</li>
                 <li><button class="btn btn-danger btn-sm"></button>: Moroso</li>
+                <li><button class="btn btn-warning btn-sm"></button>: Pagado solo interes</li>
             </ul>
         </div>
+        
         <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
             &nbsp;
             {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad_cuota, 'onclick' => 'cerrarModal();')) !!}
