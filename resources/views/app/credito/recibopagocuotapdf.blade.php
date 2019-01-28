@@ -11,6 +11,7 @@
         }
         td{
             font-size: 10px;
+           
         }
         
         .lineborderleft{
@@ -33,6 +34,7 @@
         .line_v_id{
             border-left: 0.9px solid #3f3f3f;
             border-right: 0.9px solid #3f3f3f;
+            text-align: center;
         }
     </style>
 </head>
@@ -169,7 +171,7 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
-                <td class="line_v_id line_h_b"></td>
+                <td class="line_v_id line_h_b">{{ round($cuota->interes_mora, 1) }}</td>
             </tr>
             <tr><td colspan="9"></td></tr>
             <tr>

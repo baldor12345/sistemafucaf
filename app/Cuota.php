@@ -59,7 +59,7 @@ class Cuota extends Model
             DB::raw('extract( year from cuota.fecha_programada_pago) as anio')
         )
         ->where('persona.nombres','ILIKE', '%'.$nombre.'%')
-        ->where('cuota.estado','=', '0')
+        ->where('cuota.estado','!=', '1')
         ->where('cuota.deleted_at','=', null)
         ->where('cuota.fecha_programada_pago','<=',$fecha_p)
         ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')

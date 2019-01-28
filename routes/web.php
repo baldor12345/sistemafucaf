@@ -174,10 +174,11 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/listpersonas',  'CreditoController@listpersonas')->name('creditos.listpersonas');
      //Route::get('creditos/abrirpdf', 'CreditoController@abrirpdf')->name('creditos.abrirpdf');
      /*RECIBOCREDITOS*/
-     Route::post('recibocuotas/buscar', 'RecibocuotasController@buscar')->name('recibocuotas.buscar');
-     Route::get('recibocuotas/eliminar/{id?}/{listarluego?}', 'RecibocuotasController@eliminar')->name('recibocuotas.eliminar');
-     Route::resource('recibocuotas', 'RecibocuotasController', array('except' => array('show')));
-
+    Route::post('recibocuotas/buscar', 'RecibocuotasController@buscar')->name('recibocuotas.buscar');
+    Route::get('recibocuotas/eliminar/{id?}/{listarluego?}', 'RecibocuotasController@eliminar')->name('recibocuotas.eliminar');
+    Route::resource('recibocuotas', 'RecibocuotasController', array('except' => array('show')));
+    Route::post('recibocuotas/aplicarmora', 'RecibocuotasController@aplicarmora')->name('recibocuotas.aplicarmora');
+    Route::get('recibocuotas/vistaaplicarmora/{id_cuota?}', 'RecibocuotasController@vistaaplicarmora')->name('recibocuotas.vistaaplicarmora');
     /*AHORROS*/
     Route::post('ahorros/buscar', 'AhorrosController@buscar')->name('ahorros.buscar');
     Route::get('ahorros/eliminar/{id}/{listarluego}', 'AhorrosController@eliminar')->name('ahorros.eliminar');
