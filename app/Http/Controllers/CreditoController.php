@@ -41,7 +41,10 @@ class CreditoController extends Controller{
         'abrirpdf' => 'creditos.abrirpdf',
         'listpersonas' => 'creditos.listpersonas',
         'cuotasalafecha' => 'creditos.cuotasalafecha',
-        'pagarcuotainteres'=>'creditos.pagarcuotainteres'
+        'pagarcuotainteres'=>'creditos.pagarcuotainteres',
+        'amortizarcuotas' => 'creditos.amortizarcuotas',
+        'obtenermontototal' => 'creditos.obtenermontototal',
+        'pagarcreditototal' => 'creditos.pagarcreditototal'
     );
 
     public function __construct(){
@@ -531,31 +534,17 @@ class CreditoController extends Controller{
             '4'=>'Ampliar cuotas',//Despues de pagar la cuota pendiente si lo hay, ampliar el numero de cuotas
             '5'=>'Cancelar todo'//despues de cancelar la cuota pendiente si lo hay, cancelar toda la deuda del credito
         );
-        $meses = array(
-            '01'=>'Enero',
-            '02'=>'Febrero',
-            '03'=>'Marzo',
-            '04'=>'Abril',
-            '05'=>'Mayo',
-            '06'=>'Junio',
-            '07'=>'Julio',
-            '08'=>'Agosto',
-            '09'=>'Septiembre',
-            '10'=>'Octubre',
-            '11'=>'Noviembre',
-            '12'=>'Diciembre');
     
-            $anios = array();
+           
             $anioInicio = 2007;
             $anioactual = explode('-',date('Y-m-d'))[0];
             $mesactual = explode('-',date('Y-m-d'))[1];
-            for($anyo=$anioactual; $anyo>=$anioInicio; $anyo --){
-                $anios[$anyo] = $anyo;
-            }
+            
+            $fecha_actual = date('Y-m-d');
         $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
         $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
         $ruta = $this->rutas;
-        return view($this->folderview.'.vistaoperacion')->with(compact('credito','anios','meses','anioactual','mesactual','credito_id','cboacciones', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona'));
+        return view($this->folderview.'.vistaoperacion')->with(compact('credito','anios','meses','anioactual','mesactual','credito_id','cboacciones', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona','fecha_actual'));
     }
 
 /*************--LISTAR DETALLE CUOTAS--********** */
@@ -645,6 +634,35 @@ class CreditoController extends Controller{
         $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-Pago cuota-'.$persona->codigo;
         $view = \View::make('app.credito.recibopagocuotapdf')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+/*************--RECIBO AMORTIZACION PDF--********** */
+    public function generareciboamortizacionPDF($transaccion_id, $credito_id){   
+        $transaccion = Transaccion::find($transaccion_id);
+        $credito = Credito::find($credito_id);
+        $persona = Persona::find($credito->persona_id);
+        $periodocredito = $credito->periodo;
+        $cuotas =array();
+        $cadenaC = explode(':',$transaccion->descripcion)[1];
+        $numerosCuotas = explode(',',$cadenaC);
+        for($i=0; $i<count($numerosCuotas) -1 ; $i++){
+            $num =trim($numerosCuotas[$i]);
+            $cuota = Cuota::where('credito_id', '=', $credito->id)->where('numero_cuota','=', $num)->get()[0];
+            $cuotas[$i]=$cuota;
+        }
+
+        $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
+        $titulo ='Voucher-amortización cuotas-'.$persona->codigo;
+        $view = \View::make('app.credito.reciboamortizacionpdf')->with(compact('transaccion','credito', 'persona', 'periodocredito','numoperacion', 'cuotas'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
@@ -801,12 +819,153 @@ class CreditoController extends Controller{
     public function cuotasalafecha(Request $request){
         $persona_id = $request->input('persona_id');
         $credito_id = $request->input('credito_id');
+        $opcion = $request->input('opcion');
         $anio = $request->input('anio');
         $mes = $request->input('mes');
-        $cuotas  = Cuota::listarCuotasAlafechaPersona($anio,$mes, $persona_id, $credito_id)->get();
+        $cuotas  = Cuota::listarCuotasAlafechaPersona($anio,$mes, $persona_id, $credito_id, $opcion)->get();
 
         //return $cuotas->toJson();
         return response()->json($cuotas);
+    }
+
+    public function amortizarcuotas(Request $request){
+       
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+        $res = null;
+        $transaccion_id = 0;
+        if($caja_id != 0){
+            $error = DB::transaction(function() use($request, $caja_id){
+
+                $id_credito = $request->get('credito_id');
+                $credito = Credito::find($id_credito);
+            
+                $fecha_pago = $request->get('fechaop').date(" H:i:s");
+                $persona = Persona::find((int)$request->get('persona_id'));
+                $montoTotal = $request->get('monto_suma');
+                $cantidadDatos = $request->get('cantidadmarcados');
+                $descripcion ="Amortizacion de las cuotas N°: ";
+                for($i=0; $i<$cantidadDatos; $i++){
+                    $cuota = Cuota::find($request->get('cuota_id'.$i));
+                    $descripcion = $descripcion."".$cuota->numero_cuota.",";
+                    $cuota->estado = '1';// pagado
+                    $cuota->fecha_pago = $fecha_pago;
+                    $cuota->save();
+                }
+                $cuotasRestantes = Cuota::where('credito_id', '=', $credito->id)->where('estado','!=','1')->where('deleted_at','=', null)->orderBy('numero_cuota', 'ASC')->get();
+                $fecha_actual = $fecha_pago;
+                $explod = explode('-',date("Y-m-d",strtotime($fecha_actual)));
+                $fechacuota = date($explod[0].'-'.$explod[1].'-01');
+                for($j=0; $j<count($cuotasRestantes); $j++){
+                    $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month")); 
+                    $fecha_p = new DateTime($fechacuota);
+                    $fecha_p->modify('last day of this month');
+                    $fecha_p->format('Y-m-d');
+                    $cuotasRestantes[$j]->fecha_programada_pago = $fecha_p;
+                    $cuotasRestantes[$j]->save();
+                }
+                $comision_voucher = 0.2;
+
+                //registra la comision por voucher en caja si desea imprimirlo
+                $concepto_id = 8;
+                $transaccion2 = new Transaccion();
+                $transaccion2->fecha = $fecha_pago;
+                $transaccion2->monto = $comision_voucher;
+                $transaccion2->concepto_id = $concepto_id;
+                $transaccion2->descripcion ='Comision por Recibo Pago (Amortizacion de cuotas)';
+                $transaccion2->persona_id = $persona->id;
+                $transaccion2->usuario_id = Credito::idUser();
+                $transaccion2->caja_id = $caja_id;
+                $transaccion2->comision_voucher = $comision_voucher;
+                $transaccion2->save();
+
+                //registramos en caja el valor de cuotas amortizadas
+                $id_cuotap = $request->get('cuotap');
+                $valor_partecapital =0;
+                $interescuota =0;
+                
+                if($id_cuotap !=0){
+                    $cuotap = Cuota::find($id_cuotap);
+                    $valor_partecapital = $cuotap->parte_capital;
+                    $interescuota = $cuotap->interes;
+                }
+                $concepto_id_pagocuota = 4;
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $fecha_pago;
+                $transaccion->monto = $montoTotal;
+                $transaccion->concepto_id =  $concepto_id_pagocuota;
+                $transaccion->descripcion = $descripcion;
+                $transaccion->persona_id = $persona->id;
+                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->caja_id = $caja_id;
+                $transaccion->cuota_parte_capital = $valor_partecapital;
+                $transaccion->cuota_interes = $interescuota;
+                $transaccion->cuota_mora = 0;
+                $transaccion->save();
+                $transaccion_id = $transaccion->id;
+            });
+            $res = $error;
+        }else{
+            $res = 'Caja no aperturada, asegurece de aperturar primero para registrar alguna transacción.!';
+        }
+       
+        $res =  is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $transaccion_id);
+        return $respuesta;
+    }
+
+    public function pagarcreditototal(Request $request){
+
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+        $res = null;
+        $transaccion_id = 0;
+        if($caja_id != 0){
+            $error = DB::transaction(function() use($request, $caja_id){
+                $credito = Credito::find($request->get('credito_id'));
+                $persona = Persona::find($credito->persona_id);
+                $monto_total = $request->get('monto_suma');
+                $fecha_pago = $request->get('fechaop');
+
+                $cuotas = Cuota::where('credito_id','=', $credito->id)->where('estado','!=', '1')->where('deleted_at','=', null)->get();
+                for($i=0; $i<count($cuotas); $i++){
+                    $cuotas[$i]->estado = '1';
+                    $cuotas[$i]->save();
+                }
+                $credito->estado = 1;
+                $credito->save();
+
+                $concepto_id_pagocuota = 4;
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $fecha_pago;
+                $transaccion->monto = $monto_total;
+                $transaccion->concepto_id =  $concepto_id_pagocuota;
+                $transaccion->descripcion = "Cancelado total el credito";
+                $transaccion->persona_id = $persona->id;
+                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->caja_id = $caja_id;
+                $transaccion->cuota_parte_capital = 0;
+                $transaccion->cuota_interes = 0;
+                $transaccion->cuota_mora = 0;
+                $transaccion->save();
+                $transaccion_id = $transaccion->id;
+
+
+            });
+            $res = $error;
+        }else{
+            $res = 'Caja no aperturada, asegurece de aperturar primero para registrar alguna transacción.!';
+        }
+        return is_null($res) ? "OK" : $res;
+    }
+
+    public function obtenermontototal(Request $request){
+        $cuotas = Cuota::where('credito_id','=', $request->get('credito_id'))->where('estado','!=', '1')->where('deleted_at','=', null)->get();
+        $valor_total = 0;
+        for($i =0; $i<count($cuotas); $i++){
+            $valor_total += $cuotas[$i]->parte_capital;
+        }
+        return $valor_total;
     }
 
 }

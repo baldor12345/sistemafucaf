@@ -62,44 +62,71 @@ class Cuota extends Model
         ->where('cuota.estado','!=', '1')
         ->where('cuota.deleted_at','=', null)
         ->where('cuota.fecha_programada_pago','<=',$fecha_p)
-        ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')
-        ->orderBy(DB::raw('extract( month from cuota.fecha_programada_pago)'), 'DSC');
+        ->orderBy('cuota.numero_cuota', 'ASC');
         return $results;
     }
 
-    public static function listarCuotasAlafechaPersona($anio, $mes, $persona_id, $credito_id){
+    public static function listarCuotasAlafechaPersona($anio, $mes, $persona_id, $credito_id, $opcion){
      
         $fecha_p = new DateTime($anio.'-'.$mes.'-01');
         $fecha_p->modify('last day of this month');
         $fecha_p->format('Y-m-d');
-
-        $results = DB::table('cuota')
-        ->Join('credito','credito.id','=','cuota.credito_id')
-        ->Join('persona','persona.id','=','credito.persona_id')
-        ->select(
-            'cuota.id as cuota_id',
-            'cuota.parte_capital as parte_capital',
-            'cuota.interes as interes',
-            'cuota.interes_mora as interes_mora',
-            'cuota.fecha_programada_pago as fecha_pagar',
-            'cuota.estado as estado',
-            'cuota.numero_cuota as numero_cuota',
-            'credito.id as credito_id',
-            'credito.periodo as periodo',
-            'persona.id as persona_id',
-            'persona.nombres as nombres',
-            'persona.apellidos as apellidos',
-            'persona.tipo as tipo',
-            DB::raw('extract( month from cuota.fecha_programada_pago) as mes'),
-            DB::raw('extract( year from cuota.fecha_programada_pago) as anio')
-        )
-        ->where('persona.id','=', $persona_id)
-        ->where('credito.id','=', $credito_id)
-        ->where('cuota.estado','!=', '1')
-        ->where('cuota.deleted_at','=', null)
-        ->where('cuota.fecha_programada_pago','<=',$fecha_p)
-        ->orderBy(DB::raw('extract( year from cuota.fecha_programada_pago)'), 'DSC')
-        ->orderBy(DB::raw('extract( month from cuota.fecha_programada_pago)'), 'DSC');
+        $results = null;
+        if($opcion == '3'){
+            $results = DB::table('cuota')
+            ->Join('credito','credito.id','=','cuota.credito_id')
+            ->Join('persona','persona.id','=','credito.persona_id')
+            ->select(
+                'cuota.id as cuota_id',
+                'cuota.parte_capital as parte_capital',
+                'cuota.interes as interes',
+                'cuota.interes_mora as interes_mora',
+                'cuota.fecha_programada_pago as fecha_pagar',
+                'cuota.estado as estado',
+                'cuota.numero_cuota as numero_cuota',
+                'credito.id as credito_id',
+                'credito.periodo as periodo',
+                'persona.id as persona_id',
+                'persona.nombres as nombres',
+                'persona.apellidos as apellidos',
+                'persona.tipo as tipo',
+                DB::raw('extract( month from cuota.fecha_programada_pago) as mes'),
+                DB::raw('extract( year from cuota.fecha_programada_pago) as anio')
+            )
+            ->where('persona.id','=', $persona_id)
+            ->where('credito.id','=', $credito_id)
+            ->where('cuota.estado','!=', '1')
+            ->where('cuota.deleted_at','=', null)
+            ->orderBy('cuota.numero_cuota', 'ASC');
+        }else{
+            $results = DB::table('cuota')
+            ->Join('credito','credito.id','=','cuota.credito_id')
+            ->Join('persona','persona.id','=','credito.persona_id')
+            ->select(
+                'cuota.id as cuota_id',
+                'cuota.parte_capital as parte_capital',
+                'cuota.interes as interes',
+                'cuota.interes_mora as interes_mora',
+                'cuota.fecha_programada_pago as fecha_pagar',
+                'cuota.estado as estado',
+                'cuota.numero_cuota as numero_cuota',
+                'credito.id as credito_id',
+                'credito.periodo as periodo',
+                'persona.id as persona_id',
+                'persona.nombres as nombres',
+                'persona.apellidos as apellidos',
+                'persona.tipo as tipo',
+                DB::raw('extract( month from cuota.fecha_programada_pago) as mes'),
+                DB::raw('extract( year from cuota.fecha_programada_pago) as anio')
+            )
+            ->where('persona.id','=', $persona_id)
+            ->where('credito.id','=', $credito_id)
+            ->where('cuota.estado','!=', '1')
+            ->where('cuota.deleted_at','=', null)
+            ->where('cuota.fecha_programada_pago','<=',$fecha_p)
+            ->orderBy('cuota.numero_cuota', 'ASC');
+        }
+        
         return $results;
     }
 

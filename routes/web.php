@@ -175,7 +175,11 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/listpersonas',  'CreditoController@listpersonas')->name('creditos.listpersonas');
      Route::get('creditos/cuotasalafecha', 'CreditoController@cuotasalafecha')->name('creditos.cuotasalafecha');
      Route::post('creditos/pagarcuotainteres', 'CreditoController@pagarcuotainteres')->name('creditos.pagarcuotainteres');
-  
+     Route::get('creditos/amortizarcuotas', 'CreditoController@amortizarcuotas')->name('creditos.amortizarcuotas');
+     Route::get('creditos/obtenermontototal', 'CreditoController@obtenermontototal')->name('creditos.obtenermontototal');
+     Route::get('creditos/pagarcreditototal', 'CreditoController@pagarcreditototal')->name('creditos.pagarcreditototal');
+     
+     
      
      //Route::get('creditos/abrirpdf', 'CreditoController@abrirpdf')->name('creditos.abrirpdf');
      /*RECIBOCREDITOS*/
