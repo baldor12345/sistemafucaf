@@ -259,6 +259,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('certificado/guardarpagarcontribucion', 'CertificadoController@guardarpagarcontribucion')->name('certificado.guardarpagarcontribucion');
     Route::get('/reportecertificadoPDF/{id?}', 'CertificadoController@reportecertificadoPDF')->name('certificado.reportecertificadoPDF');
 
+    /*DIRECTIVOS*/
+    Route::post('directivos/buscar', 'DirectivosController@buscar')->name('directivos.buscar');
+    Route::get('directivos/eliminar/{id}/{listarluego}', 'DirectivosController@eliminar')->name('directivos.eliminar');
+    Route::resource('directivos', 'DirectivosController', array('except' => array('show')));
+    Route::get('directivos/listdirectivos/{directivos_id}', 'DirectivosController@listdirectivos')->name('directivos.listdirectivos');
+    Route::get('directivos/listpersonas',  'DirectivosController@listpersonas')->name('directivos.listpersonas');
+    Route::get('/directivosPDF/{id}', 'DirectivosController@directivosPDF')->name('directivosPDF');
 });
 
 //Route::get('personas/{dni?}','AccionesController@getPersona');

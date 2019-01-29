@@ -116,6 +116,10 @@ class MenuoptionSeeder extends Seeder
 					'name' => 'Socios y Clientes',
 					'link'   => 'persona'
 				),
+				array(
+					'name' => 'Directivos',
+					'link'   => 'directivos'
+				),
 
 				
 			);
