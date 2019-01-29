@@ -159,7 +159,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/reciboaccionventapdf/{id_comprador?}/{id_vendedor?}/{cant?}/{fecha?}', 'AccionesController@reciboaccionventapdf')->name('acciones.reciboaccionventapdf');
 
 
-     /*CREDITO*/
+     /*CREDITO*/ 
      Route::post('creditos/buscar', 'CreditoController@buscar')->name('creditos.buscar');
      Route::get('creditos/eliminar/{id?}/{listarluego?}', 'CreditoController@eliminar')->name('creditos.eliminar');
      Route::resource('creditos', 'CreditoController', array('except' => array('show')));
@@ -174,6 +174,8 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('/generarecibocreditoPDF/{credito_id?}', 'CreditoController@generarecibocreditoPDF')->name('creditos.generarecibocreditoPDF');
      Route::get('creditos/listpersonas',  'CreditoController@listpersonas')->name('creditos.listpersonas');
      Route::get('creditos/cuotasalafecha', 'CreditoController@cuotasalafecha')->name('creditos.cuotasalafecha');
+     Route::post('creditos/pagarcuotainteres', 'CreditoController@pagarcuotainteres')->name('creditos.pagarcuotainteres');
+  
      
      //Route::get('creditos/abrirpdf', 'CreditoController@abrirpdf')->name('creditos.abrirpdf');
      /*RECIBOCREDITOS*/

@@ -40,7 +40,8 @@ class CreditoController extends Controller{
         'generarecibocreditoPDF' => 'creditos.generarecibocreditoPDF',
         'abrirpdf' => 'creditos.abrirpdf',
         'listpersonas' => 'creditos.listpersonas',
-        'cuotasalafecha' => 'creditos.cuotasalafecha'
+        'cuotasalafecha' => 'creditos.cuotasalafecha',
+        'pagarcuotainteres'=>'creditos.pagarcuotainteres'
     );
 
     public function __construct(){
@@ -338,6 +339,7 @@ class CreditoController extends Controller{
     }
 /*************--MODAL PAGO CUOTA--*************** */
     public function vistapagocuota(Request $request, $cuota_id, $listarluego, $entidadr="nan"){
+        $numero= $entidadr;
         $entidad_recibo = $entidadr;
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
@@ -351,13 +353,21 @@ class CreditoController extends Controller{
         $entidad_cuota = 'Cuota';
         $credito = null;
         
-        $formData = array('creditos.pagarcuota');
-        $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
+        
         $boton = 'Registrar'; 
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
         $credito2 = Credito::find($cuota->credito_id);
-        return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
+        if($numero == 2){
+            $formData = array('creditos.pagarcuotainteres');
+            $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
+            return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
+        }else{
+            $formData = array('creditos.pagarcuota');
+            $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
+            return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
+        }
+        
     }
 /*************--REGISTRO PAGO CUOTA--************ */
     public function pagarcuota(Request $request){
@@ -370,7 +380,6 @@ class CreditoController extends Controller{
                 $id_credito = $request->get('id_credito');
                 $fecha_pago = $request->get('fecha_pago').date(" H:i:s");
                 $id_cliente = $request->get('id_cliente');
-                //$imprimir_voucher = $request->get('imprimir_voucherpago');
                 $comision_voucher = 0.2;
 
                 //Actualiza cuota a estado cancelado
@@ -434,6 +443,63 @@ class CreditoController extends Controller{
         }
         return is_null($res) ? "OK" : $res;
     }
+
+    /*************--REGISTRO PAGO INTERES CUOTA--************ */
+    public function pagarcuotainteres(Request $request){
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+        $res = null;
+        if($caja_id != 0){
+            $error = DB::transaction(function() use($request, $caja_id){
+                $id_cuota = $request->get('id_cuota');
+                $id_credito = $request->get('id_credito');
+                $fecha_pago = $request->get('fecha_pago').date(" H:i:s");
+                $id_cliente = $request->get('id_cliente');
+                $comision_voucher = 0.2;
+
+                //Actualiza cuota a estado cancelado
+                $cuota = Cuota::find($id_cuota);
+                $cuota->estado = 'I';// pago de interes de cuota
+                $cuota->fecha_pago = $fecha_pago;
+                $cuota->save();
+
+                //registra la comision por voucher en caja si desea imprimirlo
+                $concepto_id = 8;
+                $transaccion2 = new Transaccion();
+                $transaccion2->fecha = $fecha_pago;
+                $transaccion2->monto = $comision_voucher;
+                $transaccion2->concepto_id = $concepto_id;
+                $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
+                $transaccion2->persona_id = $id_cliente;
+                $transaccion2->usuario_id = Credito::idUser();
+                $transaccion2->caja_id = $caja_id;
+                $transaccion2->comision_voucher = $comision_voucher;
+                $transaccion2->save();
+                //registramos en caja el pago cuota
+                $monto = $cuota->parte_capital;
+                $parte_capital =  $cuota->parte_capital;
+               
+                $concepto_id_pagocuota = 4;
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $fecha_pago;
+                $transaccion->monto = $cuota->interes;
+                $transaccion->concepto_id =  $concepto_id_pagocuota;
+                $transaccion->descripcion = "Pago de interes Cuota";
+                $transaccion->persona_id = $id_cliente;
+                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->caja_id = $caja_id;
+                $transaccion->cuota_parte_capital = 0;
+                $transaccion->cuota_interes = $cuota->interes;
+                $transaccion->cuota_mora = 0;
+                $transaccion->save();
+            });
+            $res = $error;
+        }else{
+            $res = 'Caja no aperturada, asegurece de aperturar primero para registrar alguna transacción.!';
+        }
+        return is_null($res) ? "OK" : $res;
+    }
+
 /*************--MODAL DETALLE CREDITO--********** */
     public function detallecredito(Request $request, $credito_id){
         $caja_id = Caja::where("estado","=","A")->value('id');

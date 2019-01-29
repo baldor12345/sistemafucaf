@@ -73,19 +73,20 @@ $fecha_pago = null;
                 }else{
                     if (respuesta === 'OK') {
                         cerrarModal();
-                        if("{{ $entidad_recibo }}" == "nan"){
-                            buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-                            buscar('{{ $entidad_credito }}');
-                        }else{
-                            buscar('{{ $entidad_recibo }}');
+                        if("{{ $entidad_recibo }}" != "0" || "{{ $entidad_recibo }}" != "2"){
+                            if("{{ $entidad_recibo }}" == "nan"){
+                                buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+                                buscar('{{ $entidad_credito }}');
+                            }else{
+                                buscar('{{ $entidad_recibo }}');
+                            }
                         }
+                    
+                        var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array($cuota->id))}}";
+                        //window.open(rutarecibopagocuota+"/{{ $cuota->id }}", "Voucher credito", "width=700, height=500, left=50, top=20");
+                        var anchoModal = '700';
+                        modalrecibopdf(rutarecibopagocuota,anchoModal);
                         
-                        if($("#imprimir_voucherpago").val() == 1){
-                            var rutarecibopagocuota = "{{ URL::route($ruta['generarecibopagocuotaPDF'], array($cuota->id))}}";
-                            //window.open(rutarecibopagocuota+"/{{ $cuota->id }}", "Voucher credito", "width=700, height=500, left=50, top=20");
-                            var anchoModal = '700';
-                            modalrecibopdf(rutarecibopagocuota,anchoModal);
-                        }  
                     } else {
                         var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+respuesta+"</div>";
                         $('#divMensajeError{{ $entidad_cuota }}1').html(msj);
