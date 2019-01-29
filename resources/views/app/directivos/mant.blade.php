@@ -1,4 +1,4 @@
-@if( $day >= $periodo_fin )
+
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($directivos, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -228,6 +228,3 @@
 		
 	}); 
 </script>
-@else
-<h3 class="text-warning">Ya existe una relacion de directivos para este periodo, Gracias!.</h3>
-@endif

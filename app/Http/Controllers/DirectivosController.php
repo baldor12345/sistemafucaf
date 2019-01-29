@@ -104,12 +104,14 @@ class DirectivosController extends Controller
     public function index()
     {
         $directivos_last = Directivos::All()->last();
+        $day = date("d/m/Y");
+        $periodo_fin = Date::parse($directivos_last->periodof )->format('d/m/Y');
 
         $entidad          = 'Directivos';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','directivos_last'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','periodo_fin','day'));
     }
 
     /**
