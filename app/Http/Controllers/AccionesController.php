@@ -16,7 +16,9 @@ use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Jenssegers\Date\Date;
 use PDF;
+use DateTime;
 
 class AccionesController extends Controller
 {
@@ -126,12 +128,14 @@ class AccionesController extends Controller
         $cboContribucion  =array(11=>'Contribución de Ingreso');
         $entidad        = 'Acciones';
         $acciones        = null;
+        $config = Configuraciones::All()->last();
+        $precio_accion = $config->precio_accion;
         $ruta = $this->rutas;
         $cboPers = array(0=>'Seleccione...');
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion'));
     }
 
     /**
@@ -168,13 +172,13 @@ class AccionesController extends Controller
                 $cantidad_accion= $request->input('cantidad_accion');
                 if($cantidad_accion !== ''){
 
-                    $can_moment = DB::table('acciones')->where('estado','C')->count();
+                    $can_moment = DB::table('acciones')->where('deleted_at',null)->count();
                     $codigo = (count($can_moment) ==0)?0:$can_moment;
                     for($i=0; $i< $cantidad_accion; $i++){
                         $codigo++;
                         $acciones               = new Acciones();    
                         $acciones->estado        = 'C';
-                        $acciones->fechai        = $request->input('fechai').date(" H:i:s");
+                        $acciones->fechai        = $request->input('fechai').date(" H:i");
                         if(strlen($codigo) == 1){
                             $acciones->codigo = "000000".($codigo);
                         }
@@ -196,12 +200,18 @@ class AccionesController extends Controller
                     }
                 }
 
+                $buy_last = Acciones::where('estado','C')->where('persona_id',$request->input('selectnom'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'DSC')->get();
+                $descrp = "";
+                foreach($buy_last as $value){
+                    $descrp += $value->id.",";
+                }
+
                 if($cantidad_accion !== ''){
                     $historial_accion               = new HistorialAccion();    
                     $historial_accion->cantidad        =  $request->input('cantidad_accion');
                     $historial_accion->estado        = 'C';
                     $historial_accion->fecha        = $request->input('fechai');
-                    $historial_accion->descripcion        = $request->input('descripcion');
+                    $historial_accion->descripcion        = $descrp;
                     $historial_accion->persona_id        = $request->input('selectnom');
                     $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
                     $historial_accion->caja_id = $idCaja;
@@ -221,7 +231,7 @@ class AccionesController extends Controller
 
                 //comision voucher si esque desea imprimirlo
                 $transaccion = new Transaccion();
-                $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                $transaccion->fecha = $request->input('fechai').date(" H:i");
                 $transaccion->monto = $monto_ingreso;
                 $transaccion->acciones_soles = $monto_ingreso;
                 $transaccion->concepto_id = $request->input('concepto_id');
@@ -448,6 +458,9 @@ class AccionesController extends Controller
         if (isset($listarParam)) {
             $listar = $listarParam;
         }
+        $config = Configuraciones::All()->last();
+        $precio_accion = $config->precio_accion;
+
         $cboPers = array(0=>'Seleccione...');
         $nom = '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos;
         $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
@@ -456,7 +469,7 @@ class AccionesController extends Controller
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones','cboPers'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones','cboPers','precio_accion'));
     }
 
     public function guardarventa(Request $request, $id)
@@ -744,8 +757,7 @@ class AccionesController extends Controller
 
             $concepto_id = $acciones->concepto_id;
             $persona_id = $acciones->persona_id;
-
-            $transacciones = Transaccion::where('persona_id',$acciones->persona_id)->where('fecha',$acciones->fechai)->where('inicial_tabla','AC')->get();
+            $transacciones = Transaccion::where('persona_id',$acciones->persona_id)->where('fecha',Date::parse( $acciones->fechai )->format('Y-m-d  H:i:00'))->where('inicial_tabla','AC')->get();
             $cantidad = ((($transacciones[0]->monto)/($configuraciones->precio_accion))-1);
             $caja_id =$transacciones[0]->caja_id;
 

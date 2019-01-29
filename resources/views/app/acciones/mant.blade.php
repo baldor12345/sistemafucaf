@@ -12,27 +12,34 @@ use Illuminate\Support\Facades\DB;
 	{!! Form::label('dni', 'Socio:', array('class' => 'col-sm-2 col-xs-12 control-label')) !!}
 	<div class="col-sm-10 col-xs-12">
 		{!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
-		<input type="hidden" id="persona_id", name="persona_id" value="">
 	</div>
 </div>
-
+</br></br>
 <input type="hidden" id="cantaccionpersona", name="cantaccionpersona" value="">
 <input type="hidden" id="cantacciontotal", name="cantacciontotal" value="">
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-4 col-sm-12 col-xs-12">
 		<div class="form-group">
-			{!! Form::label('cantidad_accion', 'Cantidad:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
-			<div class="col-sm-8 col-xs-12">
-				{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_accion', 'placeholder' => 'Ingrese cantidad', 'maxlength' => '3')) !!}
+			{!! Form::label('cantidad_accion', ' Cantidad:', array('class' => 'col-sm-6  col-xs-12 control-label')) !!}
+			<div class="col-sm-6 col-xs-12">
+				{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_accion', 'placeholder' => '....', 'maxlength' => '3')) !!}
 			</div>
 		</div>
 	</div>
-	<div class="col-md-6">
+	<div class="col-md-4 col-sm-12 col-xs-12">
 		<div class="form-group">
-			{!! Form::label('configuraciones_id', 'Precio:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
-			<div class="col-sm-9 col-xs-12">
+			{!! Form::label('configuraciones_id', 'Precio:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+			<div class="col-sm-8 col-xs-12">
 				{!! Form::select('configuraciones_id', $cboConfiguraciones, null, array('class' => 'form-control input-xs', 'id' => 'configuraciones_id')) !!}
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 col-sm-12 col-xs-12">
+		<div class="form-group">
+			{!! Form::label('total', 'Total S/.:', array('class' => 'col-sm-6 col-xs-12 control-label')) !!}
+			<div class="col-sm-6 col-xs-12">
+				{!! Form::text('total', 0.0, array('class' => 'form-control input-xs', 'id' => 'total', 'readonly')) !!}
 			</div>
 		</div>
 	</div>
@@ -47,7 +54,6 @@ use Illuminate\Support\Facades\DB;
 				{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
 			</div>
 		</div>
-		
 	</div>
 	<div class="col-md-6">
 		<div class="form-group">
@@ -61,8 +67,10 @@ use Illuminate\Support\Facades\DB;
 
 <div class="row" id='oculto' style="display:none;">
 	<fieldset> 
-		<legend> Aporte como nuevo socio</legend>
-		<div class="col-md-8">
+		<div class="col-md-12">
+			<p style="font-family: italic; font size: 16px; color:#FF0000">Contribucion de Ingreso como nuevo Socio</p>
+		</div>
+		<div class="col-md-6">
 			<div class="form-group">
 				{!! Form::label('contribucion_id', 'Concepto:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 				<div class="col-sm-8 col-xs-12">
@@ -70,7 +78,7 @@ use Illuminate\Support\Facades\DB;
 				</div>
 			</div>	
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-6">
 			<div class="form-group ">
 				{!! Form::label('monto', 'Monto S/.:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
 				<div class="col-sm-7 col-xs-12">
@@ -166,8 +174,21 @@ use Illuminate\Support\Facades\DB;
             }
         });
 
+	
+		$("input[name=cantidad_accion]").change(function(event){
+			var cantidad_ingresad = parseInt($('#cantidad_accion').val());
+			var precio = '{{ $precio_accion }}';
+			if(cantidad_ingresad != 0){
+				$('#total').val(cantidad_ingresad*precio);
+			}else{
+				$('#total').val('0.0');
+			}
+		});
+
+
 		$("input[name=cantidad_accion]").change(function(event){
 			var cantidad = parseInt($('#cantaccionpersona').val());
+			
 			if(cantidad == 0){
 				document.getElementById('oculto').style.display = 'block';
 			}else{

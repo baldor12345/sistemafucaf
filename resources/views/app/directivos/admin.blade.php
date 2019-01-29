@@ -74,7 +74,7 @@
 			modal(controlador, titulo);
 		}else{
 			bootbox.confirm({
-				title: "Mensaje de Avviso",
+				title: "Mensaje de Aviso",
 				message: "Ya existe una relacion de directivos para este periodo, Gracias!.",
 				buttons: {
 					cancel: {
