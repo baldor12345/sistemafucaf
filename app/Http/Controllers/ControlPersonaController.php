@@ -317,7 +317,7 @@ class ControlPersonaController extends Controller
         
         $error = DB::transaction(function() use($request, $concepto_id, $monto, $fecha_pago, $caja_id, $control_id, $persona){
 
-            $control_socio            = ControlPersona::find($control_id);
+            $control_socio = ControlPersona::find($control_id);
 
             $control_socio->fecha_pago = $fecha_pago;
             $control_socio->monto = $monto;
@@ -326,18 +326,22 @@ class ControlPersonaController extends Controller
             $control_socio->caja_id =  $caja_id;
             $control_socio->save();
 
-            //-----------------------------------------------------------------------------------------------GASTELO COJUDO TU PARTE-------------------------------------------------
-            /*
-            $ahorro = new Ahorros();
-            $ahorro->capital = $monto;
-            $ahorro->interes = 0;
-            $ahorro->estado = 'P';
-            $ahorro->fechai = $fecha_pago;
-            $ahorro->persona_id = 6;
-            $ahorro->save();
-            */
-            //-----------------------------------------------------------------------------------------------GASTELO COJUDO TU PARTE-------------------------------------------------
-            
+            $resultado = Ahorros::getahorropersona($request->input(6));
+            if(count($resultado) >0){
+                $ahorro_actual = $resultado[0];
+                $ahorro_actual->capital = $ahorro_actual->capital + $monto;
+                $ahorro_actual->estado = 'P';
+                $ahorro_actual->save();
+            }else{
+                $ahorro = new Ahorros();
+                $ahorro->capital = $monto;
+                $ahorro->interes = 0;
+                $ahorro->estado = 'P';
+                $ahorro->fechai = $fecha_pago;
+                $ahorro->persona_id = 6;
+                $ahorro->save();
+            }
+
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
