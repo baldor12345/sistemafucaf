@@ -57,6 +57,7 @@ class Certificado extends Model
                     ->where(DB::raw('extract( month from acciones.fechai)'),'<=',$month2)
                     ->where(DB::raw('extract( year from acciones.fechai)'),'=',$anio)
                     ->where('acciones.estado','=','C')
+                    ->where('acciones.deleted_at',null)
                     ->groupBy('persona.id','configuraciones.precio_accion');
         return $results;
     }
