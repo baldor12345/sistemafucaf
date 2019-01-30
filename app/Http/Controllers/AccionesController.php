@@ -243,12 +243,15 @@ class AccionesController extends Controller
                 $transaccion->save();
 
                 $contribucion = $request->input('monto');
+                $accion_last = Acciones::All()->last();
+                $persona_last = Persona::find($accion_last->persona_id);
+
                 if($contribucion != ''){
                     $transaccion = new Transaccion();
                     $transaccion->fecha = $request->input('fechai').date(" H:i:s");
                     $transaccion->monto = $contribucion;
                     $transaccion->concepto_id = $request->input('contribucion_id');
-                    $transaccion->descripcion = "aporte como nuevo socio";
+                    $transaccion->descripcion = $persona_last->nombres;
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->inicial_tabla ="AC";
                     $transaccion->caja_id =$idCaja;

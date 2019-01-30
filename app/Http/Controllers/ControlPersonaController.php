@@ -326,10 +326,23 @@ class ControlPersonaController extends Controller
             $control_socio->caja_id =  $caja_id;
             $control_socio->save();
 
+            //-----------------------------------------------------------------------------------------------GASTELO COJUDO TU PARTE-------------------------------------------------
+            /*
+            $ahorro = new Ahorros();
+            $ahorro->capital = $monto;
+            $ahorro->interes = 0;
+            $ahorro->estado = 'P';
+            $ahorro->fechai = $fecha_pago;
+            $ahorro->persona_id = 6;
+            $ahorro->save();
+            */
+            //-----------------------------------------------------------------------------------------------GASTELO COJUDO TU PARTE-------------------------------------------------
+            
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
             $transaccion->concepto_id = $concepto_id;
+            $transaccion->persona_id = 6;
             $transaccion->descripcion =  "pagó ".$persona->nombres." ";
             $transaccion->usuario_id =Caja::getIdPersona();
             $transaccion->caja_id = $caja_id;
