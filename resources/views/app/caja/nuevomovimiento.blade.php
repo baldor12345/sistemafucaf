@@ -34,7 +34,7 @@ function cargarselect2(entidad){
 
 </script>
 
-
+<div id="divinfo"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::open(array('route' => array('caja.registrarmovimiento', $id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -42,7 +42,7 @@ function cargarselect2(entidad){
 <div class="form-group">
 	{!! Form::label('fecha', 'Fecha:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::date('fecha', null, array('class' => 'form-control input-xs', 'id' => 'fecha', 'placeholder' => '')) !!}
+		{!! Form::date('fecha', null, array('class' => 'form-control input-xs','min'=>'', 'max'=>'', 'id' => 'fecha', 'placeholder' => '')) !!}
 	</div>
 </div>
 
@@ -67,7 +67,7 @@ function cargarselect2(entidad){
 		{!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
 	</div>
 </div>
-
+</br></br>
 
 <div class="form-group" id="btnOculto">
 	<div class="col-sm-6 col-xs-12 control-label form-check form-check-inline">
@@ -111,11 +111,13 @@ function cargarselect2(entidad){
 		configurarAnchoModal('400');
 		$("#btnOculto").hide();
 		$(".dni").html('DNI: <sup style="color: blue;">Opcional</sup>');
-		
+		$('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $diferencia }}</div>');
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fecha = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
+		$('#fecha').min ="2010-01-01";
+		$('#fecha').max ="2010-12-30";
 		$('#fecha').val(fecha);
 
 		$('#selectnom').select2({

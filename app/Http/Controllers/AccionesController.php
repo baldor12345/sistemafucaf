@@ -727,11 +727,14 @@ class AccionesController extends Controller
         $tags = Persona::where("dni",'ILIKE', '%'.$term.'%')->orwhere("nombres",'ILIKE', '%'.$term.'%')->orwhere("apellidos",'ILIKE', '%'.$term.'%')->limit(5)->get();
         $formatted_tags = [];
         foreach ($tags as $tag) {
-            if($tag->tipo == 'S '){
-                $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
-            }else{
-                //$formatted_tags[] = ['id'=> '', 'text'=>"seleccione socio"];
+            if(trim($tag->estado) == 'A'){
+                if(trim($tag->tipo) == 'S'){
+                    $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
+                }else{
+                    //$formatted_tags[] = ['id'=> '', 'text'=>"seleccione socio"];
+                }
             }
+            
         }
 
         return \Response::json($formatted_tags);

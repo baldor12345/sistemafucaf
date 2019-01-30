@@ -73,7 +73,6 @@ class Transaccion extends Model
                     ->where('transaccion.deleted_at','=',null)
             ->where('concepto.titulo','!=','Interes I')
             ->where('concepto.titulo','!=','Interes E')
-            ->where('transaccion.deleted_at',null)
             ->where('transaccion.caja_id', '=', $caja_id);
         return $query;
     }

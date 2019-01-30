@@ -56,7 +56,90 @@ class PersonSeeder extends Seeder
                 'estado'              =>'A',
 				'created_at'     => $now,
 				'updated_at'     => $now
-			));
-
+            ));
+            DB::table('persona')->insert(array(
+                'codigo'              =>'FUCAF',
+                'dni'               =>'11111111',
+                'nombres'       =>'Fondo',
+                'apellidos'              =>'Social',
+                'fecha_nacimiento'	=>'2018-09-08',
+                'sexo'              =>'M',
+                'estado_civil'              =>'S',
+                'personas_en_casa'      =>'1',
+                'direccion'         =>'',
+                'ocupacion'         =>'',
+                'email'             =>'',
+                'telefono_fijo'     =>'',
+                'tipo'              =>'S',
+                'fechai'	=>'2011-12-22',
+                'ingreso_personal'              =>'1000.00',
+                'ingreso_familiar'              =>'2500.00',
+                'estado'              =>'E',
+				'created_at'     => $now,
+				'updated_at'     => $now
+            ));
+            DB::table('persona')->insert(array(
+                'codigo'              =>'FUCAF',
+                'dni'               =>'22222222',
+                'nombres'       =>'Reserva',
+                'apellidos'              =>'Legal',
+                'fecha_nacimiento'	=>'2018-09-08',
+                'sexo'              =>'M',
+                'estado_civil'              =>'CA',
+                'personas_en_casa'      =>'3',
+                'direccion'         =>'',
+                'ocupacion'         =>'',
+                'email'             =>'',
+                'telefono_fijo'     =>'',
+                'tipo'              =>'E',
+                'fechai'	=>'2009-01-03',
+                'ingreso_personal'              =>'1000.00',
+                'ingreso_familiar'              =>'1000.00',
+                'estado'              =>'A',
+				'created_at'     => $now,
+				'updated_at'     => $now
+            ));
+            DB::table('persona')->insert(array(
+                'codigo'              =>'FUCAF',
+                'dni'               =>'33333333',
+                'nombres'       =>'Intereses',
+                'apellidos'              =>'Moratorios',
+                'fecha_nacimiento'	=>'2018-09-08',
+                'sexo'              =>'M',
+                'estado_civil'              =>'CA',
+                'personas_en_casa'      =>'3',
+                'direccion'         =>'',
+                'ocupacion'         =>'',
+                'email'             =>'',
+                'telefono_fijo'     =>'',
+                'tipo'              =>'E',
+                'fechai'	=>'2009-01-03',
+                'ingreso_personal'              =>'1000.00',
+                'ingreso_familiar'              =>'1000.00',
+                'estado'              =>'A',
+				'created_at'     => $now,
+				'updated_at'     => $now
+            ));
+            DB::table('persona')->insert(array(
+                'codigo'              =>'FUCAF',
+                'dni'               =>'44444444',
+                'nombres'       =>'Multas',
+                'apellidos'              =>'por Tardanza o Faltas',
+                'fecha_nacimiento'	=>'2018-09-08',
+                'sexo'              =>'M',
+                'estado_civil'              =>'S',
+                'personas_en_casa'      =>'1',
+                'direccion'         =>'',
+                'ocupacion'         =>'',
+                'email'             =>'',
+                'telefono_fijo'     =>'',
+                'tipo'              =>'E',
+                'fechai'	=>'2011-12-22',
+                'ingreso_personal'              =>'1000.00',
+                'ingreso_familiar'              =>'2500.00',
+                'estado'              =>'A',
+				'created_at'     => $now,
+				'updated_at'     => $now
+            ));
     }
 }

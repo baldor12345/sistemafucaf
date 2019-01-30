@@ -143,9 +143,8 @@ class CajaController extends Controller
      */
     public function create(Request $request)
     {
-        $datosCaja = Caja::orderby('created_at','DESC')->take(1)->get();
-        $ingresos = $datosCaja[0]->monto_cierre;
-
+        $caja_last = Caja::All()->last();
+        $ingresos = (count($caja_last) != 0)?$caja_last->monto_cierre:0;
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Caja';
         $caja        = null;
@@ -575,6 +574,21 @@ class CajaController extends Controller
     //PARA REGISTRAR NUEVO MOVIMIENTO PARA GASTOS, AHORROS DESDE LA CAJA
     public function nuevomovimiento($id, Request $request)
     {
+        $result = DB::table('caja')->where('id', $id)->first();
+        $ingresos = $result->monto_iniciado;
+        $egresos = 0;
+        $diferencia = 0;
+        $saldo = Transaccion::getsaldo($id)->get();
+        for($i = 0; $i<count( $saldo ); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+
+        $diferencia= $ingresos-$egresos;
+
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true) {
             return $existe;
@@ -592,7 +606,7 @@ class CajaController extends Controller
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];
         $boton          = 'Registrar';
-        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos','cboPers','ruta'));
+        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos','cboPers','ruta','diferencia','result'));
     }
 
 
