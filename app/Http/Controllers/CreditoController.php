@@ -533,8 +533,7 @@ class CreditoController extends Controller{
         $cboacciones = array('1'=>'Pago de cuotas pendientes',//pago de cuota pendiente a la fecha
             '2'=>'Pago de interes (Cuota/Pendiente)',//pagar solo el interes de la cuota pendiente
             '3'=>'Amortizar cuotas',//cancelacion de cuotas para reducir interes y acortar el plazo
-            '4'=>'Ampliar cuotas',//Despues de pagar la cuota pendiente si lo hay, ampliar el numero de cuotas
-            '5'=>'Cancelar todo'//despues de cancelar la cuota pendiente si lo hay, cancelar toda la deuda del credito
+            '4'=>'Cancelar todo'
         );
     
            
