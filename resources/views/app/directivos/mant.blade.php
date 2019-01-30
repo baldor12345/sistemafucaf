@@ -10,32 +10,35 @@
 				{!! Form::select('presidente_id', $cboPresidente, null, array('class' => 'form-control input-sm', 'id' => 'presidente_id')) !!}
 			</div>
 		</div>
+        </br></br>
 		<div>
 			{!! Form::label('secretario_id', 'Secretario:', array('class' => 'col-sm-3 col-xs-12 control-label ')) !!}
 			<div class="col-sm-9 col-xs-12">
 				{!! Form::select('secretario_id', $cboSecretario, null, array('class' => 'form-control input-sm', 'id' => 'secretario_id')) !!}
 			</div>
 		</div>
+        </br></br>
 		<div>
 			{!! Form::label('tesorero_id', 'Tesorero:', array('class' => 'col-sm-3 col-xs-12 control-label ')) !!}
 			<div class="col-sm-9 col-xs-12">
 				{!! Form::select('tesorero_id', $cboTesorero, null, array('class' => 'form-control input-sm', 'id' => 'tesorero_id')) !!}
 			</div>
 		</div>
+        </br></br>
 		<div>
 			{!! Form::label('vocal_id', 'Vocal:', array('class' => 'col-sm-3 col-xs-12 control-label ')) !!}
 			<div class="col-sm-9 col-xs-12">
 				{!! Form::select('vocal_id', $cboVocal, null, array('class' => 'form-control input-sm', 'id' => 'vocal_id')) !!}
 			</div>
 		</div>
-
+        </br></br>
 		<div class="form-group">
 			{!! Form::label('estado', 'Estado:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 			<div class="col-sm-9 col-xs-12">
 				{!! Form::select('estado', $cboEstado, null, array('class' => 'form-control input-xs', 'id' => 'estado')) !!}
 			</div>
 		</div>
-
+        </br>
 		<div class="row">
 			<div class="col-sm-6 col-xs-12">
 				{!! Form::label('periodoi', 'Periodo Inicio:', array('class' => '')) !!}
