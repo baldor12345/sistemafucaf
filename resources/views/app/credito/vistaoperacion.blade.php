@@ -154,13 +154,14 @@
 
     function abirmodal(btn){
         if($('#accioncredito').val() == '1'){
-            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/0";
+            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/Credito";
         }else{
-            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/2";
+            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/Credito";
         }
         
         console.log("RUTA: "+ruta);
         modal(ruta, "Pago de Cuota");
+        
         $('#modal'+(contadorModal-1)).on('hidden.bs.modal', function (e) {
             listarcuotasalafecha();
         });

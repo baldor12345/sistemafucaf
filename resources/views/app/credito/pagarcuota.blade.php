@@ -10,7 +10,7 @@
 <div class="form-row">
     <div class="form-group col-12 col-md-12 col-sm-12" >
         {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
-        {!! Form::date('fecha_pago', null, array('class' => 'form-control input-xs', 'id' => 'fecha_pago')) !!}
+        {!! Form::date('fecha_pagoc', null, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
     </div>
 </div>
 
@@ -32,10 +32,10 @@ $fecha_pago = null;
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualc = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#fecha_pago').val(fechaactualc);
+        $('#fecha_pagoc').val(fechaactualc);
 
         init(IDFORMMANTENIMIENTO+'{!! $entidad_cuota !!}', 'M', '{!! $entidad_cuota !!}');
-		$(IDFORMMANTENIMIENTO + '{!! $entidad_cuota !!} :input[id="fechapago"]').focus();
+		$(IDFORMMANTENIMIENTO + '{!! $entidad_cuota !!} :input[id="fecha_pagoc"]').focus();
 		configurarAnchoModal('450');
 
         $("#imprimir_voucherpago").change(function(event) {
@@ -53,8 +53,8 @@ $fecha_pago = null;
     });
 
     
-    function guardarPagoCuota (entidad, idboton) {
-        var fechap = new Date($('#fecha_pago').val());
+    function guardarPagoCuota(entidad, idboton) {
+        var fechap = new Date($('#fecha_pagoc').val());
         var anio_mes = fechap.getFullYear()+"-"+fechap.getMonth();
         if(anio_mes >= "{{ date('Y-m',strtotime($cuota->fecha_programada_pago)) }}"){
 
