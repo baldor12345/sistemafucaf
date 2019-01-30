@@ -54,7 +54,7 @@ class UsuarioController extends Controller
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Usuario';
-        $name             = Libreria::getParam($request->input('name'));
+        $name             = Libreria::getParam($request->input('nombre'));
         $resultado        = User::listar($name);
         $lista            = $resultado->get();
         $cabecera         = array();

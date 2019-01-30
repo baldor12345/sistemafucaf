@@ -46,7 +46,7 @@
 <div class="form-group">
 	{!! Form::label('estado', 'Estado:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::select('estado', $cboEstado, null, array('class' => 'form-control input-xs', 'id' => 'usertype_id')) !!}
+		{!! Form::select('estado', $cboEstado, null, array('class' => 'form-control input-xs', 'id' => 'estado')) !!}
 	</div>
 </div>
 
@@ -64,32 +64,5 @@
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('400');
-		/*
-		var personas = new Bloodhound({
-			datumTokenizer: function (d) {
-				return Bloodhound.tokenizers.whitespace(d.value);
-			},
-			queryTokenizer: Bloodhound.tokenizers.whitespace,
-			remote: {
-				url: 'person/employeesautocompleting/%QUERY',
-				filter: function (personas) {
-					return $.map(personas, function (movie) {
-						return {
-							value: movie.value,
-							id: movie.id
-						};
-					});
-				}
-			}
-		});
-		personas.initialize();
-		$('#nombrepersona').typeahead(null,{
-			displayKey: 'value',
-			source: personas.ttAdapter()
-		}).on('typeahead:selected', function (object, datum) {
-			$('#person_id').val(datum.id);
-		});
-		, campos de texto=>'disabled' => 'disabled'			
-		*/
 	}); 
 </script>
