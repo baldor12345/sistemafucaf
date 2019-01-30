@@ -47,7 +47,7 @@
             
             <tr>
                 <td>{{  $nombremes[date('m',strtotime($value->fecha_programada_pago))]."-". date('Y',strtotime($value->fecha_programada_pago)) }}</td>
-                <td>{{$value->numero_cuota}}/{{$credito->periodo}}</td>
+                <td>{{  $value->numero_cuota}}/{{$credito->periodo}}</td>
                 <td>{{  round($value->interes + $value->parte_capital,1)}}</td>
                 <td>{{  round($value->parte_capital,1)}}</td>
                 <td>{{  round($value->interes,1)}}</td>
@@ -56,10 +56,11 @@
                 <td>{{  round($value->parte_capital + $value->interes + $value->interes_mora,1)}}</td>
                 <td>{{  round($value->saldo_restante,1)}}</td>
                 @if($value->estado == '1')
+                
                 <td>P  @if($value->interes_mora != 0) <button class="btn btn-danger btn-sm"></button>@endif</td>
                 <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagado', array('class' => 'btn btn-light btn-xs', 'id' => 'btnGuardar', 'onclick' => '')) !!}</td>
-                {{-- <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnrecibo', 'onclick' => 'generaRecibo(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\')')) !!}</td>--}}
                 <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
+                
                 @else
                 <td> @if($value->estado == 'I')P <button class="btn btn-warning btn-sm"></button>@endif</td>
                 <td>{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-xs', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI','nan')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td>

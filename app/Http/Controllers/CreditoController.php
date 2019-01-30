@@ -381,7 +381,7 @@ class CreditoController extends Controller{
             $error = DB::transaction(function() use($request, $caja_id){
                 $id_cuota = $request->get('id_cuota');
                 $id_credito = $request->get('id_credito');
-                $fecha_pago = $request->get('fecha_pago').date(" H:i:s");
+                $fecha_pago = $request->get('fecha_pagoc')." ".date(" H:i:s");
                 $id_cliente = $request->get('id_cliente');
                 $comision_voucher = 0.2;
 
@@ -393,7 +393,7 @@ class CreditoController extends Controller{
 
                 //registra la comision por voucher en caja si desea imprimirlo
                 $concepto_id = 8;
-            // if($imprimir_voucher==1){
+          
 
                     $transaccion2 = new Transaccion();
                     $transaccion2->fecha = $fecha_pago;
@@ -405,9 +405,7 @@ class CreditoController extends Controller{
                     $transaccion2->caja_id = $caja_id;
                     $transaccion2->comision_voucher = $comision_voucher;
                     $transaccion2->save();
-
-
-               // }
+               
                 //registramos en caja el pago cuota
                 $monto = $cuota->parte_capital;
                 $parte_capital =  $cuota->parte_capital;
