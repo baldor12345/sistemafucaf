@@ -248,7 +248,7 @@ class AccionesController extends Controller
 
                 if($contribucion != ''){
                     $transaccion = new Transaccion();
-                    $transaccion->fecha = $request->input('fechai').date(" H:i:s");
+                    $transaccion->fecha = $request->input('fechai').date(" H:i");
                     $transaccion->monto = $contribucion;
                     $transaccion->concepto_id = $request->input('contribucion_id');
                     $transaccion->descripcion = $persona_last->nombres;
