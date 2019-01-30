@@ -44,7 +44,12 @@
             <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td><td></td>
         </tr>
         @foreach ($lista as $key => $value)
-            
+            <?php
+            if($value->estado == 'm'){
+                
+            }
+            ?>
+
             <tr>
                 <td>{{  $nombremes[date('m',strtotime($value->fecha_programada_pago))]."-". date('Y',strtotime($value->fecha_programada_pago)) }}</td>
                 <td>{{  $value->numero_cuota}}/{{$credito->periodo}}</td>
@@ -62,7 +67,7 @@
                 <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
                 
                 @else
-                <td> @if($value->estado == 'I')P <button class="btn btn-warning btn-sm"></button>@endif</td>
+                <td> @if($value->estado == 'I') <button class="btn btn-warning btn-sm"></button>@endif @if($value->estado =='m')<button class="btn btn-danger btn-sm"></button>@endif</td>
                 <td>{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-xs', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI','nan')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td>
                 <td>{!! Form::button('<i class=""></i> ......', array('class' => 'btn btn-light btn-xs', 'id' => '', 'onclick' => '')) !!}</td>
                 @endif

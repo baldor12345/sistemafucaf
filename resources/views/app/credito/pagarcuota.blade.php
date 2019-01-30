@@ -5,12 +5,13 @@
 {!! Form::hidden('id_cuota', $cuota->id, array('id' => 'id_cuota')) !!}
 {!! Form::hidden('id_credito', $cuota->credito_id, array('id' => 'id_credito')) !!}
 {!! Form::hidden('id_cliente', $credito2->persona_id, array('id' => 'id_cliente')) !!}
+{!! Form::hidden('valor_mora', $cuota->interes_mora, array('id' => 'valor_mora')) !!}
 
 
 <div class="form-row">
     <div class="form-group col-12 col-md-12 col-sm-12" >
         {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
-        {!! Form::date('fecha_pagoc', null, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
+        {!! Form::date('fecha_pagoc', $fechapago, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
     </div>
 </div>
 
@@ -28,11 +29,11 @@ $fecha_pago = null;
 ?>
 <script>
     $(document).ready(function(){
-        var fechaActual = new Date();
+        /*var fechaActual = new Date();
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualc = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#fecha_pagoc').val(fechaactualc);
+        $('#fecha_pagoc').val(fechaactualc);*/
 
         init(IDFORMMANTENIMIENTO+'{!! $entidad_cuota !!}', 'M', '{!! $entidad_cuota !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad_cuota !!} :input[id="fecha_pagoc"]').focus();

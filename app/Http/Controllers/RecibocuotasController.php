@@ -11,7 +11,7 @@ use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-
+use DateTime;
 class RecibocuotasController extends Controller
 {
 
@@ -69,12 +69,13 @@ class RecibocuotasController extends Controller
         for($anyo=$anioactual; $anyo>=$anioInicio; $anyo --){
             $anios[$anyo] = $anyo;
         }
+        $fecha_actual = date('Y-m-d');
 
         $entidad = 'ReciboCuota';
         $title = $this->tituloAdmin;
         $tituloPagoCuota = $this->tituloPagoCuota;
         $ruta = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'tituloPagoCuota', 'ruta', 'meses', 'anios','anioactual','mesactual'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'tituloPagoCuota', 'ruta', 'meses', 'anios','anioactual','mesactual', 'fecha_actual'));
     }
 
     /**
@@ -89,8 +90,11 @@ class RecibocuotasController extends Controller
         $entidad = 'ReciboCuota';
         $anio = Libreria::getParam($request->input('anio'));
         $mes = Libreria::getParam($request->input('mes'));
+        $fecha_actual = Libreria::getParam($request->input('fecha_recibocuotas'));
+        
         $nombre = Libreria::getParam($request->input('nombres'));
         $resultado  = Cuota::listarCuotasAlafecha($anio,$mes, $nombre);
+        
         $lista = $resultado->get();
         $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
@@ -114,27 +118,29 @@ class RecibocuotasController extends Controller
             $paginaactual = $paramPaginacion['nuevapagina'];
             $lista = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'tituloPagoCuota', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'tituloPagoCuota', 'ruta', 'fecha_actual'));
         }
-        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('lista', 'entidad','fecha_actual'));
     }
     public function vistaaplicarmora(Request $request, $id_cuota){
         $cuota = Cuota::find($id_cuota);
         $credito = Credito::find($cuota->credito_id);
         $persona = Persona::find($credito->persona_id);
         $configuraciones = Configuraciones::all()->last();
+        $fecha_mora = $request->get('fecha_iniciomora');
         $entidad = 'ReciboCuota';
         $listar = Libreria::getParam($request->input('listar'), 'NO');
         $ruta = $this->rutas;
         $formData = array('recibocuotas.aplicarmora');
         $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         
-        return view($this->folderview.'.mant')->with(compact('cuota', 'formData', 'entidad', 'listar', 'configuraciones','ruta', 'persona', 'credito'));
+        return view($this->folderview.'.mant')->with(compact('cuota', 'formData', 'entidad', 'listar', 'configuraciones','ruta', 'persona', 'credito','fecha_mora'));
     }
-    public function aplicarmora(Request $request){
+    public function aplicarmora2(Request $request){
         $id_cuota = $request->input('id_cuota');
         $monto_mora = $request->input('monto_cuota');
-        $error = DB::transaction(function() use($monto_mora, $id_cuota  ){
+       
+        $error = DB::transaction(function() use($monto_mora, $id_cuota){
             $cuota = Cuota::find($id_cuota);
             $cuota->interes_mora = $monto_mora;
             $cuota->estado = 'm';
@@ -142,6 +148,20 @@ class RecibocuotasController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
+
+    public function aplicarmora(Request $request){
+        $id_cuota = $request->input('id_cuota');
+        
+        $error = DB::transaction(function() use($request, $id_cuota){
+            $cuota = Cuota::find($id_cuota);
+            $cuota->fecha_iniciomora =  $request->get('fechamora')." ".date('H:i:s');
+            $cuota->estado = 'm';
+            $cuota->tasa_interes_mora = $request->get('porcentaje_mora');
+            $cuota->save();
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
 
    
 }

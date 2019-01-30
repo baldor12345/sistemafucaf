@@ -1,27 +1,37 @@
 
 <div id="divInfo" class="alert alert-success">Acreditado: {{ $persona->nombres." ".$persona->apellidos }}
 	<ul>
-		<li>Monto Cuota: {{ $cuota->parte_capital + $cuota->interes}}</li>
-		<li>Saldo Restante: {{ $cuota->saldo_restante}}</li>
-		<li>Numero cuota: {{ $cuota->numero_cuota."/".$credito->periodo}}</li>
+		<li>Monto Cuota: {{ round($cuota->parte_capital + $cuota->interes,1)}}</li>
+		<li>Saldo Restante: {{ round($cuota->saldo_restante,1)}}</li>
+		<li>Numero cuota: {{ round($cuota->numero_cuota."/".$credito->periodo, 1)}}</li>
 	</ul>
-</div>
+</div>  
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($cuota, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('id_cuota', $cuota->id, array('id' => 'id_cuota')) !!}
 {!! Form::hidden('monto_cuota', 0, array('id' => 'monto_cuota')) !!}
 
+<div class="form-group">
+	{!! Form::label('fechamora', 'Fecha de aplicación:', array('class' => 'input-sm')) !!}
+	{!! Form::date('fechamora', $fecha_mora, array('class' => 'form-control input-xs', 'id' => 'fechamora')) !!}
+	
+</div>
 <div class="form-row">
     <div class="form-group col-md-12 col-sm-12">
-		{!! Form::label('porcentaje_mora', 'Porcentaje de Mora (%):', array('class' => '')) !!}
-		{!! Form::text('porcentaje_mora', 3, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
+		{!! Form::label('porcentaje_mora', 'Porcentaje de mora diario (%):', array('class' => '')) !!}
+		{!! Form::text('porcentaje_mora', 0.10, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora diario %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 	</div>
 </div>
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::label('monto_moratorio', 'Monto de mora aplicado S/.: ', array('class' => '', 'id'=>'monto_moratorio')) !!}
+		{!! Form::label('monto_moratorio', 'Interes mora en 1 dia S/.: ', array('class' => '', 'id'=>'monto_moratorio')) !!}
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+		{!! Form::label('monto_moratorio2', 'Interes mora en 30 dia S/.: ', array('class' => '', 'id'=>'monto_moratorio2')) !!}
 	</div>
 </div>
 
@@ -39,10 +49,12 @@
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('450');
-		var saldorestante = "{{ $cuota->saldo_restante }}";
+		var saldorestante = "{{ ($cuota->parte_capital + $cuota->interes) }}";
 		var montomora = $('#porcentaje_mora').val()/100 * saldorestante;
+
 		$('#monto_cuota').val(RoundDecimal(montomora, 4));
-		$('#monto_moratorio').html('Monto de mora aplicado S/.: '+RoundDecimal(montomora, 1));
+		$('#monto_moratorio').html('Interes mora en 1 dia S/.: '+RoundDecimal(montomora, 1));
+		$('#monto_moratorio2').html('Interes mora en 30 dia S/.: '+RoundDecimal((montomora*30), 1));
 		
 	}); 
 	

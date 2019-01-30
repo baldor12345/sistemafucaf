@@ -355,20 +355,22 @@ class CreditoController extends Controller{
         $entidad_credito = 'Credito';
         $entidad_cuota = 'Cuota';
         $credito = null;
-        
+        $interes_moratorio = $request->get('valor_moratorio');
+        $fechapago = $request->get('fechaselect');
         
         $boton = 'Registrar'; 
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
+        $cuota->interes_mora = $interes_moratorio;
         $credito2 = Credito::find($cuota->credito_id);
         if($numero == 2){
             $formData = array('creditos.pagarcuotainteres');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
-            return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
+            return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta','fechapago'));
         }else{
             $formData = array('creditos.pagarcuota');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
-            return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta'));
+            return view($this->folderview.'.pagarcuota')->with(compact('cuota', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta','fechapago'));
         }
         
     }
@@ -383,11 +385,13 @@ class CreditoController extends Controller{
                 $id_credito = $request->get('id_credito');
                 $fecha_pago = $request->get('fecha_pagoc')." ".date(" H:i:s");
                 $id_cliente = $request->get('id_cliente');
+                $valor_mora = $request->get('valor_mora');
                 $comision_voucher = 0.2;
 
                 //Actualiza cuota a estado cancelado
                 $cuota = Cuota::find($id_cuota);
                 $cuota->estado = 1;
+                $cuota->interes_mora = $valor_mora;
                 $cuota->fecha_pago = $fecha_pago;
                 $cuota->save();
 
@@ -411,12 +415,12 @@ class CreditoController extends Controller{
                 $parte_capital =  $cuota->parte_capital;
                 $cuota_interes = 0;
                 $cuota_interesMora = 0;
-                if(date('Y-m',strtotime($fecha_pago)) >= date('Y-m', strtotime($cuota->fecha_programada_pago))){
+                //if(date('Y-m',strtotime($fecha_pago)) >= date('Y-m', strtotime($cuota->fecha_programada_pago))){
                     $monto += $cuota->interes+ $cuota->interes_mora;
                     $parte_capital = $cuota->parte_capital;
                     $cuota_interes = $cuota->interes;
                     $cuota_interesMora = $cuota->interes_mora;
-                }
+                //}
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
