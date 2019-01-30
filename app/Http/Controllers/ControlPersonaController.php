@@ -345,6 +345,7 @@ class ControlPersonaController extends Controller
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
+            $transaccion->monto_ahorro = $monto;
             $transaccion->concepto_id = $concepto_id;
             $transaccion->persona_id = 6;
             $transaccion->descripcion =  "pagó ".$persona->nombres." ";
