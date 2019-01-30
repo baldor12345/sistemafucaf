@@ -1,3 +1,4 @@
+@if($day >= $fechaf)
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($certificado, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -40,3 +41,6 @@
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 	}); 
 </script>
+@else
+<h3 class="text-warning">Ya existe una lista de certificado, Gracias!.</h3>
+@endif
