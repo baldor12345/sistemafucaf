@@ -327,11 +327,14 @@ class ControlPersonaController extends Controller
             $control_socio->save();
 
             $resultado = Ahorros::getahorropersona($request->input(6));
+
+            $ahorro_id=null;
             if(count($resultado) >0){
                 $ahorro_actual = $resultado[0];
                 $ahorro_actual->capital = $ahorro_actual->capital + $monto;
                 $ahorro_actual->estado = 'P';
                 $ahorro_actual->save();
+                $ahorro_id = $ahorro_actual->id;
             }else{
                 $ahorro = new Ahorros();
                 $ahorro->capital = $monto;
@@ -340,18 +343,34 @@ class ControlPersonaController extends Controller
                 $ahorro->fechai = $fecha_pago;
                 $ahorro->persona_id = 6;
                 $ahorro->save();
+                $ahorro_id = $ahorro->id;
             }
 
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
-            $transaccion->monto_ahorro = $monto;
-            $transaccion->concepto_id = $concepto_id;
-            $transaccion->persona_id = 6;
+            $transaccion->monto_ahorro = 0;
+            $transaccion->concepto_id = $concepto_id;///multa por tradanza
+            $transaccion->persona_id = $persona->id;
             $transaccion->descripcion =  "pagó ".$persona->nombres." ";
-            $transaccion->usuario_id =Caja::getIdPersona();
+            $transaccion->usuario_id = Caja::getIdPersona();
             $transaccion->caja_id = $caja_id;
             $transaccion->save();
+
+            $idconcepto = $request->input('concepto');
+            $transaccion = new Transaccion();
+            $transaccion->fecha = $fecha_pago;
+            $transaccion->monto =  0;
+            $transaccion->monto_ahorro=  $monto;
+            $transaccion->id_tabla = $ahorro_id;
+            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = 5;// concepto deposito de ahorros
+            $transaccion->persona_id = 6;
+            $transaccion->descripcion =  "Se ahorró S/. 5 de multa de ".$persona->nombres." ".$persona->apellidos;
+            $transaccion->usuario_id = Caja::getIdPersona();
+            $transaccion->caja_id =  $caja_id;
+            $transaccion->save();
+
         });
         
         return is_null($error) ? "OK" : $error;
