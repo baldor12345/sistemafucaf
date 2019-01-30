@@ -38,8 +38,6 @@
                 {!! Form::label('accioncredito', 'Operación a realizar: ', array('class' => '')) !!}
                 {!! Form::select('accioncredito', $cboacciones, 0, array('class' => 'form-control input-sm', 'id' => 'accioncredito',  'onchange' => 'realizaoperacion(this)')) !!}
              </div>
-            
-             
          </div>
          <div class="card-box crbox">
              <div id="cuotas_pendiente">

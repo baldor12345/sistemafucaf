@@ -17,19 +17,19 @@
 					{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
+					{!! Form::hidden('anio', $anioactual, array('id' => 'anio')) !!}
+					{!! Form::hidden('mes', $mesactual, array('id' => 'mes')) !!}
 					
 					<div class="form-group">
 						{!! Form::label('nombres', 'Nombre:', array('class' => 'input-sm')) !!}
 						{!! Form::text('nombres', '', array('class' => 'form-control input-sm', 'id' => 'nombres')) !!}
 					</div>
+
 					<div class="form-group">
-						{!! Form::label('anio', 'Año:', array('class' => 'input-sm')) !!}
-						{!! Form::select('anio', $anios, $anioactual, array('class' => 'form-control input-sm', 'id' => 'anio')) !!}
+						{!! Form::label('fecha_recibocuotas', 'Fecha de aplicación:', array('class' => 'input-sm')) !!}
+						{!! Form::date('fecha_recibocuotas', $fecha_actual, array('class' => 'form-control input-xs', 'id' => 'fecha_recibocuotas', 'onchange'=>'cambiardatos()')) !!}
 					</div>
-					<div class="form-group">
-						{!! Form::label('mes', 'Mes:', array('class' => 'input-sm')) !!}
-						{!! Form::select('mes', $meses, $mesactual, array('class' => 'form-control input-sm', 'id' => 'mes')) !!}
-					</div>
+
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
@@ -54,7 +54,15 @@
 				buscar('{{ $entidad }}');
 			}
 		});
+
 	});
+
+	function cambiardatos(){
+		var fechadate = new Date($('#fecha_recibocuotas').val());
+        $("#anio").val(fechadate.getFullYear());
+        $("#mes").val(parseInt(fechadate.getMonth()) + 1);
+	}
+
 	//Funcion para abrir pdf en una pestaña nueva del navegador
 	function modalrecibopdf(url_pdf, ancho_modal, titulo_modal) {
 		var a = document.createElement("a");
