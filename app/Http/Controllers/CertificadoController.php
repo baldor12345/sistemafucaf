@@ -102,11 +102,13 @@ class CertificadoController extends Controller
      */
     public function index()
     {
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $idCaja = (count($caja_id) == 0)?0:$caja_id;
         $entidad          = 'Certificado';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','idCaja'));
     }
 
     /**
@@ -135,6 +137,13 @@ class CertificadoController extends Controller
                         10=>'Octubre',
                         11=>'Noviembre',
                         12=>'Diciembre');
+        $certificado_last = Certificado::All()->last();
+        $day = date("d/m/Y");
+        if(count($certificado_last) != 0){
+            $fechaf = Date::parse($certificado_last->fechaf )->format('d/m/Y');
+        }else{
+            $fechaf =null;
+        }
 
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Certificado';
@@ -142,7 +151,7 @@ class CertificadoController extends Controller
         $formData       = array('certificado.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Generar Certificados'; 
-        return view($this->folderview.'.mant')->with(compact('certificado', 'formData', 'entidad', 'boton', 'listar','cboAnios','cboMonth'));
+        return view($this->folderview.'.mant')->with(compact('certificado', 'formData', 'entidad', 'boton', 'listar','cboAnios','cboMonth','fechaf','day'));
     }
 
     /**

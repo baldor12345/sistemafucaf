@@ -105,7 +105,12 @@ class DirectivosController extends Controller
     {
         $directivos_last = Directivos::All()->last();
         $day = date("d/m/Y");
-        $periodo_fin = Date::parse($directivos_last->periodof )->format('d/m/Y');
+        if(count($directivos_last) != 0){
+            $periodo_fin = Date::parse($directivos_last->periodof )->format('d/m/Y');
+        }else{
+            $periodo_fin =null;
+        }
+        
 
         $entidad          = 'Directivos';
         $title            = $this->tituloAdmin;
@@ -123,7 +128,12 @@ class DirectivosController extends Controller
     {
         $directivos_last = Directivos::All()->last();
         $day = date("d/m/Y");
-        $periodo_fin = Date::parse($directivos_last->periodof )->format('d/m/Y');
+        if(count($directivos_last) != 0){
+            $periodo_fin = Date::parse($directivos_last->periodof )->format('d/m/Y');
+        }else{
+            $periodo_fin = null;
+        }
+        
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Directivos';
         $directivos        = null;
