@@ -126,7 +126,7 @@
                                 '<tr><th>Fecha</th><th>Numero</th><th>Monto S/.</th><th>Mora S/.</th><th>TOTAL</th><th>Operación</th></tr></thead><tbody>';
                                 for(i=0;i<length;i++){
                                     tabla += "<tr><td>"+res[i].mes+"-"+res[i].anio+"</td><td>"+res[i].numero_cuota+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+"</td><td>"+res[i].interes_mora+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)+parseFloat(res[i].interes_mora)).toFixed(1)+"</td>"+
-                                    '<td><button class="btn btn-light btn-sm btnamortizar" marcado="0" monto_cuota="'+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+'" parte_capital="'+res[i].parte_capital+'" anio_mes="'+res[i].anio+'-'+res[i].mes+'" cuota_id="'+res[i].cuota_id+'" onclick ="btnchek(this);"><i class="fa fa-check fa-lg" style="color:white"></i></button></td>';
+                                    '<td><button disabled="true" id="btnchek'+i+'" numbtn='+i+' class="btn btn-light btn-sm btnamortizar" marcado="0" monto_cuota="'+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+'" parte_capital="'+res[i].parte_capital+'" anio_mes="'+res[i].anio+'-'+res[i].mes+'" cuota_id="'+res[i].cuota_id+'" onclick ="btnchek(this);"><i class="fa fa-check fa-lg" style="color:white"></i></button></td>';
                                 }
                                 tabla += "</tbody></table>";
                             
@@ -136,6 +136,9 @@
                             tabla +='<div><label monto=0 id="lblMonto">Monto total S/.: </label></div>';
                             tabla += '<button class="btn btn-success" onclick="amortisarcuotas();">Amortizar</button>';
                             $('#cuotas_pendiente').html(tabla);
+                            if(length > 0){
+                                $('#btnchek0').attr('disabled',false);
+                            }
                             break;
                         default:
                             
@@ -154,7 +157,7 @@
         if($('#accioncredito').val() == '1'){
             ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/Credito";
         }else{
-            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/Credito";
+            ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/2";
         }
         
         console.log("RUTA: "+ruta);
@@ -202,7 +205,16 @@
 		if( $(btn).attr("marcado") == '0'){
             $(btn).attr("marcado",'1');
             $(btn).removeClass( "btn-light" ).addClass("btn-primary");
-            console.log("anio_mes: "+$(btn).attr('anio_mes')+" = "+anio_mes);
+           // if($(btn).attr("numbtn")>0){
+                $('#btnchek'+(parseInt($(btn).attr("numbtn")) + 1)).attr('disabled', false);
+                $('#btnchek'+(parseInt($(btn).attr("numbtn")) - 1)).attr('disabled', true);
+                console.log("anio_mes: "+$(btn).attr('anio_mes')+" = "+anio_mes);
+           /* }else{
+              
+                $('#btnchek'+(parseInt($(btn).attr("numbtn")) + 1)).attr('disabled', false); 
+            }*/
+            $(btn).removeClass( "btn-light" ).addClass("btn-primary");
+            
             if($(btn).attr('anio_mes') == anio_mes){
                 var monto = parseFloat($("#montototal").val());
                 $("#montototal").val(monto+ parseFloat($(btn).attr('monto_cuota')));
@@ -216,6 +228,11 @@
 		}else{
             $(btn).attr("marcado",'0');
             $(btn).removeClass( "btn-primary" ).addClass("btn-light");
+            
+            $('#btnchek'+(parseInt($(btn).attr("numbtn")) + 1)).attr('disabled', true);
+            $('#btnchek'+(parseInt($(btn).attr("numbtn")) - 1)).attr('disabled', false);
+            console.log("anio_mes: "+$(btn).attr('anio_mes')+" = "+anio_mes);
+
             if($(btn).attr('anio_mes') == anio_mes){
                 var monto = parseFloat($("#montototal").val());
                 $("#montototal").val(monto- parseFloat($(btn).attr('monto_cuota')));
@@ -278,7 +295,7 @@
             },
             success: function(res){
                 $("#montototal").val(res);
-                var tabla = '<div class="alert alert-success"><label>Total a pagar S/.: '+res+'</label></div>'
+                var tabla = '<div class="alert alert-success"><label>Total a pagar S/.: '+(parseFloat(res).toFixed(1))+'</label></div>'
                 tabla += '<button class="btn btn-primary" onclick="pagar_credito_total();">Pagar Todo</button>';
                 $('#cuotas_pendiente').html(tabla);
                 
@@ -320,5 +337,12 @@
                 mostrarMensaje ("Error de consulta..", "ERROR");
             });
     }
-   
+    function RoundDecimal(numero, decimales) {
+		numeroRegexp = new RegExp('\\d\\.(\\d){' + decimales + ',}');   // Expresion regular para numeros con un cierto numero de decimales o mas
+		if (numeroRegexp.test(numero)) {         // Ya que el numero tiene el numero de decimales requeridos o mas, se realiza el redondeo
+			return Number(numero.toFixed(decimales));
+		} else {
+			return Number(numero.toFixed(decimales)) === 0 ? 0 : numero;  // En valores muy bajos, se comprueba si el numero es 0 (con el redondeo deseado), si no lo es se devuelve el numero otra vez.
+		}
+	}
  </script>

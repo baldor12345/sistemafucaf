@@ -391,7 +391,7 @@ class CreditoController extends Controller{
                 //Actualiza cuota a estado cancelado
                 $cuota = Cuota::find($id_cuota);
                 $cuota->estado = 1;
-                $cuota->interes_mora = $valor_mora;
+                $cuota->interes_mora = ($valor_mora == null?0:$valor_mora);
                 $cuota->fecha_pago = $fecha_pago;
                 $cuota->save();
 
@@ -399,17 +399,17 @@ class CreditoController extends Controller{
                 $concepto_id = 8;
           
 
-                    $transaccion2 = new Transaccion();
-                    $transaccion2->fecha = $fecha_pago;
-                    $transaccion2->monto = $comision_voucher;
-                    $transaccion2->concepto_id = $concepto_id;
-                    $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
-                    $transaccion2->persona_id = $id_cliente;
-                    $transaccion2->usuario_id = Credito::idUser();
-                    $transaccion2->caja_id = $caja_id;
-                    $transaccion2->comision_voucher = $comision_voucher;
-                    $transaccion2->save();
-               
+                $transaccion2 = new Transaccion();
+                $transaccion2->fecha = $fecha_pago;
+                $transaccion2->monto = $comision_voucher;
+                $transaccion2->concepto_id = $concepto_id;
+                $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
+                $transaccion2->persona_id = $id_cliente;
+                $transaccion2->usuario_id = Credito::idUser();
+                $transaccion2->caja_id = $caja_id;
+                $transaccion2->comision_voucher = $comision_voucher;
+                $transaccion2->save();
+            
                 //registramos en caja el pago cuota
                 $monto = $cuota->parte_capital;
                 $parte_capital =  $cuota->parte_capital;
@@ -458,7 +458,7 @@ class CreditoController extends Controller{
             $error = DB::transaction(function() use($request, $caja_id){
                 $id_cuota = $request->get('id_cuota');
                 $id_credito = $request->get('id_credito');
-                $fecha_pago = $request->get('fecha_pago').date(" H:i:s");
+                $fecha_pago = $request->get('fecha_pagoc').date(" H:i:s");
                 $id_cliente = $request->get('id_cliente');
                 $comision_voucher = 0.2;
 
