@@ -188,7 +188,7 @@ class AhorrosController extends Controller
                         $ahorro_actual->save();
 
                     }else{
-                        $capital = $ahorro->capital + $request->input('capital');
+                        $capital = $ahorro_actual->capital + $request->input('capital');
                         $ahorro_actual->capital = $capital;
                         $ahorro_actual->estado = 'P';
                         $ahorro_actual->save();

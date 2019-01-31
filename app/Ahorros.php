@@ -115,12 +115,12 @@ class Ahorros extends Model
         {
 
             $binnacle             = new Binnacle();
-            $binnacle->action     = 'I';
-            $binnacle->date      = date('Y-m-d H:i:s');
-            $binnacle->ip         = Libreria::get_client_ip();
+            $binnacle->action = 'I';
+            $binnacle->date = date('Y-m-d H:i:s');
+            $binnacle->ip = Libreria::get_client_ip();
             $binnacle->user_id =  Auth::user()->id;
-            $binnacle->table      = 'ahorros';
-            $binnacle->detail    = $marca->toJson(JSON_UNESCAPED_UNICODE);
+            $binnacle->table = 'ahorros';
+            $binnacle->detail = "Registro de ahorro";
             $binnacle->recordid = $marca->id;
             $binnacle->save();
         });

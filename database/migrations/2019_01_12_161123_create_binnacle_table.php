@@ -17,10 +17,10 @@ class CreateBinnacleTable extends Migration
             $table->increments('id');
             $table->char('action', 1); // C->create, R->Read, U->Update, D->Delete
             $table->timestamp('date');
-            $table->string('ip', 15);
+            $table->string('ip', 40);
             $table->integer('user_id')->unsigned();
             $table->integer('recordid')->unsigned();
-            $table->string('table', 50);
+            $table->string('table', 200);
             $table->text('detail');
             $table->timestamps();
             $table->softDeletes();
