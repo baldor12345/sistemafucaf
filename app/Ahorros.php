@@ -93,7 +93,7 @@ class Ahorros extends Model
         ->Join('concepto', 'transaccion.concepto_id', '=', 'concepto.id')
         ->select(
             'transaccion.id_tabla as id_ahorro',
-            'transaccion.monto as monto',
+            'transaccion.monto_ahorro as monto',
             'transaccion.id as transaccion_id',
             'transaccion.fecha as fecha'
         )
