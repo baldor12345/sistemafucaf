@@ -78,7 +78,9 @@
 				<td width="8%" align="center" class="fondo"><strong>S/.</strong></td>
 				<td width="16%" align="center" class="fondo"><strong>Especificar</strong></td>
 			</tr>
-            @foreach($lista as $value )
+			@foreach($lista as $value )
+			@if((($value->deposito_ahorros + $value->monto_ahorro) <= 0) and (number_format($value->pagos_de_capital,1) <= 0) and (number_format($value->intereces_recibidos,1) <=0) and (number_format($value->acciones,1)<= 0) and (number_format($value->comision_voucher,1) <= 0))
+			@else
             <tr>
 				<td width="5%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
 				<td width="29%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
@@ -111,7 +113,8 @@
 					{{ number_format(($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro + $value->comision_voucher),1) }}
 					</span>
 				</td>
-            </tr>
+			</tr>
+			@endif
 			@endforeach
 
 			@foreach($lista_ingresos_por_concepto as $value )
