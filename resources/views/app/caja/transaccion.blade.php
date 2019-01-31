@@ -1,3 +1,31 @@
+<?php 
+use App\Persona;
+use App\Acciones;
+use App\Configuraciones;
+use Illuminate\Support\Facades\DB;
+?>
+<script>
+function cargarselect2(entidad){
+	var select = $('#tipo_id1').val();
+	if(select == ''){
+		$('#concepto_id1').html('<option value="" selected="selected">Todo</option>');
+		return false;
+	}
+	route = 'caja/cargarselecttransaccion/' + select + '?entidad='+entidad+'&t=si';
+	$.ajax({
+		url: route,
+		headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+		type: 'GET',
+		beforeSend: function(){
+			$('#concepto_id1').html('<option value="" selected="selected">Todo</option>');
+		},
+		success: function(res){
+			$('#concepto_id1').html(res);
+		}
+	});
+}
+</script>
+
 <div class="row">
 	    <div class="col-sm-12">
 	        <div class="card-box table-responsive">
@@ -8,8 +36,12 @@
 						{!! Form::hidden('idcaja', $id, array('id' => 'idcaja')) !!}
 						{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 						<div class="form-group">
+                            {!! Form::label('tipo_id1', 'Tipo:', array('class' => 'input-sm')) !!}
+                            {!! Form::select('tipo_id1', $cboTipo1, null, array('class' => 'form-control input-sm', 'id' => 'tipo_id1','onchange'=>'cargarselect2("concepto")')) !!}
+                        </div>
+						<div class="form-group">
                             {!! Form::label('concepto_id1', 'Concepto:', array('class' => 'input-sm')) !!}
-                            {!! Form::select('concepto_id1', $cboConcepto, null, array('class' => 'form-control input-sm', 'id' => 'concepto_id1')) !!}
+                            {!! Form::select('concepto_id1', $cboConceptos1, null, array('class' => 'form-control input-sm', 'id' => 'concepto_id1')) !!}
                         </div>
 						<div class="form-group">
                             {!! Form::label('filas', 'Filas a mostrar:')!!}
@@ -53,9 +85,6 @@
 	</div>
 </div>
 
-<div class="form-group text-center">
-	{!! Form::button('Cerrar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCerrar', 'onclick' => 'cerrarModal();')) !!}
-</div>
 <script type="text/javascript">
 $(document).ready(function() {
 	configurarAnchoModal('1200');
