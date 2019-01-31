@@ -106,7 +106,7 @@ class ControlPersonaController extends Controller
         $entidad          = 'ControlPersona';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
-        $cboTipo        = [''=>'Todo']+ array('F'=>'Faltas','T'=>'Tardanzas','J'=>'Faltas Justificadas','J'=>'Tardanzas Justificadas');
+        $cboTipo        = [''=>'Todo']+ array('F'=>'Faltas','T'=>'Tardanzas');
         $ruta             = $this->rutas;
         return view($this->folderview.'.admin')->with(compact('entidad','cboTipo' ,'title', 'titulo_registrar', 'ruta'));
     }
