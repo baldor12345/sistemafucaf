@@ -326,7 +326,7 @@ class ControlPersonaController extends Controller
             $control_socio->caja_id =  $caja_id;
             $control_socio->save();
 
-            $resultado = Ahorros::getahorropersona($request->input(6));
+            $resultado = Ahorros::getahorropersona(6);
 
             $ahorro_id=null;
             if(count($resultado) >0){
