@@ -248,7 +248,7 @@ class AhorrosController extends Controller
        $tipo = Libreria::getParam($request->input('tipo'));
        $persona_id = Libreria::getParam($request->input('persona_id'));
        $fechainicio = Libreria::getParam($request->input('fechainicio'));
-       
+       $persona = Persona::find($persona_id);
        $entidad = "Detalleahorro";
        $resultado = Ahorros::listaretirodeposito($persona_id, $fechainicio, $tipo);
        $lista = $resultado->get();
@@ -269,7 +269,7 @@ class AhorrosController extends Controller
            $paginaactual = $paramPaginacion['nuevapagina'];
            $lista = $resultado->paginate($filas);
            $request->replace(array('page' => $paginaactual));
-           return view($this->folderview.'.listdetahorro')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera','ruta', 'tipo','titulo_eliminar'));
+           return view($this->folderview.'.listdetahorro')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera','ruta', 'tipo','titulo_eliminar','persona'));
        }
        return view($this->folderview.'.listdetahorro')->with(compact('lista', 'entidad'));
    }

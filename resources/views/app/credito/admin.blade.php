@@ -6,6 +6,41 @@
         </div>
     </div>
 </div>
+{{-- <style>
+	.tooltipg {
+	  position: relative;
+	  display: inline-block;
+	  border-bottom: 1px dotted black;
+	}
+	
+	.tooltipg .tooltiptextg {
+	  visibility: hidden;
+	  width: 120px;
+	  background-color: black;
+	  color: #fff;
+	  text-align: center;
+	  border-radius: 6px;
+	  padding: 5px 0;
+	  position: absolute;
+	  z-index: 1;
+	  top: -5px;
+	  left: 110%;
+	}
+	
+	.tooltipg .tooltiptextg::after {
+	  content: "";
+	  position: absolute;
+	  top: 50%;
+	  right: 100%;
+	  margin-top: -5px;
+	  border-width: 5px;
+	  border-style: solid;
+	  border-color: transparent black transparent transparent;
+	}
+	.tooltipg:hover .tooltiptextg {
+	  visibility: visible;
+	}
+</style> --}}
 
 <div class="row">
     <div class="col-sm-12">
@@ -37,11 +72,12 @@
 					
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md','data-toggle'=>'tooltip', 'id' => 'btnBuscar','data-placement'=>'top', 'title'=>'boton para buscar los datos que estan en la base de dtaos de sistema fucaf boton para buscar los datos que estan en la base de dtaos de sistema fucaf boton para buscar los datos que estan en la base de dtaos de sistema fucaf', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo Credito', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevo', 'onclick' => 'abrirModalMant(\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\');')) !!}
-					{{--  {!! Form::button('<i class="glyphicon glyphicon-plus"></i> MOSTAR PDF', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnPdf', 'onclick' => 'modal(\''.URL::route($ruta["abrirpdf"], array()).'\', \''.'Modal PDF'.'\');')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> MOSTAR PDF 2', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnPdf2', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array(1)).'\', \''.'800'.'\')')) !!} --}}
 					
+					{{--<div class="tooltipg"><i class="fa fa-question-circle-o" aria-hidden="true"></i>
+						<span class="tooltiptextg"> Alexander gastelo benavides </span>
+					</div> --}}
+				
 					{!! Form::close() !!}
-					
                 </div>
             </div>
 			<div id="listado{{ $entidad }}"></div>

@@ -6,6 +6,12 @@
  </script>
  <div id="divMensajeError{!! $entidad_cuota !!}"></div>
  <div class="card-box table-responsive crbox">
+    <div class="alert alert-warning">
+        <label><strong>¡Aviso!</strong> Antes de realizar alguna operación, asegurese primero de realizar sus pagos de cuotas pendientes, para no tener posibles errores. ¡Gracias!</label>
+    </div>
+</div>
+
+ <div class="card-box table-responsive crbox">
      <div class="form-row lbldatos">
          <div class="form-group col-12 col-md-12 col-sm-12 lbldatos">
              {!! Form::label('', 'Socio o Cliente: '.$persona->nombres.' '.$persona->apellidos, array('id'=>'cliente','class' => '')) !!}
