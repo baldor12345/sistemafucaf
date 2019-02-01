@@ -49,6 +49,7 @@ class CajaController extends Controller
             'cargarreporte' => 'caja.cargarreporte',
             'generarreportes' => 'caja.generarreportes',
             'cargarselect' => 'encuesta.cargarselect',
+            'cargarselecttransaccion' => 'caja.cargarselecttransaccion',
             'buscartransaccion'=> 'caja.buscartransaccion',
 
             'reporteingresosPDF' => 'caja.reporteingresosPDF',
@@ -522,13 +523,15 @@ class CajaController extends Controller
             }
         }
         $diferencia= $ingresos-$egresos;
-        $cboConcepto = array('' => 'Todo') + Concepto::pluck('titulo', 'id')->all();
+        $cboTipo1        = [''=>'Todo']+ array('I'=>'Ingreso','E'=>'Egreso');
+        $cboConceptos1        = [''=>'Todo'];
+
         $concepto_id             = Libreria::getParam(-1);
         $tituloNuevaTransaccion = $this->tituloNuevaTransaccion;
         $ruta             = $this->rutas;
         $inicio           = 0;
         $entidad ='Transaccion';
-        return view($this->folderview.'.transaccion')->with(compact('concepto_id','entidad', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConcepto','tituloNuevaTransaccion'));
+        return view($this->folderview.'.transaccion')->with(compact('concepto_id','entidad', 'ruta', 'inicio', 'id','saldo','ingresos','egresos','diferencia','cboConceptos1','cboTipo1','tituloNuevaTransaccion'));
     }
     ///************** NUevo metodo */
 
@@ -688,7 +691,7 @@ class CajaController extends Controller
        }
        if($tipo_id == 'E'){
             $persona_id = $request->get('selectnom');
-            if($persona_id != ''){
+            if($persona_id != 0){
                 $persona = Persona::find($persona_id);
                 $error = DB::transaction(function() use($request, $id, $persona){
                     $gastos = new Gastos();
@@ -775,6 +778,35 @@ class CajaController extends Controller
         }
         $retorno .= '</select></div>';
 
+        echo $retorno;
+    }
+
+
+    public function cargarselecttransaccion($idselect, Request $request ){
+        echo $idselect;
+        $entidad = $request->get('entidad');
+        $t = '';
+        $tt = '';
+
+        if($request->get('t') == ''){
+            $t = '_';
+            $tt = '2';
+        }
+        
+        $retorno = '<select class="form-control input-sm" id="'.$t.$entidad. '_id" name="';
+        $cbo = Concepto::select('id','titulo')
+                        ->where('tipo',$idselect)
+                        ->where('id','!=',16)
+                        ->where('id','!=',17)
+                        ->where('id','!=',2)
+                        ->where('id','!=',10)
+                        ->where('deleted_at',null)
+                        ->get();
+        $retorno .='><option value="" selected="selected">Todo</option>';
+        foreach($cbo as $row){
+            $retorno .='<option value="' . $row['id'] . '">' .$row['titulo'] . '</option>';
+        }
+        $retorno .= '/selected></div>';
         echo $retorno;
     }
 

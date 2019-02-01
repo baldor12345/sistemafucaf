@@ -75,7 +75,7 @@ use Illuminate\Support\Facades\DB;
 	$(document).ready(function() {
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('450');
+		configurarAnchoModal('400');
 
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
