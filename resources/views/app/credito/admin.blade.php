@@ -41,7 +41,22 @@
 	  visibility: visible;
 	}
 </style> --}}
+<?php
+	$anio_menor= date("Y", strtotime("2019-12-31"));
+	$mes_menor= date("m", strtotime("2019-12-31"));
 
+	$anio_mayor= date("Y", strtotime("2021-02-28"));
+	$mes_mayor= date("m", strtotime("2021-02-28"));
+	$numero_meses = 0;
+	if($anio_mayor == $anio_menor){
+		$numero_meses = $mes_mayor - $mes_menor;
+	}else if($anio_mayor > $anio_menor){
+		$diferencia_anios = $anio_mayor - $anio_menor;
+		$numero_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
+	}
+	
+
+?>
 <div class="row">
     <div class="col-sm-12">
         <div class="card-box table-responsive">
