@@ -117,7 +117,13 @@ use Illuminate\Support\Facades\DB;
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-		$('#fechai').val(fechai);
+		var fecha_caja = '{{ $fecha_caja }}';
+		if(fecha_caja != 0){
+			$('#fechai').val(fecha_caja);
+		}else{
+			$('#fechai').val(fechai);
+		}
+		
 
 		$('#selectnom').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),

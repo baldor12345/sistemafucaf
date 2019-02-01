@@ -147,11 +147,24 @@ class CajaController extends Controller
         $ingresos = (count($caja_last) != 0)?$caja_last->monto_cierre:0;
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Caja';
+        $count_caja = Caja::where('estado','C')->count();
+        if(strlen($count_caja) == 1){
+            $titulo = "Caja 000".$count_caja;
+        }
+        if(strlen($count_caja) == 2){
+            $titulo = "Caja 00".$count_caja;
+        }
+        if(strlen($count_caja) == 3){
+            $titulo = "Caja 0".$count_caja;
+        }
+        if(strlen($count_caja) == 4){
+            $titulo = "Caja ".$count_caja;
+        }
         $caja        = null;
         $formData       = array('caja.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos'));
+        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos','titulo'));
     }
 
     /**
@@ -225,6 +238,9 @@ class CajaController extends Controller
         $monto_cierre=0;
         $monto_cierre = round(($result->monto_iniciado-$diferencia),1);
 
+        //fecha de apertura de caja
+        $fecha_caja = Date::parse($result->fecha_horaApert)->format('Y-m-d');
+
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true){
             return $existe;
@@ -237,7 +253,7 @@ class CajaController extends Controller
         $formData       = array('caja.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Cerrar Caja';
-        return view($this->folderview.'.cierrecaja')->with(compact( 'formData', 'caja','listar','entidad', 'boton','diferencia','monto_cierre'));
+        return view($this->folderview.'.cierrecaja')->with(compact( 'formData', 'caja','listar','entidad', 'boton','diferencia','monto_cierre','fecha_caja'));
     }
 
     /**
@@ -605,6 +621,9 @@ class CajaController extends Controller
 
         $diferencia= $ingresos-$egresos;
 
+        //fecha caja 
+        $fecha_caja = Date::parse($result->fecha_horaApert)->format('Y-m-d');
+
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true) {
             return $existe;
@@ -622,7 +641,7 @@ class CajaController extends Controller
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];
         $boton          = 'Registrar';
-        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos','cboPers','ruta','diferencia','result'));
+        return view($this->folderview.'.nuevomovimiento')->with(compact('caja', 'entidad', 'id','boton', 'listar','cboTipo','cboConceptos','cboPers','ruta','diferencia','result','fecha_caja'));
     }
 
 

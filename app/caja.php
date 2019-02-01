@@ -318,6 +318,107 @@ class caja extends Model
                     ->groupBy('persona_id','configuraciones.ganancia_accion','concepto_id','persona.tipo');
         return $results;
     }
+
+    /**************************************************************+RESUMEN FINANCIERO POR MES******************************************************/
+    //lista de cuotas de prestamos por persona
+    /*
+    SELECT 	persona.nombres AS persona_nombres,
+				persona.apellidos AS persona_apellidos,
+				SUM(transaccion.cuota_parte_capital) AS capital, 
+				SUM(transaccion.cuota_interes) AS interes,
+				SUM(transaccion.cuota_mora) AS mora,
+				SUM(transaccion.comision_voucher) AS comision
+FROM persona INNER JOIN transaccion ON (transaccion.persona_id = persona.id)
+WHERE extract( month from transaccion.fecha) = 2
+GROUP BY persona.id;
+    */
+    public static function listcoutasprestamo($anio, $month)
+    {
+        $results = DB::table('persona')
+                    ->join('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
+    //lista de acciones compradas en el mes en soles
+    /*
+    SELECT 	persona.nombres AS persona_nombres,
+				persona.apellidos AS persona_apellidos,
+				SUM(transaccion.acciones_soles) AS acciones
+FROM persona INNER JOIN transaccion ON (transaccion.persona_id = persona.id)
+WHERE extract( month from transaccion.fecha) = 1
+GROUP BY persona.id;
+    */
+    public static function listacciones($anio, $month)
+    {
+        $results = DB::table('persona')
+                    ->join('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+    //lista de ahorros realizados en el mes seleccionado
+    public static function listahorros($anio, $month)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+    //lista de prestamos realizados en el mes seleccionado
+    public static function listprestamos($month, $anio)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.monto_credito) as monto_credito")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','E')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+    
+
+
+
     /*
     SELECT 
 				(COUNT(acciones.estado)*configuraciones.ganancia_accion) AS ganancia_accion,

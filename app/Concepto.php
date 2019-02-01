@@ -20,6 +20,10 @@ class Concepto extends Model
                     $subquery->where('tipo', '=', $tipo);
                 }
             })
+            ->where('titulo','!=','Venta de acciones')
+            ->where('id','!=',16)
+            ->where('id','!=',17)
+            ->where('id','!=',10)
             ->orderBy('titulo', 'ASC');
     }
     

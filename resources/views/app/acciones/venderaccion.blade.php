@@ -105,7 +105,13 @@ use Illuminate\Support\Facades\DB;
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-		$('#fechai').val(fechai);
+		var fecha_caja = '{{ $fecha_caja }}';
+		if(fecha_caja != 0){
+			$('#fechai').val(fecha_caja);
+		}else{
+			$('#fechai').val(fechai);
+		}
+		
 
 		$("input[name=cantidad_accion]").change(function(event){
 			var cantidad_ingresad = parseInt($('#cantidad_accion').val());

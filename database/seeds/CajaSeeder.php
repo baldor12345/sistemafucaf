@@ -14,7 +14,7 @@ class CajaSeeder extends Seeder
         $now = new DateTime;
         $persona_id = DB::table('persona')->where('dni','=','41604698')->first()->id;
         DB::table('caja')->insert(array(
-                'titulo'          => 'Caja 00001',
+                'titulo'          => 'Caja 0001',
                 'descripcion'       => 'ok',
                 'monto_iniciado'    =>'0',
                 'estado'    =>'A',

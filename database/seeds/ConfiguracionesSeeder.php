@@ -22,7 +22,7 @@ class ConfiguracionesSeeder extends Seeder
                 'tasa_interes_ahorro'       => '0.01',
 
                 'fecha'	=>'2018-09-08',
-                'descripcion'       => 'EL PRECIO DE ACCION ES S/.10 CON GANANCIA DE 1% POR DIA',
+                'descripcion'       => 'PRECIO DE ACCION ES S/.10',
 				'created_at'     => $now,
 				'updated_at'     => $now
         ));

@@ -130,12 +130,16 @@ class AccionesController extends Controller
         $acciones        = null;
         $config = Configuraciones::All()->last();
         $precio_accion = $config->precio_accion;
+
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaApert)->format('Y-m-d');
+
         $ruta = $this->rutas;
         $cboPers = array(0=>'Seleccione...');
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion','fecha_caja'));
     }
 
     /**
@@ -464,6 +468,9 @@ class AccionesController extends Controller
         $config = Configuraciones::All()->last();
         $precio_accion = $config->precio_accion;
 
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaApert)->format('Y-m-d');
+
         $cboPers = array(0=>'Seleccione...');
         $nom = '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos;
         $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
@@ -472,7 +479,7 @@ class AccionesController extends Controller
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones','cboPers','precio_accion'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones','cboPers','precio_accion','fecha_caja'));
     }
 
     public function guardarventa(Request $request, $id)

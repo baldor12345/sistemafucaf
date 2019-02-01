@@ -355,9 +355,13 @@ class CertificadoController extends Controller
         $caja_id = Caja::where("estado","=","A")->value('id');
         $cboCertificado = array('18'=>'Contribucion de Certificado');
         $entidad  = 'Certificado';
+
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaApert)->format('Y-m-d');
+
         $ruta = $this->rutas;
         $titulo_pagarmulta = "Generar Certificado";
-        return view($this->folderview.'.pagarcontribucion')->with(compact('entidad', 'ruta', 'titulo_pagarmulta','cboMulta','caja_id','id','cboCertificado'));
+        return view($this->folderview.'.pagarcontribucion')->with(compact('entidad', 'ruta', 'titulo_pagarmulta','cboMulta','caja_id','id','cboCertificado','fecha_caja'));
     }
 
     public function guardarpagarcontribucion(Request $request)
