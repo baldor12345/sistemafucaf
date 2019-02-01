@@ -29,7 +29,7 @@
                 {!! Form::label('fechar', 'Fecha de retiro: *', array('class' => '')) !!}
                 </div>
                 <div class="form-group col-12 col-md-12 col-sm-12">
-                {!! Form::date('fechar', null, array('class' => 'form-control input-md', 'id' => 'fechar')) !!}
+                {!! Form::date('fechar', $fecha_pordefecto, array('class' => 'form-control input-md', 'id' => 'fechar')) !!}
                 </div>
             </div>
             <br>
@@ -48,12 +48,6 @@
 	$(document).ready(function() {
 		configurarAnchoModal('450');
         $('#divinforetiro').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $saldo_en_caja }}</div>');
-        var fechaActual = new Date();
-        var day = ("0" + fechaActual.getDate()).slice(-2);
-        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
-        var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-
-        $('#fechar').val(fechaactualr);
     });
 
     function retirar(id,rutarecibo){

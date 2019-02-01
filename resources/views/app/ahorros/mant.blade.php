@@ -23,7 +23,7 @@
 			</div>
 			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
 				{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
-				{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai')) !!}
+				{!! Form::date('fechai', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechai')) !!}
 			</div>
 		</div>
 		<div class="form-group col-12 col-md-12 col-sm-12" >
@@ -42,11 +42,12 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	var fechaActual = new Date();
+	console.log("FECHA_DEFECTO: {{ $fecha_pordefecto }}");
+	/*var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day;
-		$('#fechai').val(fechai);
+		$('#fechai').val(fechai);*/
 	configurarAnchoModal('650');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 	$('#selectpersona').select2({

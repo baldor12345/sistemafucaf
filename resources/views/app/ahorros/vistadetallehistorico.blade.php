@@ -12,7 +12,7 @@
             </div>
             <div class="form-group" >
             {!! Form::label('cboanio', 'Año:')!!}
-            {!! Form::select('cboanio', $cboanio, null, array('class' => 'form-control input-xs', 'id' => 'cboanio', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+            {!! Form::select('cboanio', $cboanio, $anio_pordefecto, array('class' => 'form-control input-xs', 'id' => 'cboanio', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
             </div>
             <div class="form-group" >
                 &nbsp;
@@ -32,9 +32,6 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		configurarAnchoModal('850');
-        var fechaActual = new Date();
-        //var fechai = (fechaActual.getFullYear()) +"-01-01";
-        $('#cboanio').val(fechaActual.getFullYear());
         buscar("{{ $entidad }}");
     });
 
