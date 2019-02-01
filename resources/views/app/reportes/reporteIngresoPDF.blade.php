@@ -85,7 +85,7 @@
 				<td width="5%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
 				<td width="29%" align="left"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
 				@if(($value->deposito_ahorros + $value->monto_ahorro) != 0)
-				<td width="8%" align="center"><span class="text">{{ number_format($value->deposito_ahorros,1) + number_format($value->monto_ahorro,1) }}</span></td>
+				<td width="8%" align="center"><span class="text">{{ number_format(($value->deposito_ahorros + $value->monto_ahorro),1) }}</span></td>
 				@else
 				<td width="8%" align="center"><span class="text">-</span></td>
 				@endif

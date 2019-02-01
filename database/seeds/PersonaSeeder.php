@@ -60,8 +60,8 @@ class PersonSeeder extends Seeder
         DB::table('persona')->insert(array(
             'codigo'              =>'FUCAF',
             'dni'               =>'11111111',
-            'nombres'       =>'Fondo',
-            'apellidos'              =>'Social',
+            'nombres'       =>'Fondo Social',
+            'apellidos'              =>'',
             'fecha_nacimiento'	=>'2018-09-08',
             'sexo'              =>'M',
             'estado_civil'              =>'S',
@@ -81,8 +81,8 @@ class PersonSeeder extends Seeder
         DB::table('persona')->insert(array(
             'codigo'              =>'FUCAF',
             'dni'               =>'22222222',
-            'nombres'       =>'Reserva',
-            'apellidos'              =>'Legal',
+            'nombres'       =>'Reserva Legal',
+            'apellidos'              =>'',
             'fecha_nacimiento'	=>'2018-09-08',
             'sexo'              =>'M',
             'estado_civil'              =>'CA',
@@ -102,8 +102,8 @@ class PersonSeeder extends Seeder
         DB::table('persona')->insert(array(
             'codigo'              =>'FUCAF',
             'dni'               =>'33333333',
-            'nombres'       =>'Intereses',
-            'apellidos'              =>'Moratorios',
+            'nombres'       =>'Intereses Moratorios',
+            'apellidos'              =>'',
             'fecha_nacimiento'	=>'2018-09-08',
             'sexo'              =>'M',
             'estado_civil'              =>'CA',
@@ -123,8 +123,8 @@ class PersonSeeder extends Seeder
         DB::table('persona')->insert(array(
             'codigo'              =>'FUCAF',
             'dni'               =>'44444444',
-            'nombres'       =>'Multas',
-            'apellidos'              =>'por Tardanza o Faltas',
+            'nombres'       =>'Multas por Tardanza o Faltas',
+            'apellidos'              =>'',
             'fecha_nacimiento'	=>'2018-09-08',
             'sexo'              =>'M',
             'estado_civil'              =>'S',
