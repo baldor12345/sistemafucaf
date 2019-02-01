@@ -72,7 +72,7 @@
 					</div>
 					<div class="form-group">
 						{!! Form::label('fechabusqueda', 'Desde la fecha:', array('class' => 'input-sm')) !!}
-						{!! Form::date('fechabusqueda', null, array('class' => 'form-control input-xs', 'id' => 'fechabusqueda',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::date('fechabusqueda', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechabusqueda',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 						
 					</div>
 					<div class="form-group">
@@ -101,11 +101,6 @@
 </div>
 <script>
     $(document).ready(function(){
-		var fechaActual = new Date();
-        var fechai = (fechaActual.getFullYear()-3) +"-01-01";
-
-		$('#fechabusqueda').val(fechai);
-
         buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
 		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="nombres"]').keyup(function (e) {
@@ -123,24 +118,6 @@
             bootbox.alert("<div class='alert alert-danger'><strong>¡Error!</strong> Caja no aperturada, asegurese de aperturar caja.!</div>");
         }
     }
-/*
-	//Funcion para abrir pdf en un modal
-	function modalrecibopdf2(url_pdf, ancho_modal, titulo_modal){
-		var motbx = bootbox.dialog({
-		          message: '<object class="preview-pdf-file" type="application/pdf" data="'+url_pdf+'" width="100%" height="500px"></object><div class="modal-footer"><button type="button" class="btn btn-warning" id="btnCerrarPdf" >Close</button></div>',      
-		          title: ""+titulo_modal,
-		          "className" : "preview-pdf-modal",
-		          onEscape: function() {}
-		        });
-		motbx.prop('id', 'modalvspdf');
-		$('#modalvspdf').children('.modal-dialog').css('width','auto');
-		$('#modalvspdf').children('.modal-dialog').css('max-width', ancho_modal+'px');
-		$('#modalvspdf').css('resize', 'both');
-		$('#btnCerrarPdf').click(function(){
-			$('#modalvspdf').modal('hide');
-		});
-	}*/
-
 	//Funcion para abrir pdf en una pestaña nueva del navegador
 	function modalrecibopdf(url_pdf, ancho_modal, titulo_modal) {
 		var a = document.createElement("a");

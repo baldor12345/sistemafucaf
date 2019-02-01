@@ -53,15 +53,18 @@ class CreditoController extends Controller{
 
 /*************--INICIO--************************* */
     public function index(){
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = count($caja) == 0? 0: $caja[0]->id;
+        //$caja_id = Caja::where("estado","=","A")->value('id');
+        //$caja_id = ($caja_id != "")?$caja_id:0;
         $configuraciones = configuraciones::all()->last();
         $entidad = 'Credito';
         $ruta = $this->rutas;
         $title = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $cboEstado = array(0=>'Pendientes', 1 => 'Cancelados');
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta', 'cboEstado','caja_id','configuraciones' ));
+        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaApert))."-01-01";
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta', 'cboEstado','caja_id','configuraciones','fecha_pordefecto' ));
     }
 
 /*************--LISTAR CREDITOS--**************** */
@@ -102,8 +105,12 @@ class CreditoController extends Controller{
     }
 /*************--MODAL NUEVO CREDITO--************ */
     public function create(Request $request){
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
+
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = count($caja) == 0? 0: $caja[0]->id;
+
+        //$caja_id = Caja::where("estado","=","A")->value('id');
+        //$caja_id = ($caja_id != "")?$caja_id:0;
         $configuraciones = Configuraciones::all()->last();
         $listar = Libreria::getParam($request->input('listar'), 'NO');
         $entidad = 'Credito';
@@ -114,9 +121,9 @@ class CreditoController extends Controller{
         $boton = 'Registrar'; 
 
 
-        $caja = DB::table('caja')->where('id', $caja_id)->first();
+       // $caja = DB::table('caja')->where('id', $caja_id)->first();
         //calculos
-        $ingresos =$caja->monto_iniciado;
+        $ingresos =$caja[0]->monto_iniciado;
         $egresos=0;
         $saldo_en_caja =0;
         $saldo = Transaccion::getsaldo($caja_id)->get();
@@ -129,7 +136,8 @@ class CreditoController extends Controller{
         }
         $saldo_en_caja= $ingresos-$egresos;
         $cboPers = array(0=>'Seleccione...');
-        return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja', 'cboPers'));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja', 'cboPers','fecha_pordefecto'));
     }
 
     public function store(Request $request){
@@ -344,8 +352,10 @@ class CreditoController extends Controller{
     public function vistapagocuota(Request $request, $cuota_id, $listarluego, $entidadr="nan"){
         $numero= $entidadr;
         $entidad_recibo = $entidadr;
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = count($caja) == 0? 0: $caja[0]->id;
+        //$caja_id = Caja::where("estado","=","A")->value('id');
+       // $caja_id = ($caja_id != "")?$caja_id:0;
         $existe = Libreria::verificarExistencia($cuota_id, 'cuota');
         if ($existe !== true) {
             return $existe;
@@ -356,8 +366,8 @@ class CreditoController extends Controller{
         $entidad_cuota = 'Cuota';
         $credito = null;
         $interes_moratorio = $request->get('valor_moratorio');
-        $fechapago = $request->get('fechaselect');
-        
+        //$fechapago = $request->get('fechaselect');
+        $fechapago =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
         $boton = 'Registrar'; 
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
@@ -449,7 +459,7 @@ class CreditoController extends Controller{
         return is_null($res) ? "OK" : $res;
     }
 
-    /*************--REGISTRO PAGO INTERES CUOTA--************ */
+/*************--REGISTRO PAGO INTERES CUOTA--************ */
     public function pagarcuotainteres(Request $request){
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
@@ -523,8 +533,11 @@ class CreditoController extends Controller{
     }
 /*************--MODAL Realizar accion--********** */
     public function vistaaccion(Request $request, $credito_id){
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = count($caja) == 0? 0: $caja[0]->id;
+        //$caja_id = Caja::where("estado","=","A")->value('id');
+        //$caja_id = ($caja_id != "")?$caja_id:0;
+
         $configuraciones = configuraciones::all()->last();
         $credito = Credito::find($credito_id);
         $persona = Persona::find($credito->persona_id);
@@ -545,7 +558,8 @@ class CreditoController extends Controller{
         $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
         $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
         $ruta = $this->rutas;
-        return view($this->folderview.'.vistaoperacion')->with(compact('credito','anios','meses','anioactual','mesactual','credito_id','cboacciones', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona','fecha_actual'));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        return view($this->folderview.'.vistaoperacion')->with(compact('credito','anios','meses','anioactual','mesactual','credito_id','cboacciones', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona','fecha_actual','fecha_pordefecto'));
     }
 
 /*************--LISTAR DETALLE CUOTAS--********** */

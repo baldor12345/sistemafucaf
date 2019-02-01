@@ -131,13 +131,16 @@ class AhorrosController extends Controller
         $dni = null;
         $idopcion = null;
         $ruta = $this->rutas;
+
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+
         $cboPers = array(0=>'Seleccione...');
         $resultado = Concepto::listar('I');
         $cboConcepto = array(5=>'Deposito de ahorros');// Concepto::pluck('titulo', 'id')->all();
         $formData = array('ahorros.store');
         $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto','cboPers'));
+        return view($this->folderview.'.mant')->with(compact('ahorros','idcaja','configuraciones','idopcion', 'dni', 'formData', 'entidad','ruta', 'boton', 'listar','cboConcepto','cboPers', 'fecha_pordefecto'));
     }
    /**
      * Store a newly created resource in storage.
@@ -237,7 +240,10 @@ class AhorrosController extends Controller
         $persona = Persona::find($persona_id);
         $cbotipo = array('I'=>'Depositos','E'=>'Retiros');
         $entidad = "Detalleahorro";
-        return view($this->folderview.'.detalles_ahorro')->with(compact('ruta','persona', 'entidad','cbotipo'));
+        $caja = Caja::where("estado","=","A")->get();
+       
+        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaApert))."-01-01";
+        return view($this->folderview.'.detalles_ahorro')->with(compact('ruta','persona', 'entidad','cbotipo','fecha_pordefecto'));
     }
     
    //Metodo para listar detalle depositos o retiros 
@@ -279,7 +285,7 @@ class AhorrosController extends Controller
    //Metodo para abrir Modal historico de capital + interes 
    public function vistahistoricoahorro ($persona_id, Request $request){
         $ruta = $this->rutas;
-        $fecha_actual = date('Y-m-d'); 
+       /* $fecha_actual = date('Y-m-d'); 
         $datosfac = explode("-", $fecha_actual);
         $anioactual = $datosfac[0];
         $cboanio = array(
@@ -298,12 +304,22 @@ class AhorrosController extends Controller
         ''.($anioactual-11)=>''.($anioactual-11),
         ''.($anioactual-12)=>''.($anioactual-12),
         ''.($anioactual-13)=>''.($anioactual-13),);
+        */
+
+        $cboanio = array();
+        $anioInicio = 2007;
+        $anioactual = date('Y');
+        $mesactual = date('m');
+        for($anyo=$anioactual; $anyo>=$anioInicio; $anyo --){
+            $cboanio[$anyo] = $anyo;
+        }
 
         $titulo_vistahistoricoahorro = $this->titulo_vistahistoricoahorro;
         $entidad = "Detallehistorico";
-        
+        $caja = Caja::where("estado","=","A")->get();
+        $anio_pordefecto =count($caja) == 0?  date('Y'): date('Y',strtotime($caja[0]->fecha_horaApert));
 
-        return view($this->folderview.'.vistadetallehistorico')->with(compact('ruta','persona_id', 'entidad','cboanio','titulo_vistahistoricoahorro'));
+        return view($this->folderview.'.vistadetallehistorico')->with(compact('ruta','persona_id', 'entidad','cboanio','titulo_vistahistoricoahorro', 'anio_pordefecto'));
     }
 
    //Metodo para listar historico
@@ -354,13 +370,15 @@ class AhorrosController extends Controller
         $ruta = $this->rutas;
         $titulo_vistaretiro = $this->titulo_vistaretiro;
 
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = count($caja) == 0? 0: $caja[0]->id;
+        //$caja_id = Caja::where("estado","=","A")->value('id');
+        //$caja_id = ($caja_id != "")?$caja_id:0;
         $saldo_en_caja = 0;
         if($caja_id != 0){
-            $caja = DB::table('caja')->where('id', $caja_id)->first();
+            //$caja = DB::table('caja')->where('id', $caja_id)->first();
             //calculos
-            $ingresos =$caja->monto_iniciado;
+            $ingresos =$caja[0]->monto_iniciado;
             $egresos=0;
             $saldo_en_caja =0;
             $saldo = Transaccion::getsaldo($caja_id)->get();
@@ -373,8 +391,9 @@ class AhorrosController extends Controller
             }
             $saldo_en_caja= $ingresos-$egresos;
         }
-
-        return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id'));
+        
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id','fecha_pordefecto'));
     }
     //Metodo para registrar el retiro
     public function retiro(Request $request){

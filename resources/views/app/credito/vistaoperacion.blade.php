@@ -34,7 +34,7 @@
                      {!! Form::hidden('mes', $mesactual, array('id' => 'mes')) !!}
                      <div class="form-group">
 						{!! Form::label('fechaop', 'Fecha Actual:', array('class' => '')) !!}
-						{!! Form::date('fechaop', $fecha_actual, array('class' => 'form-control input-sm', 'id' => 'fechaop',  'onchange' => 'listarcuotasalafecha()')) !!}
+						{!! Form::date('fechaop', $fecha_pordefecto, array('class' => 'form-control input-sm', 'id' => 'fechaop',  'onchange' => 'listarcuotasalafecha()')) !!}
 					</div>
                      {!! Form::close() !!}
                  </div>

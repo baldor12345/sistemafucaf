@@ -9,7 +9,7 @@
             {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
             <div class="form-group" >
                 {!! Form::label('fechainicio', 'Desde:')!!}
-                {!! Form::date('fechainicio', null, array('class' => 'form-control input-xs', 'id' => 'fechainicio',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+                {!! Form::date('fechainicio', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechainicio',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
              </div>		
             <div class="form-group" >
                 {!! Form::label('filas', 'Filas a mostrar:')!!}
@@ -34,9 +34,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		configurarAnchoModal('850');
-        var fechaActual = new Date();
-        var fechai = (fechaActual.getFullYear()) +"-01-01";
-		$('#fechainicio').val(fechai);
+        
         buscar("{{ $entidad }}");
     });
 </script>

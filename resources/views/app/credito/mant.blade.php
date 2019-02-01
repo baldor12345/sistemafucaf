@@ -35,7 +35,7 @@
 
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
         {!! Form::label('fechacredito', 'Fecha: *', array('class' => 'fechacred')) !!}
-        {!! Form::date('fechacredito', null, array('class' => 'form-control input-xs', 'id' => 'fechacredito')) !!}
+        {!! Form::date('fechacredito', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechacredito')) !!}
     </div>
     <div class="form-group col-12" >
         {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descrip')) !!}
@@ -57,12 +57,6 @@
 {!! Form::close() !!}
 <script>
     $(document).ready(function() {
-        var fechaActual = new Date();
-        var day = ("0" + fechaActual.getDate()).slice(-2);
-        var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
-        var fechaactualcredito = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#fechacredito').val(fechaactualcredito);
-        
         $('#selectnom').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),
             

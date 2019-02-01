@@ -7,6 +7,7 @@ use App\Http\Requests;
 use App\Persona;
 use App\Credito;
 use App\Cuota;
+use App\Caja;
 use App\Configuraciones;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -69,8 +70,10 @@ class RecibocuotasController extends Controller
         for($anyo=$anioactual; $anyo>=$anioInicio; $anyo --){
             $anios[$anyo] = $anyo;
         }
-        $fecha_actual = date('Y-m-d');
-
+        //$fecha_actual = date('Y-m-d');
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = count($caja) == 0? 0: $caja[0]->id;
+        $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
         $entidad = 'ReciboCuota';
         $title = $this->tituloAdmin;
         $tituloPagoCuota = $this->tituloPagoCuota;
