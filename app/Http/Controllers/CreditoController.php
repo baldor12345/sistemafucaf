@@ -963,6 +963,8 @@ class CreditoController extends Controller{
                 $credito = Credito::find($request->get('credito_id'));
                 $persona = Persona::find($credito->persona_id);
                 $monto_total = $request->get('monto_suma');
+                $capital_total = $request->get('capital_total');
+                $interes_total = $request->get('interes_total');
                 $fecha_pago = $request->get('fechaop');
 
                 $cuotas = Cuota::where('credito_id','=', $credito->id)->where('estado','!=', '1')->where('deleted_at','=', null)->get();
@@ -982,8 +984,8 @@ class CreditoController extends Controller{
                 $transaccion->persona_id = $persona->id;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = 0;
-                $transaccion->cuota_interes = 0;
+                $transaccion->cuota_parte_capital = $capital_total;
+                $transaccion->cuota_interes = $interes_total;
                 $transaccion->cuota_mora = 0;
                 $transaccion->save();
                 $transaccion_id = $transaccion->id;
@@ -1001,16 +1003,19 @@ class CreditoController extends Controller{
         $valor_total = 0;
         $fechaOp = $request->get('fechaoperacion');
         $anio_mes = date('Y-m', strtotime($fechaOp));
-
+        $interes_total = 0;
+        $parte_capital_total = 0;
         for($i =0; $i<count($cuotas); $i++){
             if(date('Y-m', strtotime($cuotas[$i]->fecha_programada_pago)) <= $anio_mes){
                 $valor_total += $cuotas[$i]->parte_capital + $cuotas[$i]->interes;
+                $interes_total += $cuotas[$i]->interes;
+                $parte_capital_total += $cuotas[$i]->parte_capital ;
             }else{
                 $valor_total += $cuotas[$i]->parte_capital;
+                $parte_capital_total += $cuotas[$i]->parte_capital ;
             }
-            
         }
-        return $valor_total;
+        return  array($valor_total, $parte_capital_total, $interes_total);
     }
 
 }

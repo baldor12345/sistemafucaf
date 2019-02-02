@@ -30,6 +30,8 @@
                      {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
                      {!! Form::hidden('opcion', '', array('id' => 'opcion')) !!}
                      {!! Form::hidden('montototal', 0, array('id' => 'montototal')) !!}
+                     {!! Form::hidden('interes_total', 0, array('id' => 'interes_total')) !!}
+                     {!! Form::hidden('capital_total', 0, array('id' => 'capital_total')) !!}
                      {!! Form::hidden('anio', $anioactual, array('id' => 'anio')) !!}
                      {!! Form::hidden('mes', $mesactual, array('id' => 'mes')) !!}
                      <div class="form-group">
@@ -301,7 +303,10 @@
             beforeSend: function(){
             },
             success: function(res){
-                $("#montototal").val(res);
+                $("#montototal").val(res[0]);
+                $("#capital_total").val(res[1]);
+                $("#interes_total").val(res[2]);
+
                 var tabla = '<div class="alert alert-success"><label>Total a pagar S/.: '+(parseFloat(res).toFixed(1))+'</label></div>'
                 tabla += '<button class="btn btn-primary" onclick="pagar_credito_total();">Pagar Todo</button>';
                 $('#cuotas_pendiente').html(tabla);
