@@ -15,7 +15,9 @@ use App\Transaccion;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Jenssegers\Date\Date;
 use PDF;
+use DateTime;
 
 class ControlPersonaController extends Controller
 {
@@ -294,9 +296,13 @@ class ControlPersonaController extends Controller
         $caja_id = Caja::where("estado","=","A")->value('id');
         $cboMulta        = array('12'=>'Multa Por Tardanza o Insistencia');
         $entidad  = 'ControlPersona';
+
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaApert)->format('Y-m-d');
+
         $ruta = $this->rutas;
         $titulo_pagarmulta = "Pagar Multa por Tardanza o Inasistencia";
-        return view($this->folderview.'.pagarmulta')->with(compact('entidad', 'ruta', 'titulo_pagarmulta','cboMulta','caja_id','id'));
+        return view($this->folderview.'.pagarmulta')->with(compact('entidad', 'ruta', 'titulo_pagarmulta','cboMulta','caja_id','id','fecha_caja'));
     }
 
     public function guardarpagarmulta(Request $request)

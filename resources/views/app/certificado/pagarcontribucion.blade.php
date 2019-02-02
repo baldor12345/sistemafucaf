@@ -41,7 +41,13 @@
         var day = ("0" + fechaActual.getDate()).slice(-2);
         var month = ("0" + (fechaActual.getMonth()+1)).slice(-2);
         var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#fecha_pago').val(fechaactualr);
+        var fecha_caja = '{{ $fecha_caja }}';
+        if(fecha_caja != 0){
+            $('#fecha_pago').val(fecha_caja);
+        }else{
+            $('#fecha_pago').val(fechaactualr);
+        }
+        
         
     });
 

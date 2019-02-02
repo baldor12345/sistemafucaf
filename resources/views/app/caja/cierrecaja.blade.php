@@ -91,8 +91,9 @@ use Illuminate\Support\Facades\DB;
 		}else{
 			var horaC =fechaActual.getHours()+":"+fechaActual.getMinutes();
 		}
+		var fecha_caja = '{{ $fecha_caja }}';
 		$('#hora_cierre').val(horaC);
-		$('#fecha_horaApert').val(fechai);
+		$('#fecha_horaApert').val(fecha_caja);
 		
 	});
 	

@@ -116,9 +116,10 @@ function cargarselect2(entidad){
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
 		var fecha = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-		$('#fecha').min ="2010-01-01";
-		$('#fecha').max ="2010-12-30";
-		$('#fecha').val(fecha);
+		var fecha_caja = '{{ $fecha_caja }}';
+		$('#fecha').val(fecha_caja);
+		
+		
 
 		$('#selectnom').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),

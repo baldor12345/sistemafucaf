@@ -80,6 +80,10 @@ class MenuoptionSeeder extends Seeder
 				array(
 					'name' => 'Distribucion de Utilidades',
 					'link'   => 'distribucion_utilidades'
+				),
+				array(
+					'name' => 'Certificados',
+					'link'   => 'certificado'
 				)
 			);
 
@@ -106,10 +110,6 @@ class MenuoptionSeeder extends Seeder
 				array(
 					'name' => 'Conceptos',
 					'link'   => 'concepto'
-				),
-				array(
-					'name' => 'Certificados',
-					'link'   => 'certificado'
 				),
 
 				array(
