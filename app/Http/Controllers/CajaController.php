@@ -850,7 +850,7 @@ class CajaController extends Controller
         $diferencia= $ingresos-$egresos;
 
         $concepto_id             = Libreria::getParam(-1);
-        $resultado        = Transaccion::listar($id);
+        $resultado        = Transaccion::listar1($id, null);
         $lista            = $resultado->get();
         $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
@@ -1470,15 +1470,15 @@ class CajaController extends Controller
                         11=>'Noviembre', 12=>'Diciembre');
         //presidente y secretario
         $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
-        $usuario2 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',2)->get();
 
         $presidente = Persona::find($usuario1[0]->persona_id);
         $tesorero = Persona::find($usuario2[0]->persona_id);
 
         //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
-        $titulo = "reporte ".$arraymonth[intval($month)]."-".$anio."_Ingresos";
-        $view = \View::make('app.reportes.reporteresumenfinancieroPDF')->with(compact('lista' ,'id', 'caja','arraymonth','month','anio','listacoutas','listacciones','listahorros','listprestamos','sum_cuotas','sum_acciones','sum_ahorros','sum_prestamos',
+        $titulo = "resumen_financiero_".$arraymonth[intval($month)]."-".$anio;
+        $view = \View::make('app.reportes.reporteresumenfinancieroPDF')->with(compact('lista','presidente','tesorero' ,'id', 'caja','arraymonth','month','anio','listacoutas','listacciones','listahorros','listprestamos','sum_cuotas','sum_acciones','sum_ahorros','sum_prestamos',
                                                                                             'listaotrosingresos','sum_otrosingresos','listaotrosegresosadmin','sum_otrosingresosadmin','listaotrosegresosotros',
                                                                                         'sum_otrosingresootros','sum_total_ingresos','sum_total_egresos'));
         $html_content = $view->render();      

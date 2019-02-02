@@ -340,5 +340,23 @@
 
 	</div>
 
+    <br/>
+	<br/>
+    <br/>
+    <table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
+            <tr>
+            <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="1"> </td>
+            <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="1"> </td>
+            <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="3">TESORERO------------------------------------</td>
+            <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="3">PRESIDENTE----------------------------------</td>
+            </tr>
+            <tr>
+                <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="1"> </td>
+                <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="1"> </td>
+                <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="3">{{ $tesorero->apellidos.' '.$tesorero->nombres}}</td>
+                <td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="3">{{ $presidente->apellidos.' '.$presidente->nombres}}</td>
+            </tr>
+        </table>
+
 </body>
 </html>
