@@ -214,7 +214,7 @@ use Illuminate\Support\Facades\DB;
 		var accion_persona1 = parseInt($('#cantaccionpersona').val());
 		var lmite = (cantidad_limite-accion_persona1);
 		var cantid = $('#cantidad_accion').val();
-		if(lmite<=cantid){
+		if(lmite>=cantid){
 			var idformulario = IDFORMMANTENIMIENTO + entidad;
 			var data         = submitForm(idformulario);
 			var respuesta    = null;
