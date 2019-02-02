@@ -22,12 +22,18 @@
     
 </div>
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto' style="display:none;">
-        {!! Form::button('<i class="fa fa-check fa-lg"></i> Ingreso', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteingreso(\''.$entidad.'\', \''.URL::route($ruta["reporteingresosPDF"], array()).'\')')) !!}
+        {!! Form::button('<i class="fa fa-check fa-lg"></i> Generar R. Ingreso', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteingreso(\''.$entidad.'\', \''.URL::route($ruta["reporteingresosPDF"], array()).'\')')) !!}
+    &nbsp;
+    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i>Generar R. Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+</div>
+<div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto2' style="display:none;">
+        {!! Form::button('<i class="fa fa-check fa-lg"></i> Generar R. Egreso', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteingreso(\''.$entidad.'\', \''.URL::route($ruta["reporteegresosPDF"], array()).'\')')) !!}
     &nbsp;
     {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
-<div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto2' style="display:none;">
-        {!! Form::button('<i class="fa fa-check fa-lg"></i> Egreso', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteingreso(\''.$entidad.'\', \''.URL::route($ruta["reporteegresosPDF"], array()).'\')')) !!}
+
+<div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto3' style="display:none;">
+        {!! Form::button('<i class="fa fa-check fa-lg"></i> Generar R. Financiero', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteresumenfinanciero(\''.$entidad.'\', \''.URL::route($ruta["reporteresumenfinancieroPDF"], array()).'\')')) !!}
     &nbsp;
     {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
@@ -43,9 +49,17 @@
             if(valorCambiado == 'I'){
                 document.getElementById('oculto').style.display = 'block';
                 document.getElementById('oculto2').style.display = 'none';
-            }else{
+                document.getElementById('oculto3').style.display = 'none';
+            }
+            if(valorCambiado == 'E'){
                 document.getElementById('oculto').style.display = 'none';
                 document.getElementById('oculto2').style.display = 'block';
+                document.getElementById('oculto3').style.display = 'none';
+            }
+            if(valorCambiado == 'R'){
+                document.getElementById('oculto').style.display = 'none';
+                document.getElementById('oculto2').style.display = 'none';
+                document.getElementById('oculto3').style.display = 'block';
             }
         });
                 
@@ -103,6 +117,32 @@
                         }
                         buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
                     }        
+                } else {
+                    mostrarErrores(respuesta, idformulario, entidad);
+                }
+            }
+        });
+    }
+
+    function reporteresumenfinanciero(entidad, rutarecibo) {
+        var idformulario = IDFORMMANTENIMIENTO + entidad;
+        var data         = submitForm(idformulario);
+        var respuesta    = null;
+        var listar       = 'NO';
+        if ($(idformulario + ' :input[id = "listar"]').length) {
+            var listar = $(idformulario + ' :input[id = "listar"]').val()
+        };
+        data.done(function(msg) {
+            respuesta = msg;
+        }).fail(function(xhr, textStatus, errorThrown) {
+            respuesta = 'ERROR';
+        }).always(function() {
+            
+            if(respuesta[0] === 'ERROR'){
+            }else{
+                
+                if (respuesta[0] === 'OK') {
+                    modalrecibopdf(rutarecibo+"/"+respuesta[1], '100', 'recibo credito');    
                 } else {
                     mostrarErrores(respuesta, idformulario, entidad);
                 }

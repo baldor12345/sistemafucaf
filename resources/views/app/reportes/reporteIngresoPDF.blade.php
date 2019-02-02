@@ -184,8 +184,8 @@
 			<tr>
 				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
 				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2"> </td>
-				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">Rocio Castillo Rojas</td>
-				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">Harold Lopez Osorio</td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">{{ $tesorero->apellidos.' '.$tesorero->nombres}}</td>
+				<td style="text-transform: uppercase;" align="center" style="font-size: 10px" colspan="2">{{$presidente->apellidos.' '.$presidente->nombres}}</td>
 			</tr>
 		</table>
 	</div>

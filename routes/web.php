@@ -228,6 +228,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/reporteingresosPDF/{id?}', 'CajaController@reporteingresosPDF')->name('caja.reporteingresosPDF');
     Route::get('/reporteegresosPDF/{id?}', 'CajaController@reporteegresosPDF')->name('caja.reporteegresosPDF');
+    Route::get('/reporteresumenfinancieroPDF/{id?}', 'CajaController@reporteresumenfinancieroPDF')->name('caja.reporteresumenfinancieroPDF');
 
     Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
     Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');

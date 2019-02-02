@@ -13,6 +13,7 @@ use App\Transaccion;
 use App\Concepto;
 use App\Configuraciones;
 use App\Gastos;
+use App\User;
 use App\Credito;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -54,6 +55,7 @@ class CajaController extends Controller
 
             'reporteingresosPDF' => 'caja.reporteingresosPDF',
             'reporteegresosPDF' => 'caja.reporteegresosPDF',
+            'reporteresumenfinancieroPDF' => 'caja.reporteresumenfinancieroPDF',
             'listpersonas' =>'caja.listpersonas'
         );
 
@@ -330,7 +332,7 @@ class CajaController extends Controller
 
     /**CARGAR REPORTE */
     public function cargarreporte(){
-        $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos');
+        $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos', 'R'=>'Reporte Financiero');
         $entidad  = 'Caja';
         $ruta = $this->rutas;
         $titulo_reporte = $this->titulo_reporte;
@@ -852,8 +854,16 @@ class CajaController extends Controller
         $lista            = $resultado->get();
         $persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
+        //directivos
+        $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',2)->get();
+
+        $presidente = Persona::find($usuario1[0]->persona_id);
+        $tesorero = Persona::find($usuario2[0]->persona_id);
+
+
         $titulo = "reporte ".$caja->titulo;
-        $view = \View::make('app.caja.reportecajaPDF')->with(compact('lista', 'id', 'caja','diferencia', 'result','persona','ingresos','egresos'));
+        $view = \View::make('app.caja.reportecajaPDF')->with(compact('lista', 'id', 'caja','diferencia', 'result','persona','ingresos','egresos','presidente','tesorero'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -1037,11 +1047,18 @@ class CajaController extends Controller
 
         //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
+        //directivos
+        $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',2)->get();
+
+        $presidente = Persona::find($usuario1[0]->persona_id);
+        $tesorero = Persona::find($usuario2[0]->persona_id);
+
         $titulo = "reporte ".$mes."-".$anio."_Ingresos";
         $view = \View::make('app.reportes.reporteIngresoPDF')->with(compact('lista','lista_ingresos_por_concepto' ,'id', 'caja', 'mes','anio','mesItm','sum_deposito_ahorros_mes_actual',
                                                                             'sum_pagos_de_capital_mes_actual','sum_interese_recibidos_mes_actual','sum_acciones_mes_actual','sum_otros_mes_actual','sum_ingresos_totales_mes_actual','sum_por_concepto_actual',
                                                                         'sum_deposito_ahorros_asta_mes_anterior','sum_pagos_de_capital_asta_mes_anterior','sum_interese_recibidos_asta_mes_anterior','sum_acciones_asta_mes_anterior','sum_otros_asta_mes_anterior','sum_ingresos_totales_asta_mes_anterior',
-                                                                    'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados'));
+                                                                    'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados','presidente','tesorero'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -1365,6 +1382,13 @@ class CajaController extends Controller
         $saldo =    ($total_ingresos_del_mes-$egresos_del_mes);
 
 
+        //directivos
+        $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',2)->get();
+
+        $presidente = Persona::find($usuario1[0]->persona_id);
+        $tesorero = Persona::find($usuario2[0]->persona_id);
+
         //-------------------------------------------
         //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
@@ -1373,7 +1397,7 @@ class CajaController extends Controller
                                                                             'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual','sum_otros_egresos_mes_actual','sum_utilidad_distribuida',
                                                                         'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior','sum_otros_egresos_asta_mes_anterior',
                                                                     'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado', 
-                                                                    'saldo_del_mes_anterior','ingresos_del_mes','total_ingresos_del_mes','egresos_del_mes','saldo','sum_ingresos_totales_acumulados'));
+                                                                    'saldo_del_mes_anterior','ingresos_del_mes','total_ingresos_del_mes','egresos_del_mes','saldo','sum_ingresos_totales_acumulados','presidente','tesorero'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -1385,6 +1409,93 @@ class CajaController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    //reporte de resumen financiero
+    public function reporteresumenfinancieroPDF($fecha)
+    {
+        //fecha en mes y año separados
+        $fechaf = explode("-", $fecha);
+        $anio =  $fechaf[0];
+        $month = $fechaf[1];
+
+        //ingresos
+        $listacoutas = Caja::listcoutasprestamo($anio,$month)->get();
+        $sum_cuotas =0;
+        foreach($listacoutas as $value){
+            $sum_cuotas +=$value->pagos_de_capital+$value->intereces_recibidos+$value->cuota_mora+$value->comision_voucher;
+        }
+
+        $listacciones = Caja::listacciones($anio,$month)->get();
+        $sum_acciones=0;
+        foreach($listacciones as $value){
+            $sum_acciones += $value->acciones;
+        }
+
+        $listahorros = Caja::listahorros($anio,$month)->get();
+        $sum_ahorros =0;
+        foreach ($listahorros as $key => $value) {
+            $sum_ahorros += $value->deposito_ahorros;
+        }
+        $listaotrosingresos = Caja::listotrosingresos($month, $anio)->get();
+        $sum_otrosingresos =0;
+        foreach ($listaotrosingresos as $key => $value) {
+            $sum_otrosingresos += $value->transaccion_monto;
+        }
+
+        //egresos
+        $listprestamos = Caja::listprestamos($month,$anio)->get();
+        $sum_prestamos = 0;
+        foreach ($listprestamos as $key => $value) {
+            $sum_prestamos += $value->monto_credito;
+        }
+
+        $listaotrosegresosadmin = Caja::listotrosegresosadmin($anio,$month)->get();
+        $sum_otrosingresosadmin =0;
+        foreach ($listaotrosegresosadmin as $key => $value) {
+            $sum_otrosingresosadmin += $value->transaccion_monto;
+        }
+
+        $listaotrosegresosotros = Caja::listotrosegresosothers($anio,$month)->get();
+        $sum_otrosingresootros =0;
+        foreach ($listaotrosegresosotros as $key => $value) {
+            $sum_otrosingresootros += $value->transaccion_monto;
+        }
+
+        $sum_total_ingresos = 0;
+        $sum_total_egresos =0;
+        $sum_total_ingresos = ($sum_cuotas + $sum_acciones+$sum_ahorros+$sum_otrosingresos);
+        $sum_total_egresos = ($sum_prestamos+$sum_otrosingresosadmin+$sum_otrosingresootros);
+
+        $arraymonth = array(1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril', 5=>'Mayo', 6=>'Junio', 7=>'Julio',8=>'Agosto', 9=>'Septiembre', 10=>'Octubre',
+                        11=>'Noviembre', 12=>'Diciembre');
+        //presidente y secretario
+        $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',1)->get();
+
+        $presidente = Persona::find($usuario1[0]->persona_id);
+        $tesorero = Persona::find($usuario2[0]->persona_id);
+
+        //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+
+        $titulo = "reporte ".$arraymonth[intval($month)]."-".$anio."_Ingresos";
+        $view = \View::make('app.reportes.reporteresumenfinancieroPDF')->with(compact('lista' ,'id', 'caja','arraymonth','month','anio','listacoutas','listacciones','listahorros','listprestamos','sum_cuotas','sum_acciones','sum_ahorros','sum_prestamos',
+                                                                                            'listaotrosingresos','sum_otrosingresos','listaotrosegresosadmin','sum_otrosingresosadmin','listaotrosegresosotros',
+                                                                                        'sum_otrosingresootros','sum_total_ingresos','sum_total_egresos'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('p','A4',0);
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
+
+
 
     //Metodo para redondear numero decimal
     public function rouNumber($numero, $decimales) { 
