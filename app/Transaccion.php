@@ -50,7 +50,6 @@ class Transaccion extends Model
 		            		$subquery->where('concepto_id','=',$concepto_id);
 		            	}
                     })
-                    ->where('deleted_at','=',null)
                     ->where('concepto_id', '!=', 16)
                     ->where('concepto_id','!=',17)
                     ->where('deleted_at',null)

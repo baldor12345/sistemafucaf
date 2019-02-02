@@ -388,7 +388,7 @@ GROUP BY persona.id;
                     ->select(
                         'persona.nombres as persona_nombres',
 				        'persona.apellidos as persona_apellidos',
-                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros")
+                        DB::raw("SUM(transaccion.monto_ahorro) as deposito_ahorros")
                     )
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
@@ -413,6 +413,76 @@ GROUP BY persona.id;
                     ->where('concepto.tipo','=','E')
                     ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
+        return $results;
+    }
+
+    //otros ingresos
+    public static function listotrosingresos($month, $anio)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as transaccion_descrpcion'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('concepto.id','!=',1)
+                    ->where('concepto.id','!=',2)
+                    ->where('concepto.id','!=',8)
+                    ->where('concepto.id','!=',5)
+                    ->where('concepto.id','!=',16)
+                    ->where('concepto.id','!=',4)
+                    ->where('concepto.id','!=',12)
+                    ->where('transaccion.deleted_at',null);
+        return $results;
+    }
+    //otros egresos admin
+    public static function listotrosegresosadmin($anio, $month)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as comentario'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','E')
+                    ->where('concepto.id','!=',6)
+                    ->where('concepto.id','!=',3)
+                    ->where('concepto.id','!=',17)
+                    ->where('concepto.id','!=',10)
+                    ->where('concepto.id', '!=', 37)
+                    ->where('concepto.id','!=',15)
+                    ->where('transaccion.tipo_egreso','=',1)
+                    ->where('transaccion.deleted_at',null);
+        return $results;
+    }
+
+    public static function listotrosegresosothers($anio, $month)
+    {
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'concepto.titulo as concepto_titulo',
+                        'transaccion.monto as transaccion_monto',
+                        'transaccion.descripcion as comentario'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','E')
+                    ->where('concepto.id','!=',6)
+                    ->where('concepto.id','!=',3)
+                    ->where('concepto.id','!=',17)
+                    ->where('concepto.id','!=',10)
+                    ->where('concepto.id', '!=', 37)
+                    ->where('transaccion.tipo_egreso','=',0)
+                    ->where('transaccion.deleted_at',null);
+        //echo "datos por concepto   ".$results->get();
         return $results;
     }
     
