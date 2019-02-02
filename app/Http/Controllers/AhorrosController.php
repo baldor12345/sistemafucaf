@@ -536,6 +536,7 @@ class AhorrosController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+    
 /*************************** GENERAR REPORTE HISTORICO DE AHORRO PDF **************************** */
     //metodo para generar voucher ahorro en pdf
     public function generareportehistoricoahorrosPDF($persona_id=0,$anyo)
@@ -559,7 +560,7 @@ class AhorrosController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
-/************************************ Fin generar reporte *********************************** */
+
 
 /************************************* OTRAS FUNCIONES ************************************** */
     //Metodo para redondear numero decimal
@@ -756,9 +757,10 @@ class AhorrosController extends Controller
                     $ahorros->capital = ($ahorros->capital - $transact->monto);
                     if($ahorros->capital < 0.1){
                         $ahorros->estado = 'P';
-                        $ahorros->capital = 0; 
+                        $ahorros->capital = 0;
+                        $ahorros->delete();
                     }
-                    $ahorros->save();
+                    //$ahorros->save();
                     
                 }else{
                     $ahorros = Ahorros::find($transact->id_tabla);

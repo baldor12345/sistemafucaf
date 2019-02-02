@@ -103,6 +103,7 @@ class CreditoController extends Controller{
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad','titulo_detalle'));
     }
+
 /*************--MODAL NUEVO CREDITO--************ */
     public function create(Request $request){
 
@@ -139,7 +140,8 @@ class CreditoController extends Controller{
         $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
         return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja', 'cboPers','fecha_pordefecto'));
     }
-
+    
+/*************--GUARDAR NUEVO CREDITO--************ */
     public function store(Request $request){
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
@@ -255,7 +257,7 @@ class CreditoController extends Controller{
         return $respuesta;
     }
 
-/*************--ELIMINAR CREDITO--*************** */
+/*************-- MODAL ELIMINAR CREDITO--*************** */
     public function eliminar($id, $listarLuego){
         $existe = Libreria::verificarExistencia($id, 'credito');
         if ($existe !== true) {
@@ -282,6 +284,7 @@ class CreditoController extends Controller{
         }
         
     }
+
 /*************--BORRAR CREDITO--***************** */
     public function destroy($id){
         $existe = Libreria::verificarExistencia($id, 'credito');
@@ -304,6 +307,7 @@ class CreditoController extends Controller{
         });
         return is_null($error) ? "OK" : $error;
     }
+
 /*************--MODIFICAR CREDITO--************** */
     public function update(Request $request, $id){
         $reglas =array(
@@ -348,6 +352,7 @@ class CreditoController extends Controller{
         });
         return is_null($error) ? "OK" : $error;
     }
+
 /*************--MODAL PAGO CUOTA--*************** */
     public function vistapagocuota(Request $request, $cuota_id, $listarluego, $entidadr="nan"){
         $numero= $entidadr;
@@ -384,6 +389,7 @@ class CreditoController extends Controller{
         }
         
     }
+
 /*************--REGISTRO PAGO CUOTA--************ */
     public function pagarcuota(Request $request){
         $caja_id = Caja::where("estado","=","A")->value('id');
@@ -531,6 +537,7 @@ class CreditoController extends Controller{
         $ruta = $this->rutas;
         return view($this->folderview.'.detallecredito')->with(compact('credito','credito_id', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona'));
     }
+
 /*************--MODAL Realizar accion--********** */
     public function vistaaccion(Request $request, $credito_id){
         $caja = Caja::where("estado","=","A")->get();
@@ -609,6 +616,7 @@ class CreditoController extends Controller{
         }
         return view($this->folderview.'.listdetallecredito')->with(compact('lista','entidad_credito','entidad_cuota'));
     }
+
 /*************--REPORTE DE CUOTAS PDF--********** */
     public function generareportecuotasPDF($credito_id){   
         $resultado = Cuota::listar($credito_id);
@@ -630,6 +638,7 @@ class CreditoController extends Controller{
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
 /*************--RECIBO PAGO CUOTA PDF--********** */
     public function generarecibopagocuotaPDF($cuota_id){   
         $cuota = Cuota::find($cuota_id);
@@ -660,6 +669,7 @@ class CreditoController extends Controller{
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
 /*************--RECIBO AMORTIZACION PDF--********** */
     public function generareciboamortizacionPDF($transaccion_id, $credito_id){   
         $transaccion = Transaccion::find($transaccion_id);
@@ -818,6 +828,7 @@ class CreditoController extends Controller{
 
     }
 
+/*************--LISTA PERSONAS--************ */
     public function listpersonas(Request $request){
         $term = trim($request->q);
         if (empty($term)) {
@@ -831,6 +842,8 @@ class CreditoController extends Controller{
 
         return \Response::json($formatted_tags);
     }
+
+/*************--LISTA DE CUOTAS A LA FECHA--************ */
     public function cuotasalafecha(Request $request){
         $persona_id = $request->input('persona_id');
         $credito_id = $request->input('credito_id');
@@ -843,6 +856,7 @@ class CreditoController extends Controller{
         return response()->json($cuotas);
     }
 
+/*************--AMORTIZAR CUOTAS--************ */
     public function amortizarcuotas(Request $request){
        
         $caja_id = Caja::where("estado","=","A")->value('id');
@@ -860,12 +874,20 @@ class CreditoController extends Controller{
                 $montoTotal = $request->get('monto_suma');
                 $cantidadDatos = $request->get('cantidadmarcados');
                 $descripcion ="Amortizacion de las cuotas N°: ";
+                $num_cuotaFinal = 0;
                 for($i=0; $i<$cantidadDatos; $i++){
                     $cuota = Cuota::find($request->get('cuota_id'.$i));
                     $descripcion = $descripcion."".$cuota->numero_cuota.",";
                     $cuota->estado = '1';// pagado
                     $cuota->fecha_pago = $fecha_pago;
                     $cuota->save();
+                    if($cuota->numero_cuota > $num_cuotaFinal ){
+                        $num_cuotaFinal = $cuota->numero_cuota;
+                    }
+                }
+                if($num_cuotaFinal == $credito->periodo){
+                    $credito->estado = 1;
+                    $credito->save();
                 }
                 $cuotasRestantes = Cuota::where('credito_id', '=', $credito->id)->where('estado','!=','1')->where('deleted_at','=', null)->orderBy('numero_cuota', 'ASC')->get();
                 $fecha_actual = $fecha_pago;
@@ -929,6 +951,7 @@ class CreditoController extends Controller{
         return $respuesta;
     }
 
+/*************--PAGAR TODO EL CREDITO--************ */
     public function pagarcreditototal(Request $request){
 
         $caja_id = Caja::where("estado","=","A")->value('id');
@@ -974,6 +997,7 @@ class CreditoController extends Controller{
         return is_null($res) ? "OK" : $res;
     }
 
+/*************--OBTENER MONTO TOTAL--************ */
     public function obtenermontototal(Request $request){
         $cuotas = Cuota::where('credito_id','=', $request->get('credito_id'))->where('estado','!=', '1')->where('deleted_at','=', null)->get();
         $valor_total = 0;
