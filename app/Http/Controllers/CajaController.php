@@ -151,22 +151,24 @@ class CajaController extends Controller
         $entidad        = 'Caja';
         $count_caja = Caja::where('estado','C')->count();
         if(strlen($count_caja) == 1){
-            $titulo = "Caja 000".$count_caja;
+            $titulo = "Caja 000".($count_caja+1);
         }
         if(strlen($count_caja) == 2){
-            $titulo = "Caja 00".$count_caja;
+            $titulo = "Caja 00".($count_caja+1);
         }
         if(strlen($count_caja) == 3){
-            $titulo = "Caja 0".$count_caja;
+            $titulo = "Caja 0".($count_caja+1);
         }
         if(strlen($count_caja) == 4){
-            $titulo = "Caja ".$count_caja;
+            $titulo = "Caja ".($count_caja+1);
         }
+
+        $caja_abierta = Caja::where('estado','A')->count();
         $caja        = null;
         $formData       = array('caja.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos','titulo'));
+        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos','titulo','caja_abierta'));
     }
 
     /**
@@ -188,17 +190,25 @@ class CajaController extends Controller
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         }
-        $error = DB::transaction(function() use($request){
-            //apertura una nueva caja
-            $caja               = new Caja();
-            $caja->titulo        = $request->input('titulo');
-            $caja->descripcion        = $request->input('descripcion');
-            $caja->fecha_horaApert        = $request->input('fecha_horaApert').date(" H:i:s");
-            $caja->monto_iniciado        = $request->input('monto_iniciado');
-            $caja->estado        = 'A';//abierto
-            $caja->persona_id        = Caja::getIdPersona();
-            $caja->save();
-        });
+        $evaluar_caja = Caja::where('estado','A')->count();
+        if($evaluar_caja == 0){
+            $error = DB::transaction(function() use($request){
+                //apertura una nueva caja
+                
+                $caja               = new Caja();
+                $caja->titulo        = $request->input('titulo');
+                $caja->descripcion        = $request->input('descripcion');
+                $caja->fecha_horaApert        = $request->input('fecha_horaApert').date(" H:i:s");
+                $caja->monto_iniciado        = $request->input('monto_iniciado');
+                $caja->estado        = 'A';//abierto
+                $caja->persona_id        = Caja::getIdPersona();
+                $caja->save();
+            });
+        }else{
+            $error = "ERROR";
+        }
+
+        
 
         $error =  $this->actualizardatosahorros($request);
         return is_null($error) ? "OK" : $error;

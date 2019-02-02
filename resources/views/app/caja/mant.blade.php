@@ -1,5 +1,4 @@
-
-
+@if($caja_abierta == 0)
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($caja, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -100,3 +99,6 @@
 		
 	}); 
 </script>
+@else
+<h3 class="text-warning">Cerrar caja aperturada antes de aperturar nueva caja, Gracias!.</h3>
+@endif
