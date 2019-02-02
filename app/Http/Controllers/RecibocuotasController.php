@@ -65,8 +65,8 @@ class RecibocuotasController extends Controller
 
         $anios = array();
         $anioInicio = 2007;
-        $anioactual = explode('-',date('Y-m-d'))[0];
-        $mesactual = explode('-',date('Y-m-d'))[1];
+        //$anioactual = explode('-',date('Y-m-d'))[0];
+        //$mesactual = explode('-',date('Y-m-d'))[1];
         for($anyo=$anioactual; $anyo>=$anioInicio; $anyo --){
             $anios[$anyo] = $anyo;
         }
@@ -74,6 +74,8 @@ class RecibocuotasController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
         $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $anioactual = date('Y',strtotime($fecha_actual));
+        $mesactual = date('m',strtotime($fecha_actual));
         $entidad = 'ReciboCuota';
         $title = $this->tituloAdmin;
         $tituloPagoCuota = $this->tituloPagoCuota;
