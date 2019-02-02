@@ -13,7 +13,7 @@
     <div class="form-group">
         {!! Form::label('mes', 'Mes:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
         <div class="col-sm-9 col-xs-12">
-            <input type="month" name="mes" id="mes" step="1" min="2008-12" max="2050-12" value="2019-02" >
+            <input type="month" name="mes" id="mes" step="1" min="2008-12" max="2050-12" value='{{ $fecha_caja }}' >
         </div>
     </div>
 
@@ -24,18 +24,18 @@
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto' style="display:none;">
         {!! Form::button('<i class="fa fa-check fa-lg"></i> Generar R. Ingreso', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteingreso(\''.$entidad.'\', \''.URL::route($ruta["reporteingresosPDF"], array()).'\')')) !!}
     &nbsp;
-    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i>Generar R. Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i>Cancelar y Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto2' style="display:none;">
         {!! Form::button('<i class="fa fa-check fa-lg"></i> Generar R. Egreso', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteingreso(\''.$entidad.'\', \''.URL::route($ruta["reporteegresosPDF"], array()).'\')')) !!}
     &nbsp;
-    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar y Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
 
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn" id='oculto3' style="display:none;">
         {!! Form::button('<i class="fa fa-check fa-lg"></i> Generar R. Financiero', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'reporteresumenfinanciero(\''.$entidad.'\', \''.URL::route($ruta["reporteresumenfinancieroPDF"], array()).'\')')) !!}
     &nbsp;
-    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar y Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
 
 <script type="text/javascript">
