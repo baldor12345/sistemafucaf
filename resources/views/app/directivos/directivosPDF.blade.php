@@ -68,19 +68,35 @@
             </tr>
             <tr>
                 <td align="center" colspan="3" style="font-size: 11px" class="linebordercenter" >PREDIDEMTE: </td>
+                @if($presidente != null)
                 <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >{{ '  '.$presidente->apellidos.'   '.$presidente->apellidos}}</td>
+                @else
+                <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >--</td>
+                @endif
             </tr>
             <tr>
                 <td align="center" colspan="3" style="font-size: 11px" class="linebordercenter" >SECRETARIO: </td>
+                @if($secretario != null)
                 <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >{{ '  '.$secretario->apellidos.'   '.$secretario->apellidos}}</td>
+                @else
+                <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >--</td>
+                @endif
             </tr>
             <tr>
                 <td align="center" colspan="3" style="font-size: 11px" class="linebordercenter" >TESORERO: </td>
+                @if($tesorero != null)
                 <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >{{ '  '.$tesorero->apellidos.'   '.$tesorero->apellidos}}</td>
+                @else
+                <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >--</td>
+                @endif
             </tr>
             <tr>
                 <td align="center" colspan="3" style="font-size: 11px" class="linebordercenter" >VOCAL: </td>
+                @if($vocal != null)
                 <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >{{ '  '.$vocal->apellidos.'   '.$vocal->apellidos}}</td>
+                @else
+                <td align="left" colspan="6" style="font-size: 11px" class="linebordercenter" >--</td>
+                @endif
             </tr>
             
 
