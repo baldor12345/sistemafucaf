@@ -987,8 +987,6 @@ class CreditoController extends Controller{
                 $transaccion->cuota_mora = 0;
                 $transaccion->save();
                 $transaccion_id = $transaccion->id;
-
-
             });
             $res = $error;
         }else{
@@ -1001,8 +999,16 @@ class CreditoController extends Controller{
     public function obtenermontototal(Request $request){
         $cuotas = Cuota::where('credito_id','=', $request->get('credito_id'))->where('estado','!=', '1')->where('deleted_at','=', null)->get();
         $valor_total = 0;
+        $fechaOp = $request->get('fechaoperacion');
+        $anio_mes = date('Y-m', strtotime($fechaOp));
+
         for($i =0; $i<count($cuotas); $i++){
-            $valor_total += $cuotas[$i]->parte_capital;
+            if(date('Y-m', strtotime($cuotas[$i]->fecha_programada_pago)) <= $anio_mes){
+                $valor_total += $cuotas[$i]->parte_capital + $cuotas[$i]->interes;
+            }else{
+                $valor_total += $cuotas[$i]->parte_capital;
+            }
+            
         }
         return $valor_total;
     }

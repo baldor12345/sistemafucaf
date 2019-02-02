@@ -278,6 +278,7 @@
                 console.log(res);
                 if(res[0] == 'OK'){
                     listarcuotasalafecha();
+                    buscar("Credito");
                     mostrarMensaje ("Amortizacion realizada", "OK");
                    
                 }else{
@@ -291,7 +292,7 @@
     }
 
     function cancelarTodo(){
-        var parametros = "credito_id={{ $credito->id }}&persona_id={{ $persona->id }}";
+        var parametros = "credito_id={{ $credito->id }}&persona_id={{ $persona->id }}&fechaoperacion="+$('#fechaop').val();
         $.ajax({
             url: "creditos/obtenermontototal",
             headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
