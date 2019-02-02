@@ -874,12 +874,20 @@ class CreditoController extends Controller{
                 $montoTotal = $request->get('monto_suma');
                 $cantidadDatos = $request->get('cantidadmarcados');
                 $descripcion ="Amortizacion de las cuotas N°: ";
+                $num_cuotaFinal = 0;
                 for($i=0; $i<$cantidadDatos; $i++){
                     $cuota = Cuota::find($request->get('cuota_id'.$i));
                     $descripcion = $descripcion."".$cuota->numero_cuota.",";
                     $cuota->estado = '1';// pagado
                     $cuota->fecha_pago = $fecha_pago;
                     $cuota->save();
+                    if($cuota->numero_cuota > $num_cuotaFinal ){
+                        $num_cuotaFinal = $cuota->numero_cuota;
+                    }
+                }
+                if($num_cuotaFinal == $credito->periodo){
+                    $credito->estado = 1;
+                    $credito->save();
                 }
                 $cuotasRestantes = Cuota::where('credito_id', '=', $credito->id)->where('estado','!=','1')->where('deleted_at','=', null)->orderBy('numero_cuota', 'ASC')->get();
                 $fecha_actual = $fecha_pago;
