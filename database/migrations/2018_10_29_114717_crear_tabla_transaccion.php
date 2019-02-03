@@ -20,14 +20,14 @@ class CrearTablaTransaccion extends Migration
             $table->decimal('interes_ahorro',20, 7)->nullable();
             $table->decimal('cuota_parte_capital',20, 7)->nullable();
             $table->decimal('cuota_interes',20, 7)->nullable();
-            $table->decimal('cuota_mora',20, 8)->nullable();
+            $table->decimal('cuota_mora',20, 7)->nullable();
             $table->decimal('acciones_soles',20, 7)->nullable();
             $table->decimal('monto_ahorro',20, 7)->nullable();
             $table->decimal('monto_credito',20, 7)->nullable();
             $table->decimal('comision_voucher',20, 7)->nullable();
             $table->decimal('ganancia_accion',20, 7)->nullable();
             $table->decimal('otros_egresos',20, 7)->nullable();
-            $table->decimal('utilidad_distribuida',20, 8)->nullable();
+            $table->decimal('utilidad_distribuida',20, 7)->nullable();
             $table->char('tipo_egreso', 1)->nullable();
             $table->integer('id_tabla')->nullable();
             $table->char('inicial_tabla',2)->nullable();
