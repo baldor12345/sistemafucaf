@@ -509,7 +509,7 @@ class CajaController extends Controller
                                 $transaccion->monto = 0;
                                 $transaccion->concepto_id = 16;
                                 $transaccion->fecha = $fecha_nueva;
-                                $transaccion->interes_ahorro =round($tasa_interes_ahorro * $value->capital, 7);
+                                $transaccion->interes_ahorro =round($tasa_interes_ahorro * $value->capital, 1);
                                 $transaccion->persona_id = $value->persona_id;
                                 $transaccion->caja_id = $caja->id;
                                 $transaccion->usuario_id = Credito::idUser();
@@ -519,7 +519,7 @@ class CajaController extends Controller
                                 $transaccion->monto = 0;
                                 $transaccion->concepto_id = 17;
                                 $transaccion->fecha = $fecha_nueva;
-                                $transaccion->interes_ahorro = round($tasa_interes_ahorro * $value->capital, 7);
+                                $transaccion->interes_ahorro = round($tasa_interes_ahorro * $value->capital, 1);
                                 $transaccion->persona_id = $value->persona_id;
                                 $transaccion->caja_id = $caja->id;
                                 $transaccion->usuario_id = Credito::idUser();
