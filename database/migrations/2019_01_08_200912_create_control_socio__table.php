@@ -17,7 +17,7 @@ class CreateControlSocioTable extends Migration
             $table->increments('id');
             $table->char('asistencia',1)->nullable();
             $table->char('estado',1)->nullable();
-            $table->decimal('monto',20,1)->nullable();
+            $table->decimal('monto',20, 7)->nullable();
             $table->timestamp('fecha')->nullable();
             $table->timestamp('fecha_pago')->nullable();
             $table->integer('persona_id')->unsigned()->nullable();

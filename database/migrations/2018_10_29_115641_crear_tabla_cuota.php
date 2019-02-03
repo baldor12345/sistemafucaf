@@ -16,11 +16,11 @@ class CrearTablaCuota extends Migration
     {
         Schema::create('cuota', function (Blueprint $table) {
             $table->increments('id');
-            $table->decimal('parte_capital',10,4);
-            $table->decimal('interes',10,4);
-            $table->decimal('tasa_interes_mora',10,2)->nullable();
-            $table->decimal('interes_mora',10,4);
-            $table->decimal('saldo_restante',10,4);
+            $table->decimal('parte_capital',10,7);
+            $table->decimal('interes',10,7);
+            $table->decimal('tasa_interes_mora',10,7)->nullable();
+            $table->decimal('interes_mora',10,7);
+            $table->decimal('saldo_restante',10,7);
             $table->timestamp('fecha_programada_pago')->nullable();
             $table->integer('numero_cuota');
             $table->timestamp('fecha_pago')->nullable();

@@ -134,7 +134,7 @@
                                 '<tr><th>Fecha</th><th>Numero</th><th>Monto S/.</th><th>Mora S/.</th><th>TOTAL</th><th>Operación</th></tr></thead><tbody>';
                                 for(i=0;i<length;i++){
                                     tabla += "<tr><td>"+res[i].mes+"-"+res[i].anio+"</td><td>"+res[i].numero_cuota+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+"</td><td>"+res[i].interes_mora+"</td><td>"+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)+parseFloat(res[i].interes_mora)).toFixed(1)+"</td>"+
-                                    '<td><button disabled="true" id="btnchek'+i+'" numbtn='+i+' class="btn btn-light btn-sm btnamortizar" marcado="0" monto_cuota="'+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes)).toFixed(1)+'" parte_capital="'+res[i].parte_capital+'" anio_mes="'+res[i].anio+'-'+res[i].mes+'" cuota_id="'+res[i].cuota_id+'" onclick ="btnchek(this);"><i class="fa fa-check fa-lg" style="color:white"></i></button></td>';
+                                    '<td><button disabled="true" id="btnchek'+i+'" numbtn='+i+' class="btn btn-light btn-sm btnamortizar" marcado="0" monto_cuota="'+(parseFloat(res[i].parte_capital)+parseFloat(res[i].interes))+'" parte_capital="'+res[i].parte_capital+'" anio_mes="'+res[i].anio+'-'+res[i].mes+'" cuota_id="'+res[i].cuota_id+'" onclick ="btnchek(this);"><i class="fa fa-check fa-lg" style="color:white"></i></button></td>';
                                 }
                                 tabla += "</tbody></table>";
                             
@@ -268,7 +268,7 @@
             }
 		});
         parametros += "&cuotap="+id_cuotap;
-        parametros += "&monto_suma="+parseFloat($("#montototal").val()).toFixed(4)+"&cantidadmarcados="+i;
+        parametros += "&monto_suma="+parseFloat($("#montototal").val())+"&cantidadmarcados="+i;
         $.ajax({
             url: "creditos/amortizarcuotas",
             headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -322,7 +322,7 @@
         var anio_mes = $("#anio").val()+"-"+parseInt($("#mes").val());
         var id_cuotap =0;
        
-        parametros += "&monto_suma="+parseFloat($("#montototal").val()).toFixed(4);
+        parametros += "&monto_suma="+parseFloat($("#montototal").val());
         console.log('Parametros: '+parametros);
         $.ajax({
             url: "creditos/pagarcreditototal",

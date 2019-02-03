@@ -147,7 +147,7 @@ class RecibocuotasController extends Controller
        
         $error = DB::transaction(function() use($monto_mora, $id_cuota){
             $cuota = Cuota::find($id_cuota);
-            $cuota->interes_mora = $monto_mora;
+            $cuota->interes_mora = rouNumber($monto_mora, 7);
             $cuota->estado = 'm';
             $cuota->save();
         });
@@ -166,7 +166,10 @@ class RecibocuotasController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
+    public function rouNumber($numero, $decimales) { 
+        $factor = pow(10, $decimales); 
+        return (round($numero*$factor)/$factor);
+    }
 
 
-   
 }

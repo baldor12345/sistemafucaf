@@ -123,8 +123,8 @@ class DistUtilidadesController extends Controller
             $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
             $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
             $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),4);
-            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 4);
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
             $acciones_mes  =0;
@@ -169,17 +169,17 @@ class DistUtilidadesController extends Controller
                 $listar = Libreria::getParam($request->input('listar'), 'NO');
                 $error = DB::transaction(function() use($request, $caja_id, $anio){
                 $distribucion = new DistribucionUtilidades();
-                $distribucion->gast_admin_acum = $request->input('gast_ad_acum');
-                $distribucion->int_pag_acum = $request->input('int_pag_acum');
-                $distribucion->otros_acum = $request->input('otros_acum');
-                $distribucion->ub_duactual = $request->input('ub_duactual');
+                $distribucion->gast_admin_acum = $this->rouNumber($request->input('gast_ad_acum'), 7);
+                $distribucion->int_pag_acum = $this->rouNumber($request->input('int_pag_acum'), 7);
+                $distribucion->otros_acum = $this->rouNumber($request->input('otros_acum'), 7);
+                $distribucion->ub_duactual = $this->rouNumber($request->input('ub_duactual'), 7);
                 $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
-                $distribucion->intereses = $request->input('intereses');
+                $distribucion->intereses = $this->rouNumber($request->input('intereses'), 7);
                 $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
-                $distribucion->otros = $request->input('otros');
-                $distribucion->gastos_duactual = $request->input('gast_duactual');
+                $distribucion->otros = $this->rouNumber($request->input('otros'), 7);
+                $distribucion->gastos_duactual = $this->rouNumber($request->input('gast_duactual'), 7);
                 $distribucion->fechai = date($anio.'-01-01');
-                $distribucion->fechaf =  date($anio.'-12-31');
+                $distribucion->fechaf = date($anio.'-12-31');
                 $distribucion->save();
 
                 $num_socios = $request->input('numerosocios');
@@ -192,8 +192,8 @@ class DistUtilidadesController extends Controller
                     $transaccion->caja_id = $caja_id;
                     $transaccion->fecha = $caja->fecha_horaApert;
                     $transaccion->concepto_id = 37; // distribucion d eutilidad
-                    $transaccion->monto = $request->input('monto'.$i);
-                    $transaccion->utilidad_distribuida = $request->input('monto'.$i);
+                    $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 7);
+                    $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 7);
                     $transaccion->save();
                     if($request->input('ahorrar'.$i) == '1'){
                         $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
@@ -201,12 +201,12 @@ class DistUtilidadesController extends Controller
                         if(count($resultado) >0){
                             $ahorro = $resultado[0];
                             $capital = $ahorro->capital + $request->input('monto'.$i);
-                            $ahorro->capital = $capital;
+                            $ahorro->capital = $this->rouNumber($capital, 7);
                             $ahorro->estado = 'P';
                             $ahorro->save();
                         }else{
                             $ahorro = new Ahorros();
-                            $ahorro->capital = $request->input('monto'.$i);
+                            $ahorro->capital =$this->rouNumber( $request->input('monto'.$i), 7);
                             $ahorro->interes = 0;
                             $ahorro->estado = 'P';
                             $ahorro->fechai = $caja->fecha_horaApert;
@@ -216,8 +216,8 @@ class DistUtilidadesController extends Controller
 
                         $transaccion = new Transaccion();
                         $transaccion->fecha = $caja->fecha_horaApert;
-                        $transaccion->monto = $request->input('monto'.$i);
-                        $transaccion->monto_ahorro= $request->input('monto'.$i);
+                        $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 7);
+                        $transaccion->monto_ahorro= $this->rouNumber($request->input('monto'.$i), 7);
                         $transaccion->id_tabla = $ahorro->id;
                         $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                         $transaccion->concepto_id = 5;
@@ -235,12 +235,12 @@ class DistUtilidadesController extends Controller
                 if(count($resultS) >0){
                     $ahorroS = $resultS[0];
                     $capital = $ahorroS->capital + $request->input('fsocial');
-                    $ahorroS->capital = $capital;
+                    $ahorroS->capital = $this->rouNumber($capital, 7);
                     $ahorroS->estado = 'P';
                     $ahorroS->save();
                 }else{
                     $ahorroS = new Ahorros();
-                    $ahorroS->capital = $request->input('fsocial');
+                    $ahorroS->capital = $this->rouNumber($request->input('fsocial'), 7);
                     $ahorroS->interes = 0;
                     $ahorroS->estado = 'P';
                     $ahorroS->fechai = $caja->fecha_horaApert;
@@ -249,8 +249,8 @@ class DistUtilidadesController extends Controller
                 }
                 $transaccionS = new Transaccion();
                 $transaccionS->fecha = $caja->fecha_horaApert;
-                $transaccionS->monto = $request->input('fsocial');
-                $transaccionS->monto_ahorro= $request->input('fsocial');
+                $transaccionS->monto = $this->rouNumber($request->input('fsocial'), 7);
+                $transaccionS->monto_ahorro= $this->rouNumber($request->input('fsocial'), 7);
                 $transaccionS->id_tabla = $ahorroS->id;
                 $transaccionS->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccionS->concepto_id = 5;
@@ -265,8 +265,8 @@ class DistUtilidadesController extends Controller
                 $transaccionF->caja_id =$caja->id;
                 $transaccionF->fecha = $caja->fecha_horaApert;
                 $transaccionF->concepto_id = 37; // distribucion d eutilidad
-                $transaccionF->monto = $request->input('fsocial');
-                $transaccionF->utilidad_distribuida = $request->input('fsocial');
+                $transaccionF->monto = $this->rouNumber($request->input('fsocial'), 7);
+                $transaccionF->utilidad_distribuida = $this->rouNumber($request->input('fsocial'), 7);
                 $transaccionF->save();
 
                 /***Reserva Legal */
@@ -276,12 +276,12 @@ class DistUtilidadesController extends Controller
                 if(count($resultR) >0){
                     $ahorroL = $resultR[0];
                     $capital = $ahorroS->capital + $request->input('rlegal');
-                    $ahorroL->capital = $capital;
+                    $ahorroL->capital = $this->rouNumber($capital, 7);
                     $ahorroL->estado = 'P';
                     $ahorroL->save();
                 }else{
                     $ahorroL = new Ahorros();
-                    $ahorroL->capital = $request->input('rlegal');
+                    $ahorroL->capital = $this->rouNumber($request->input('rlegal'), 7);
                     $ahorroL->interes = 0;
                     $ahorroL->estado = 'P';
                     $ahorroL->fechai = $caja->fecha_horaApert;
@@ -290,8 +290,8 @@ class DistUtilidadesController extends Controller
                 }
                 $transaccionL = new Transaccion();
                 $transaccionL->fecha = $caja->fecha_horaApert;
-                $transaccionL->monto = $request->input('rlegal');
-                $transaccionL->monto_ahorro= $request->input('rlegal');
+                $transaccionL->monto = $this->rouNumber($request->input('rlegal'), 7);
+                $transaccionL->monto_ahorro= $this->rouNumber($request->input('rlegal'), 7);
                 $transaccionL->id_tabla = $ahorroL->id;
                 $transaccionL->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccionL->concepto_id = 5;
@@ -306,8 +306,8 @@ class DistUtilidadesController extends Controller
                 $transaccionR->caja_id =$caja->id;
                 $transaccionR->fecha = $caja->fecha_horaApert;
                 $transaccionR->concepto_id = 37; // distribucion d eutilidad
-                $transaccionR->monto = $request->input('rlegal');
-                $transaccionR->utilidad_distribuida = $request->input('rlegal');
+                $transaccionR->monto = $this->rouNumber($request->input('rlegal'), 7);
+                $transaccionR->utilidad_distribuida = $this->rouNumber($request->input('rlegal'), 7);
                 $transaccionR->save();
 
                 });
@@ -341,7 +341,7 @@ class DistUtilidadesController extends Controller
             $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
             $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
             $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
             $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
@@ -381,7 +381,7 @@ class DistUtilidadesController extends Controller
         $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
         $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
         $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )));
+        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
         $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
         $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
@@ -471,4 +471,10 @@ class DistUtilidadesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    public function rouNumber($numero, $decimales) { 
+        $factor = pow(10, $decimales); 
+        return (round($numero*$factor)/$factor);
+    }
+
 }

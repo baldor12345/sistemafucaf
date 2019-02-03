@@ -15,10 +15,10 @@ class CrearTablaAhorros extends Migration
     {
         Schema::create('ahorros', function (Blueprint $table) {
             $table->increments('id');
-            $table->decimal('capital',20,1);
+            $table->decimal('capital',20, 7);
             $table->timestamp('fechai')->nullable();
             $table->timestamp('fechaf')->nullable();
-            $table->decimal('interes',10,2);
+            $table->decimal('interes',10, 7);
             $table->char('estado', 1);
             $table->integer('persona_id')->unsigned();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');

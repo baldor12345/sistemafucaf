@@ -595,7 +595,7 @@ class AhorrosController extends Controller
                 $listDet = Detalle_ahorro::where('fecha_capitalizacion','=',$fechacapt )->where('ahorros_id','=', $ahorro_id)->get();
                 if(count($listDet)<1){
                     $resp = Detalle_ahorro::updateOrCreate(
-                        ['capital' => $capital, 'interes' =>round( $interes , 2, PHP_ROUND_HALF_UP) ,  'fecha_capitalizacion' => $fechacapt, 'ahorros_id' => $ahorro_id]
+                        ['capital' => $capital, 'interes' =>$interes ,  'fecha_capitalizacion' => $fechacapt, 'ahorros_id' => $ahorro_id]
                     );
                 }
             }

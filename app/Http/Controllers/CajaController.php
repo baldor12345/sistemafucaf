@@ -498,8 +498,8 @@ class CajaController extends Controller
 
                                 $ahorro = new Ahorros();
                                 $ahorro->fechai = $fecha_nueva;
-                                $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
-                                $ahorro->interes = $tasa_interes_ahorro * $value->capital;
+                                $ahorro->capital = round($value->capital + $tasa_interes_ahorro * $value->capital, 7);
+                                $ahorro->interes = round($tasa_interes_ahorro * $value->capital, 7);
                                 $ahorro->persona_id = $value->persona_id;
                                 $ahorro->estado = 'P';
                                 $ahorro->save();
@@ -508,7 +508,7 @@ class CajaController extends Controller
                                 $transaccion->monto = 0;
                                 $transaccion->concepto_id = 16;
                                 $transaccion->fecha = $fecha_nueva;
-                                $transaccion->interes_ahorro =$tasa_interes_ahorro * $value->capital;
+                                $transaccion->interes_ahorro =round($tasa_interes_ahorro * $value->capital, 7);
                                 $transaccion->persona_id = $value->persona_id;
                                 $transaccion->caja_id = $caja->id;
                                 $transaccion->usuario_id = Credito::idUser();
@@ -518,7 +518,7 @@ class CajaController extends Controller
                                 $transaccion->monto = 0;
                                 $transaccion->concepto_id = 17;
                                 $transaccion->fecha = $fecha_nueva;
-                                $transaccion->interes_ahorro =$tasa_interes_ahorro * $value->capital;
+                                $transaccion->interes_ahorro = round($tasa_interes_ahorro * $value->capital, 7);
                                 $transaccion->persona_id = $value->persona_id;
                                 $transaccion->caja_id = $caja->id;
                                 $transaccion->usuario_id = Credito::idUser();
