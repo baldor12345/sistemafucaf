@@ -195,7 +195,7 @@ class AhorrosController extends Controller
                         $ahorro_actual->capital = $capital;
                         $ahorro_actual->estado = 'P';
                         $ahorro_actual->save();
-                        $id_ahorro = $ahorro->id;
+                        $id_ahorro = $ahorro_actual->id;
                     }
                 }else{
                     $ahorro = new Ahorros();
