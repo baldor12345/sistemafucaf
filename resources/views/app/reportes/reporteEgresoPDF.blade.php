@@ -113,7 +113,7 @@
 				<td width="10%" align="center"><span class="text">-</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-					{{ number_format(($value->monto_ahorro+$value->monto_credito+$value->interes_ahorro+$value->utilidad_distribuida+$value->otros_egresos),1) }}
+					{{ round($value->monto_ahorro,1) + round($value->monto_credito,1) + round($value->interes_ahorro,1) + round($value->utilidad_distribuida,1) + round($value->otros_egresos,1) }}
 					</span>
 				</td>
             </tr>

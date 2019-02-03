@@ -124,8 +124,9 @@ class CreditoController extends Controller{
 
        // $caja = DB::table('caja')->where('id', $caja_id)->first();
         //calculos
-        $ingresos =$caja[0]->monto_iniciado;
+        $monto_inicio = round($caja[0]->monto_iniciado, 1);
         $egresos=0;
+        $ingresos=0;
         $saldo_en_caja =0;
         $saldo = Transaccion::getsaldo($caja_id)->get();
         for($i=0; $i<count($saldo); $i++){
@@ -135,7 +136,8 @@ class CreditoController extends Controller{
                 $egresos += $saldo[$i]->monto;
             }
         }
-        $saldo_en_caja= $ingresos-$egresos;
+        $saldo_en_caja= round($ingresos,1) + round($monto_inicio,1) - round($egresos, 1);
+
         $cboPers = array(0=>'Seleccione...');
         $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
         return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja', 'cboPers','fecha_pordefecto'));
