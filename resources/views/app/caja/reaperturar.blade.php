@@ -11,9 +11,10 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label('monto_inicio', 'Monto Inicial:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+        {!! Form::label('monto_inici', 'Monto Inicial:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
         <div class="col-sm-8 col-xs-12">
-            {!! Form::text('monto_inicio', $monto_inicio, array('class' => 'form-control input-xs', 'id' => 'monto_inicio', 'placeholder' => 'Ingrese titulo','readonly')) !!}
+            {!! Form::text('monto_inici', number_format($monto_inicio,1), array('class' => 'form-control input-xs', 'id' => 'monto_inici', 'placeholder' => 'Ingrese titulo','readonly')) !!}
+            {!! Form::hidden('monto_inicio', $monto_inicio, array('id' => 'monto_inicio')) !!}
         </div>
     </div>
     {!! Form::hidden('caja_id', $caja->id, array('id' => 'caja_id')) !!}

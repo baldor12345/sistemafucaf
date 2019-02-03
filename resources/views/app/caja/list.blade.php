@@ -32,9 +32,9 @@ a.disabled {
 			@else
 			<td id="cerrado" style="font-size: 14px" >-</td>
 			@endif
-			<td style="font-size: 14px">{{ $value->monto_iniciado }}</td>
-			<td style="font-size: 14px">{{ $value->monto_cierre or '-' }}</td>
-			<td style="font-size: 14px">{{ $value->diferencia_monto  or '-'}}</td>
+			<td style="font-size: 14px">{{ number_format($value->monto_iniciado,1) }}</td>
+			<td style="font-size: 14px">{{ number_format($value->monto_cierre,1) }}</td>
+			<td style="font-size: 14px">{{ number_format($value->diferencia_monto,1) }}</td>
 			@if ($value->estado === 'A')
 			<td style="color:green;font-weight: bold; font-size: 14px;" >Abierto</td>
 			@else
