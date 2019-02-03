@@ -448,9 +448,9 @@ class CreditoController extends Controller{
                 $transaccion->persona_id = $id_cliente;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = round($parte_capital, 7);
-                $transaccion->cuota_interes = round($cuota_interes, 7);
-                $transaccion->cuota_mora = round($cuota_interesMora,7) ;
+                $transaccion->cuota_parte_capital = round($parte_capital, 1);
+                $transaccion->cuota_interes = round($cuota_interes, 1);
+                $transaccion->cuota_mora = round($cuota_interesMora,1);
                 $transaccion->save();
 
                 //Modificamos el estado de credito si ya se cancelo todas las cuotas
@@ -505,14 +505,14 @@ class CreditoController extends Controller{
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
-                $transaccion->monto = round($cuota->interes, 7);
+                $transaccion->monto = round($cuota->interes, 1);
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de interes Cuota";
                 $transaccion->persona_id = $id_cliente;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $caja_id;
                 $transaccion->cuota_parte_capital = 0;
-                $transaccion->cuota_interes = round($cuota->interes, 7);
+                $transaccion->cuota_interes = round($cuota->interes, 1);
                 $transaccion->cuota_mora = 0;
                 $transaccion->save();
             });
@@ -931,14 +931,14 @@ class CreditoController extends Controller{
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
-                $transaccion->monto = round($montoTotal, 7);
+                $transaccion->monto = round($montoTotal, 1);
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = $descripcion;
                 $transaccion->persona_id = $persona->id;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = round($valor_partecapital, 7);
-                $transaccion->cuota_interes = round($interescuota, 7);
+                $transaccion->cuota_parte_capital = round($valor_partecapital, 1);
+                $transaccion->cuota_interes = round($interescuota, 1);
                 $transaccion->cuota_mora = 0;
                 $transaccion->save();
                 $transaccion_id = $transaccion->id;
@@ -980,14 +980,14 @@ class CreditoController extends Controller{
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
-                $transaccion->monto = round($monto_total,7);
+                $transaccion->monto = round($monto_total,1);
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Cancelado total el credito";
                 $transaccion->persona_id = $persona->id;
                 $transaccion->usuario_id = Credito::idUser();
                 $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = round($capital_total, 7);
-                $transaccion->cuota_interes = round($interes_total,7);
+                $transaccion->cuota_parte_capital = round($capital_total, 1);
+                $transaccion->cuota_interes = round($interes_total,1);
                 $transaccion->cuota_mora = 0;
                 $transaccion->save();
                 $transaccion_id = $transaccion->id;
