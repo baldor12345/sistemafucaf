@@ -110,7 +110,7 @@
 				@endif
 				<td width="10%" align="center">
 					<span class="text">
-					{{ number_format(($value->deposito_ahorros+$value->intereces_recibidos+$value->pagos_de_capital+$value->acciones+$value->monto_ahorro + $value->comision_voucher),1) }}
+					{{ round($value->deposito_ahorros,1) + round($value->intereces_recibidos,1) + round($value->pagos_de_capital,1) + round($value->acciones,1) + round($value->monto_ahorro,1) + round($value->comision_voucher,1) }}
 					</span>
 				</td>
 			</tr>
