@@ -55,8 +55,14 @@ $fecha_pago = null;
 
     
     function guardarPagoCuota(entidad, idboton) {
-        var fechap = new Date($('#fecha_pagoc').val());
-        var anio_mes = fechap.getFullYear()+"-"+fechap.getMonth();
+        //var fechap = new Date($('#fecha_pagoc').val());
+        //var anio_mes = fechap.getFullYear()+"-"+fechap.getMonth();
+        //var fechap = new Date("2009-11-26");
+      
+        var fechap = ($('#fecha_pagoc').val()).split("-");
+        var anio_mes = fechap[0]+"-"+fechap[1];
+        console.log("ANIO_MES: "+ anio_mes);
+        console.log("anio_mes_programada: {{ date('Y-m',strtotime($cuota->fecha_programada_pago)) }}");
         if(anio_mes >= "{{ date('Y-m',strtotime($cuota->fecha_programada_pago)) }}"){
 
             var idformulario = IDFORMMANTENIMIENTO + entidad;
