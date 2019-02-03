@@ -204,6 +204,7 @@ class CreditoController extends Controller{
                     $credito->save();
                    
                     $montorestante =  $valorcredito;
+                    $montorestante2 =  $valorcredito;
                     $valor_cuota =  (($tasa_interes/100) * $valorcredito) / (1 - (pow(1/(1+($tasa_interes/100)), $periodo)));
                     $fecha_actual = $fechainicio;
                     $explod = explode('-',date("Y-m-d",strtotime($fecha_actual)));
@@ -213,18 +214,26 @@ class CreditoController extends Controller{
                         $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month")); 
                         $montInteres = ($tasa_interes/100) * $montorestante; 
                         $interesAcumulado +=  $montInteres; 
-                        $montCapital = ($valor_cuota - $montInteres); 
-                        $montorestante = $montorestante - $montCapital;
+                       
+                        $montCapital = round($valor_cuota, 1) - round($montInteres, 1); 
+                        if($i < (int)($periodo - 1)){
+                            $montorestante = $montorestante - $montCapital;
+                        }
                         
                         $fecha_p = new DateTime($fechacuota);
                         $fecha_p->modify('last day of this month');
                         $fecha_p->format('Y-m-d');
-
+                        
+                        if($i == (int)($periodo - 1)){
+                            $montCapital = round($montorestante, 1);
+                            $montInteres =  round($valor_cuota, 1) - $montCapital;
+                            $montorestante = 0;
+                        }
                         $cuota = new Cuota();
-                        $cuota->parte_capital =round( $montCapital, 7); 
-                        $cuota->interes = round($montInteres, 7);
+                        $cuota->parte_capital = $montCapital; 
+                        $cuota->interes =$montInteres;
                         $cuota->interes_mora = 0.00;
-                        $cuota->saldo_restante =round($montorestante,7);
+                        $cuota->saldo_restante = round($montorestante, 1);
                         $cuota->numero_cuota = $i + 1;
                         $cuota->fecha_programada_pago = $fecha_p;
                         $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
@@ -804,7 +813,7 @@ class CreditoController extends Controller{
                     $cuota_extra = new Cuota();
                     $cuota_extra->credito_id = $credito->id;
                     $cuota_extra->interes = round(0.025 * $saldo_restante,4);
-                    $cuota_extra->parte_capital =round( $saldo_restante,4);
+                    $cuota_extra->parte_capital = round( $saldo_restante,4);
                     $fechacuota = date('Y-m', strtotime($cuota->fecha_pago)).'-01';
                     $fecha_p = new DateTime($fechacuota);
                         $fecha_p->modify('last day of this month');
