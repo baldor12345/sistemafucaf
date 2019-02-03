@@ -16,7 +16,7 @@ class CajaSeeder extends Seeder
         DB::table('caja')->insert(array(
                 'titulo'          => 'Caja 0001',
                 'descripcion'       => 'ok',
-                'monto_iniciado'    =>'40',
+                'monto_iniciado'    =>'0',
                 'estado'    =>'A',
                 'persona_id'    =>$persona_id,
                 'fecha_horaApert'=> date('2009-01-24'),
