@@ -967,13 +967,13 @@ class CajaController extends Controller
         $sum_ingresos_totales_mes_actual=0;
         if(count($lista) >0 ){
             for($i=0; $i<count($lista); $i++){
-                $sum_deposito_ahorros_mes_actual += $lista[$i]->deposito_ahorros + $lista[$i]->monto_ahorro;
-                $sum_pagos_de_capital_mes_actual += $lista[$i]->pagos_de_capital;
-                $sum_interese_recibidos_mes_actual += $lista[$i]->intereces_recibidos;
-                $sum_acciones_mes_actual += $lista[$i]->acciones;
-                $sum_otros_mes_actual += $lista[$i]->comision_voucher;
+                $sum_deposito_ahorros_mes_actual += round($lista[$i]->deposito_ahorros,1) + round($lista[$i]->monto_ahorro,1);
+                $sum_pagos_de_capital_mes_actual += round($lista[$i]->pagos_de_capital,1);
+                $sum_interese_recibidos_mes_actual += round($lista[$i]->intereces_recibidos,1);
+                $sum_acciones_mes_actual += round($lista[$i]->acciones,1);
+                $sum_otros_mes_actual += round($lista[$i]->comision_voucher,1);
             }
-            $sum_ingresos_totales_mes_actual=round($sum_deposito_ahorros_mes_actual,1) + round($sum_pagos_de_capital_mes_actual,1) + round($sum_interese_recibidos_mes_actual,1) + round($sum_acciones_mes_actual,1) + round($sum_otros_mes_actual,1);
+            $sum_ingresos_totales_mes_actual=$sum_deposito_ahorros_mes_actual + $sum_pagos_de_capital_mes_actual + $sum_interese_recibidos_mes_actual + $sum_acciones_mes_actual + $sum_otros_mes_actual;
         }else{
             $sum_deposito_ahorros_mes_actual=0;
             $sum_pagos_de_capital_mes_actual=0;
@@ -1015,13 +1015,13 @@ class CajaController extends Controller
         $sum_ingresos_totales_asta_mes_anterior=0;
         if(count($lista_mes_anterior) >0 ){
             for($i=0; $i<count($lista_mes_anterior); $i++){
-                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterior[$i]->deposito_ahorros + $lista_mes_anterior[$i]->monto_ahorro;
-                $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterior[$i]->pagos_de_capital;
-                $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterior[$i]->intereces_recibidos;
-                $sum_acciones_asta_mes_anterior += $lista_mes_anterior[$i]->acciones;
-                $sum_otros_asta_mes_anterior += $lista_mes_anterior[$i]->comision_voucher;
+                $sum_deposito_ahorros_asta_mes_anterior += round($lista_mes_anterior[$i]->deposito_ahorros,1) + round($lista_mes_anterior[$i]->monto_ahorro,1);
+                $sum_pagos_de_capital_asta_mes_anterior += round($lista_mes_anterior[$i]->pagos_de_capital,1);
+                $sum_interese_recibidos_asta_mes_anterior += round($lista_mes_anterior[$i]->intereces_recibidos,1);
+                $sum_acciones_asta_mes_anterior += round($lista_mes_anterior[$i]->acciones,1);
+                $sum_otros_asta_mes_anterior += round($lista_mes_anterior[$i]->comision_voucher,1);
             }
-            $sum_ingresos_totales_asta_mes_anterior=round($sum_deposito_ahorros_asta_mes_anterior,1) + round($sum_pagos_de_capital_asta_mes_anterior,1) + round($sum_interese_recibidos_asta_mes_anterior,1) + round($sum_acciones_asta_mes_anterior,1) + round($sum_otros_asta_mes_anterior,1);
+            $sum_ingresos_totales_asta_mes_anterior=$sum_deposito_ahorros_asta_mes_anterior + $sum_pagos_de_capital_asta_mes_anterior + $sum_interese_recibidos_asta_mes_anterior + $sum_acciones_asta_mes_anterior + $sum_otros_asta_mes_anterior;
         }else{
             $sum_deposito_ahorros_asta_mes_anterior=0;
             $sum_pagos_de_capital_asta_mes_anterior=0;
@@ -1165,13 +1165,13 @@ class CajaController extends Controller
         $sum_egresos_totales_mes_actual=0;
         if(count($lista) >0 ){
             for($i=0; $i<count($lista); $i++){
-                $sum_retiro_ahorros_mes_actual += $lista[$i]->monto_ahorro;
-                $sum_prestamo_de_capital_mes_actual += $lista[$i]->monto_credito;
-                $sum_interes_pagado_mes_actual += $lista[$i]->interes_ahorro;
-                $sum_utilidad_distribuida += $lista[$i]->utilidad_distribuida;
-                $sum_otros_egresos_mes_actual += $lista[$i]->otros_egresos;
+                $sum_retiro_ahorros_mes_actual += round($lista[$i]->monto_ahorro,1);
+                $sum_prestamo_de_capital_mes_actual += round($lista[$i]->monto_credito,1);
+                $sum_interes_pagado_mes_actual += round($lista[$i]->interes_ahorro,1);
+                $sum_utilidad_distribuida += round($lista[$i]->utilidad_distribuida,1);
+                $sum_otros_egresos_mes_actual += round($lista[$i]->otros_egresos,1);
             }
-            $sum_egresos_totales_mes_actual=round($sum_retiro_ahorros_mes_actual,1) + round($sum_prestamo_de_capital_mes_actual,1) + round($sum_interes_pagado_mes_actual,1) + round($sum_otros_egresos_mes_actual,1) + round($sum_utilidad_distribuida,1);
+            $sum_egresos_totales_mes_actual= $sum_retiro_ahorros_mes_actual + $sum_prestamo_de_capital_mes_actual + $sum_interes_pagado_mes_actual + $sum_otros_egresos_mes_actual + $sum_utilidad_distribuida;
         }else{
             $sum_retiro_ahorros_mes_actual=0;
             $sum_prestamo_de_capital_mes_actual=0;
@@ -1224,12 +1224,12 @@ class CajaController extends Controller
 
         if(count($lista_mes_anterior) >0 ){
             for($i=0; $i<count($lista_mes_anterior); $i++){
-                $sum_retiro_ahorros_mes_anterior += $lista_mes_anterior[$i]->monto_ahorro;
-                $sum_prestamo_de_capital_mes_anterior += $lista_mes_anterior[$i]->monto_credito;
-                $sum_utilidad_distribuida_mes_anterior += $lista_mes_anterior[$i]->utilidad_distribuida;
-                $sum_interes_pagado_mes_anterior += $lista_mes_anterior[$i]->interes_ahorro;
+                $sum_retiro_ahorros_mes_anterior += round($lista_mes_anterior[$i]->monto_ahorro,1);
+                $sum_prestamo_de_capital_mes_anterior += round($lista_mes_anterior[$i]->monto_credito,1);
+                $sum_utilidad_distribuida_mes_anterior += round($lista_mes_anterior[$i]->utilidad_distribuida,1);
+                $sum_interes_pagado_mes_anterior += round($lista_mes_anterior[$i]->interes_ahorro,1);
             }
-            $sum_egresos_totales_mes_anterior=round($sum_retiro_ahorros_mes_anterior,1) + round($sum_prestamo_de_capital_mes_anterior,1) + round($sum_interes_pagado_mes_anterior,1) + round($sum_utilidad_distribuida_mes_anterior,1);
+            $sum_egresos_totales_mes_anterior= $sum_retiro_ahorros_mes_anterior + $sum_prestamo_de_capital_mes_anterior + $sum_interes_pagado_mes_anterior + $sum_utilidad_distribuida_mes_anterior;
         }else{
             $sum_retiro_ahorros_mes_anterior=0;
             $sum_prestamo_de_capital_mes_anterior=0;
@@ -1293,13 +1293,13 @@ class CajaController extends Controller
         $sum_ingresos_totales_mes_actual=0;
         if(count($listaingreso) >0 ){
             for($i=0; $i<count($listaingreso); $i++){
-                $sum_deposito_ahorros_mes_actual += $listaingreso[$i]->deposito_ahorros + $listaingreso[$i]->monto_ahorro;
-                $sum_pagos_de_capital_mes_actual += $listaingreso[$i]->pagos_de_capital;
-                $sum_interese_recibidos_mes_actual += $listaingreso[$i]->intereces_recibidos;
-                $sum_acciones_mes_actual += $listaingreso[$i]->acciones;
-                $sum_otros_mes_actual += $listaingreso[$i]->comision_voucher;
+                $sum_deposito_ahorros_mes_actual += round($listaingreso[$i]->deposito_ahorros,1) + round($listaingreso[$i]->monto_ahorro,1);
+                $sum_pagos_de_capital_mes_actual += round($listaingreso[$i]->pagos_de_capital,1);
+                $sum_interese_recibidos_mes_actual += round($listaingreso[$i]->intereces_recibidos,1);
+                $sum_acciones_mes_actual += round($listaingreso[$i]->acciones,1);
+                $sum_otros_mes_actual += round($listaingreso[$i]->comision_voucher,1);
             }
-            $sum_ingresos_totales_mes_actual=round($sum_deposito_ahorros_mes_actual,1) + round($sum_pagos_de_capital_mes_actual,1) + round($sum_interese_recibidos_mes_actual,1) + round($sum_acciones_mes_actual,1) + round($sum_otros_mes_actual,1);
+            $sum_ingresos_totales_mes_actual= $sum_deposito_ahorros_mes_actual + $sum_pagos_de_capital_mes_actual + $sum_interese_recibidos_mes_actual + $sum_acciones_mes_actual + $sum_otros_mes_actual;
         }else{
             $sum_deposito_ahorros_mes_actual=0;
             $sum_pagos_de_capital_mes_actual=0;
@@ -1337,13 +1337,13 @@ class CajaController extends Controller
         $sum_ingresos_totales_asta_mes_anterior=0;
         if(count($lista_mes_anterioringreso) >0 ){
             for($i=0; $i<count($lista_mes_anterioringreso); $i++){
-                $sum_deposito_ahorros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->deposito_ahorros + $lista_mes_anterioringreso[$i]->monto_ahorro;
-                $sum_pagos_de_capital_asta_mes_anterior += $lista_mes_anterioringreso[$i]->pagos_de_capital;
-                $sum_interese_recibidos_asta_mes_anterior += $lista_mes_anterioringreso[$i]->intereces_recibidos;
-                $sum_acciones_asta_mes_anterior += $lista_mes_anterioringreso[$i]->acciones;
-                $sum_otros_asta_mes_anterior += $lista_mes_anterioringreso[$i]->comision_voucher;
+                $sum_deposito_ahorros_asta_mes_anterior +=round($lista_mes_anterioringreso[$i]->deposito_ahorros,1) + round($lista_mes_anterioringreso[$i]->monto_ahorro,1);
+                $sum_pagos_de_capital_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->pagos_de_capital,1);
+                $sum_interese_recibidos_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->intereces_recibidos,1);
+                $sum_acciones_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->acciones,1);
+                $sum_otros_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->comision_voucher,1);
             }
-            $sum_ingresos_totales_asta_mes_anterior=round($sum_deposito_ahorros_asta_mes_anterior,1) + round($sum_pagos_de_capital_asta_mes_anterior,1) + round($sum_interese_recibidos_asta_mes_anterior,1) + round($sum_acciones_asta_mes_anterior,1) + round($sum_otros_asta_mes_anterior,1);
+            $sum_ingresos_totales_asta_mes_anterior= $sum_deposito_ahorros_asta_mes_anterior + $sum_pagos_de_capital_asta_mes_anterior + $sum_interese_recibidos_asta_mes_anterior + $sum_acciones_asta_mes_anterior + $sum_otros_asta_mes_anterior;
         }else{
             $sum_deposito_ahorros_asta_mes_anterior=0;
             $sum_pagos_de_capital_asta_mes_anterior=0;
