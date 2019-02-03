@@ -427,12 +427,12 @@ class CreditoController extends Controller{
                 $transaccion2->save();
             
                 //registramos en caja el pago cuota
-                $monto = $cuota->parte_capital;
+                $monto = round($cuota->parte_capital, 1);
                 $parte_capital =  $cuota->parte_capital;
                 $cuota_interes = 0;
                 $cuota_interesMora = 0;
                 //if(date('Y-m',strtotime($fecha_pago)) >= date('Y-m', strtotime($cuota->fecha_programada_pago))){
-                    $monto += $cuota->interes+ $cuota->interes_mora;
+                    $monto += round($cuota->interes+ $cuota->interes_mora, 1);
                     $parte_capital = $cuota->parte_capital;
                     $cuota_interes = $cuota->interes;
                     $cuota_interesMora = $cuota->interes_mora;
@@ -440,7 +440,7 @@ class CreditoController extends Controller{
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
-                $transaccion->monto = round($monto, 7);
+                $transaccion->monto = $monto;
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de Cuota";
                 $transaccion->persona_id = $id_cliente;
@@ -1007,11 +1007,11 @@ class CreditoController extends Controller{
         $parte_capital_total = 0;
         for($i =0; $i<count($cuotas); $i++){
             if(date('Y-m', strtotime($cuotas[$i]->fecha_programada_pago)) <= $anio_mes){
-                $valor_total += $cuotas[$i]->parte_capital + $cuotas[$i]->interes;
+                $valor_total += round($cuotas[$i]->parte_capital, 1) + round($cuotas[$i]->interes,1);
                 $interes_total += $cuotas[$i]->interes;
                 $parte_capital_total += $cuotas[$i]->parte_capital ;
             }else{
-                $valor_total += $cuotas[$i]->parte_capital;
+                $valor_total += round($cuotas[$i]->parte_capital, 1);
                 $parte_capital_total += $cuotas[$i]->parte_capital ;
             }
         }
