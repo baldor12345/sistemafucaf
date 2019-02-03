@@ -25,23 +25,26 @@ use Illuminate\Support\Facades\DB;
 
 
 <div class="form-group">
-	{!! Form::label('monto_iniciado', 'Monto inicio(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('monto_inic', 'Monto inicio(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('monto_iniciado', $caja->monto_iniciado, array('class' => 'form-control input-xs', 'id' => 'monto_iniciado', 'placeholder' => 'S/.','readonly')) !!}
+		{!! Form::text('monto_inic', number_format($caja->monto_iniciado,1), array('class' => 'form-control input-xs', 'id' => 'monto_inic', 'placeholder' => 'S/.','readonly')) !!}
+		{!! Form::hidden('monto_iniciado', $caja->monto_iniciado, array('id' => 'monto_iniciado')) !!}
 	</div>
 </div>
 
 <div class="form-group">
-	{!! Form::label('monto_cierre', 'Monto Cierre(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('monto_c', 'Monto Cierre(S/.):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('monto_cierre', $diferencia, array('class' => 'form-control input-xs', 'id' => 'monto_cierre', 'placeholder' => 'S/.','readonly')) !!}
+		{!! Form::text('monto_c', number_format($diferencia,1), array('class' => 'form-control input-xs', 'id' => 'monto_c', 'placeholder' => 'S/.','readonly')) !!}
+		{!! Form::hidden('monto_cierre', $diferencia, array('id' => 'monto_cierre')) !!}
 	</div>
 </div>
 
 <div class="form-group">
-	{!! Form::label('diferencia_monto', 'Diferencia:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('diferencia_mont', 'Diferencia:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::text('diferencia_monto', $monto_cierre , array('class' => 'form-control input-xs', 'id' => 'diferencia_monto', 'placeholder' => 'S/.','readonly')) !!}
+		{!! Form::text('diferencia_mont', number_format($monto_cierre,1) , array('class' => 'form-control input-xs', 'id' => 'diferencia_mont', 'placeholder' => 'S/.','readonly')) !!}
+		{!! Form::hidden('diferencia_monto', $monto_cierre, array('id' => 'diferencia_monto')) !!}
 	</div>
 </div>
 
