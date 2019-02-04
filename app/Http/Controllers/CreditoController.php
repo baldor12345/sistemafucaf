@@ -230,10 +230,10 @@ class CreditoController extends Controller{
                             $montorestante = 0;
                         }
                         $cuota = new Cuota();
-                        $cuota->parte_capital = rouNumber($montCapital, 1); 
-                        $cuota->interes = rouNumber($montInteres, 1);
+                        $cuota->parte_capital = round($montCapital, 1); 
+                        $cuota->interes = round($montInteres, 1);
                         $cuota->interes_mora = 0.00;
-                        $cuota->saldo_restante = rouNumber($montorestante, 1);
+                        $cuota->saldo_restante = round($montorestante, 1);
                         $cuota->numero_cuota = $i + 1;
                         $cuota->fecha_programada_pago = $fecha_p;
                         $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; 2 = MOROSO
