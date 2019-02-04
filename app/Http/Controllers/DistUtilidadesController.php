@@ -191,7 +191,7 @@ class DistUtilidadesController extends Controller
                     $transaccion->persona_id = $request->input('persona_id'.$i);
                     $transaccion->caja_id = $caja_id;
                     $transaccion->fecha = $caja->fecha_horaApert;
-                    $transaccion->concepto_id = 37; // distribucion d eutilidad
+                    $transaccion->concepto_id = 19; // distribucion d eutilidad
                     $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 7);
                     $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 7);
                     $transaccion->save();
@@ -264,7 +264,7 @@ class DistUtilidadesController extends Controller
                 $transaccionF->persona_id = $fsocial[0]->id;
                 $transaccionF->caja_id =$caja->id;
                 $transaccionF->fecha = $caja->fecha_horaApert;
-                $transaccionF->concepto_id = 37; // distribucion d eutilidad
+                $transaccionF->concepto_id = 19; // distribucion d eutilidad
                 $transaccionF->monto = $this->rouNumber($request->input('fsocial'), 7);
                 $transaccionF->utilidad_distribuida = $this->rouNumber($request->input('fsocial'), 7);
                 $transaccionF->save();
@@ -305,7 +305,7 @@ class DistUtilidadesController extends Controller
                 $transaccionR->persona_id = $rlegal[0]->id;
                 $transaccionR->caja_id =$caja->id;
                 $transaccionR->fecha = $caja->fecha_horaApert;
-                $transaccionR->concepto_id = 37; // distribucion d eutilidad
+                $transaccionR->concepto_id = 19; // distribucion d eutilidad
                 $transaccionR->monto = $this->rouNumber($request->input('rlegal'), 7);
                 $transaccionR->utilidad_distribuida = $this->rouNumber($request->input('rlegal'), 7);
                 $transaccionR->save();

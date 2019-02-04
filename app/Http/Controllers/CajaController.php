@@ -346,7 +346,7 @@ class CajaController extends Controller
         $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos', 'R'=>'Reporte Financiero');
         $entidad  = 'Caja';
         $caja = Caja::where('estado','A')->get();
-        $fecha_caja = Date::parse($caja[0]->fecha_horaApert)->format('Y-m');
+        $fecha_caja = (count($caja) == 0)?date("Y-m"):(Date::parse($caja[0]->fecha_horaApert)->format('Y-m'));
         $ruta = $this->rutas;
         $titulo_reporte = $this->titulo_reporte;
         return view($this->folderview.'.reportes')->with(compact('entidad', 'ruta', 'titulo_reporte','cboTipo','fecha_caja'));
