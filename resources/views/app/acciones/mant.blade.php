@@ -99,7 +99,7 @@ use Illuminate\Support\Facades\DB;
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardaraccion(\''.$entidad.'\', \''.URL::route($ruta["reciboaccionpdf"], array()).'\')')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardaraccion', 'onclick' => 'guardaraccion(\''.$entidad.'\', \''.URL::route($ruta["reciboaccionpdf"], array()).'\')')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -222,10 +222,14 @@ use Illuminate\Support\Facades\DB;
 			if ($(idformulario + ' :input[id = "listar"]').length) {
 				var listar = $(idformulario + ' :input[id = "listar"]').val()
 			};
+			$('#btnGuardaraccion').button('loading');
 			data.done(function(msg) {
 				respuesta = msg;
 			}).fail(function(xhr, textStatus, errorThrown) {
 				respuesta = 'ERROR';
+				$('#btnGuardaraccion').removeClass('disabled');
+				$('#btnGuardaraccion').attr('disabled');
+				$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}).always(function() {
 				
 				if(respuesta[0] === 'ERROR'){
@@ -242,12 +246,18 @@ use Illuminate\Support\Facades\DB;
 						}        
 					} else {
 						mostrarErrores(respuesta, idformulario, entidad);
+						$('#btnGuardaraccion').removeClass('disabled');
+						$('#btnGuardaraccion').attr('disabled');
+						$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 					}
 				}
 			});
 		}else{
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
 			$('#divMensajeError{{ $entidad }}').show();
+			$('#btnGuardaraccion').removeClass('disabled');
+			$('#btnGuardaraccion').attr('disabled');
+			$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 		}
         
 	}

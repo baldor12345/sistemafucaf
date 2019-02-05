@@ -66,7 +66,7 @@ use Illuminate\Support\Facades\DB;
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-	{!! Form::button('Cerrar Caja', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+	{!! Form::button('Cerrar Caja', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCerrar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>

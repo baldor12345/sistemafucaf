@@ -30,7 +30,7 @@
     
 </div>
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
-    {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Pagar Multa ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'guardarpagarmulta(\''.$entidad.'\', this)')) !!}
+    {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Pagar Multa ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarpagar', 'onclick' => 'guardarpagarmulta(\''.$entidad.'\', this)')) !!}
     &nbsp;
     {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
@@ -58,7 +58,7 @@
             type: 'GET',
             data: $('#formControlPersona').serialize(),
             beforeSend: function(){
-                
+                $('#btnGuardarpagar').button('loading');
             },
             success: function(res){
                 
@@ -68,7 +68,10 @@
         
             }
         }).fail(function(){
-            mostrarMensaje ("Error de servidor", "ERROR")
+            mostrarMensaje ("Error de servidor", "ERROR");
+            $('#btnGuardarpagar').removeClass('disabled');
+            $('#btnGuardarpagar').attr('disabled');
+            $('#btnGuardarpagar').html('<i class="fa fa-check fa-lg"></i>Guardar');
         });
     }
     
