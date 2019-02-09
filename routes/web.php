@@ -178,6 +178,8 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/amortizarcuotas', 'CreditoController@amortizarcuotas')->name('creditos.amortizarcuotas');
      Route::get('creditos/obtenermontototal', 'CreditoController@obtenermontototal')->name('creditos.obtenermontototal');
      Route::get('creditos/pagarcreditototal', 'CreditoController@pagarcreditototal')->name('creditos.pagarcreditototal');
+     Route::get('creditos/ampliar_reducir_cuotas', 'CreditoController@ampliar_reducir_cuotas')->name('creditos.ampliar_reducir_cuotas');
+     Route::get('creditos/datos_ampliar_reducir_cuotas', 'CreditoController@datos_ampliar_reducir_cuotas')->name('creditos.datos_ampliar_reducir_cuotas');
      
      
      

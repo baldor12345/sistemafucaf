@@ -120,6 +120,7 @@ use App\Persona;
 			</tfoot>
 		</table>
 	</div>
+
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
@@ -188,6 +189,7 @@ use App\Persona;
 		</table>
 	</div>
 
+
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
@@ -203,6 +205,7 @@ use App\Persona;
 			</thead>
 		</table>
 	</div>
+
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
@@ -246,6 +249,7 @@ use App\Persona;
 			</tfoot>
 		</table>
 	</div>
+	
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>

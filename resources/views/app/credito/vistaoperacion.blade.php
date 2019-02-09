@@ -47,6 +47,7 @@
                 {!! Form::select('accioncredito', $cboacciones, 0, array('class' => 'form-control input-sm', 'id' => 'accioncredito',  'onchange' => 'realizaoperacion(this)')) !!}
              </div>
          </div>
+
          <div class="card-box crbox">
              <div id="cuotas_pendiente">
 
@@ -195,11 +196,9 @@
                 break;
             case '4':
             cancelarTodo();
-
-               
                 break;
-            case 5:
-                
+            case '5':
+                ampliar_disminuir_cuotas();
                 break;
 
             default:
@@ -349,6 +348,8 @@
                 mostrarMensaje ("Error de consulta..", "ERROR");
             });
     }
+
+
     function RoundDecimal(numero, decimales) {
 		numeroRegexp = new RegExp('\\d\\.(\\d){' + decimales + ',}');   // Expresion regular para numeros con un cierto numero de decimales o mas
 		if (numeroRegexp.test(numero)) {         // Ya que el numero tiene el numero de decimales requeridos o mas, se realiza el redondeo
@@ -357,4 +358,58 @@
 			return Number(numero.toFixed(decimales)) === 0 ? 0 : numero;  // En valores muy bajos, se comprueba si el numero es 0 (con el redondeo deseado), si no lo es se devuelve el numero otra vez.
 		}
 	}
+
+    function ampliar_disminuir_cuotas(){
+        var parametros = "fechaop="+$('#fechaop').val()+"&credito_id="+$('#credito_id').val();
+
+        $.ajax({
+            url: "creditos/datos_ampliar_reducir_cuotas",
+            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            type: 'GET',
+            data: parametros,
+            beforeSend: function(){
+            },
+            success: function(res){
+                    $('#cuotas_pendiente').empty();
+                    $('#cuotas_pendiente').html('<div class="">'
+                    +'<div class="form-group col-12 col-md-12 col-sm-12">'
+                    +'<ul><li>N° Cuotas pendientes: '+res[1]+'</li><li>Saldo deudor: '+res[0]+'</li></ul></div>'
+                    +'<div class="form-group col-12 col-md-12 col-sm-12"><label >Nuevo N° cuotas pendientes: *</label>'
+                    +'<input type="text" class="form-control input-sm" name="nuevo_numCuotas" id="nuevo_numCuotas" onkeypress="return filterFloat(event,this);"></div>'
+                    +'<button class="btn btn-primary" onclick="guardarAmpDisCuotas(this);">Guardar</button></div>');
+                 
+            }
+        }).fail(function(){
+                mostrarMensaje ("Error de consulta..", "ERROR");
+        });
+
+    }
+
+    function guardarAmpDisCuotas(btn){
+        var parametros = "fechaop="+$('#fechaop').val()+"&credito_id="+$('#credito_id').val()+"&nuevo_num_cuotas="+$('#nuevo_numCuotas').val();
+        $(btn).button('Loading ...');
+        $.ajax({
+            url: "creditos/ampliar_reducir_cuotas",
+            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            type: 'GET',
+            data: parametros,
+            beforeSend: function(){
+            },
+            success: function(res){
+                if(res == 'OK'){
+                    $('#cuotas_pendiente').empty();
+                    $('#cuotas_pendiente').html('<div class="alert alert-success">Datos modificados correctamente</div>');
+                }else{
+                    $('#divMensajeError{{ $entidad_cuota }}').html('<div class="alert alert-danger">'+res+'</div>')
+                }
+                
+                 
+            }
+        }).fail(function(){
+            $(btn).removeClass('disabled');
+            $(btn).removeAttr('disabled');
+            $(btn).html('Guardar');
+                mostrarMensaje ("Error de consulta..", "ERROR");
+        });
+    }
  </script>

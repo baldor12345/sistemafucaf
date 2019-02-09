@@ -32,7 +32,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarahorro(\''.$entidad.'\', \''.URL::route($ruta["generareciboahorroPDF"], array()).'\')')) !!}
+				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarAhorro', 'onclick' => 'guardarahorro(\''.$entidad.'\', \''.URL::route($ruta["generareciboahorroPDF"], array()).'\')')) !!}
 				&nbsp;
 				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 			</div>
@@ -102,6 +102,7 @@ function guardarahorro(entidad,rutarecibo) {
 	if ($(idformulario + ' :input[id = "listar"]').length) {
 		var listar = $(idformulario + ' :input[id = "listar"]').val()
 	};
+	$('#btnGuardarAhorro').button('loading');
 	data.done(function(msg) {
 		respuesta = msg;
 	}).fail(function(xhr, textStatus, errorThrown) {
@@ -109,6 +110,9 @@ function guardarahorro(entidad,rutarecibo) {
 	}).always(function() {
 		
 		if(respuesta === 'ERROR'){
+			$('#btnGuardarAhorro').removeClass('disabled');
+			$('#btnGuardarAhorro').removeAttr('disabled');
+			$('#btnGuardarAhorro').html('<i class="fa fa-check fa-lg"></i> Registrar');
 		}else{
 			if (respuesta === 'OK') {
 				cerrarModal();
@@ -122,6 +126,10 @@ function guardarahorro(entidad,rutarecibo) {
 				}        
 			} else {
 				mostrarErrores(respuesta, idformulario, entidad);
+				$('#btnGuardarAhorro').removeClass('disabled');
+			$('#btnGuardarAhorro').removeAttr('disabled');
+			$('#btnGuardarAhorro').html('<i class="fa fa-check fa-lg"></i> Registrar');
+			
 			}
 		}
 	});

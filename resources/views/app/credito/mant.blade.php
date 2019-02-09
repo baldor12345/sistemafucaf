@@ -48,7 +48,7 @@
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarCredito(\''.$entidad.'\', \''.URL::route($ruta["generarecibocreditoPDF"], array()).'\')')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCred', 'onclick' => 'guardarCredito(\''.$entidad.'\', \''.URL::route($ruta["generarecibocreditoPDF"], array()).'\')')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -204,6 +204,7 @@
     function guardarCredito(entidad, rutarecibo) {
         var valida = true;
         var mensaje = "";
+        $('#btnGuardarCred').button('loading');
         if(valid()){
             if($('#numcreditos').val() == 1 ){
                 if($('#periodo').val() > 1){
@@ -246,6 +247,9 @@
                         }).always(function() {
                             
                             if(respuesta[0] === 'ERROR'){
+                                $('#btnGuardarCred').removeClass('disabled');
+                                $('#btnGuardarCred').removeAttr('disabled');
+                                $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
                             }else{
                                 
                                 if (respuesta[0] === 'OK') {
@@ -258,11 +262,17 @@
                                         buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
                                     }        
                                 } else {
+                                    $('#btnGuardarCred').removeClass('disabled');
+                                    $('#btnGuardarCred').removeAttr('disabled');
+                                    $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
                                     mostrarErrores(respuesta, idformulario, entidad);
                                 }
                             }
                         });
                     }else{
+                        $('#btnGuardarCred').removeClass('disabled');
+                        $('#btnGuardarCred').removeAttr('disabled');
+                        $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
                         var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
                         $('#divMensajeError{{ $entidad }}').html(msj);
                         $('#divMensajeError{{ $entidad }}').show();
@@ -271,11 +281,17 @@
                 }
                 
             }else{
+                $('#btnGuardarCred').removeClass('disabled');
+                $('#btnGuardarCred').removeAttr('disabled');
+                $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
                 var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+mensaje+"</div>";
                 $('#divMensajeError{{ $entidad }}').html(msj);
                 $('#divMensajeError{{ $entidad }}').show();
             }
         }else{
+            $('#btnGuardarCred').removeClass('disabled');
+            $('#btnGuardarCred').removeAttr('disabled');
+            $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
             var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
                 $('#divMensajeError{{ $entidad }}').html(msj);
                 $('#divMensajeError{{ $entidad }}').show();
@@ -330,7 +346,6 @@
             
             abrirmodal(mdCronograma);
             $('#filasTcuotas').empty();
-            
             var montInteres=0.0;
             var montCapital=0.0;
             var montCuota = 0.0;
