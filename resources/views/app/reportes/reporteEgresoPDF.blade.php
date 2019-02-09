@@ -132,7 +132,7 @@
 				<td width="10%" align="center"><span class="text">{{$value->comentario }}</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-							{{$value->transaccion_monto}}
+							{{ round($value->transaccion_monto,1) }}
 					</span>
 				</td>
             </tr>
@@ -151,7 +151,7 @@
 				<td width="10%" align="center"><span class="text">{{$value->comentario }}</span></td>
 				<td width="10%" align="center">
 					<span class="text">
-							{{$value->transaccion_monto}}
+							{{ round($value->transaccion_monto,1) }}
 					</span>
 				</td>
             </tr>
