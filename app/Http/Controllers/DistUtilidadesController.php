@@ -127,6 +127,7 @@ class DistUtilidadesController extends Controller
             $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+            $numero_acciones_hasta_enero=  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();
             $acciones_mes  =0;
             $indice1 = 0;
             $j1=12;
@@ -141,7 +142,7 @@ class DistUtilidadesController extends Controller
             $anio_actual=$anio;
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
        /* }else{
             $existe = 1;
             return view($this->folderview.'.mant')->with(compact('existe','entidad'));
@@ -173,7 +174,7 @@ class DistUtilidadesController extends Controller
                 $distribucion->int_pag_acum = $this->rouNumber($request->input('int_pag_acum'), 7);
                 $distribucion->otros_acum = $this->rouNumber($request->input('otros_acum'), 7);
                 $distribucion->ub_duactual = $this->rouNumber($request->input('ub_duactual'), 7);
-                $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
+                $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: <br> DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
                 $distribucion->intereses = $this->rouNumber($request->input('intereses'), 7);
                 $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
                 $distribucion->otros = $this->rouNumber($request->input('otros'), 7);
@@ -439,26 +440,27 @@ class DistUtilidadesController extends Controller
                         
                     if(((($l)<count($listaAcciones))?$listaAcciones[$l]->mes:"") == $j){
                         $numaccciones += $listaAcciones[$l]->cantidad_mes;
-                        $distrib_util = $distrib_util."<td>".$numaccciones."</td>";
+                        $distrib_util = $distrib_util."<td>".($numaccciones>0?$numaccciones: '-')."</td>";
                         $utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
                         $sumtotalAcciones += $numaccciones;
                         $l++;
                     }else{
-                        $distrib_util = $distrib_util."<td>0</td>";
+                        $distrib_util = $distrib_util."<td>-</td>";
                         $utilidades[$j-1] = 0;
                     }
                 }
-                $distrib_util = $distrib_util."<td>0</td><td>".round($sumtotalAcciones,1)."</td></tr><tr>";
+                $distrib_util = $distrib_util."<td>-</td><td>".(round($sumtotalAcciones,1) > 0? round($sumtotalAcciones,1): '-')."</td></tr><tr>";
                     $sumtotal_util = 0;
                 for($j=1; $j<=12; $j++){
-                    $distrib_util = $distrib_util."<td>".round($utilidades[$j-1],1)."</td>";
+                    $distrib_util = $distrib_util."<td>".(round($utilidades[$j-1],1) >0?round($utilidades[$j-1],1): '-')."</td>";
                     $sumtotal_util += $utilidades[$j-1];
                 }
                 
-                $distrib_util = $distrib_util."<td>0</td><td>".round($sumtotal_util,1)."</td></tr>";
+                $distrib_util = $distrib_util."<td>-</td><td>".round($sumtotal_util,1)."</td></tr>";
             }
         }
         $titulo =$distribucion->titulo;
+        $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ";
         $view = \View::make('app.distribucionutilidad.reportedist')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta', 'distrib_util'));
         $html_content = $view->render();
 

@@ -50,12 +50,16 @@
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
                     {!! Form::hidden('credito_id', $credito->id, array('id' => 'credito_id')) !!}
-					<div class="form-group" >
+					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 5, array('class' => 'form-control input-xs d-none d-sm-block', 'onchange' => 'buscar(\''.$entidad_cuota.'\')')) !!}
                     </div>
                     <div class="form-group">
                     {!! Form::button('<i class="fa fa-check fa-lg"></i> Imprimir PDF', array('class' => 'btn btn-success btn-sm', 'id' => 'btnImprimirpdf', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta['generareportecuotasPDF'], array($credito->id)).'\',\''.'1000'.'\', \''.'Reporte de Cuotas'.'\')')) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('select_opcion', 'Opción: ', array('class' => 'op')) !!}
+                        {!! Form::select('select_opcion', array('vigentes'=>'Vigentes','cancelados'=>'Cancelados'), 'vigentes', array('class' => 'form-control input-sm', 'id' => 'select_opcion')) !!}
                     </div>
 					{!! Form::close() !!}
                 </div>
@@ -89,6 +93,33 @@
         buscar('{{ $entidad_cuota }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad_cuota }}', 'B', '{{ $entidad_cuota }}');
     });
-  
 
+    function listarCuotas(){
+        var parametros = "credito_id="+$('#credito_id').val();
+        $(btn).button('Loading ...');
+        $.ajax({
+            url: "creditos/listar_creditos_pagados",
+            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            type: 'GET',
+            data: parametros,
+            beforeSend: function(){
+            },
+            success: function(res){
+                if(res == 'OK'){
+                    $("#listado{{ $entidad_cuota }}").html(res);
+                }else{
+                    $(contenedor).html(respuesta);
+                }
+                
+                 
+            }
+        }).fail(function(){
+            $(btn).removeClass('disabled');
+            $(btn).removeAttr('disabled');
+            $(btn).html('Guardar');
+                mostrarMensaje ("Error de consulta..", "ERROR");
+        });
+
+        
+    }
 </script>

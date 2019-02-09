@@ -27,9 +27,7 @@
         </style>
 </head>
 <body>
-    <div>
-        <h2 style="text-align: center;">{{ $distribucion->titulo }}</h2>
-    </div>
+    <h2 width="70%" style="text-align: center; margin: 20px;">{{ $distribucion->titulo }}</h2>
     <div>
     <table class="linebordercenter" width ="100%">
         <thead class="linebordercenter">
@@ -69,14 +67,14 @@
             <tr>
                     
                 <td>Intereses</td>
-                <td>{{ $intereses }}</td>
+                <td>{{ round($intereses, 1) }}</td>
                 <td  colspan="1" rowspan="1">I. Pag. Acum.</td>
                 <td  colspan="1" rowspan="1">{{ round($int_pag_acum,1) }}</td>
             </tr>
             <tr>
                     
                 <td>Otros</td>
-                <td>{{ $otros }}</td>
+                <td>{{ round($otros, 1) }}</td>
                 <td  colspan="1" rowspan="1">Otros Acum.</td>
                 <td  colspan="1" rowspan="1">{{ round($otros_acumulados,1) }}</td>
                 <td  colspan="1" rowspan="3">R Legal 10%</td>
@@ -85,14 +83,14 @@
             <tr>
                     
                 <td>Total acumulado</td>
-                <td>{{ $intereses + $otros }}</td>
+                <td>{{ round($intereses + $otros, 1) }}</td>
                 <td  rowspan="1" colspan="1">TOTAL ACUMULADO</td>
                 <td  rowspan="1" colspan="1">{{ round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) }}</td>
             </tr>
             <tr>
                     
                 <td>U.B DU Anterior</td>
-                <td>{{ $du_anterior }}</td>
+                <td>{{ round($du_anterior, 1) }}</td>
                 <td  rowspan="1" colspan="1">Gast. DU Anterior</td>
                 <td  rowspan="1" colspan="1">{{ round($gast_du_anterior,1) }}</td>
             </tr>
@@ -140,11 +138,11 @@
                         $total_acc_mensual += $acciones_mensual[$ind]->cantidad_mes;
                         $ind ++;
                     }else{
-                        echo("<td align='center'>0</td>");
+                        echo("<td align='center'>-</td>");
                     }
                 }
                 ?>
-                <td>0</td>
+                <td>-</td>
                 <td>{{ $total_acc_mensual }}</td>
             </tr>
             <tr>
@@ -154,7 +152,7 @@
                     echo("<td align='center'>".$mes."</td>");
                 }
                 ?>
-                <td align='center'>0</td><td align='center'>---</td>
+                <td align='center'>-</td><td align='center'>---</td>
             </tr>
             <tr>
                 <td colspan="2" align='center'>Acciones-mes</td>
@@ -170,12 +168,12 @@
                         $j--;
                         $indice++;
                     }else{
-                        echo("<td align='center'>0</td>");
+                        echo("<td align='center'>-</td>");
                     }
                 }
                 
                 ?>
-                <td>0</td><td>{{ $sumatotal_acc_mes }}</td>
+                <td>-</td><td>{{ $sumatotal_acc_mes }}</td>
             </tr>
 
             <tr><td colspan="17"></td></tr>
@@ -236,7 +234,7 @@
                         $f++;
                     }
                 ?>
-                <td align='center'>0</td>
+                <td align='center'>-</td>
                 <td align='center'>...</td>
             </tr>
         </tbody>
@@ -278,16 +276,16 @@
                     
                     for($i=1; $i<=12; $i++){
                         if((($ind<count($acciones_mensual))?$acciones_mensual[$ind]->mes: "") == "".$i){
-                            echo("<th align='center'>".$acciones_mensual[$ind]->cantidad_mes."</th>");
+                            echo("<th align='center'>".($acciones_mensual[$ind]->cantidad_mes > 0?$acciones_mensual[$ind]->cantidad_mes : "-" )."</th>");
                             $total_acc_mensual += $acciones_mensual[$ind]->cantidad_mes;
                             $ind ++;
                         }else{
-                            echo("<th align='center'>0</th>");
+                            echo("<th align='center'>-</th>");
                         }
                     }
                 ?>
-                <th>0</th>
-                <th>{{ $total_acc_mensual }}</th>
+                <th>-</th>
+                <th>{{ ($total_acc_mensual > 0?$total_acc_mensual: "-" ) }}</th>
             </tr>
             <tr>
                 <th>Utilidades</th>
@@ -299,16 +297,16 @@
                     for($i=1; $i<=12; $i++){
                         if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
                             $sumatotal_utilidades += $acciones_mensual[$indice]->cantidad_mes * $factor*$j;
-                            echo("<th align='center'>".round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1)."</th>");
+                            echo("<th align='center'>".(round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1) > 0?round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1) : "-" )."</th>");
                             $j--;
                             $indice++;
                         }else{
-                            echo("<th align='center'>0</th>");
+                            echo("<th align='center'>-</th>");
                         }
                     }
                     
                     ?>
-                <th>0</th><th>{{ round($sumatotal_utilidades, 1) }}</th>
+                <th>-</th><th>{{ round($sumatotal_utilidades, 1) }}</th>
 
             </tr>
             <tr>

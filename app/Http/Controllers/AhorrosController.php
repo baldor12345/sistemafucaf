@@ -499,9 +499,9 @@ class AhorrosController extends Controller
 
         PDF::SetTitle($titulo);
         PDF::AddPage('P', 'A4', 'es');
-        PDF::SetTopMargin(5);
-        PDF::SetLeftMargin(5);
-        PDF::SetRightMargin(5);
+        PDF::SetTopMargin(0);
+        PDF::SetLeftMargin(0);
+        PDF::SetRightMargin(0);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');

@@ -64,7 +64,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
                         DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
                     )
-                    ->where('transaccion.fecha','>=',$fechai)
+                    //S>where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','I')
@@ -79,7 +79,7 @@ class DistribucionUtilidades extends Model
                     ->select(
                         DB::raw("SUM(transaccion.monto) as mas_otros")
                     )
-                    ->where('transaccion.fecha','>=',$fechai)
+                    //->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','I')
@@ -101,19 +101,33 @@ class DistribucionUtilidades extends Model
     {
         $fechai = date($anio.'-01-01');
         $fechaf = date(($anio+1).'-01-31');
+        $results0 = DB::table('transaccion')
+        ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+        ->select(
+            DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro")
+       
+        )
+        //->where('transaccion.fecha','>=',$fechai)
+        ->where('transaccion.fecha','<=',$fechaf)
+        ->where('transaccion.deleted_at','=',null)
+        ->where('concepto.tipo','=','E')
+        ->groupBy('concepto.tipo')->get();
+$i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
+
+
         $results1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
-                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
-                        DB::raw("SUM(transaccion.interes_ahorro) as interes_ahorro"),
+                     
                         DB::raw("SUM(transaccion.otros_egresos) as otros_egresos")
                     )
-                    ->where('transaccion.fecha','>=',$fechai)
+                    //->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','E')
+                    ->where('transaccion.tipo_egreso','=', 0)
                     ->groupBy('concepto.tipo')->get();
-        $i_pag_acum =(count($results1)<1)?0: $results1[0]->interes_ahorro;
+        
         $otros_acum  = 0;
         $otros_acum += (count($results1)<1)?0: $results1[0]->otros_egresos;
                         
@@ -122,7 +136,7 @@ class DistribucionUtilidades extends Model
                     ->select(
                         DB::raw("SUM(transaccion.monto) as gastos_adm ")
                     )
-                    ->where('transaccion.fecha','>=',$fechai)
+                   // ->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','E')
@@ -131,6 +145,7 @@ class DistribucionUtilidades extends Model
                     ->where('concepto.titulo','!=','Ganancia por accion')
                     ->where('concepto.titulo','!=','Saldo Deudor')
                     ->where('concepto.titulo', '!=', 'Distribución de utilidad')
+                    ->where('transaccion.tipo_egreso','=', 1)
                     ->groupBy('concepto.tipo')->get();
         $g_adm_acum = (count($results2)<1)?0: $results2[0]->gastos_adm;
 
@@ -158,6 +173,17 @@ class DistribucionUtilidades extends Model
                     ->groupBy(DB::raw('extract( month from fecha)'))
                     ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
         return $results;
+    }
+
+    public static function num_acciones_anio_anterior($anio){
+        $results = DB::table('historial_accion')
+        ->select(
+            DB::raw("SUM(cantidad) as cantidad_total")
+        )
+        ->where('deleted_at','=', null)
+        ->where(DB::raw('extract( year from fecha)'),'<',$anio);
+       
+    return $results;
     }
 
     //lista total de acciones por persona por mes 
