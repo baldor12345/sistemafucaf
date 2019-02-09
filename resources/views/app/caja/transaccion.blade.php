@@ -65,16 +65,16 @@ function cargarselect2(entidad){
 					<tbody>
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Ingresos :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ $ingresos }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ round($ingresos,1) }}</font></font></th>
 						</tr>
 
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Egresos :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ $egresos }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ round($egresos,1) }}</font></font></th>
 						</tr>
 						<tr>
 							<th><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">Saldo :</font></font></th>
-							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ $diferencia }}</font></font></th>
+							<th class="text-right"><font style="vertical-align: inherit;"><font style="vertical-align: inherit; font-size: 13px;">{{ round($diferencia,1) }}</font></font></th>
 						</tr>
 					</tbody>
 				</table>
