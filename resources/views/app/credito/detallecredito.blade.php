@@ -59,13 +59,13 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('select_opcion', 'Opción: ', array('class' => 'op')) !!}
-                        {!! Form::select('select_opcion', array('vigentes'=>'Vigentes','cancelados'=>'Cancelados'), 'vigentes', array('class' => 'form-control input-sm', 'id' => 'select_opcion')) !!}
+                        {!! Form::select('select_opcion', array('vigentes'=>'Vigentes','cancelados'=>'Cancelados'), 'vigentes', array('class' => 'form-control input-sm', 'id' => 'select_opcion',  'onchange' => 'listar_det(\''.$entidad_cuota.'\')')) !!}
                     </div>
 					{!! Form::close() !!}
                 </div>
             </div>
             <div class="form-group col-12" style="height: 15px">
-                <h4>CUOTAS DE PAGO: </h4>
+                <h4 id="title_det">CUOTAS VIGENTES</h4>
             </div>
             <div id="listado{{ $entidad_cuota }}"></div>
         </div>
@@ -94,6 +94,14 @@
 		init(IDFORMBUSQUEDA+'{{ $entidad_cuota }}', 'B', '{{ $entidad_cuota }}');
     });
 
+    function listar_det(entidad){
+        var titl = "CUOTAS VIGENTES";
+        if($('#select_opcion').val() == "cancelados"){
+            titl = "CUOTAS CANCELADAS";
+        }
+        $('#title_det').html(titl);
+        buscar(entidad);
+    }
     function listarCuotas(){
         var parametros = "credito_id="+$('#credito_id').val();
         $(btn).button('Loading ...');

@@ -46,7 +46,8 @@ class DistribucionUtilidades extends Model
     {
         return $this->belongsTo('App\Persona', 'persona_id');
     }
-    
+    //esto es una prueba
+
 
 
     /**CALCULO DE LOS INGRESOS */

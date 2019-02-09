@@ -34,6 +34,7 @@
                      {!! Form::hidden('capital_total', 0, array('id' => 'capital_total')) !!}
                      {!! Form::hidden('anio', $anioactual, array('id' => 'anio')) !!}
                      {!! Form::hidden('mes', $mesactual, array('id' => 'mes')) !!}
+                     {!! Form::hidden('num_cuotas_p', 0, array('id' => 'num_cuotas_p')) !!}
                      <div class="form-group">
 						{!! Form::label('fechaop', 'Fecha Actual:', array('class' => '')) !!}
 						{!! Form::date('fechaop', $fecha_pordefecto, array('class' => 'form-control input-sm', 'id' => 'fechaop',  'onchange' => 'listarcuotasalafecha()')) !!}
@@ -168,8 +169,7 @@
         }else{
             ruta = "{{  URL::route($ruta['vistapagocuota'], array())}}" + "/"+$(btn).attr('cuota_id')+"/"+"SI/2";
         }
-        
-        console.log("RUTA: "+ruta);
+       
         modal(ruta, "Pago de Cuota");
         
         $('#modal'+(contadorModal-1)).on('hidden.bs.modal', function (e) {
@@ -179,7 +179,7 @@
 
      function realizaoperacion(select){
          var numoperacion = $(select).val();
-         console.log("numero: "+numoperacion);
+      
         switch (numoperacion) {
            
             case '1':
@@ -305,6 +305,7 @@
                 $("#montototal").val(res[0]);
                 $("#capital_total").val(res[1]);
                 $("#interes_total").val(res[2]);
+                $("#num_cuotas_p").val(res[3]);
 
                 var tabla = '<div class="alert alert-success"><label>Total a pagar S/.: '+(parseFloat(res).toFixed(1))+'</label></div>'
                 tabla += '<button class="btn btn-primary" onclick="pagar_credito_total();">Pagar Todo</button>';

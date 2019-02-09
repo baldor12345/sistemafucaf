@@ -91,7 +91,7 @@
                 <td style="font-size: 8px" colspan="2">LINEA DE CREDITO</td>
                 <td style="font-size: 8px" colspan="3">° Incluye capital, intereses, gastos de cuotas atrasadas</td>
                 <td style="font-size: 8px" colspan="2" class="lineborderleft">Mes: </td>
-                <td style="font-size: 8px" colspan="2" class="lineborderleft">{{ $nombremes[explode('-',date('Y-m-d', strtotime($cuota->fecha_programada_pago)))[1]] }}</td>
+                <td style="font-size: 8px" colspan="2" class="lineborderleft">{{ $nombremes[date('m', strtotime($cuota->fecha_programada_pago))]."-".date('Y', strtotime($cuota->fecha_programada_pago)) }}</td>
             </tr>
             <tr>
                 <td style="font-size: 8px" colspan="2">TOTAL</td>
@@ -130,19 +130,19 @@
                 <td style="font-size: 8px" colspan="1" class="linebordercenter"><strong>INTERES</strong></td>
             </tr>
             <tr>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ date('d/m/Y',strtotime( $cuota->fecha_pago)) }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ date('d/m/Y',strtotime( $cuota->fecha_pago)) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ date('d/m/Y',strtotime( $transaccion->fecha)) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ date('d/m/Y',strtotime( $transaccion->fecha)) }}</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">PRESTAMO EFECTIVO</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">Local FUCAF</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">PERU</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->numero_cuota }}/{{ $periodocredito }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($cuota->parte_capital, 1) }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($cuota->interes, 1) }}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($cuota->parte_capital + $cuota->interes, 1) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($transaccion->cuota_parte_capital, 1) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($transaccion->cuota_interes, 1) }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes, 1) }}</td>
             </tr>
             <tr>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->fecha_pago}}</td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $cuota->fecha_pago }}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $transaccion->fecha}}</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $transaccion->fecha }}</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">COMISION POR RECIBO DE PAGO</td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2"></td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">PERU</td>
@@ -171,7 +171,7 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
-                <td class="line_v_id line_h_b">{{ round($cuota->interes_mora, 1) }}</td>
+                <td class="line_v_id line_h_b">{{ round($transaccion->cuota_interes_mora, 1) }}</td>
             </tr>
             <tr><td colspan="9"></td></tr>
             <tr>
@@ -199,10 +199,10 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes, 1) }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes, 1) }}</td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">0.2</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2,1) }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2, 1)   }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes+ $transaccion->cuota_interes_mora + 0.2,1) }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes+ $transaccion->cuota_interes_mora + 0.2, 1)   }}</td>
                 <td class=""></td>
                 <td class=""></td>
             </tr>

@@ -170,6 +170,7 @@ Route::group(['middleware' => 'auth'], function () {
      Route::post('creditos/pagarcuota', 'CreditoController@pagarcuota')->name('creditos.pagarcuota');
      Route::get('creditos/listardetallecuotas', 'CreditoController@listardetallecuotas')->name('creditos.listardetallecuotas');
      Route::get('/generarecibopagocuotaPDF/{cuota_id?}', 'CreditoController@generarecibopagocuotaPDF')->name('creditos.generarecibopagocuotaPDF');
+     Route::get('/generarecibopagocuotaPDF2/{transaccion_id?}', 'CreditoController@generarecibopagocuotaPDF2')->name('creditos.generarecibopagocuotaPDF2');
      Route::get('/generareportecuotasPDF/{credito_id?}', 'CreditoController@generareportecuotasPDF')->name('creditos.generareportecuotasPDF');
      Route::get('/generarecibocreditoPDF/{credito_id?}', 'CreditoController@generarecibocreditoPDF')->name('creditos.generarecibocreditoPDF');
      Route::get('creditos/listpersonas',  'CreditoController@listpersonas')->name('creditos.listpersonas');

@@ -28,6 +28,7 @@ class Cuota extends Model
         $results = DB::table('cuota')
         ->where('cuota.credito_id','=',$idcredito)
         ->where('cuota.deleted_at','=',null)
+        ->where('cuota.estado','!=','1')
         ->orderBy('cuota.fecha_programada_pago', 'ASC');
         return $results;
     }

@@ -102,12 +102,15 @@ class DistUtilidadesController extends Controller
        /* $ditr = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio))->get();
         if(count($ditr)<=0){*/
             $caja = Caja::where("estado","=","A")->get();
+
+            
+
+
             $idcaja = count($caja) == 0? 0: $caja[0]->id;
             $configuraciones = Configuraciones::all()->last();
             $listar = Libreria::getParam($request->input('listar'), 'NO');
             
             $ruta = $this->rutas;
-        
             $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
             //$anio = date('Y') - 1; 
             $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
@@ -138,16 +141,76 @@ class DistUtilidadesController extends Controller
                     $indice1++;
                 }
             }
+            $porcentaje_ditribuible = 100;
+            $porcentaje_ditr_faltante = 0;
+            $saldo_caja_distribuible = round($this->getSaldoCaja($caja) - $this->getInteresPagado_mesactual($caja->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja->fecha_horaApert), 1);
+            if($saldo_caja_distribuible < $utilidad_neta){
+                $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
+                $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
+            }
+
             $existe = 0;
             $anio_actual=$anio;
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
+            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
        /* }else{
             $existe = 1;
             return view($this->folderview.'.mant')->with(compact('existe','entidad'));
         }*/
         
+    }
+
+    public function getSaldoCaja($caja){
+        $monto_inicio = round($caja->monto_iniciado, 1);
+        $egresos=0;
+        $ingresos=0;
+        $saldo_en_caja =0;
+        $saldo = Transaccion::getsaldo($caja->id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $saldo_en_caja= round($ingresos,1) + round($monto_inicio,1) - round($egresos, 1);
+        return $saldo_en_caja;
+    }
+    public function getInteresPagado_mesactual($fecha){
+        //fecha en mes y año separados
+        $fecha = date('Y-m-d', strtotime($fecha));
+        $fechaf = explode("-", $fecha);
+        $anio =  $fechaf[0];
+        $month = $fechaf[1];
+
+        $lista = Caja::listEgresos($month,$anio)->get();
+        //calculo del total de egresos del mes actual por persona
+        $sum_interes_pagado_mes_actual=0;
+        if(count($lista) >0 ){
+            for($i=0; $i<count($lista); $i++){
+                $sum_interes_pagado_mes_actual += round($lista[$i]->interes_ahorro,1);
+            }
+        }else{
+            $sum_interes_pagado_mes_actual=0;
+        }
+        return $sum_interes_pagado_mes_actual;
+    }
+    public function getGastosAdmin_mesactual($fecha){
+        $fecha = date('Y-m-d', strtotime($fecha));
+        $fechaf = explode("-", $fecha);
+        $anio =  $fechaf[0];
+        $month = $fechaf[1];
+        $lista_por_conceptoAdmin = Caja::listEgresos_por_conceptoAdmin($anio,$month)->get();
+
+        // calculo del total de egresos del mes actual por concepto
+        $sum_gasto_administrativo_mes_actual=0;
+        if(count($lista_por_conceptoAdmin) >0 ){
+            for($i=0; $i<count($lista_por_conceptoAdmin); $i++){
+                $sum_gasto_administrativo_mes_actual += $lista_por_conceptoAdmin[$i]->transaccion_monto;
+            }
+        }
+        return $sum_gasto_administrativo_mes_actual;
     }
    /**
      * Store a newly created resource in storage.

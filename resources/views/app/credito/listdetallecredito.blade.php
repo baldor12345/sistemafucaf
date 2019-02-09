@@ -41,19 +41,16 @@
             '12'=>'Dic',);
         ?>
         <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td>
         </tr>
        
         @if($opcion == "vigentes")
             @foreach ($lista as $key => $value)
                 <?php
-                // if($value->estado == 'm'){
-                    
-                // }
+              
                 ?>
 
                 <tr>
-                    @if($value->estado != '1')
                     <td>{{  $nombremes[date('m',strtotime($value->fecha_programada_pago))]."-". date('Y',strtotime($value->fecha_programada_pago)) }}</td>
                     <td>{{  $value->numero_cuota}}/{{$credito->periodo}}</td>
                     <td>{{  round($value->interes + $value->parte_capital,1)}}</td>
@@ -66,13 +63,7 @@
                    
                     <td> @if($value->estado == 'I') <button class="btn btn-warning btn-sm"></button>@endif @if($value->estado =='m')<button class="btn btn-danger btn-sm"></button>@endif</td>
                     <td>{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-xs', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI','nan')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td>
-                    {{--  <td>{!! Form::button('<i class=""></i> ......', array('class' => 'btn btn-light btn-xs', 'id' => '', 'onclick' => '')) !!}</td> --}}
-                    
-                    @else
-                    {{-- <td>P  @if($value->interes_mora != 0) <button class="btn btn-danger btn-sm"></button>@endif</td>
-                    <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagado', array('class' => 'btn btn-light btn-xs', 'id' => 'btnGuardar', 'onclick' => '')) !!}</td>
-                    <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>--}}
-                    @endif
+                 
                 </tr>
                 <?php
                 $saldo_restante -= $value->parte_capital;
@@ -81,6 +72,9 @@
             @endforeach
         @else
             @foreach ($lista as $key => $value)
+                <?php
+                    $saldo_restante -= $value->cuota_parte_capital;
+                ?>
                 <tr>
                    
                     <td>{{  $contador }}</td>
@@ -92,13 +86,12 @@
                     <td>{{  round($value->cuota_interes_mora,1)}}</td>
                     <td>{{  round($value->monto,1)}}</td>
                     <td>{{  round($saldo_restante,1)}}</td>
-                    {{-- <td>P  @if($value->interes_mora != 0) <button class="btn btn-danger btn-sm"></button>@endif</td> --}}
-                    <td>{{ explode(':',$value->descripcion)[0] }}</td>
-                    <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>--}}
+                 
+                    <td>{{ $value->descripcion }}</td>
+                    <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF2"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
                   
                 </tr>
                 <?php
-                $saldo_restante -= $value->parte_capital;
                 $contador ++;
                 ?>
             @endforeach
