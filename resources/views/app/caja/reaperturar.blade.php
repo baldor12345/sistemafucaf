@@ -36,7 +36,7 @@
     
 </div>
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
-    {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Reaperturar ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'guardarreapertura(\''.$entidad.'\', this)')) !!}
+    {!! Form::button('<i class="glyphicon glyphicon-ok"></i> Reaperturar ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirarReaperturar', 'onclick' => 'guardarreapertura(\''.$entidad.'\', this)')) !!}
     &nbsp;
     {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
@@ -64,7 +64,7 @@
             type: 'GET',
             data: $('#formCaja').serialize(),
             beforeSend: function(){
-                
+                $('#btnRetirarReaperturar').button('loading');
             },
             success: function(res){
                 
@@ -75,6 +75,9 @@
             }
         }).fail(function(){
             mostrarMensaje ("Error de servidor", "ERROR")
+            $('#btnRetirarReaperturar').removeClass('disabled');
+            $('#btnRetirarReaperturar').attr('disabled');
+            $('#btnRetirarReaperturar').html('<i class="fa fa-check fa-lg"></i>Reaperturar');
         });
     }
     

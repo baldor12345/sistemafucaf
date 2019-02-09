@@ -42,7 +42,7 @@
 	</table>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar_control(\''.$entidad.'\', this)')) !!}
+			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarcontrol', 'onclick' => 'guardar_control(\''.$entidad.'\', this)')) !!}
 			&nbsp;
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
@@ -75,6 +75,7 @@ function guardar_control(entidad, idboton) {
 	btn.button('loading');
 	data.done(function(msg) {
 		respuesta = msg;
+		$('#btnGuardarcontrol').button('loading');
 	}).fail(function(xhr, textStatus, errorThrown) {
 		respuesta = 'ERROR';
 	}).always(function() {
@@ -90,6 +91,9 @@ function guardar_control(entidad, idboton) {
 				}        
 			} else {
 				mostrarErrores(respuesta, idformulario, entidad);
+				$('#btnGuardarcontrol').removeClass('disabled');
+				$('#btnGuardarcontrol').attr('disabled');
+				$('#btnGuardarcontrol').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}
 		}
 	});

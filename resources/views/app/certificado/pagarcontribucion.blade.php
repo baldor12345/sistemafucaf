@@ -30,7 +30,7 @@
     
 </div>
 <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
-    {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Pagar y Generar Reporte ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'guardarpagarmulta(\''.$entidad.'\', \''.URL::route($ruta["reportecertificadoPDF"], array()).'\')')) !!}
+    {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Pagar y Generar Reporte ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnpagarmulta', 'onclick' => 'guardarpagarmulta(\''.$entidad.'\', \''.URL::route($ruta["reportecertificadoPDF"], array()).'\')')) !!}
     &nbsp;
     {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
@@ -62,6 +62,7 @@
         };
         data.done(function(msg) {
             respuesta = msg;
+            $('#btnpagarmulta').button('loading');
         }).fail(function(xhr, textStatus, errorThrown) {
             respuesta = 'ERROR';
         }).always(function() {
@@ -75,6 +76,9 @@
                     buscar('{{ $entidad }}');      
                 } else {
                     mostrarErrores(respuesta, idformulario, entidad);
+                    $('#btnpagarmulta').removeClass('disabled');
+                    $('#btnpagarmulta').attr('disabled');
+                    $('#btnpagarmulta').html('<i class="fa fa-check fa-lg"></i>Guardar');
                 }
             }
         });
