@@ -487,6 +487,71 @@ GROUP BY persona.id;
     }
     
 
+    /**PARA DISTRIBUCUION DE UTILIDADES **************************************************** */
+    public static function listIngresosActual($anio, $month)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+    
+    public static function listIngresosTotal($anio, $month)
+    {
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
+                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones"),
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'<=',$month)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'<=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+    public static function listIngresos_por_concepto_hasta_mesactual($fecha)
+    {
+        $anio = date('Y', strtotime($fecha));
+        $mes = date('m', strtotime($fecha));
+
+        $fechai = date('Y-m-d', strtotime($fecha));
+        $results = DB::table('concepto')
+                    ->leftJoin('transaccion', 'transaccion.concepto_id', '=', 'concepto.id')
+                    ->select(
+                        'transaccion.monto as transaccion_monto'
+                    )
+                    ->where(DB::raw('extract( month from transaccion.fecha)'),'<=',$mes)
+                    ->where(DB::raw('extract( year from transaccion.fecha)'),'<=',$anio)
+                    ->where('concepto.tipo','=','I')
+                    ->where('concepto.id','!=',1)
+                    ->where('concepto.id','!=',2)
+                    ->where('concepto.id','!=',8)
+                    ->where('concepto.id','!=',5)
+                    ->where('concepto.id','!=',16)
+                    ->where('concepto.id','!=',4)
+                    ->where('concepto.id','!=',12)
+                    ->where('transaccion.deleted_at',null);
+        return $results;
+    }
 
 
     /*

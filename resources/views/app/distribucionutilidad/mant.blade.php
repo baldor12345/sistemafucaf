@@ -22,6 +22,8 @@ use App\Persona;
 {!! Form::hidden('gast_duactual', (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior), array('id' => 'gast_duactual')) !!}
 {!! Form::hidden('fsocial', round($utilidad_neta*0.1,4), array('id' => 'fsocial')) !!}
 {!! Form::hidden('rlegal', round($utilidad_neta*0.1,4), array('id' => 'rlegal')) !!}
+{!! Form::hidden('porcentaje_dist', $porcentaje_ditribuible, array('id' => 'porcentaje_dist')) !!}
+{!! Form::hidden('porcentaje_dist_faltante', $porcentaje_ditr_faltante, array('id' => 'porcentaje_dist_faltante')) !!}
 <style>
 	.tablesimple tr th, td {
 		text-align : center;
@@ -75,51 +77,51 @@ use App\Persona;
 					<td  colspan="2" rowspan="1">U. B. Acumulada</td>
 					<td rowspan="5"></td>
 					<td  colspan="1" rowspan="1">G. Adm. Acum.</td>
-					<td  colspan="1" rowspan="1">{{ round($gastadmacumulado, 1) }}</td>
+					<td  colspan="1" rowspan="1">{{ (round($gastadmacumulado, 1) == 0?"-":round($gastadmacumulado, 1)) }}</td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 					<td  colspan="1" rowspan="2">F Social 10%</td>
-					<td  colspan="1" rowspan="2">{{ round($utilidad_neta*0.1, 1) }}</td>
+					<td  colspan="1" rowspan="2">{{ (round($utilidad_neta*0.1, 1) == 0?"-":round($utilidad_neta, 1)) }}</td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 				</tr>
 				<tr>
 						
 					<td>Intereses</td>
-					<td>{{ round($intereses, 1) }}</td>
+					<td>{{ (round($intereses, 1) == 0?"-":round($intereses, 1)) }}</td>
 					<td  colspan="1" rowspan="1">I. Pag. Acum.</td>
-					<td  colspan="1" rowspan="1">{{ round($int_pag_acum, 1) }}</td>
+					<td  colspan="1" rowspan="1">{{ (round($int_pag_acum, 1) == 0?"-":round($int_pag_acum, 1)) }}</td>
 				</tr>
 				<tr>
 						
 					<td>Otros</td>
-					<td>{{ round($otros, 1) }}</td>
+					<td>{{ (round($otros, 1) == 0?"-":round($otros, 1)) }}</td>
 					<td  colspan="1" rowspan="1">Otros Acum.</td>
-					<td  colspan="1" rowspan="1">{{ round($otros_acumulados, 1) }}</td>
+					<td  colspan="1" rowspan="1">{{ (round($otros_acumulados, 1) == 0?"-":round($otros_acumulados, 1)) }}</td>
 					<td  colspan="1" rowspan="3">R Legal 10%</td>
-					<td  colspan="1" rowspan="3">{{ round($utilidad_neta*0.1, 1) }}</td>
+					<td  colspan="1" rowspan="3">{{ (round($utilidad_neta*0.1, 1) == 0?"-":round($utilidad_neta*0.1, 1)) }}</td>
 				</tr>
 				<tr>
 						
 					<td>Total acumulado</td>
-					<td>{{ round($intereses + $otros, 1) }}</td>
+					<td>{{ (round($intereses + $otros, 1) == 0?"-":round($intereses + $otros, 1)) }}</td>
 					<td  rowspan="1" colspan="1">TOTAL ACUMULADO</td>
-					<td  rowspan="1" colspan="1">{{ round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) }}</td>
+					<td  rowspan="1" colspan="1">{{ (round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) == 0?"-":round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) ) }}</td>
 				</tr>
 				<tr>
 						
 					<td>U.B DU Anterior</td>
-					<td>{{ round($du_anterior, 1) }}</td>
+					<td>{{ round($du_anterior, 1)==0?"-": round($du_anterior, 1)}}</td>
 					<td  rowspan="1" colspan="1">Gast. DU Anterior</td>
-					<td  rowspan="1" colspan="1">{{ round($gast_du_anterior, 1) }}</td>
+					<td  rowspan="1" colspan="1">{{ round($gast_du_anterior, 1)==0?"-": round($gast_du_anterior, 1) }}</td>
 				</tr>
 			</tbody>
 			<tfoot>
 				<tr>
 					<td></td>
 					<td>Utilidad Bruta DU ACTUAL</td>
-					<td>{{ round(($intereses + $otros) -  $du_anterior, 1) }}</td>
+					<td>{{ (round(($intereses + $otros) -  $du_anterior, 1)==0?"-":round(($intereses + $otros) -  $du_anterior, 1)) }}</td>
 					<td>menos</td>
 					<td>Gast. DU ACTUAL</td>
 					<td>{{ round(($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior, 1) }}</td>
@@ -164,7 +166,7 @@ use App\Persona;
 							$total_acc_mensual += $acciones_mensual[$ind]->cantidad_mes;
 							$ind ++;
 						}else{
-							echo('<td align="center">0</td>');
+							echo('<td align="center">-</td>');
 						}
 					}
 					?>
@@ -178,7 +180,7 @@ use App\Persona;
 						echo('<td align="center">'.$mes."</td>");
 					}
 					?>
-					<td>0</td><td>---</td>
+					<td>-</td><td>---</td>
 				</tr>
 				<tr>
 					<td colspan="2">Acciones-mes</td>
@@ -200,12 +202,12 @@ use App\Persona;
 							$j--;
 							$indice++;
 						}else{
-							echo('<td align="center">0</td>');
+							echo('<td align="center">-</td>');
 						}
 					}
 					
 					?>
-					<td>0</td><td>{{ $sumatotal_acc_mes }}</td>
+					<td>-</td><td>{{ $sumatotal_acc_mes }}</td>
 				</tr>
 	
 				<tr><td colspan="17"></td></tr>
@@ -263,7 +265,7 @@ use App\Persona;
 							$f++;
 						}
 					?>
-					<td align='center'>0</td>
+					<td align='center'>-</td>
 					<td align='center'>...</td>
 				</tr>
 			</tbody>
@@ -286,13 +288,16 @@ use App\Persona;
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
-				<tr ><th colspan="19" >PASO 6: Se sumasn estas utilidades mensuales y se obtiene  la UTILIDAD TOTAL del socio en el año (última columna de la derecha).</th></tr>
-				<tr ><th rowspan="2">N°</th><th rowspan="2" colspan="2">SOCIOS</th><th colspan="12" >{{ $anio }}</th><th>{{ $anio +1 }}</th><th rowspan="2">TOTAL</th><th colspan="2">OPPERACION</th></tr>
+				<tr ><th colspan="20" >PASO 6: Se sumasn estas utilidades mensuales y se obtiene  la UTILIDAD TOTAL del socio en el año (última columna de la derecha).</th></tr>
+				<tr ><th rowspan="2">N°</th><th rowspan="2" colspan="2">SOCIOS</th><th colspan="12" >{{ $anio }}</th><th>{{ $anio +1 }}</th><th rowspan="2">TOTAL</th><th rowspan="1">DISTR.</th><th colspan="2">OPPERACION</th></tr>
 				<tr >
 					<th>E</th><th>F</th><th>M</th><th>A</th><th>M</th><th>J</th><th>J</th><th>A</th><th>S</th><th>O</th><th>N</th><th>D</th><th>E</th>
-					<th>REITRAR</th><th>AHORRAR</th>
+					<th>{{ $porcentaje_ditribuible."%" }}</th><th>REITRAR</th><th>AHORRAR</th>
 				</tr>
 			</thead>
+			<?php
+			$total_distr = 0;
+			?>
 			<tbody>
 				<?php
 				$socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
@@ -304,7 +309,7 @@ use App\Persona;
 					
 					$utilidades = array();
 					if(count($listaAcciones)>0){
-						echo("<tr><td rowspan='2'  align='center'>".($i+1)."</td><th rowspan='2' colspan='2' align='center'>".$socios[$i]->nombres." ".$socios[$i]->apellidos."</th>");
+						echo("<tr><td rowspan='2'  align='center'>".($i+1)."</td><th rowspan='2' colspan='2' align='left'>".$socios[$i]->nombres." ".$socios[$i]->apellidos."</th>");
 						$l=0;
 						$sumtotalAcciones =0;
 						for($j=1; $j<=12; $j++){
@@ -320,21 +325,23 @@ use App\Persona;
 								$sumtotalAcciones += $numaccciones;
 								$l++;
 							}else{
-								echo("<td align='center'>0</td>");
+								echo("<td align='center'>-</td>");
 								$utilidades[$j-1] = 0;
 							}
 						}
-						echo("<td align='center'>0</td><td>".round($sumtotalAcciones,1)."</td><td></td><td></td><tr>");
+						echo("<td align='center'>0</td><td>".round($sumtotalAcciones,1)."</td><td>-</td><td></td><td></td></tr><tr>");
 							$sumtotal_util = 0;
 						for($j=1; $j<=12; $j++){
 							echo("<td align='center'>".round($utilidades[$j-1],1)."</td>");
 							$sumtotal_util += $utilidades[$j-1];
 						}
-						echo("<td align='center'>0</td><td>".round($sumtotal_util,1)."</td>");
+						echo("<td align='center'>-</td><td>".round($sumtotal_util,1)."</td>");
+						$distr = round(($porcentaje_ditribuible/100)*$sumtotal_util, 1);
+						$total_distr = $total_distr + $distr;
 						?>
-						
-						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirar ','vr'=>'1','num'=>''.$i ,'id' => 'btn'.$i, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,4))) !!}</td>
-						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrar','vr'=>'0', 'num'=>''.$i , 'id' => 'btna'.$i , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round($sumtotal_util,4))) !!}</td>
+						<td>{{ $distr }}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirar ','vr'=>'1','num'=>''.$i ,'id' => 'btn'.$i, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.$distr)) !!}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrar','vr'=>'0', 'num'=>''.$i , 'id' => 'btna'.$i , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.$distr)) !!}</td>
 
 						<?php
 						echo("</tr>");
@@ -343,6 +350,7 @@ use App\Persona;
 				?>
 
 			</tbody>
+		
 			<tfoot>
 				<tr>
 					<th rowspan="2" colspan="2">TOTAL</th>
@@ -370,6 +378,7 @@ use App\Persona;
 					?>
 					<th>0</th>
 					<th>{{ $total_acc_mensual }}</th>
+					<th>-</th>
 					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> RETIRAR TODO', array('class' => 'btn btn-warning btn-xs', 'accion'=>'retirar',  'id' => 'btnrecibo', 'onclick' => 'marcartodo(this)')) !!}</th>
 				</tr>
 				<tr>
@@ -399,11 +408,12 @@ use App\Persona;
 						
 						?>
 					<th>0</th><th>{{ round($sumatotal_utilidades, 1) }}</th>
+					<th>{{ round($total_distr, 1) }}</th>
 					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> AHORRAR TODO', array('class' => 'btn btn-success btn-xs','accion'=>'ahorrar', 'id' => 'btnrecibo', 'onclick' => 'marcartodo(this)')) !!}</th>
 
 				</tr>
 				<tr>
-					<th colspan="19"> PASO 7: Se efectúa la distribución y se decide que parte de las utilidades se capitaliza y que parte se entrega.
+					<th colspan="20"> PASO 7: Se efectúa la distribución y se decide que parte de las utilidades se capitaliza y que parte se entrega.
 						(FUNDERPERU recomienda capitalizar el mayor monto posible). Se efectua todo y se consigna en los libros de Actas y de Caja. !FELICITACION
 					</th>
 				</tr>
