@@ -103,9 +103,6 @@ class DistUtilidadesController extends Controller
         if(count($ditr)<=0){*/
             $caja = Caja::where("estado","=","A")->get();
 
-            
-
-
             $idcaja = count($caja) == 0? 0: $caja[0]->id;
             $configuraciones = Configuraciones::all()->last();
             $listar = Libreria::getParam($request->input('listar'), 'NO');
@@ -143,7 +140,8 @@ class DistUtilidadesController extends Controller
             }
             $porcentaje_ditribuible = 100;
             $porcentaje_ditr_faltante = 0;
-            $saldo_caja_distribuible = round($this->getSaldoCaja($caja) - $this->getInteresPagado_mesactual($caja->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja->fecha_horaApert), 1);
+            $saldo_caja_distribuible = $this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaApert), 1);
+            echo("saldo distr: ".$saldo_caja_distribuible);
             if($saldo_caja_distribuible < $utilidad_neta){
                 $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
                 $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
@@ -160,58 +158,135 @@ class DistUtilidadesController extends Controller
         }*/
         
     }
+    
+    public function getSaldoDistribuible($fecha){
+        echo("fecha: ".$fecha);
+        $anio =date('Y',strtotime($fecha));
+        $month =date('m',strtotime($fecha));
 
-    public function getSaldoCaja($caja){
-        $monto_inicio = round($caja->monto_iniciado, 1);
-        $egresos=0;
-        $ingresos=0;
-        $saldo_en_caja =0;
-        $saldo = Transaccion::getsaldo($caja->id)->get();
-        for($i=0; $i<count($saldo); $i++){
-            if(($saldo[$i]->concepto_tipo)=="I"){
-                $ingresos  += $saldo[$i]->monto; 
-            }else if(($saldo[$i]->concepto_tipo)=="E"){
-                $egresos += $saldo[$i]->monto;
-            }
-        }
-        $saldo_en_caja= round($ingresos,1) + round($monto_inicio,1) - round($egresos, 1);
-        return $saldo_en_caja;
-    }
-    public function getInteresPagado_mesactual($fecha){
-        //fecha en mes y año separados
-        $fecha = date('Y-m-d', strtotime($fecha));
-        $fechaf = explode("-", $fecha);
-        $anio =  $fechaf[0];
-        $month = $fechaf[1];
-
-        $lista = Caja::listEgresos($month,$anio)->get();
-        //calculo del total de egresos del mes actual por persona
-        $sum_interes_pagado_mes_actual=0;
+        $lista = Caja::listIngresosActual($anio,$month)->get();
+        //calculo del total de ingresos del mes
+        $sum_deposito_ahorros_mes_actual=0;
         if(count($lista) >0 ){
             for($i=0; $i<count($lista); $i++){
-                $sum_interes_pagado_mes_actual += round($lista[$i]->interes_ahorro,1);
+                $sum_deposito_ahorros_mes_actual += round($lista[$i]->deposito_ahorros,1) + round($lista[$i]->monto_ahorro,1);
             }
-        }else{
-            $sum_interes_pagado_mes_actual=0;
         }
-        return $sum_interes_pagado_mes_actual;
-    }
-    public function getGastosAdmin_mesactual($fecha){
-        $fecha = date('Y-m-d', strtotime($fecha));
-        $fechaf = explode("-", $fecha);
-        $anio =  $fechaf[0];
-        $month = $fechaf[1];
-        $lista_por_conceptoAdmin = Caja::listEgresos_por_conceptoAdmin($anio,$month)->get();
 
-        // calculo del total de egresos del mes actual por concepto
+
+        $fecha_completa= $anio."-02-01";
+        //se le pasa el año con un mes mas para traer la lista hasta el mes enero
+        $lista_hasta_actual = Caja::listIngresosastamesanterior($fecha_completa)->get();
+
+
+        $depositos_ahorros_totales=0;
+        $pagos_de_capital_total=0;
+        $intereses_totales=0;
+        $acciones_totales=0;
+        $otros_totales=0;
+        $ingresos_totales=0;
+        if(count($lista_hasta_actual) >0 ){
+            for($i=0; $i<count($lista_hasta_actual); $i++){
+                $depositos_ahorros_totales += round($lista_hasta_actual[$i]->deposito_ahorros,1) + round($lista_hasta_actual[$i]->monto_ahorro,1);
+                $pagos_de_capital_total += round($lista_hasta_actual[$i]->pagos_de_capital,1);
+                $intereses_totales += round($lista_hasta_actual[$i]->intereces_recibidos,1);
+                $acciones_totales += round($lista_hasta_actual[$i]->acciones,1);
+                $otros_totales += round($lista_hasta_actual[$i]->comision_voucher,1);
+            }
+            $ingresos_totales=$depositos_ahorros_totales + $pagos_de_capital_total + $intereses_totales + $acciones_totales + $otros_totales;
+        }
+
+        //lista de ingresos por concepto
+        $lista_ingresos_por_concepto_total = Caja::listIngresos_por_concepto_asta_mes_anterior($fecha_completa)->get();
+        // calculo del total de ingresos del mes actual por concepto
+        $sum_por_concepto_mes_total=0;
+        if(count($lista_ingresos_por_concepto_total) >0 ){
+            for($i=0; $i<count($lista_ingresos_por_concepto_total); $i++){
+                $sum_por_concepto_mes_total += $lista_ingresos_por_concepto_total[$i]->transaccion_monto;
+            }
+            $ingresos_totales += $sum_por_concepto_mes_total;
+            $otros_totales += $sum_por_concepto_mes_total;
+        }
+        $ingresos_dist = $ingresos_totales - $sum_deposito_ahorros_mes_actual;
+
+
+        /********************************************************************************************* */
+        //Calculo de egresos hasta el mes anterior 
+
+
+        $fecha_completa= $anio."-01-01";
+        $lista_mes_anterior = Caja::listEgresos_asta_mes_anterior($fecha_completa)->get();
+        $sum_retiro_ahorros_mes_anterior=0;
+        $sum_prestamo_de_capital_mes_anterior=0;
+        $sum_interes_pagado_mes_anterior=0;
+        $sum_utilidad_distribuida_mes_anterior=0;
+        $sum_egresos_totales_mes_anterior=0;
+
+        if(count($lista_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_mes_anterior); $i++){
+                $sum_retiro_ahorros_mes_anterior += round($lista_mes_anterior[$i]->monto_ahorro,1);
+                $sum_prestamo_de_capital_mes_anterior += round($lista_mes_anterior[$i]->monto_credito,1);
+                $sum_utilidad_distribuida_mes_anterior += round($lista_mes_anterior[$i]->utilidad_distribuida,1);
+                $sum_interes_pagado_mes_anterior += round($lista_mes_anterior[$i]->interes_ahorro,1);
+            }
+            $sum_egresos_totales_mes_anterior= $sum_retiro_ahorros_mes_anterior + $sum_prestamo_de_capital_mes_anterior + $sum_interes_pagado_mes_anterior + $sum_utilidad_distribuida_mes_anterior;
+        }
+        $lista_por_concepto_asta_mes_anteriorAdmin = Caja::listEgresos_por_concepto_asta_mes_anteriorAdmin($fecha_completa)->get();
+
+        $sum_gasto_administrativo_asta_mes_anterior=0;
+        if(count($lista_por_concepto_asta_mes_anteriorAdmin) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anteriorAdmin); $i++){
+                $sum_gasto_administrativo_asta_mes_anterior += $lista_por_concepto_asta_mes_anteriorAdmin[$i]->transaccion_monto;
+            }
+            $sum_egresos_totales_mes_anterior += $sum_gasto_administrativo_asta_mes_anterior;
+        }
+
+        $lista_por_concepto_asta_mes_anteriorOthers = Caja::listEgresos_por_concepto_asta_mes_anteriorOthers($fecha_completa)->get();
+        $sum_otros_egresos_asta_mes_anterior =0;
+        if(count($lista_por_concepto_asta_mes_anteriorOthers) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anteriorOthers); $i++){
+                $sum_otros_egresos_asta_mes_anterior += $lista_por_concepto_asta_mes_anteriorOthers[$i]->transaccion_monto;
+            }
+            $sum_egresos_totales_mes_anterior += $sum_otros_egresos_asta_mes_anterior;
+        }
+
+        //gastos administrativos mes actual
+        $lista_por_conceptoAdmin = Caja::listEgresos_por_conceptoAdmin($anio,$month)->get();
         $sum_gasto_administrativo_mes_actual=0;
         if(count($lista_por_conceptoAdmin) >0 ){
             for($i=0; $i<count($lista_por_conceptoAdmin); $i++){
                 $sum_gasto_administrativo_mes_actual += $lista_por_conceptoAdmin[$i]->transaccion_monto;
             }
         }
-        return $sum_gasto_administrativo_mes_actual;
+
+        // interes pagado del mes actual y otros egresos del mes actual
+        $lista = Caja::listEgresos($month,$anio)->get();
+        $sum_interes_pagado_mes_actual=0;
+        $sum_otros_egresos_mes_actual =0;
+       
+        if(count($lista) >0 ){
+            for($i=0; $i<count($lista); $i++){
+                $sum_interes_pagado_mes_actual += round($lista[$i]->interes_ahorro,1);
+                $sum_otros_egresos_mes_actual += round($lista[$i]->otros_egresos,1);
+            }
+        }
+
+        $lista_por_conceptoOthers = Caja::listEgresos_por_conceptoOthers($anio,$month)->get();
+        if(count($lista_por_conceptoOthers) >0 ){
+            for($i=0; $i<count($lista_por_conceptoOthers); $i++){
+                $sum_otros_egresos_mes_actual += $lista_por_conceptoOthers[$i]->transaccion_monto;
+            }
+        }
+        echo("egresoso_totales mes anterior: ".$sum_egresos_totales_mes_anterior);
+        echo("interes pagado mes actual: ".$sum_interes_pagado_mes_actual);
+        echo("otros egresos mes actual: ".$sum_otros_egresos_mes_actual);
+        $egresos_dist =  $sum_egresos_totales_mes_anterior + $sum_gasto_administrativo_mes_actual + $sum_otros_egresos_mes_actual+ $sum_interes_pagado_mes_actual;
+
+        return round($ingresos_dist -$egresos_dist, 1);
+
     }
+
+
    /**
      * Store a newly created resource in storage.
      *
@@ -261,7 +336,7 @@ class DistUtilidadesController extends Controller
                     $transaccion->save();
                     if($request->input('ahorrar'.$i) == '1'){
                         $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
-                    $ahorro=null;
+                        $ahorro=null;
                         if(count($resultado) >0){
                             $ahorro = $resultado[0];
                             $capital = $ahorro->capital + $request->input('monto'.$i);
@@ -433,7 +508,6 @@ class DistUtilidadesController extends Controller
 
         $anio =date('Y',strtotime($distribucion->fechai));
         $entidad = 'Distribucion';
-    
         $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
         $otros = $distribucion->otros;//$sumUBAcumulado[1];
         $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
@@ -462,7 +536,6 @@ class DistUtilidadesController extends Controller
         $existe = 0;
         $reporte =1;
         $anio_actual=$anio+1;
-
 
         $j=12;
         $indice=0;
@@ -541,5 +614,4 @@ class DistUtilidadesController extends Controller
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
     }
-
 }
