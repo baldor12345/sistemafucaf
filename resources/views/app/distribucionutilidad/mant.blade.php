@@ -20,8 +20,8 @@ use App\Persona;
 {!! Form::hidden('int_pag_acum', $int_pag_acum, array('id' => 'int_pag_acum')) !!}
 {!! Form::hidden('otros_acum', $otros_acumulados, array('id' => 'otros_acum')) !!}
 {!! Form::hidden('gast_duactual', (($gastadmacumulado + $int_pag_acum + $otros_acumulados) - $gast_du_anterior), array('id' => 'gast_duactual')) !!}
-{!! Form::hidden('fsocial', round($utilidad_neta*0.1,4), array('id' => 'fsocial')) !!}
-{!! Form::hidden('rlegal', round($utilidad_neta*0.1,4), array('id' => 'rlegal')) !!}
+{!! Form::hidden('fsocial', round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1), array('id' => 'fsocial')) !!}
+{!! Form::hidden('rlegal', round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1), array('id' => 'rlegal')) !!}
 {!! Form::hidden('porcentaje_dist', $porcentaje_ditribuible, array('id' => 'porcentaje_dist')) !!}
 {!! Form::hidden('porcentaje_dist_faltante', $porcentaje_ditr_faltante, array('id' => 'porcentaje_dist_faltante')) !!}
 <style>
@@ -82,7 +82,7 @@ use App\Persona;
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 					<td  colspan="1" rowspan="2">F Social 10%</td>
-					<td  colspan="1" rowspan="2">{{ (round($utilidad_neta*0.1, 1) == 0?"-":round($utilidad_neta, 1)) }}</td>
+					<td  colspan="1" rowspan="2">{{ (round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1) == 0?"-":(round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1))) }}</td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 				</tr>
@@ -100,7 +100,7 @@ use App\Persona;
 					<td  colspan="1" rowspan="1">Otros Acum.</td>
 					<td  colspan="1" rowspan="1">{{ (round($otros_acumulados, 1) == 0?"-":round($otros_acumulados, 1)) }}</td>
 					<td  colspan="1" rowspan="3">R Legal 10%</td>
-					<td  colspan="1" rowspan="3">{{ (round($utilidad_neta*0.1, 1) == 0?"-":round($utilidad_neta*0.1, 1)) }}</td>
+					<td  colspan="1" rowspan="3">{{ (round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1) == 0?"-":round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1)) }}</td>
 				</tr>
 				<tr>
 						
