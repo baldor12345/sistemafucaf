@@ -141,6 +141,8 @@ class DistUtilidadesController extends Controller
             $porcentaje_ditribuible = 100;
             $porcentaje_ditr_faltante = 0;
             $saldo_caja_distribuible = $this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaApert), 1);
+            
+            $saldo_caja_distribuible -= 10.8;
             echo("saldo distr: ".$saldo_caja_distribuible);
             if($saldo_caja_distribuible < $utilidad_neta){
                 $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
@@ -308,15 +310,19 @@ class DistUtilidadesController extends Controller
                 $listar = Libreria::getParam($request->input('listar'), 'NO');
                 $error = DB::transaction(function() use($request, $caja_id, $anio){
                 $distribucion = new DistribucionUtilidades();
-                $distribucion->gast_admin_acum = $this->rouNumber($request->input('gast_ad_acum'), 7);
-                $distribucion->int_pag_acum = $this->rouNumber($request->input('int_pag_acum'), 7);
-                $distribucion->otros_acum = $this->rouNumber($request->input('otros_acum'), 7);
-                $distribucion->ub_duactual = $this->rouNumber($request->input('ub_duactual'), 7);
+                $distribucion->gast_admin_acum = $this->rouNumber($request->input('gast_ad_acum'), 1);
+                $distribucion->int_pag_acum = $this->rouNumber($request->input('int_pag_acum'), 1);
+                $distribucion->otros_acum = $this->rouNumber($request->input('otros_acum'), 1);
+                $distribucion->ub_duactual = $this->rouNumber($request->input('ub_duactual'), 1);
                 $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: <br> DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
-                $distribucion->intereses = $this->rouNumber($request->input('intereses'), 7);
+                $distribucion->intereses = $this->rouNumber($request->input('intereses'), 1);
                 $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
-                $distribucion->otros = $this->rouNumber($request->input('otros'), 7);
-                $distribucion->gastos_duactual = $this->rouNumber($request->input('gast_duactual'), 7);
+                $distribucion->otros = $this->rouNumber($request->input('otros'), 1);
+                $distribucion->gastos_duactual = $this->rouNumber($request->input('gast_duactual'), 1);
+                $distribucion->porcentaje_distribuido = round($request->input('porcentaje_dist'), 2);
+                $distribucion->porcentaje_faltante = round($request->input('porcentaje_dist_faltante'), 2);
+
+                $distribucion->estado =(round($request->input('porcentaje_dist_faltante'), 2) <=0) ?'d': 'p';
                 $distribucion->fechai = date($anio.'-01-01');
                 $distribucion->fechaf = date($anio.'-12-31');
                 $distribucion->save();
@@ -609,9 +615,9 @@ class DistUtilidadesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
-
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
     }
+
 }
