@@ -17,8 +17,24 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card-box table-responsive">
-
-            <div class="row m-b-30">
+			@if($existe_dist_pendiente)
+			<div class="alert bg-warning col-xl-6 col-lg-8 col-md-12 col-sm-12 -col-xs-12">
+				<div class="row ">
+					<div class="col-md-6">
+						<strong>Distribución de utilidades Pendiente</strong>
+						<ul>
+							<li>Utilidad Distribuible Total: {{ $distribuicionPendiente[0]->utilidad_distribuible }}</li>
+							<li>Porcentaje Pendiente a distribuir: {{ $distribuicionPendiente[0]->porcentaje_faltante."%" }}</li>
+							<li>Utilidad Pendiente por distribuir: {{ ($distribuicionPendiente[0]->porcentaje_faltante/100)*$distribuicionPendiente[0]->utilidad_distribuible }}</li>
+						</ul>
+					</div>
+					<div class="col-md-6" style="text-align: left;">
+						{!! Form::button('<i class="glyphicon glyphicon-check"></i> Distribuir Faltante', array('class' => 'btn btn-succes waves-effect waves-light m-l-10 btn-md', 'id' => 'btnDistribuirFalt', 'onclick' => 'modal (\''.URL::route($ruta["vistadistribuirfaltante"], array('distribucion_id'=>$distribuicionPendiente[0]->id)).'\', \''."Distribucion de utilidades faltantes".'\', this);')) !!}
+					</div>
+				</div>
+			</div>
+			@endif
+            <div class="row m-b-5">
                 <div class="col-sm-12">
 					{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}

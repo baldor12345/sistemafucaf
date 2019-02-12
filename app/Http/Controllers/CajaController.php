@@ -12,6 +12,7 @@ use App\Ahorros;
 use App\Transaccion;
 use App\Concepto;
 use App\Configuraciones;
+use App\DistribucionUtilidades;
 use App\Gastos;
 use App\User;
 use App\Credito;
@@ -56,7 +57,9 @@ class CajaController extends Controller
             'reporteingresosPDF' => 'caja.reporteingresosPDF',
             'reporteegresosPDF' => 'caja.reporteegresosPDF',
             'reporteresumenfinancieroPDF' => 'caja.reporteresumenfinancieroPDF',
-            'listpersonas' =>'caja.listpersonas'
+            'listpersonas' =>'caja.listpersonas',
+            'vistadistribuirfaltante' => 'caja.vistadistribuirfaltante',
+            'guardar_distribucion_faltante' => 'caja.guardar_distribucion_faltante'
         );
 
     /**
@@ -127,6 +130,7 @@ class CajaController extends Controller
 
     public function index()
     {
+
         $entidad          = 'Caja';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
@@ -135,9 +139,119 @@ class CajaController extends Controller
         $titulo_reporte = $this->titulo_reporte;
         $ruta             = $this->rutas;
         $listCaja = Caja::listCaja();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja','titulo_reapertura','titulo_reporte'));
+
+        $existe_dist_pendiente =false;
+        $distribuicionPendiente = DistribucionUtilidades::where('estado','=','p')->get();
+        if(count($distribuicionPendiente)>0){
+            $existe_dist_pendiente = true;
+        }
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar','titulo_nuevomovimiento', 'ruta','listCaja','titulo_reapertura','titulo_reporte','distribuicionPendiente', 'existe_dist_pendiente'));
+    
     }
 
+    /************************************************************************************************* */
+        public function vistadistribuirfaltante($distribucion_id){
+            $distribucion = DistribucionUtilidades::find($distribucion_id);
+
+        $anio =date('Y',strtotime($distribucion->fechai));
+        $entidad = 'Distribucion';
+      
+            $ruta = $this->rutas;
+        
+            $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = $distribucion->otros;//$sumUBAcumulado[1];
+            $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
+
+            $int_pag_acum= $distribucion->int_pag_acum; //$gastosDUActual[0];
+            $otros_acumulados=  $distribucion->otros_acum;// $gastosDUActual[1];
+            $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
+         
+            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+            $numero_acciones_hasta_enero=  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();
+           
+            $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+            $acciones_mes  =0;
+            $indice1 = 0;
+            $j1=12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
+            }
+            $existe = 0;
+            $reporte =0;
+            $anio_actual=$anio+1;
+            $fsocial = Persona::personas('11111111')[0];
+            $rlegal = Persona::personas('22222222')[0];
+            return view($this->folderview.'.vistadistribucionfaltante')->with(compact('rlegal','fsocial','distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
+        }
+
+        public function guardar_distribucion_faltante(Request $request){
+            $caja_id = Caja::where("estado","=","A")->value('id');
+            $caja_id = ($caja_id != "")?$caja_id:0;
+            $error = null;
+        
+            if($caja_id >0){
+                $error = DB::transaction(function() use($request, $caja_id){
+                    $num_socios = $request->input('numerosocios');
+                    $caja = Caja::where("estado","=","A")->get()[0];
+                    for($i=0;$i<$num_socios;$i++){
+                        //$caja = Caja::where("estado","=","A")->get()[0];
+                        $transaccion = new Transaccion();
+                        $transaccion->usuario_id = Credito::idUser();
+                        $transaccion->persona_id = $request->input('persona_id'.$i);
+                        $transaccion->caja_id = $caja_id;
+                        $transaccion->fecha = $caja->fecha_horaApert;
+                        $transaccion->concepto_id = 19; // distribucion d eutilidad
+                        $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
+                        $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 1);
+                        $transaccion->save();
+                        if($request->input('ahorrar'.$i) == '1'){
+                            $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
+                            $ahorro=null;
+                            if(count($resultado) >0){
+                                $ahorro = $resultado[0];
+                                $capital = $ahorro->capital + $request->input('monto'.$i);
+                                $ahorro->capital = $this->rouNumber($capital, 1);
+                                $ahorro->estado = 'P';
+                                $ahorro->save();
+                            }else{
+                                $ahorro = new Ahorros();
+                                $ahorro->capital =$this->rouNumber( $request->input('monto'.$i), 1);
+                                $ahorro->interes = 0;
+                                $ahorro->estado = 'P';
+                                $ahorro->fechai = $caja->fecha_horaApert;
+                                $ahorro->persona_id = $request->input('persona_id'.$i);
+                                $ahorro->save();
+                            }
+
+                            $transaccion = new Transaccion();
+                            $transaccion->fecha = $caja->fecha_horaApert;
+                            $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
+                            $transaccion->monto_ahorro= $this->rouNumber($request->input('monto'.$i), 1);
+                            $transaccion->id_tabla = $ahorro->id;
+                            $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                            $transaccion->concepto_id = 5;
+                            $transaccion->persona_id = $request->input('persona_id'.$i);
+                            $transaccion->usuario_id = Credito::idUser();
+                            $transaccion->caja_id =  $caja->id;
+                            $transaccion->save();
+                        }
+                    }
+                    $distribucion = DistribucionUtilidades::find($request->get('distribucion_id'));
+                    $distribucion->estado = 'd';
+                    $distribucion->save();
+                });
+            }
+            return $error; 
+        }
+    /************************************************************************************************* */
     /**
      * Show the form for creating a new resource.
      *
