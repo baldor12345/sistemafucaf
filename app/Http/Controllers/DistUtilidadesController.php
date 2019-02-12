@@ -337,8 +337,8 @@ class DistUtilidadesController extends Controller
                     $transaccion->caja_id = $caja_id;
                     $transaccion->fecha = $caja->fecha_horaApert;
                     $transaccion->concepto_id = 19; // distribucion d eutilidad
-                    $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 7);
-                    $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 7);
+                    $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
+                    $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 1);
                     $transaccion->save();
                     if($request->input('ahorrar'.$i) == '1'){
                         $resultado = Ahorros::getahorropersona($request->input('persona_id'.$i));
@@ -346,12 +346,12 @@ class DistUtilidadesController extends Controller
                         if(count($resultado) >0){
                             $ahorro = $resultado[0];
                             $capital = $ahorro->capital + $request->input('monto'.$i);
-                            $ahorro->capital = $this->rouNumber($capital, 7);
+                            $ahorro->capital = $this->rouNumber($capital, 1);
                             $ahorro->estado = 'P';
                             $ahorro->save();
                         }else{
                             $ahorro = new Ahorros();
-                            $ahorro->capital =$this->rouNumber( $request->input('monto'.$i), 7);
+                            $ahorro->capital =$this->rouNumber( $request->input('monto'.$i), 1);
                             $ahorro->interes = 0;
                             $ahorro->estado = 'P';
                             $ahorro->fechai = $caja->fecha_horaApert;
@@ -361,8 +361,8 @@ class DistUtilidadesController extends Controller
 
                         $transaccion = new Transaccion();
                         $transaccion->fecha = $caja->fecha_horaApert;
-                        $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 7);
-                        $transaccion->monto_ahorro= $this->rouNumber($request->input('monto'.$i), 7);
+                        $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
+                        $transaccion->monto_ahorro= $this->rouNumber($request->input('monto'.$i), 1);
                         $transaccion->id_tabla = $ahorro->id;
                         $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                         $transaccion->concepto_id = 5;
@@ -380,7 +380,7 @@ class DistUtilidadesController extends Controller
                 if(count($resultS) >0){
                     $ahorroS = $resultS[0];
                     $capital = $ahorroS->capital + $request->input('fsocial');
-                    $ahorroS->capital = $this->rouNumber($capital, 7);
+                    $ahorroS->capital = $this->rouNumber($capital, 1);
                     $ahorroS->estado = 'P';
                     $ahorroS->save();
                 }else{
@@ -394,8 +394,8 @@ class DistUtilidadesController extends Controller
                 }
                 $transaccionS = new Transaccion();
                 $transaccionS->fecha = $caja->fecha_horaApert;
-                $transaccionS->monto = $this->rouNumber($request->input('fsocial'), 7);
-                $transaccionS->monto_ahorro= $this->rouNumber($request->input('fsocial'), 7);
+                $transaccionS->monto = $this->rouNumber($request->input('fsocial'), 1);
+                $transaccionS->monto_ahorro= $this->rouNumber($request->input('fsocial'), 1);
                 $transaccionS->id_tabla = $ahorroS->id;
                 $transaccionS->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccionS->concepto_id = 5;
@@ -410,8 +410,8 @@ class DistUtilidadesController extends Controller
                 $transaccionF->caja_id =$caja->id;
                 $transaccionF->fecha = $caja->fecha_horaApert;
                 $transaccionF->concepto_id = 19; // distribucion d eutilidad
-                $transaccionF->monto = $this->rouNumber($request->input('fsocial'), 7);
-                $transaccionF->utilidad_distribuida = $this->rouNumber($request->input('fsocial'), 7);
+                $transaccionF->monto = $this->rouNumber($request->input('fsocial'), 1);
+                $transaccionF->utilidad_distribuida = $this->rouNumber($request->input('fsocial'), 1);
                 $transaccionF->save();
 
                 /***Reserva Legal */
@@ -420,8 +420,8 @@ class DistUtilidadesController extends Controller
                 $ahorroL = null;
                 if(count($resultR) >0){
                     $ahorroL = $resultR[0];
-                    $capital = $ahorroS->capital + $request->input('rlegal');
-                    $ahorroL->capital = $this->rouNumber($capital, 7);
+                    $capital = $ahorroL->capital + $request->input('rlegal');
+                    $ahorroL->capital = $this->rouNumber($capital, 1);
                     $ahorroL->estado = 'P';
                     $ahorroL->save();
                 }else{
@@ -435,8 +435,8 @@ class DistUtilidadesController extends Controller
                 }
                 $transaccionL = new Transaccion();
                 $transaccionL->fecha = $caja->fecha_horaApert;
-                $transaccionL->monto = $this->rouNumber($request->input('rlegal'), 7);
-                $transaccionL->monto_ahorro= $this->rouNumber($request->input('rlegal'), 7);
+                $transaccionL->monto = $this->rouNumber($request->input('rlegal'), 1);
+                $transaccionL->monto_ahorro= $this->rouNumber($request->input('rlegal'), 1);
                 $transaccionL->id_tabla = $ahorroL->id;
                 $transaccionL->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccionL->concepto_id = 5;
@@ -451,8 +451,8 @@ class DistUtilidadesController extends Controller
                 $transaccionR->caja_id =$caja->id;
                 $transaccionR->fecha = $caja->fecha_horaApert;
                 $transaccionR->concepto_id = 19; // distribucion d eutilidad
-                $transaccionR->monto = $this->rouNumber($request->input('rlegal'), 7);
-                $transaccionR->utilidad_distribuida = $this->rouNumber($request->input('rlegal'), 7);
+                $transaccionR->monto = $this->rouNumber($request->input('rlegal'), 1);
+                $transaccionR->utilidad_distribuida = $this->rouNumber($request->input('rlegal'), 1);
                 $transaccionR->save();
 
                 });
