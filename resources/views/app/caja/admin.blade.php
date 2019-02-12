@@ -41,9 +41,6 @@
             </div>
 
 			<div id="listado{{ $entidad }}"></div>
-			
-            <table id="datatable" class="table table-striped table-bordered">
-            </table>
         </div>
     </div>
 </div>

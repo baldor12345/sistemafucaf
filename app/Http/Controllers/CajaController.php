@@ -656,7 +656,7 @@ class CajaController extends Controller
         }
         $cboPers = array(0=>'Seleccione...');
 
-        $entidad        = 'Transaccion';
+        $entidad        = 'Caja';
         $ruta = $this->rutas;
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingreso','E'=>'Egreso');
         $cboConceptos        = [''=>'Seleccione'];

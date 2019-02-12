@@ -98,7 +98,7 @@ function cargarselect2(entidad){
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarmovimiento', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarmovimiento', 'onclick' => 'guardarmoviemiento(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -215,5 +215,25 @@ function cargarselect2(entidad){
 			}
 		}).change();
 	});
+
+	function guardarmoviemiento(entidad){
+		var fecha_de_caja = '{{ $fecha_caja }}';
+		var fecha_seleccionada = $('#fecha').val();
+		var saldo = '{{ $diferencia}}';
+		var monto_ingresado = $('#total');
+
+		if(monto_ingresado<=saldo){
+			if(fecha_de_caja>fecha_seleccionada){
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura de caja, gracias!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+			}else{
+				guardar(entidad);
+				buscar("{{ $entidad }}");
+			}
+		}else{
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Saldo de caja insuficiente!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+		}
+	}
 
 </script>
