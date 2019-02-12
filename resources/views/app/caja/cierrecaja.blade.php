@@ -100,10 +100,10 @@ use Illuminate\Support\Facades\DB;
 		
 	});
 	
-	function (entidad){
+	function CerrarCaja(entidad){
 		var fechacierre = '{{ $fecha_caja }}';
 		var fecharecibida = $('#fecha_horaApert').val();
-		if(fechacierrCerrarCajae>fecharecibida){
+		if(fechacierre>fecharecibida){
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura, gracias!</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
 		}else{
