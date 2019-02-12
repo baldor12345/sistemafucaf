@@ -66,7 +66,7 @@ use Illuminate\Support\Facades\DB;
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-	{!! Form::button('Cerrar Caja', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCerrar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+	{!! Form::button('Cerrar Caja', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCerrar', 'onclick' => 'CerrarCaja(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -100,7 +100,16 @@ use Illuminate\Support\Facades\DB;
 		
 	});
 	
-
+	function (entidad){
+		var fechacierre = '{{ $fecha_caja }}';
+		var fecharecibida = $('#fecha_horaApert').val();
+		if(fechacierrCerrarCajae>fecharecibida){
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura, gracias!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+		}else{
+			guardar(entidad);
+		}
+	}
 
 
 </script>
