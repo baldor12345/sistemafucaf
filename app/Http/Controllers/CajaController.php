@@ -613,8 +613,8 @@ class CajaController extends Controller
 
                                 $ahorro = new Ahorros();
                                 $ahorro->fechai = $fecha_nueva;
-                                $ahorro->capital = round($value->capital + $tasa_interes_ahorro * $value->capital, 7);
-                                $ahorro->interes = round($tasa_interes_ahorro * $value->capital, 7);
+                                $ahorro->capital = round($value->capital + $tasa_interes_ahorro * $value->capital, 1);
+                                $ahorro->interes = round($tasa_interes_ahorro * $value->capital, 1);
                                 $ahorro->persona_id = $value->persona_id;
                                 $ahorro->estado = 'P';
                                 $ahorro->save();
