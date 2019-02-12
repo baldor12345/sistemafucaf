@@ -816,7 +816,7 @@ class CajaController extends Controller
                     $transaccion->fecha = $request->get('fecha');
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
-                    $transaccion->descripcion =  $request->get('comentario')." ".$persona->nombres;
+                    $transaccion->descripcion =  "de: ".$persona->nombres." para ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();
@@ -860,7 +860,7 @@ class CajaController extends Controller
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
                     $transaccion->tipo_egreso = $request->get('editable');
-                    $transaccion->descripcion =  $request->get('comentario')." ".$persona->nombres;
+                    $transaccion->descripcion =  "de: ".$persona->nombres." para ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();
