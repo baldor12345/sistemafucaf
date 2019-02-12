@@ -243,6 +243,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/cargarreporte', 'CajaController@cargarreporte')->name('caja.cargarreporte');
     Route::get('caja/generarreportes', 'CajaController@generarreportes')->name('caja.generarreportes');
     Route::get('caja/listpersonas',  'CajaController@listpersonas')->name('caja.listpersonas');
+    Route::get('caja/guardar_distribucion_faltante',  'CajaController@guardar_distribucion_faltante')->name('caja.guardar_distribucion_faltante');
+    Route::get('caja/vistadistribuirfaltante/{distribucion_id?}',  'CajaController@vistadistribuirfaltante')->name('caja.vistadistribuirfaltante');
 
     /*CONCEPTO*/
     Route::post('concepto/buscar', 'ConceptoController@buscar')->name('concepto.buscar');
