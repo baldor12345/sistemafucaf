@@ -219,8 +219,8 @@ function cargarselect2(entidad){
 	function guardarmoviemiento(entidad){
 		var fecha_de_caja = '{{ $fecha_caja }}';
 		var fecha_seleccionada = $('#fecha').val();
-		var saldo = '{{ $diferencia}}';
-		var monto_ingresado = $('#total');
+		var saldo = '{{ $diferencia }}';
+		var monto_ingresado = $('#total').val();
 
 		if(monto_ingresado<=saldo){
 			if(fecha_de_caja>fecha_seleccionada){
@@ -228,7 +228,6 @@ function cargarselect2(entidad){
 					$('#divMensajeError{{ $entidad }}').show();
 			}else{
 				guardar(entidad);
-				buscar("{{ $entidad }}");
 			}
 		}else{
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Saldo de caja insuficiente!</span></div>";
