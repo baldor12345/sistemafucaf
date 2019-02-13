@@ -419,13 +419,15 @@ class CreditoController extends Controller{
                 // ***************
                 $partecapital = $request->get('partecapital');
                 $cuotainteres = $request->get('cuotainteres');
+                $cuotamora = $request->get('cuotamora');
                 // ***********************
                 $comision_voucher = 0.2;
 
                 //Actualiza cuota a estado cancelado
                 $cuota = Cuota::find($id_cuota);
                 $cuota->estado = 1;
-                $cuota->interes_mora = round(($valor_mora == null?0:$valor_mora), 7);
+               // $cuota->interes_mora = round(($valor_mora == null?0:$valor_mora), 7);
+                $cuota->interes_mora = $cuotamora;
                 $cuota->fecha_pago = $fecha_pago;
                 $cuota->save();
 
@@ -459,7 +461,7 @@ class CreditoController extends Controller{
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
                 //$transaccion->monto = $monto;
-                $transaccion->monto = round($cuota_interesMora+ $cuotainteres + $partecapital,1);
+                $transaccion->monto = round($cuotamora+ $cuotainteres + $partecapital,1);
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de Cuota N°:".$cuota->numero_cuota;
                 $transaccion->persona_id = $id_cliente;
@@ -470,7 +472,8 @@ class CreditoController extends Controller{
                 //$transaccion->cuota_interes = round($cuota_interes, 1);
                 $transaccion->cuota_interes = round($cuotainteres, 1);
 
-                $transaccion->cuota_mora = round($cuota_interesMora,1);
+                //$transaccion->cuota_mora = round($cuota_interesMora,1);
+                $transaccion->cuota_mora = round($cuotamora,1);
                 $transaccion->id_tabla = $id_credito;
                 $transaccion->inicial_tabla = 'CU';
                 $transaccion->save();

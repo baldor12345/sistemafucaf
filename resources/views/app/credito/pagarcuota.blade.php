@@ -15,8 +15,12 @@
             {!! Form::text('partecapital', $cuota->parte_capital, array('class' => 'form-control input-xs', 'id' => 'partecapital', 'placeholder' => 's/.')) !!}
         </div>
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('cuotainteres', 'Interes: *', array('class' => 'interesss')) !!}
+            {!! Form::label('cuotainteres', 'Interes: ', array('class' => 'interesss')) !!}
             {!! Form::text('cuotainteres', $cuota->interes, array('class' => 'form-control input-xs', 'id' => 'cuotainteres', 'placeholder' => 's/.')) !!}
+        </div>
+        <div class="form-group col-12 col-md-12 col-sm-12">
+            {!! Form::label('cuotamora', 'Mora: ', array('class' => 'morass')) !!}
+            {!! Form::text('cuotamora', $cuota->interes_mora, array('class' => 'form-control input-xs', 'id' => 'cuotamora', 'placeholder' => 's/.')) !!}
         </div>
         <div class="form-group col-12 col-md-12 col-sm-12">
                 {!! Form::label('total', 'total: *', array('class' => 'tol')) !!}
