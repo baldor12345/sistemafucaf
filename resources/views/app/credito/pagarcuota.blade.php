@@ -9,6 +9,16 @@
 
 
 <div class="form-row">
+    {{-- ******************************* --}}
+        <div class="form-group col-12 col-md-12 col-sm-12">
+            {!! Form::label('partecapital', 'Parte capital: ', array('class' => 'valor_parte')) !!}
+            {!! Form::text('partecapital', $credito->parte_capital, array('class' => 'form-control input-xs', 'id' => 'partecapital', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+        </div>
+        <div class="form-group col-12 col-md-12 col-sm-12">
+            {!! Form::label('cuotainteres', 'Valor de Credito: *', array('class' => 'valor_cred')) !!}
+            {!! Form::text('cuotainteres', $credito->interes, array('class' => 'form-control input-xs', 'id' => 'cuotainteres', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+        </div>
+        {{-- *************** --}}
     <div class="form-group col-12 col-md-12 col-sm-12" >
         {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
         {!! Form::date('fecha_pagoc', $fechapago, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
