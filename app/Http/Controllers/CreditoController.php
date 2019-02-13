@@ -1126,7 +1126,7 @@ class CreditoController extends Controller{
                 $credito->estado = 1;
                 $credito->save();
 
-                if($numerosCuotas>0){
+                if($num_cuotas>0){
                     $concepto_id = 8;
                     $transaccion2 = new Transaccion();
                     $transaccion2->fecha = $fecha_pago;
