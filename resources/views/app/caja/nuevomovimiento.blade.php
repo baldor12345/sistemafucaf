@@ -219,8 +219,8 @@ function cargarselect2(entidad){
 	function guardarmoviemiento(entidad){
 		var fecha_de_caja = '{{ $fecha_caja }}';
 		var fecha_seleccionada = $('#fecha').val();
-		var saldo = '{{ $diferencia }}';
-		var monto_ingresado = $('#total').val();
+		var saldo = parseFloat('{{ $diferencia }}');
+		var monto_ingresado = parseFloat($('#total').val());
 
 		if(monto_ingresado<=saldo){
 			if(fecha_de_caja>fecha_seleccionada){
