@@ -1126,6 +1126,21 @@ class CreditoController extends Controller{
                 $credito->estado = 1;
                 $credito->save();
 
+                if($numerosCuotas>0){
+                    $concepto_id = 8;
+                    $transaccion2 = new Transaccion();
+                    $transaccion2->fecha = $fecha_pago;
+                    $transaccion2->monto = 0.2;
+                    $transaccion2->concepto_id = $concepto_id;
+                    $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
+                    $transaccion2->persona_id =  $persona->id;
+                    $transaccion2->usuario_id = Credito::idUser();
+                    $transaccion2->caja_id = $caja_id;
+                    $transaccion2->comision_voucher = 0.2;
+                    $transaccion2->save();
+                }
+                
+
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
