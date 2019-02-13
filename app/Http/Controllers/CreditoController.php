@@ -428,6 +428,8 @@ class CreditoController extends Controller{
                 $cuota->estado = 1;
                // $cuota->interes_mora = round(($valor_mora == null?0:$valor_mora), 7);
                 $cuota->interes_mora = $cuotamora;
+                $cuota->parte_capital = $partecapital;
+                $cuota->interes = $cuotainteres;
                 $cuota->fecha_pago = $fecha_pago;
                 $cuota->save();
 
