@@ -418,7 +418,7 @@ class CreditoController extends Controller{
                 $valor_mora = $request->get('valor_mora');
                 // ***************
                 $partecapital = $request->get('partecapital');
-                $cuotainteres = $request->get('cuota_interes');
+                $cuotainteres = $request->get('cuotainteres');
                 // ***********************
                 $comision_voucher = 0.2;
 
@@ -459,7 +459,7 @@ class CreditoController extends Controller{
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
                 //$transaccion->monto = $monto;
-                $transaccion->monto = round($cuota_interesMora+ $cuotainteres + $parte_capital,1);
+                $transaccion->monto = round($cuota_interesMora+ $cuotainteres + $partecapital,1);
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de Cuota N°:".$cuota->numero_cuota;
                 $transaccion->persona_id = $id_cliente;

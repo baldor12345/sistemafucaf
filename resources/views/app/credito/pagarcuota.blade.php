@@ -11,13 +11,17 @@
 <div class="form-row">
     {{-- ******************************* --}}
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('partecapital', 'Parte capital: ', array('class' => 'valor_parte')) !!}
+            {!! Form::label('partecapital', 'Parte capital: ', array('class' => 'psrtcap')) !!}
             {!! Form::text('partecapital', $cuota->parte_capital, array('class' => 'form-control input-xs', 'id' => 'partecapital', 'placeholder' => 's/.')) !!}
         </div>
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('cuotainteres', 'Interes: *', array('class' => 'valor_cred')) !!}
+            {!! Form::label('cuotainteres', 'Interes: *', array('class' => 'interesss')) !!}
             {!! Form::text('cuotainteres', $cuota->interes, array('class' => 'form-control input-xs', 'id' => 'cuotainteres', 'placeholder' => 's/.')) !!}
         </div>
+        <div class="form-group col-12 col-md-12 col-sm-12">
+                {!! Form::label('total', 'total: *', array('class' => 'tol')) !!}
+                {!! Form::text('total', ($cuota->interes + $cuota->parte_capital), array('class' => 'form-control input-xs', 'id' => 'total', 'placeholder' => 's/.')) !!}
+            </div>
         {{-- *************** --}}
     <div class="form-group col-12 col-md-12 col-sm-12" >
         {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
