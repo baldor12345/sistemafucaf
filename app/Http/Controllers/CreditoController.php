@@ -461,7 +461,7 @@ class CreditoController extends Controller{
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
                 //$transaccion->monto = $monto;
-                $transaccion->monto = round($cuotamora+ $cuotainteres + $partecapital,1);
+                $transaccion->monto = round($cuotainteres + $partecapital,1);
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de Cuota N°:".$cuota->numero_cuota;
                 $transaccion->persona_id = $id_cliente;
