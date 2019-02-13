@@ -12,11 +12,11 @@
     {{-- ******************************* --}}
         <div class="form-group col-12 col-md-12 col-sm-12">
             {!! Form::label('partecapital', 'Parte capital: ', array('class' => 'valor_parte')) !!}
-            {!! Form::text('partecapital', $credito->parte_capital, array('class' => 'form-control input-xs', 'id' => 'partecapital', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+            {!! Form::text('partecapital', $cuota->parte_capital, array('class' => 'form-control input-xs', 'id' => 'partecapital', 'placeholder' => 's/.')) !!}
         </div>
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('cuotainteres', 'Valor de Credito: *', array('class' => 'valor_cred')) !!}
-            {!! Form::text('cuotainteres', $credito->interes, array('class' => 'form-control input-xs', 'id' => 'cuotainteres', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+            {!! Form::label('cuotainteres', 'Interes: *', array('class' => 'valor_cred')) !!}
+            {!! Form::text('cuotainteres', $cuota->interes, array('class' => 'form-control input-xs', 'id' => 'cuotainteres', 'placeholder' => 's/.')) !!}
         </div>
         {{-- *************** --}}
     <div class="form-group col-12 col-md-12 col-sm-12" >
