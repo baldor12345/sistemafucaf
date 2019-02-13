@@ -1,6 +1,6 @@
 
 <div class="card-box table-responsive crbox">
-    <div class="row m-b-30" id="selectfilas">
+    <div class="row m-b-5" id="selectfilas">
         <div class="col-sm-12">
             {!! Form::open(['route' => $ruta["listardetalleahorro"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
             {!! Form::hidden('page', 1, array('id' => 'page')) !!}

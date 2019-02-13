@@ -698,7 +698,7 @@ class CreditoController extends Controller{
         
         $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-Pago cuota-'.$persona->codigo;
-        $view = \View::make('app.credito.recibopagocuotapdf')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2'));
+        $view = \View::make('app.credito.recibopagocuota')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
@@ -1200,7 +1200,7 @@ class CreditoController extends Controller{
         $anio = date('Y', strtotime($fecha));
         $mes = date('m', strtotime($fecha));
         $cuota_final_pagada = Cuota::where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('credito_id','=',$credito->id)->get();
-        $saldo_deudor = $cuota_final_pagada[0]->saldo_restante;
+        $saldo_deudor = count($cuota_final_pagada) > 0?$cuota_final_pagada[0]->saldo_restante: $credito->valor_credito;
         $cuotas = Cuota::where('credito_id','=', $credito->id)->where('estado','!=', '1')->where('deleted_at', '=', null)->get();
         $numero_cuotasPendientes = count($cuotas);
         return array($saldo_deudor, $numero_cuotasPendientes);
