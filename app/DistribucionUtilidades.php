@@ -120,7 +120,7 @@ $i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
                     ->select(
                      
-                        DB::raw("SUM(transaccion.otros_egresos) as otros_egresos")
+                        DB::raw("SUM(transaccion.monto) as otros_egresos")
                     )
                     //->where('transaccion.fecha','>=',$fechai)
                     ->where('transaccion.fecha','<=',$fechaf)
