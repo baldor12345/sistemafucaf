@@ -82,7 +82,7 @@ use App\Persona;
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 					<td  colspan="1" rowspan="2">F Social 10%</td>
-					<td  colspan="1" rowspan="2">{{ (round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1) == 0?"-":(round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1))) }}</td>
+					<td  colspan="1" rowspan="2">{{ (round($utilidad_neta*0.1, 1) == 0?"-":(round($utilidad_neta*0.1, 1))) }}</td>
 					<td rowspan="5"></td>
 					<td rowspan="5"></td>
 				</tr>
@@ -100,7 +100,7 @@ use App\Persona;
 					<td  colspan="1" rowspan="1">Otros Acum.</td>
 					<td  colspan="1" rowspan="1">{{ (round($otros_acumulados, 1) == 0?"-":round($otros_acumulados, 1)) }}</td>
 					<td  colspan="1" rowspan="3">R Legal 10%</td>
-					<td  colspan="1" rowspan="3">{{ (round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1) == 0?"-":round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1, 1)) }}</td>
+					<td  colspan="1" rowspan="3">{{ (round($utilidad_neta*0.1, 1) == 0?"-":round($utilidad_neta*0.1, 1)) }}</td>
 				</tr>
 				<tr>
 						
