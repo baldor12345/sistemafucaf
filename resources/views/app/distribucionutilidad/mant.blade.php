@@ -315,10 +315,10 @@ use App\Persona;
 						for($j=1; $j<=12; $j++){
 							$numaccciones = 0;
 							if($j == 1){
-								$numaccciones = count($num_accionesenero)>0?$num_accionesenero[0]->cantidad_total:0;
+								$numaccciones = count($num_accionesenero) >0?$num_accionesenero[0]->cantidad_total:0;
 							}
 								
-							if(((($l)<count($listaAcciones))?$listaAcciones[$l]->mes:"") == $j){
+							if(((($l)< (count($listaAcciones)  + count($num_accionesenero)))?$listaAcciones[$l]->mes:"") == $j){
 								$numaccciones += $listaAcciones[$l]->cantidad_mes;
 								echo("<td align='center'>".$numaccciones."</td>");
 								$utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
