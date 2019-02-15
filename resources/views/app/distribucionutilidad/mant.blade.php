@@ -308,7 +308,7 @@ use App\Persona;
 					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
 					
 					$utilidades = array();
-					if(count($listaAcciones)>0){
+					if(count($listaAcciones + $num_accionesenero)>0){
 						echo("<tr><td rowspan='2'  align='center'>".($i+1)."</td><th rowspan='2' colspan='2' align='left'>".$socios[$i]->nombres." ".$socios[$i]->apellidos."</th>");
 						$l=0;
 						$sumtotalAcciones =0;
