@@ -225,7 +225,7 @@ use App\Persona;
 					<th colspan="2" align='center'>entre el total de Acciones-Mes: </th>
 					<th colspan="2" align='center'>{{ $sumatotal_acc_mes }}</th>
 					<th colspan="5" align='center'>El resultado es la UTILIDAD DE UNA ACCION EN UN MES: </th>
-					<th>{{ round((($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0), 1) }}</th>
+					<th>{{ round((($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0), 4) }}</th>
 				</tr>
 			</thead>
 		</table>
@@ -237,7 +237,7 @@ use App\Persona;
 				<tr>
 					<th colspan="2" align="center">PASO 4: </th>
 					<th colspan="3" align="center">Se multiplica esta utilidad.</th>
-					<th colspan="2" align="center">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 1) }}</th>
+					<th colspan="2" align="center">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 4) }}</th>
 					<th colspan="9" align="center">por el N° de meses que ha trabajado cada accion. Los resultados son las diferentes utilidades de una accion en un año.</th>
 				</tr>
 			</thead>
@@ -251,7 +251,7 @@ use App\Persona;
 				<tr>
 					<td rowspan="2">Utilidad de una acción</td>
 					<td>En 1 mes</td>
-					<td align='center' colspan="14">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 1) }}</td>
+					<td align='center' colspan="14">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 4) }}</td>
 				</tr>
 				<tr>
 					<td>En el año</td>
@@ -260,7 +260,7 @@ use App\Persona;
 					$f=0;
 					$factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
 						for ($i=12; $i >0 ; $i--) { 
-							echo('<td align="center">'.round($i * $factor,1)."</td>");
+							echo('<td align="center">'.round($i * $factor,4)."</td>");
 							$factores_mes[$f] = $i * $factor;
 							$f++;
 						}
