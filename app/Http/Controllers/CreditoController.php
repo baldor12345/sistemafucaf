@@ -1052,11 +1052,12 @@ class CreditoController extends Controller{
             $error = DB::transaction(function() use($request, $caja_id){
                 $credito = Credito::find($request->get('credito_id'));
                 $persona = Persona::find($credito->persona_id);
-                $monto_total = $request->get('monto_suma');
+                //$monto_total = $request->get('monto_suma');
                 $capital_total = $request->get('capital_total');
                 $interes_total = $request->get('interes_total');
                 $fecha_pago = $request->get('fechaop');
                 $num_cuotas = $request->get('num_cuotas_p');
+                $monto_total = $capital_total + $interes_total;
                 $monto_t_2 = $monto_total;
                 $num_cuota_pfinal=0;
 

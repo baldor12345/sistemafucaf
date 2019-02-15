@@ -123,7 +123,7 @@ class DistUtilidadesController extends Controller
             $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
             $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
             $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-            $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
+            $utilidad_neta = round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
             $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
@@ -161,6 +161,9 @@ class DistUtilidadesController extends Controller
         
     }
     
+    public function saldocaja(){
+        
+    }
     public function getSaldoDistribuible($fecha){
         echo("fecha: ".$fecha);
         $anio =date('Y',strtotime($fecha));
