@@ -117,7 +117,7 @@ class DistUtilidadesController extends Controller
             $du_anterior= 0;//(count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
             $gast_du_anterior= 0;//(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
             $utilidad_neta = 0;//round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
-            $utilidad_dist = 0;//round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
             $numero_acciones_hasta_enero=  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();
