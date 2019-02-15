@@ -308,7 +308,7 @@ use App\Persona;
 					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
 					
 					$utilidades = array();
-					if(count($listaAcciones)>0){
+					// if((count($listaAcciones) + $num_accionesenero[0]->cantidad_total)>0){
 						echo("<tr><td rowspan='2'  align='center'>".($i+1)."</td><th rowspan='2' colspan='2' align='left'>".$socios[$i]->nombres." ".$socios[$i]->apellidos."</th>");
 						$l=0;
 						$sumtotalAcciones =0;
@@ -332,10 +332,10 @@ use App\Persona;
 						echo("<td align='center'>0</td><td>".round($sumtotalAcciones,1)."</td><td>-</td><td></td><td></td></tr><tr>");
 							$sumtotal_util = 0;
 						for($j=1; $j<=12; $j++){
-							echo("<td align='center'>".round($utilidades[$j-1],1)."</td>");
+							echo("<td align='center'>".round($utilidades[$j-1],6)."</td>");
 							$sumtotal_util += $utilidades[$j-1];
 						}
-						echo("<td align='center'>-</td><td>".round($sumtotal_util,1)."</td>");
+						echo("<td align='center'>-</td><td>".round($sumtotal_util,4)."</td>");
 						$distr = round(($porcentaje_ditribuible/100)*$sumtotal_util, 1);
 						$total_distr = $total_distr + $distr;
 						?>
@@ -345,7 +345,7 @@ use App\Persona;
 
 						<?php
 						echo("</tr>");
-					}
+					// }
 				}
 				?>
 
