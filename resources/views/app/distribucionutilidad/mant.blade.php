@@ -251,7 +251,7 @@ use App\Persona;
 				<tr>
 					<td rowspan="2">Utilidad de una acción</td>
 					<td>En 1 mes</td>
-					<td align='center' colspan="14">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 4) }}</td>
+					<td align='center' colspan="14">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 1) }}</td>
 				</tr>
 				<tr>
 					<td>En el año</td>
@@ -261,7 +261,7 @@ use App\Persona;
 					$factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
 						for ($i=12; $i >0 ; $i--) { 
 							echo('<td align="center">'.round($i * $factor,4)."</td>");
-							$factores_mes[$f] = $i * $factor;
+							$factores_mes[$f] = round(($i * $factor),4);
 							$f++;
 						}
 					?>
@@ -315,7 +315,6 @@ use App\Persona;
 						for($j=1; $j<=12; $j++){
 							$numaccciones = 0;
 							if($j == 1){
-								echo($num_accionesenero[0]->cantidad_total."-");
 								$numaccciones = count($num_accionesenero) >0?$num_accionesenero[0]->cantidad_total:0;
 							}
 								

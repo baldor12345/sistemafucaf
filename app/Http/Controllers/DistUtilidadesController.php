@@ -106,17 +106,17 @@ class DistUtilidadesController extends Controller
             $listar = Libreria::getParam($request->input('listar'), 'NO');
             
             $ruta = $this->rutas;
-            $intereses =18484.2; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
-            $otros = 298.7;//$sumUBAcumulado[1];
+            $intereses =41733.4; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = 363.7;//$sumUBAcumulado[1];
 
-            $int_pag_acum= 3037.7;//$gastosDUActual[0];
+            $int_pag_acum= 8201.4;//$gastosDUActual[0];
             $otros_acumulados= 198.5;//$gastosDUActual[1];
-            $gastadmacumulado =945.3; //$gastosDUActual[2];
+            $gastadmacumulado =1707.6; //$gastosDUActual[2];
             
-            $dist_u_anterior = 7834.5;//DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
-            $du_anterior= 7834.5;//(count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
-            $gast_du_anterior= 2016.5;//(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-            $utilidad_neta = 8783.4;//round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
+            //$dist_u_anterior = 7834.5;//DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior= 17927.71;//(count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior= 4405.4;//(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta = 18467.3;//round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
             $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
