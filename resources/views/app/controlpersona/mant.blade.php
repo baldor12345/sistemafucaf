@@ -78,6 +78,9 @@ function guardar_control(entidad, idboton) {
 		$('#btnGuardarcontrol').button('loading');
 	}).fail(function(xhr, textStatus, errorThrown) {
 		respuesta = 'ERROR';
+		$('#btnGuardarcontrol').removeClass('disabled');
+		$('#btnGuardarcontrol').removeAttr('disabled');
+		$('#btnGuardarcontrol').html('<i class="fa fa-check fa-lg"></i>Guardar');
 	}).always(function() {
 		btn.button('reset');
 		if(respuesta === 'ERROR'){
@@ -92,7 +95,7 @@ function guardar_control(entidad, idboton) {
 			} else {
 				mostrarErrores(respuesta, idformulario, entidad);
 				$('#btnGuardarcontrol').removeClass('disabled');
-				$('#btnGuardarcontrol').attr('disabled');
+				$('#btnGuardarcontrol').removeAttr('disabled');
 				$('#btnGuardarcontrol').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}
 		}

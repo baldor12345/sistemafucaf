@@ -393,6 +393,9 @@ class AccionesController extends Controller
         $ruta             = $this->rutas;
         $inicio           = 0;
 
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_caja = count($caja) == 0? 0: Date::parse( $caja[0]->fecha_horaApert )->format('Y-m') ;
+
         $Month = array(1=>'Enero',
                         2=>'Febrero',
                         3=>'Marzo',
@@ -415,9 +418,9 @@ class AccionesController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar'));
+            return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar','fecha_caja'));
         }
-        return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar'));
+        return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar','fecha_caja'));
     
     }
 
@@ -547,7 +550,7 @@ class AccionesController extends Controller
 
                 if($cantidad_accion !== ''){
                     $historial_accion               = new HistorialAccion();    
-                    $historial_accion->cantidad        = $request->input('cantidad_accion');
+                    $historial_accion->cantidad        = -$request->input('cantidad_accion');
                     $historial_accion->estado        = 'V';
                     $historial_accion->fecha        = $request->input('fechai');
                     $historial_accion->descripcion        = $request->input('descripcion');

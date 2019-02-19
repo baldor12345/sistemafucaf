@@ -70,7 +70,7 @@
         }).fail(function(){
             mostrarMensaje ("Error de servidor", "ERROR");
             $('#btnGuardarpagar').removeClass('disabled');
-            $('#btnGuardarpagar').attr('disabled');
+            $('#btnGuardarpagar').removeAttr('disabled');
             $('#btnGuardarpagar').html('<i class="fa fa-check fa-lg"></i>Guardar');
         });
     }

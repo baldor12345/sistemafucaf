@@ -5,6 +5,7 @@ use App\Configuraciones;
 use Illuminate\Support\Facades\DB;
 ?>
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="infoaccion"></div>
 {!! Form::model($acciones, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
@@ -164,9 +165,9 @@ use Illuminate\Support\Facades\DB;
 					$('#cantacciontotal').val(cantAcciones);
 				});
 				
-				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+				document.getElementById("infoaccion").innerHTML = "<div align='center' class='alert alert-success' role='success'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
 								"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+					$('#infoaccion').show();
 			});
 		});
 
@@ -228,7 +229,7 @@ use Illuminate\Support\Facades\DB;
 			}).fail(function(xhr, textStatus, errorThrown) {
 				respuesta = 'ERROR';
 				$('#btnGuardaraccion').removeClass('disabled');
-				$('#btnGuardaraccion').attr('disabled');
+				$('#btnGuardaraccion').removeAttr('disabled');
 				$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}).always(function() {
 				
@@ -247,16 +248,16 @@ use Illuminate\Support\Facades\DB;
 					} else {
 						mostrarErrores(respuesta, idformulario, entidad);
 						$('#btnGuardaraccion').removeClass('disabled');
-						$('#btnGuardaraccion').attr('disabled');
+						$('#btnGuardaraccion').removeAttr('disabled');
 						$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 					}
 				}
 			});
 		}else{
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
-			$('#divMensajeError{{ $entidad }}').show();
+			document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
+			$('#infoaccion').show();
 			$('#btnGuardaraccion').removeClass('disabled');
-			$('#btnGuardaraccion').attr('disabled');
+			$('#btnGuardaraccion').removeAttr('disabled');
 			$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 		}
         

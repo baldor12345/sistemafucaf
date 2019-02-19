@@ -76,7 +76,7 @@
         }).fail(function(){
             mostrarMensaje ("Error de servidor", "ERROR")
             $('#btnRetirarReaperturar').removeClass('disabled');
-            $('#btnRetirarReaperturar').attr('disabled');
+            $('#btnRetirarReaperturar').removeAttr('disabled');
             $('#btnRetirarReaperturar').html('<i class="fa fa-check fa-lg"></i>Reaperturar');
         });
     }
