@@ -92,7 +92,6 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Cierre', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto Ini.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto Cie.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Monto Dif.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Movimiento', 'numero' => '2');
         $cabecera[]       = array('valor' => 'Reporte', 'numero' => '1');
@@ -816,7 +815,7 @@ class CajaController extends Controller
                     $transaccion->fecha = $request->get('fecha');
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
-                    $transaccion->descripcion =  "de: ".$persona->nombres." para ".$request->get('comentario');
+                    $transaccion->descripcion =  "de: ".$persona->nombres." - ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();
@@ -860,7 +859,7 @@ class CajaController extends Controller
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
                     $transaccion->tipo_egreso = $request->get('editable');
-                    $transaccion->descripcion =  "de: ".$persona->nombres." para ".$request->get('comentario');
+                    $transaccion->descripcion =  "de: ".$persona->nombres." - ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();

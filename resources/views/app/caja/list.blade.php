@@ -34,7 +34,6 @@ a.disabled {
 			@endif
 			<td style="font-size: 14px">{{ number_format($value->monto_iniciado,1) }}</td>
 			<td style="font-size: 14px">{{ number_format($value->monto_cierre,1) }}</td>
-			<td style="font-size: 14px">{{ number_format($value->diferencia_monto,1) }}</td>
 			@if ($value->estado === 'A')
 			<td style="color:green;font-weight: bold; font-size: 14px;" >Abierto</td>
 			@else
@@ -52,19 +51,19 @@ a.disabled {
 			
 
 			<?php if($caja_last->id == $value->id){ if($value->estado == 'C'){ ?>
-				<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Reaperturar', array('onclick' => 'modal (\''.URL::route($ruta["cargarreapertura"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_reapertura.'\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
+				<td>{!! Form::button('<div class="glyphicon glyphicon-refresh"></div> Reaperturar', array('onclick' => 'modal (\''.URL::route($ruta["cargarreapertura"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_reapertura.'\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>
 				
 			<?php }else if($value->estado == 'A'){ ?>
-				<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Reaperturar', array('onclick' => 'modal (\''.URL::route($ruta["cargarreapertura"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_reapertura.'\', this);','class' => 'btn btn-xs btn-warning','disabled')) !!}</td>
+				<td>{!! Form::button('<div class="glyphicon glyphicon-refresh"></div> Reaperturar', array('onclick' => 'modal (\''.URL::route($ruta["cargarreapertura"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_reapertura.'\', this);','class' => 'btn btn-xs btn-warning','disabled')) !!}</td>
 			<?php } }else if($caja_last->id != $value->id){?>
-				<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Reaperturar', array('onclick' => 'modal (\''.URL::route($ruta["cargarreapertura"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_reapertura.'\', this);','class' => 'btn btn-xs btn-warning','disabled')) !!}</td>
+				<td>{!! Form::button('<div class="glyphicon glyphicon-refresh"></div> Reaperturar', array('onclick' => 'modal (\''.URL::route($ruta["cargarreapertura"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_reapertura.'\', this);','class' => 'btn btn-xs btn-warning','disabled')) !!}</td>
 			<?php }?>
 
 
 			@if ($value->estado === 'C')
-			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary','disabled' )) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove-circle"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary','disabled' )) !!}</td>
 			@else
-			<td>{!! Form::button('<div class="glyphicon glyphicon-star-empty"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary')) !!}</td>
+			<td>{!! Form::button('<div class="glyphicon glyphicon-remove-circle"></div> Cierre', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_cerrarCaja.'\', this);', 'class' => 'btn btn-xs btn-secondary')) !!}</td>
 			@endif
 			
 		</tr>
