@@ -277,10 +277,13 @@ class CreditoController extends Controller{
         if ($existe !== true) {
             return $existe;
         }
+        $num_cuotas_pendientes = count(Cuota::where('credito_id','=', $id)->where('estado','=','0')->get());
+        $credito = Credito::find($id);
         $listar = "NO";
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
+
         $transaccion_credito = Transaccion::where("id_tabla",'=',$id)->where('inicial_tabla','=','CR')->get();
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
@@ -290,6 +293,9 @@ class CreditoController extends Controller{
        $boton = "Eliminar";
         if($caja_id == $transaccion_credito[0]->caja_id){
             return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }else if($num_cuotas_pendientes == $credito->periodo){
+            $mensaje = "¡Error! El credito no se puede eliminar, contiene cuotas pagadas o vigentes de pago a la fecha!";
+            return view('app.ahorros.mensajealerta')->with(compact('modelo', 'formData', 'entidad', 'listar','mensaje'));
         }else{
             $mensaje = "¡Error! El registro no se puede eliminar, esta registrado en una caja actualmente cerrada.!";
             return view('app.ahorros.mensajealerta')->with(compact('modelo', 'formData', 'entidad', 'listar','mensaje'));
