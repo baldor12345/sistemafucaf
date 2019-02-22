@@ -386,9 +386,10 @@ class CreditoController extends Controller{
         $boton = 'Registrar'; 
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
-        $cuota->interes_mora = $interes_moratorio;
-        $numero_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechapago);
-        if($cuota->fecha_iniciomora == null){
+        $cuota->interes_mora = round($interes_moratorio, 1);
+        
+        if($cuota->fecha_iniciomora != null){
+            $numero_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechapago);
             $cuota->interes += $cuota->interes * $numero_meses;
         }
    
