@@ -92,7 +92,6 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'Cierre', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto Ini.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Monto Cie.', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Monto Dif.', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Movimiento', 'numero' => '2');
         $cabecera[]       = array('valor' => 'Reporte', 'numero' => '1');
@@ -816,7 +815,7 @@ class CajaController extends Controller
                     $transaccion->fecha = $request->get('fecha');
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
-                    $transaccion->descripcion =  "de: ".$persona->nombres." para ".$request->get('comentario');
+                    $transaccion->descripcion =  "de: ".$persona->nombres." - ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();
@@ -860,7 +859,7 @@ class CajaController extends Controller
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
                     $transaccion->tipo_egreso = $request->get('editable');
-                    $transaccion->descripcion =  "de: ".$persona->nombres." para ".$request->get('comentario');
+                    $transaccion->descripcion =  "de: ".$persona->nombres." - ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();
@@ -1382,6 +1381,8 @@ class CajaController extends Controller
         $sum_egresos_totales_acumulados=0;
 
         $sum_gasto_administrativo_acumulado =0;
+        $sum_utilidad_distribuida_acumulado =0;
+        $sum_otros_gastos_acumulado =0;
 
         //-------suma
         $sum_retiro_ahorros_acumulados=($sum_retiro_ahorros_mes_actual+$sum_retiro_ahorros_mes_anterior);
@@ -1391,7 +1392,10 @@ class CajaController extends Controller
         $sum_egresos_totales_acumulados=($sum_egresos_totales_mes_actual+$sum_egresos_totales_mes_anterior);
 
         $sum_gasto_administrativo_acumulado =($sum_gasto_administrativo_mes_actual + $sum_gasto_administrativo_asta_mes_anterior);
+        
+        $sum_utilidad_distribuida_acumulado = ($sum_utilidad_distribuida+ $sum_utilidad_distribuida_mes_anterior);
 
+        $sum_otros_gastos_acumulado = ($sum_otros_egresos_mes_actual+$sum_otros_egresos_asta_mes_anterior);
 
 
         //calculo de los ingresos y egresos y saldo-----------------------------------------------------------
@@ -1527,8 +1531,8 @@ class CajaController extends Controller
         $titulo = "reporte ".$mes."_Egresos";
         $view = \View::make('app.reportes.reporteEgresoPDF')->with(compact('lista','lista_por_conceptoAdmin','lista_por_conceptoOthers' ,'id', 'caja','day','mes','anio','mesItm','sum_retiro_ahorros_mes_actual',
                                                                             'sum_prestamo_de_capital_mes_actual','sum_interes_pagado_mes_actual','sum_egresos_totales_mes_actual','sum_gasto_administrativo_mes_actual','sum_otros_egresos_mes_actual','sum_utilidad_distribuida',
-                                                                        'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior','sum_otros_egresos_asta_mes_anterior',
-                                                                    'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado', 
+                                                                        'sum_retiro_ahorros_mes_anterior','sum_prestamo_de_capital_mes_anterior','sum_interes_pagado_mes_anterior','sum_egresos_totales_mes_anterior','sum_gasto_administrativo_asta_mes_anterior','sum_utilidad_distribuida_mes_anterior','sum_otros_egresos_asta_mes_anterior',
+                                                                    'sum_retiro_ahorros_acumulados','sum_prestamo_de_capital_acumulados','sum_interes_pagado_acumulados','sum_egresos_totales_acumulados','sum_gasto_administrativo_acumulado','sum_utilidad_distribuida_acumulado','sum_otros_gastos_acumulado', 
                                                                     'saldo_del_mes_anterior','ingresos_del_mes','total_ingresos_del_mes','egresos_del_mes','saldo','sum_ingresos_totales_acumulados','presidente','tesorero'));
         $html_content = $view->render();      
  

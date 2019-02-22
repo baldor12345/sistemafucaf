@@ -50,7 +50,7 @@
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar1', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura Caja', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevocaja', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
-					{!! Form::button('<i class="glyphicon glyphicon-asterisk"></i> Reportes Mes', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevoReporte', 'onclick' => 'modal (\''.URL::route($ruta["cargarreporte"], array('listar'=>'SI')).'\', \''.$titulo_reporte.'\', this);')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-folder-open "></i> Reportes Mes', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnNuevoReporte', 'onclick' => 'modal (\''.URL::route($ruta["cargarreporte"], array('listar'=>'SI')).'\', \''.$titulo_reporte.'\', this);')) !!}
 					{!! Form::close() !!}
 					
                 </div>

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 ?>
 
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="infventa"></div>
 {!! Form::open(array('route' => array('acciones.guardarventa', $persona->id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('idpropietario', $persona->id, array('id' => 'idpropietario')) !!}
@@ -166,12 +167,12 @@ use Illuminate\Support\Facades\DB;
 				var comprador_id = parseInt(event.target.value);
 				var  Propietario_id = parseInt('{{ $persona->id }}');
 				if(comprador_id == Propietario_id){
-					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Los datos ingresados deben ser diferentes de la persona que vende!!</span></div>";
-									$('#divMensajeError{{ $entidad }}').show();
+					document.getElementById("infventa").innerHTML = "<div class='alert alert-danger' role='alert'><span >Los datos ingresados deben ser diferentes de la persona que vende!!</span></div>";
+									$('#infventa').show();
 				}else{
-					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+					document.getElementById("infventa").innerHTML = "<div class='alert alert-success' role='alert'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
 								"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+					$('#infventa').show();
 				}
 				
 				
@@ -187,10 +188,10 @@ use Illuminate\Support\Facades\DB;
 		var cantidad = parseInt(event.target.value);
 		var  cant_pers = parseInt('{{ $cant_acciones }}');
 		if(cantidad > cant_pers){
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad  de acciones para la venta!!</span></div>";
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div align='center' class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad  de acciones para la venta!!</span></div>";
 									$('#divMensajeError{{ $entidad }}').show();
 		}else{
-			$('#divMensajeError{{ $entidad }}').show();
+			$('#divMensajeError{{ $entidad }}').hide();
 		}
 	});
 
@@ -221,7 +222,7 @@ use Illuminate\Support\Facades\DB;
 			}).fail(function(xhr, textStatus, errorThrown) {
 				respuesta = 'ERROR';
 				$('#btnGuardaraccionventa').removeClass('disabled');
-				$('#btnGuardaraccionventa').attr('disabled');
+				$('#btnGuardaraccionventa').removeAttr('disabled');
 				$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}).always(function() {
 				if(respuesta[0] === 'ERROR'){
@@ -239,7 +240,7 @@ use Illuminate\Support\Facades\DB;
 					} else {
 						mostrarErrores(respuesta, idformulario, entidad);
 						$('#btnGuardaraccionventa').removeClass('disabled');
-						$('#btnGuardaraccionventa').attr('disabled');
+						$('#btnGuardaraccionventa').removeAttr('disabled');
 						$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
 					}
 				}

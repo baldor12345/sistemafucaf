@@ -30,11 +30,20 @@
 			<td align="center">---</td>
 			@endif
 			@if($value->accion_estado === 'C')
-            <td align="center"><a target="_blank" href="{{ route('generarvoucheraccionPDF', array('id' => $value->accion_persona_id,'cant' => '1', 'fecha' => $value->accion_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
-            @else
-            <td align="center"><a target="_blank" href="{{ route('generarvoucheraccionventaPDF', array('id' => $value->accion_persona_id,'cant' => '1', 'fecha' => $value->accion_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
-            @endif
-            <td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->accion_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
+			<td align="center"><a target="_blank" href="{{ route('generarvoucheraccionPDF', array('id' => $value->accion_persona_id,'cant' => '1', 'fecha' => $value->accion_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
+			@else
+			<td align="center"><a target="_blank" href="{{ route('generarvoucheraccionventaPDF', array('id' => $value->accion_persona_id,'cant' => '1', 'fecha' => $value->accion_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
+			@endif
+
+			@if($fecha_caja !=0)
+				@if( $fecha_caja == Date::parse($value->accion_fecha)->format('Y-m'))
+				<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->accion_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
+				@else
+				<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->accion_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger','disabled')) !!}</td>
+				@endif
+			@else
+				<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->accion_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger','disabled')) !!}</td>
+			@endif
 		</tr>
 		<?php
 			$contador = $contador + 1;
