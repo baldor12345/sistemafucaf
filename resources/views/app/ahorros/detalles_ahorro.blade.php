@@ -2,6 +2,11 @@
 <div class="card-box table-responsive crbox">
     <div class="row m-b-5" id="selectfilas">
         <div class="col-sm-12">
+            <div class="form-group" >
+                {!! Form::label('nombreSC', (trim($persona->tipo) =='S'?"Socio: ":"Cliente ").$persona->apellidos." ".$persona->nombres) !!}
+            </div>
+        </div>
+        <div class="col-sm-12">
             {!! Form::open(['route' => $ruta["listardetalleahorro"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
             {!! Form::hidden('page', 1, array('id' => 'page')) !!}
             
@@ -12,11 +17,11 @@
                 {!! Form::date('fechainicio', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechainicio',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
              </div>		
             <div class="form-group" >
-                {!! Form::label('filas', 'Filas a mostrar:')!!}
+                {!! Form::label('filas', 'Filas a mostrar:') !!}
                 {!! Form::selectRange('filas', 1, 30, 5, array('class' => 'form-control input-xs d-none d-sm-block', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
             </div>
             <div class="form-group" >
-            {!! Form::label('tipo', 'Tipo:')!!}
+            {!! Form::label('tipo', 'Tipo:') !!}
             {!! Form::select('tipo', $cbotipo, 'I', array('class' => 'form-control input-xs', 'id' => 'tipo','onchange' => 'buscar(\''.$entidad.'\')')) !!}
             </div>
             {!! Form::close() !!}

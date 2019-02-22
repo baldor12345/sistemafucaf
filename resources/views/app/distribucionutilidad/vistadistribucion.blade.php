@@ -12,7 +12,6 @@ use App\Persona;
 		border: 0.9px solid #b4bdc1;
 		font-size: 13px;
 		padding: 2px;
-
 	}
 	.borderond {
 		border-radius: 6px;

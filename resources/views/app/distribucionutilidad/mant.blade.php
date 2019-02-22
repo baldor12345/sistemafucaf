@@ -573,7 +573,7 @@ use App\Persona;
 
 @else
 	<div class="form-group">
-		<div class='alert alert-danger'><strong>¡Error!</strong> Ya existe una distribucion para la fecha seleccionada.!</div>
+		<div class='alert alert-danger'><strong>{{ $mensaje }}</strong></div>
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">

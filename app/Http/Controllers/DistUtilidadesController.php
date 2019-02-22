@@ -149,6 +149,100 @@ class DistUtilidadesController extends Controller
             return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
     }
 
+    public function createModif(Request $request)
+    {
+        $anio = $request->input('anio');
+        $mes = 12;
+        $distrValidar = Caja::where(DB::raw('extract( year from fecha_horaApert)'),'=',$mes)->where()->get(DB::raw('extract( month from fecha_horaApert)'),'=',$anio);
+        $existe = true;
+        $entidad = 'Distribucion';
+        $mensaje = "";
+        $ditr = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio))->get();
+        if(count($distrValidar) < 1){
+            $existe = false;
+            $mensaje = "¡Aún no está disponible la distribución de utilidades para el año seleccionado..!";
+        }else if(count($ditr) > 0){
+            $existe = false;
+            $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
+        }
+        
+        if($existe){
+            $caja = Caja::where("estado","=","A")->get();
+
+            $idcaja = count($caja) == 0? 0: $caja[0]->id;
+            $configuraciones = Configuraciones::all()->last();
+            $listar = Libreria::getParam($request->input('listar'), 'NO');
+            
+            $ruta = $this->rutas;
+            $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
+            //$anio = date('Y') - 1; 
+            $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = $sumUBAcumulado[1];
+            $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
+
+            $int_pag_acum= $gastosDUActual[0];
+            $otros_acumulados= $gastosDUActual[1];
+            $gastadmacumulado = $gastosDUActual[2];
+            
+            //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            
+            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior = (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta = round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+            $acciones_mensual =  DistribucionUtilidades::list_total_acciones_mes($anio)->get();//Cantidad de acciones por cada mes en el año especificado
+            $numero_acciones_hasta_enero =  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();// conteo de acciones hasta el mes de enero
+            $acciones_mes  = 0;
+            $indice1 = 0;
+            $j1 = 12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
+            }
+            $porcentaje_ditribuible = 100;
+            $porcentaje_ditr_faltante = 0;
+            $saldo_caja_distribuible = $this->saldoEnCaja($caja[0]); //$this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaApert), 1);
+            
+            //$saldo_caja_distribuible -= 10.8;
+            echo("saldo distr: ".$saldo_caja_distribuible);
+            if($saldo_caja_distribuible < $utilidad_neta){
+                $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
+                $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
+            }
+
+            $existe = 0;
+            $anio_actual=$anio;
+            $formData = array('distribucion_utilidades.store');
+            $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
+        }else{
+            $existe = 1;
+            return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));
+        }
+        
+    }
+
+    public function saldoEnCaja($caja){
+        $monto_inicio = round($caja->monto_iniciado, 1);
+        $egresos=0;
+        $ingresos=0;
+        $saldo_en_caja =0;
+        $saldo = Transaccion::getsaldo($caja_id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $saldo_en_caja= round($ingresos,1) + round($monto_inicio,1) - round($egresos, 1);
+        return $saldo_en_caja;
+    }
 
     public function createOriginal(Request $request)
     {

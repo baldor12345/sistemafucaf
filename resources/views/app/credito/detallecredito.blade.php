@@ -59,7 +59,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('select_opcion', 'Opción: ', array('class' => 'op')) !!}
-                        {!! Form::select('select_opcion', array('vigentes'=>'Vigentes','cancelados'=>'Cancelados'), 'vigentes', array('class' => 'form-control input-sm', 'id' => 'select_opcion',  'onchange' => 'listar_det(\''.$entidad_cuota.'\')')) !!}
+                        {!! Form::select('select_opcion', array('todo'=>'Todos','vigentes'=>'Vigentes','cancelados'=>'Cancelados'), 'todo', array('class' => 'form-control input-sm', 'id' => 'select_opcion',  'onchange' => 'listar_det(\''.$entidad_cuota.'\')')) !!}
                     </div>
 					{!! Form::close() !!}
                 </div>
@@ -127,7 +127,5 @@
             $(btn).html('Guardar');
                 mostrarMensaje ("Error de consulta..", "ERROR");
         });
-
-        
     }
 </script>
