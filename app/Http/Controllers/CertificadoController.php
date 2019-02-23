@@ -144,14 +144,14 @@ class CertificadoController extends Controller
         }else{
             $fechaf =null;
         }
-        
+
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Certificado';
         $certificado        = null;
         $formData       = array('certificado.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Generar Certificados'; 
-        return view($this->folderview.'.mant')->with(compact('certificado', 'formData', 'entidad', 'boton', 'listar','cboAnios','cboMonth','fechaf','day'));
+        return view($this->folderview.'.mant')->with(compact('certificado', 'formData', 'entidad', 'boton', 'listar','cboAnios','cboMonth','fechaf','day','certificado_last'));
     }
 
     /**

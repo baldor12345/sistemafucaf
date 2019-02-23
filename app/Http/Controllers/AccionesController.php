@@ -67,9 +67,8 @@ class AccionesController extends Controller
         $filas            = $request->input('filas');
         $entidad          = 'Acciones';
         $codigo             = Libreria::getParam($request->input('codigo'));
-        $nombres             = Libreria::getParam($request->input('nombres'));
         $dni             = Libreria::getParam($request->input('dni'));
-        $resultado        = Acciones::listar($codigo, $nombres, $dni);
+        $resultado        = Acciones::listar($codigo,$dni);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');

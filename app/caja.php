@@ -42,7 +42,7 @@ class caja extends Model
         return $query->where(function($subquery) use($titulo)
                     {
                         if (!is_null($titulo)) {
-                            $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
+                            $subquery->where('titulo', 'ILIKE', '%'.$titulo.'%');
                         }
                     })
                     ->orderBy('fecha_horaapert', 'DSC');
