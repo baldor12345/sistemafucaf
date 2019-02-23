@@ -18,9 +18,9 @@
     @if($value->estado == 'N')
     <tr>
         <td>{{ $contador }}</td>
-        <td>{{ $value->persona->codigo}}</td>
-        <td>{{ $value->persona->nombres.' '.$value->persona->apellidos }} </td>
-        <td>{{ Date::parse($value->fecha )->format('d/m/y') }}</td>
+        <td style="font-size:12px;">{{ $value->persona->codigo}}</td>
+        <td style="font-size:12px;">{{ $value->persona->nombres.' '.$value->persona->apellidos }} </td>
+        <td style="font-size:12px;">{{ Date::parse($value->fecha )->format('d').' de '.$Month[intval(Date::parse($value->fecha)->format('m'))].' del '.Date::parse($value->fecha )->format('Y') }} </td>
         <?php
             $cboasist = array();
             if($value->asistencia == 'T'){
@@ -32,20 +32,20 @@
             }
         ?>
         @if($value->asistencia != 'J')
-        <td>{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');')) !!}</td>
+        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');')) !!}</td>
         @else
-        <td>{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');','disabled')) !!}</td>
+        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');','disabled')) !!}</td>
         @endif
         @if($value->asistencia != 'J')
-        <td style='color:red;font-weight: bold;' >No Pagó</td>
+        <td style='color:red;font-weight: bold; font-size:12px' >No Pagó</td>
         @else
-        <td style='color:green;font-weight: bold;' >Justificada</td>
+        <td style='color:green;font-weight: bold; font-size:12px' >Justificada</td>
         @endif
 
         @if($value->asistencia != 'J')
-        <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning')) !!}</td>
+        <td style="font-size:12px;">{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning')) !!}</td>
         @else
-        <td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning', 'disabled')) !!}</td>
+        <td style="font-size:12px;">{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Pagar Multa', array('onclick' => 'abrirmodalpagomulta (\''.URL::route($ruta["cargarpagarmulta"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_pagarmulta.'\', \''.$idCaja.'\');','class' => 'btn btn-xs btn-warning', 'disabled')) !!}</td>
         @endif
         
     </tr>

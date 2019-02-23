@@ -144,7 +144,7 @@ class CertificadoController extends Controller
         }else{
             $fechaf =null;
         }
-
+        
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Certificado';
         $certificado        = null;
@@ -386,15 +386,39 @@ class CertificadoController extends Controller
             $certificado->estado = 'C';
             $certificado->save();
 
+            $resultado = Ahorros::getahorropersona(6);
+
+            $ahorro_id=null;
+            if(count($resultado) >0){
+                $ahorro_actual = $resultado[0];
+                $ahorro_actual->capital = $ahorro_actual->capital + $monto;
+                $ahorro_actual->estado = 'P';
+                $ahorro_actual->save();
+                $ahorro_id = $ahorro_actual->id;
+            }else{
+                $ahorro = new Ahorros();
+                $ahorro->capital = $monto;
+                $ahorro->interes = 0;
+                $ahorro->estado = 'P';
+                $ahorro->fechai = $fecha_pago;
+                $ahorro->persona_id = 6;
+                $ahorro->save();
+                $ahorro_id = $ahorro->id;
+            }
+
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
-            $transaccion->monto = $monto;
-            $transaccion->otros_egresos = $monto;
-            $transaccion->concepto_id = $concepto_id;
-            $transaccion->descripcion =  "pagó ".$persona->nombres." ";
-            $transaccion->usuario_id =Caja::getIdPersona();
-            $transaccion->caja_id = $caja_id;
+            $transaccion->monto =  $monto;
+            $transaccion->monto_ahorro=  $monto;
+            $transaccion->id_tabla = $ahorro_id;
+            $transaccion->inicial_tabla = 'CE';//AH = INICIAL DE TABLA AHORROS
+            $transaccion->concepto_id = 5;// concepto deposito de ahorros
+            $transaccion->persona_id = 6;
+            $transaccion->descripcion =  "Se ahorró S/.".$monto." de Contribucion por certificado de propiedad de acciones del socio: ".$persona->apellidos." ".$persona->nombres;
+            $transaccion->usuario_id = Caja::getIdPersona();
+            $transaccion->caja_id =  $caja_id;
             $transaccion->save();
+
         });
         
         $res = is_null($res) ? "OK" : $res;

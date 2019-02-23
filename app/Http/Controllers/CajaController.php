@@ -206,7 +206,7 @@ class CajaController extends Controller
                         $transaccion->usuario_id = Credito::idUser();
                         $transaccion->persona_id = $request->input('persona_id'.$i);
                         $transaccion->caja_id = $caja_id;
-                        $transaccion->fecha = $caja->fecha_horaApert;
+                        $transaccion->fecha = $caja->fecha_horaapert;
                         $transaccion->concepto_id = 19; // distribucion d eutilidad
                         $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
                         $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 1);
@@ -225,13 +225,13 @@ class CajaController extends Controller
                                 $ahorro->capital =$this->rouNumber( $request->input('monto'.$i), 1);
                                 $ahorro->interes = 0;
                                 $ahorro->estado = 'P';
-                                $ahorro->fechai = $caja->fecha_horaApert;
+                                $ahorro->fechai = $caja->fecha_horaapert;
                                 $ahorro->persona_id = $request->input('persona_id'.$i);
                                 $ahorro->save();
                             }
 
                             $transaccion = new Transaccion();
-                            $transaccion->fecha = $caja->fecha_horaApert;
+                            $transaccion->fecha = $caja->fecha_horaapert;
                             $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
                             $transaccion->monto_ahorro= $this->rouNumber($request->input('monto'.$i), 1);
                             $transaccion->id_tabla = $ahorro->id;
@@ -311,7 +311,7 @@ class CajaController extends Controller
                 $caja               = new Caja();
                 $caja->titulo        = $request->input('titulo');
                 $caja->descripcion        = $request->input('descripcion');
-                $caja->fecha_horaApert        = $request->input('fecha_horaApert').date(" H:i:s");
+                $caja->fecha_horaapert        = $request->input('fecha_horaApert').date(" H:i:s");
                 $caja->monto_iniciado        = $request->input('monto_iniciado');
                 $caja->estado        = 'A';//abierto
                 $caja->persona_id        = Caja::getIdPersona();
@@ -365,7 +365,7 @@ class CajaController extends Controller
         $monto_cierre = round(($result->monto_iniciado-$diferencia),1);
 
         //fecha de apertura de caja
-        $fecha_caja = Date::parse($result->fecha_horaApert)->format('Y-m-d');
+        $fecha_caja = Date::parse($result->fecha_horaapert)->format('Y-m-d');
 
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true){
@@ -405,7 +405,7 @@ class CajaController extends Controller
         $error = DB::transaction(function() use($request, $id){
             $caja                 = Caja::find($id);
             $caja->descripcion        = $request->get('descripcion');
-            $caja->fecha_horaCierre        = $request->input('fecha_horaApert').date(" H:i:s");
+            $caja->fecha_horacierre        = $request->input('fecha_horaApert').date(" H:i:s");
             $caja->monto_cierre        = $request->get('monto_cierre');
             $caja->diferencia_monto        = $request->get('diferencia_monto');
             $caja->estado        = 'C';//cierre
@@ -444,7 +444,7 @@ class CajaController extends Controller
         
         $error = DB::transaction(function() use($request, $caja_id, $monto_inicio, $monto_cierre, $estado){
             $caja                 = Caja::find($caja_id);
-            $caja->fecha_horaCierre        = null;
+            $caja->fecha_horacierre        = null;
             $caja->monto_cierre        = $monto_cierre;
             $caja->diferencia_monto        = 0.0;
             $caja->estado        = $estado;//cierre
@@ -459,7 +459,7 @@ class CajaController extends Controller
         $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos', 'R'=>'Reporte Financiero');
         $entidad  = 'Caja';
         $caja = Caja::where('estado','A')->get();
-        $fecha_caja = (count($caja) == 0)?date("Y-m"):(Date::parse($caja[0]->fecha_horaApert)->format('Y-m'));
+        $fecha_caja = (count($caja) == 0)?date("Y-m"):(Date::parse($caja[0]->fecha_horaapert)->format('Y-m'));
         $ruta = $this->rutas;
         $titulo_reporte = $this->titulo_reporte;
         return view($this->folderview.'.reportes')->with(compact('entidad', 'ruta', 'titulo_reporte','cboTipo','fecha_caja'));
@@ -752,10 +752,10 @@ class CajaController extends Controller
             }
         }
 
-        $diferencia= $ingresos-$egresos;
+        $diferencia= round($ingresos-$egresos,1);
 
         //fecha caja 
-        $fecha_caja = Date::parse($result->fecha_horaApert)->format('Y-m-d');
+        $fecha_caja = Date::parse($result->fecha_horaapert)->format('Y-m-d');
 
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true) {

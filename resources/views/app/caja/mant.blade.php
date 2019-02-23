@@ -18,8 +18,8 @@
 </div>
 <?php
 	if($caja != null){
-		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha_horaApert )->format('d/m/Y')."'>";
-		echo "<input type='hidden' id='horaAp' value='".Date::parse($caja->fecha_horaApert )->format('H:m')."'>";
+		echo "<input type='hidden' id='fechaTemp' value='".Date::parse($caja->fecha_horaapert )->format('d/m/Y')."'>";
+		echo "<input type='hidden' id='horaAp' value='".Date::parse($caja->fecha_horaapert )->format('H:m')."'>";
 	}else{
 		echo "<input type='hidden' id='fechaTemp' value=''>";
 		echo "<input type='hidden' id='horaAp' value=''>";
