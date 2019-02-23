@@ -26,9 +26,9 @@ a.disabled {
 		<tr>
 			<td style="font-size: 14px">{{ $contador }}</td>
 			<td style="font-size: 14px">{{ $value->titulo }}</td>	
-			<td style="font-size: 14px">{{ Date::parse( $value->fecha_horaApert )->format('Y-m-d  H:i')  }}</td>
-			@if ($value->fecha_horaCierre !== null)
-			<td style="font-size: 14px">{{ Date::parse( $value->fecha_horaCierre )->format('Y-m-d H:i')  }}</td>
+			<td style="font-size: 14px">{{ Date::parse( $value->fecha_horaapert )->format('Y-m-d  H:i')  }}</td>
+			@if ($value->fecha_horacierre !== null)
+			<td style="font-size: 14px">{{ Date::parse( $value->fecha_horacierre )->format('Y-m-d H:i')  }}</td>
 			@else
 			<td id="cerrado" style="font-size: 14px" >-</td>
 			@endif

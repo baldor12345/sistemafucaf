@@ -132,7 +132,7 @@ class AccionesController extends Controller
         $precio_accion = $config->precio_accion;
 
         $caja = Caja::where("estado","=","A")->get();
-        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaApert)->format('Y-m-d');
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaapert)->format('Y-m-d');
 
         $ruta = $this->rutas;
         $cboPers = array(0=>'Seleccione...');
@@ -394,7 +394,7 @@ class AccionesController extends Controller
         $inicio           = 0;
 
         $caja = Caja::where("estado","=","A")->get();
-        $fecha_caja = count($caja) == 0? 0: Date::parse( $caja[0]->fecha_horaApert )->format('Y-m') ;
+        $fecha_caja = count($caja) == 0? 0: Date::parse( $caja[0]->fecha_horaapert )->format('Y-m') ;
 
         $Month = array(1=>'Enero',
                         2=>'Febrero',
@@ -472,7 +472,7 @@ class AccionesController extends Controller
         $precio_accion = $config->precio_accion;
 
         $caja = Caja::where("estado","=","A")->get();
-        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaApert)->format('Y-m-d');
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaapert)->format('Y-m-d');
 
         $cboPers = array(0=>'Seleccione...');
         $nom = '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos;

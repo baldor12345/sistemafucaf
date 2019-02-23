@@ -69,12 +69,12 @@
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="3">
-					<b>Fecha y hora de apertura:</b> {{ Date::parse($caja->fecha_horaApert)->format('d/m/y') }} {{ Date::parse($caja->fecha_horaApert)->format('H:i:s') }}
+					<b>Fecha y hora de apertura:</b> {{ Date::parse($caja->fecha_horaapert)->format('d/m/y') }} {{ Date::parse($caja->fecha_horaapert)->format('H:i:s') }}
 				</td>
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="3">
-					<b>Fecha y hora de cierre:</b> {{ Date::parse($caja->fecha_horaCierre)->format('d/m/y') }} {{ Date::parse($caja->fecha_horaCierre)->format('H:i:s') }}
+					<b>Fecha y hora de cierre:</b> {{ Date::parse($caja->fecha_horacierre)->format('d/m/y') }} {{ Date::parse($caja->fecha_horacierre)->format('H:i:s') }}
 				</td>
 			</tr>
 			<tr>

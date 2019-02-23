@@ -53,7 +53,7 @@ class ControlPersona extends Model
 
 
     public static function listSocioCliente(){
-        return  DB::table('persona')->where('tipo', 'S')->orWhere('tipo','SC');
+        return  DB::table('persona')->where('tipo', 'S');
     }
 
     //lista de ingresos por persona del mes actual

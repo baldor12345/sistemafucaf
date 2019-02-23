@@ -45,7 +45,7 @@ class caja extends Model
                             $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
                         }
                     })
-                    ->orderBy('fecha_horaApert', 'DSC');
+                    ->orderBy('fecha_horaapert', 'DSC');
     }
     
     //para evaluar el estado de la caja 

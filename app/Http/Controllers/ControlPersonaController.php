@@ -77,6 +77,19 @@ class ControlPersonaController extends Controller
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
 
         $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','T'=>'Tardanza','J'=>'Falta Justificada','J'=>'Tardanza Justificada');
+
+        $Month = array(1=>'Ene',
+                        2=>'Feb',
+                        3=>'Mar',
+                        4=>'Abr',
+                        5=>'May',
+                        6=>'Jun',
+                        7=>'Jul',
+                        8=>'Ago',
+                        9=>'Sep',
+                        10=>'Oct',
+                        11=>'Nov',
+                        12=>'Dic');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -91,7 +104,7 @@ class ControlPersonaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta','titulo_pagarmulta','cboAsistencia','idCaja'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta','titulo_pagarmulta','cboAsistencia','idCaja','Month'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -351,7 +364,7 @@ class ControlPersonaController extends Controller
                 $ahorro->save();
                 $ahorro_id = $ahorro->id;
             }
-
+            /*
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
             $transaccion->monto = $monto;
@@ -361,18 +374,18 @@ class ControlPersonaController extends Controller
             $transaccion->descripcion =  "pagó ".$persona->nombres." ";
             $transaccion->usuario_id = Caja::getIdPersona();
             $transaccion->caja_id = $caja_id;
-            $transaccion->save();
+            $transaccion->save();*/
 
             $idconcepto = $request->input('concepto');
             $transaccion = new Transaccion();
             $transaccion->fecha = $fecha_pago;
-            $transaccion->monto =  0;
+            $transaccion->monto =  $monto;
             $transaccion->monto_ahorro=  $monto;
             $transaccion->id_tabla = $ahorro_id;
             $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
             $transaccion->concepto_id = 5;// concepto deposito de ahorros
             $transaccion->persona_id = 6;
-            $transaccion->descripcion =  "Se ahorró S/. 5 de multa de ".$persona->nombres." ".$persona->apellidos;
+            $transaccion->descripcion =  "Se ahorró S/. 5 de multa de ".$persona->apellidos." ".$persona->nombres;
             $transaccion->usuario_id = Caja::getIdPersona();
             $transaccion->caja_id =  $caja_id;
             $transaccion->save();
@@ -390,8 +403,21 @@ class ControlPersonaController extends Controller
         $control_socioF = ControlPersona::listAsistenciaF($fechai, $fechaf);
         $listaF = $control_socioF->get();
         $fecha = $fechaf;
+        $Month = array(1=>'Enero',
+                        2=>'Febrero',
+                        3=>'Marzo',
+                        4=>'Abril',
+                        5=>'Mayo',
+                        6=>'Junio',
+                        7=>'Julio',
+                        8=>'Agosto',
+                        9=>'Septiembre',
+                        10=>'Octubre',
+                        11=>'Noviembre',
+                        12=>'Diciembre');
+
         $titulo = "reporte_control_asistencia_hasta".$fechaf;
-        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('listaT','listaF', 'fecha'));
+        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('listaT','listaF', 'fecha','Month'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
