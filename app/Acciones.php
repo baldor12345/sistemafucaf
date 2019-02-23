@@ -49,7 +49,7 @@ class Acciones extends Model
         return  Acciones::where('dni','=',$id)->get();
     }
 
-    public function scopelistar($codigo, $nombres, $dni){
+    public function scopelistar($codigo, $dni){
 
 
         $results = DB::table('acciones')

@@ -28,8 +28,8 @@
 						{!! Form::text('dni', '', array('class' => 'form-control input-sm', 'id' => 'dni')) !!}
 					</div>
 					<div class="form-group">
-						{!! Form::label('nombres', 'Nombre:', array('class' => 'input-sm')) !!}
-						{!! Form::text('nombres', '', array('class' => 'form-control input-sm', 'id' => 'nombres')) !!}
+						{!! Form::label('codigo', 'Codigo:', array('class' => 'input-sm')) !!}
+						{!! Form::text('codigo', '', array('class' => 'form-control input-sm', 'id' => 'codigo')) !!}
 					</div>
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
