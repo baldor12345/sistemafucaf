@@ -235,7 +235,7 @@
             
             $('#btnchek'+(parseInt($(btn).attr("numbtn")) + 1)).attr('disabled', true);
             $('#btnchek'+(parseInt($(btn).attr("numbtn")) - 1)).attr('disabled', false);
-            console.log("anio_mes: "+$(btn).attr('anio_mes')+" = "+anio_mes);
+            // console.log("anio_mes: "+$(btn).attr('anio_mes')+" = "+anio_mes);
 
             if($(btn).attr('anio_mes') == anio_mes){
                 var monto = parseFloat($("#montototal").val());
@@ -273,7 +273,7 @@
             beforeSend: function(){
             },
             success: function(res){
-                console.log(res);
+                // console.log(res);
                 if(res[0] == 'OK'){
                     listarcuotasalafecha();
                     buscar("Credito");
@@ -332,7 +332,7 @@
         var id_cuotap =0;
        
         parametros += "&monto_suma="+parseFloat($("#montototal").val());
-        console.log('Parametros: '+parametros);
+        // console.log('Parametros: '+parametros);
         $.ajax({
             url: "creditos/pagarcreditototal",
             headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}' },

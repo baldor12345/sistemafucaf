@@ -79,7 +79,7 @@ class CreditoController extends Controller{
         $estadobusqueda = Libreria::getParam($request->input('estadobusqueda'));
         $nombreclientebusqueda = $request->input('txtbusquedanombre');
 
-        $resultado = Credito::listar($nombreclientebusqueda,$fechabusqueda,$estadobusqueda);
+        $resultado = (new Credito())->listar($nombreclientebusqueda,$fechabusqueda,$estadobusqueda);
         $lista = $resultado->get();
         $cabecera = array();
         $cabecera[]  = array('valor' => '#', 'numero' => '1');
@@ -449,7 +449,7 @@ class CreditoController extends Controller{
                 $transaccion2->concepto_id = $concepto_id;
                 $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
                 $transaccion2->persona_id = $id_cliente;
-                $transaccion2->usuario_id = Credito::idUser();
+                $transaccion2->usuario_id = (new Credito())->idUser();
                 $transaccion2->caja_id = $caja_id;
                 $transaccion2->comision_voucher = $comision_voucher;
                 $transaccion2->save();
@@ -473,7 +473,7 @@ class CreditoController extends Controller{
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de Cuota N°:".$cuota->numero_cuota;
                 $transaccion->persona_id = $id_cliente;
-                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->usuario_id = (new Credito())->idUser();
                 $transaccion->caja_id = $caja_id;
                // $transaccion->cuota_parte_capital = round($parte_capital, 1);
                 $transaccion->cuota_parte_capital = round($partecapital, 1);
@@ -527,7 +527,7 @@ class CreditoController extends Controller{
                 $transaccion2->concepto_id = $concepto_id;
                 $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
                 $transaccion2->persona_id = $id_cliente;
-                $transaccion2->usuario_id = Credito::idUser();
+                $transaccion2->usuario_id = (new Credito())->idUser();
                 $transaccion2->caja_id = $caja_id;
                 $transaccion2->comision_voucher = $comision_voucher;
                 $transaccion2->save();
@@ -542,7 +542,7 @@ class CreditoController extends Controller{
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Pago de interes Cuota N°:".$cuota->numero_cuota;
                 $transaccion->persona_id = $id_cliente;
-                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->usuario_id = (new Credito())->idUser();
                 $transaccion->caja_id = $caja_id;
                 $transaccion->cuota_parte_capital = 0;
                 $transaccion->cuota_interes = round($cuota->interes, 1);
@@ -577,9 +577,6 @@ class CreditoController extends Controller{
     public function vistaaccion(Request $request, $credito_id){
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
-        //$caja_id = Caja::where("estado","=","A")->value('id');
-        //$caja_id = ($caja_id != "")?$caja_id:0;
-
         $configuraciones = configuraciones::all()->last();
         $credito = Credito::find($credito_id);
         $persona = Persona::find($credito->persona_id);
@@ -831,7 +828,7 @@ class CreditoController extends Controller{
 //listar el objeto persona por dni
     public function getPersona(Request $request, $persona_id){
         if($request->ajax()){
-            $res = Credito::getpersonacredito($persona_id);
+            $res = (new Credito())->getpersonacredito($persona_id);
             return response()->json($res);
         }
     }
@@ -1189,7 +1186,7 @@ public function numero_meses($fecha_inico, $fecha_final){
                     $transaccion2->concepto_id = $concepto_id;
                     $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
                     $transaccion2->persona_id =  $persona->id;
-                    $transaccion2->usuario_id = Credito::idUser();
+                    $transaccion2->usuario_id = (new Credito())->idUser();
                     $transaccion2->caja_id = $caja_id;
                     $transaccion2->comision_voucher = 0.2;
                     $transaccion2->save();
@@ -1203,7 +1200,7 @@ public function numero_meses($fecha_inico, $fecha_final){
                 $transaccion->concepto_id =  $concepto_id_pagocuota;
                 $transaccion->descripcion = "Cancelado total del credito, cuota N°: ".$num_cuota_pfinal;
                 $transaccion->persona_id = $persona->id;
-                $transaccion->usuario_id = Credito::idUser();
+                $transaccion->usuario_id = (new Credito())->idUser();
                 $transaccion->caja_id = $caja_id; 
                 $transaccion->cuota_parte_capital = round($capital_total, 1);
                 $transaccion->cuota_interes = round($interes_total,1);
@@ -1253,7 +1250,7 @@ public function numero_meses($fecha_inico, $fecha_final){
                         $interes_ganado = $numeroDias*($cuotas[$i]->tasa_interes_mora/100) * ($cuotas[$i]->parte_capital + $cuotas[$i]->interes);
                     }
                      $num_meses = $this->numero_meses($cuotas[$i]->fecha_iniciomora,$fechaOp);
-                     //$cuotas[$i]->interes += $cuotas[$i]->interes*$num_meses;
+                     
 
                     $interes_moratorio += round($interes_ganado, 1);
                     $interes_total += round($cuotas[$i]->interes * $num_meses, 1);

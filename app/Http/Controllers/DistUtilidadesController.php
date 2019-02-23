@@ -832,7 +832,7 @@ class DistUtilidadesController extends Controller
             
             $utilidades = array();
             if(count($listaAcciones)>0){
-               $distrib_util = $distrib_util.'<tr><td>'.($num_indice+1).'</td><td>'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>';
+               $distrib_util = $distrib_util.'<tr><td style="width: 5%;"  height="49">'.($num_indice+1).'</td><td style="width: 45%; padding-bottom: 30px;"  height="49">'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>';
                 $l=0;
                 $sumtotalAcciones =0;
                 for($j=1; $j<=12; $j++){
@@ -852,27 +852,27 @@ class DistUtilidadesController extends Controller
                         $utilidades[$j-1] = 0;
                     }
                 }
-                $distrib_util = $distrib_util."<td>".(round($sumtotalAcciones,1) > 0? round($sumtotalAcciones,1): '-')."</td>";
+                $distrib_util = $distrib_util.'<td style="width: 15%;"  height="49">'.(round($sumtotalAcciones,1) > 0? round($sumtotalAcciones,1): '-')."</td>";
                     $sumtotal_util = 0;
                 for($j=1; $j<=12; $j++){
                     // $distrib_util = $distrib_util."<td>".(round($utilidades[$j-1],1) >0?round($utilidades[$j-1],1): '-')."</td>";
                     $sumtotal_util += $utilidades[$j-1];
                 }
                 
-                $distrib_util = $distrib_util."<td>".round($sumtotal_util,1)."</td><td>________________________</td></tr>";
+                $distrib_util = $distrib_util.'<td style="width: 15%;"  height="49">'.round($sumtotal_util,1).'</td><td style="width: 20%;"  height="49"></td></tr>';
                 $num_indice++;
             }
         }
         $titulo =$distribucion->titulo;
-        $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ";
+        // $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ";
         $view = \View::make('app.distribucionutilidad.listaReciboDistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta', 'distrib_util'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
-        PDF::AddPage('L', 'A4', 'es');
-        PDF::SetTopMargin(5);
-        PDF::SetLeftMargin(5);
-        PDF::SetRightMargin(5);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(10);
+        PDF::SetLeftMargin(10);
+        PDF::SetRightMargin(10);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');

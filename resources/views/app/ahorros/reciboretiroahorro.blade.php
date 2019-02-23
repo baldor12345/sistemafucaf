@@ -17,7 +17,7 @@
 <body>
 	<div>
 		<table width="50%" class="table contenedor">
-                <thead></thead>
+            <thead></thead>
 			<tr>
 				<td style="font-size: 10px" colspan="4"><strong>FUCAF</strong></td>
 			</tr>

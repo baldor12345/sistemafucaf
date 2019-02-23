@@ -42,7 +42,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	console.log("FECHA_DEFECTO: {{ $fecha_pordefecto }}");
+	// console.log("FECHA_DEFECTO: {{ $fecha_pordefecto }}");
 
 	configurarAnchoModal('650');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
