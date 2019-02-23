@@ -1,15 +1,10 @@
-<script type="text/javascript">
-    // var rutareportecuotas = "{{ URL::route($ruta['generareportecuotasPDF'], array())}}";
-    // function imprimirpdf(){
-    //     window.open(rutareportecuotas+"/{{ $credito->id }}", "Cuotas de Credito", "width=700, height=800, left=50, top=20");
-    //}
- </script>
+
  <div id="divMensajeError{!! $entidad_cuota !!}"></div>
- <div class="card-box table-responsive crbox">
+ {{-- <div class="card-box table-responsive crbox">
     <div class="alert alert-warning">
         <label><strong>¡Aviso!</strong> Antes de realizar alguna operación, asegurese primero de realizar sus pagos de cuotas pendientes, para no tener posibles errores. ¡Gracias!</label>
     </div>
-</div>
+</div> --}}
 
  <div class="card-box table-responsive crbox">
      <div class="form-row lbldatos">
@@ -31,6 +26,7 @@
                      {!! Form::hidden('opcion', '', array('id' => 'opcion')) !!}
                      {!! Form::hidden('montototal', 0, array('id' => 'montototal')) !!}
                      {!! Form::hidden('interes_total', 0, array('id' => 'interes_total')) !!}
+                     {!! Form::hidden('interes_mora_total', 0, array('id' => 'interes_mora_total')) !!}
                      {!! Form::hidden('capital_total', 0, array('id' => 'capital_total')) !!}
                      {!! Form::hidden('anio', $anioactual, array('id' => 'anio')) !!}
                      {!! Form::hidden('mes', $mesactual, array('id' => 'mes')) !!}
@@ -45,7 +41,7 @@
              </div>
              <div class="form-group col-12 col-md-12 col-sm-12">
                 {!! Form::label('accioncredito', 'Operación a realizar: ', array('class' => '')) !!}
-                {!! Form::select('accioncredito', $cboacciones, 0, array('class' => 'form-control input-sm', 'id' => 'accioncredito',  'onchange' => 'realizaoperacion(this)')) !!}
+                {!! Form::select('accioncredito', $cboacciones, 4, array('class' => 'form-control input-sm', 'id' => 'accioncredito',  'onchange' => 'realizaoperacion(this)')) !!}
              </div>
          </div>
 
@@ -70,7 +66,8 @@
          $('.contbtn').css({'padding': '10px 5'});
         // buscar('{{ $entidad_cuota }}');
          init(IDFORMBUSQUEDA+'{{ $entidad_cuota }}', 'B', '{{ $entidad_cuota }}');
-         listarcuotasalafecha();
+         //listarcuotasalafecha();
+         cancelarTodo();
          
      });
 
@@ -302,13 +299,25 @@
             beforeSend: function(){
             },
             success: function(res){
+                
+
+                var tabla = '<div class="alert alert-light">'+
+                '<ul>'+
+                    '<li>N° Cuotas a pagar: '+parseFloat(res[3]).toFixed(0)+'</li>'+
+                    '<li>N° Cuotas morosas: '+parseFloat(res[4]).toFixed(0)+'</li>'+
+                    '<li>Capital total: '+parseFloat(res[1]).toFixed(1)+'</li>'+
+                    '<li>Interes total: '+parseFloat(res[2]).toFixed(1)+'</li>'+
+                    '<li>Interes Moratorio total: '+parseFloat(res[5]).toFixed(1)+'</li>'+
+                    '<li>Comision voucher: '+(parseFloat(res[2]).toFixed(1) > 0 ? "s/. 0.20": "s/. 0.00")+'</li>'+
+                '<ul>'+
+                '<label>Total a pagar S/.: '+(parseFloat(res[0]).toFixed(1))+'</label></div>'
+                tabla += '<button class="btn btn-primary" onclick="pagar_credito_total();">Pagar Todo</button>';
+
                 $("#montototal").val(res[0]);
                 $("#capital_total").val(res[1]);
                 $("#interes_total").val(res[2]);
+                $("#interes_mora_total").val(res[5]);
                 $("#num_cuotas_p").val(res[3]);
-
-                var tabla = '<div class="alert alert-success"><label>Total a pagar S/.: '+(parseFloat(res).toFixed(1))+'</label></div>'
-                tabla += '<button class="btn btn-primary" onclick="pagar_credito_total();">Pagar Todo</button>';
                 $('#cuotas_pendiente').html(tabla);
                 
             }
@@ -359,7 +368,7 @@
 			return Number(numero.toFixed(decimales)) === 0 ? 0 : numero;  // En valores muy bajos, se comprueba si el numero es 0 (con el redondeo deseado), si no lo es se devuelve el numero otra vez.
 		}
 	}
-
+/*
     function ampliar_disminuir_cuotas(){
         var parametros = "fechaop="+$('#fechaop').val()+"&credito_id="+$('#credito_id').val();
 
@@ -381,7 +390,7 @@
                  
             }
         }).fail(function(){
-                mostrarMensaje ("Error de consulta..", "ERROR");
+            mostrarMensaje ("Error de consulta..", "ERROR");
         });
 
     }
@@ -412,5 +421,5 @@
             $(btn).html('Guardar');
                 mostrarMensaje ("Error de consulta..", "ERROR");
         });
-    }
+    }*/
  </script>

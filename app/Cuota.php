@@ -32,6 +32,13 @@ class Cuota extends Model
         ->orderBy('cuota.fecha_programada_pago', 'ASC');
         return $results;
     }
+    public static function listartodo($idcredito){
+        $results = DB::table('cuota')
+        ->where('cuota.credito_id','=',$idcredito)
+        ->where('cuota.deleted_at','=',null)
+        ->orderBy('cuota.fecha_programada_pago', 'ASC');
+        return $results;
+    }
 
     public static function listarCuotasAlafecha($anio, $mes, $nombre){
 

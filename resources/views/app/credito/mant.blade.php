@@ -48,7 +48,7 @@
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCred', 'onclick' => 'guardarCredito(\''.$entidad.'\', \''.URL::route($ruta["generarecibocreditoPDF"], array()).'\')')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> Registrar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCredito', 'onclick' => 'guardarCredito(\''.$entidad.'\', \''.URL::route($ruta["generarecibocreditoPDF"], array()).'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -149,7 +149,7 @@
             });
         });
         $(".cliente").html('Socio o Cliente: <sup style="color: red;">Obligatorio</sup>');
-        $(".aval").html('Socio o Cliente: <sup style="color: blue;">Opcional</sup>');
+        $(".aval").html('Socio Aval: <sup style="color: blue;">Opcional</sup>');
         $(".valor_cred").html('Valor de Crédito: <sup style="color: red;">Obligatorio</sup>');
         $(".period").html('Periodo (N° Meses): <sup style="color: red;">Obligatorio</sup>');
         $(".fechacred").html('Fecha: <sup style="color: red;">Obligatorio</sup>');
@@ -157,7 +157,7 @@
         init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
         $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
         configurarAnchoModal('650');
-        $('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $saldo_en_caja }}</div>');
+        $('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ round($saldo_en_caja, 1) }}</div>');
     
     });
     function filterFloat(evt,input){
@@ -201,11 +201,12 @@
         return  res;
     }
 
-    function guardarCredito(entidad, rutarecibo) {
+    function guardarCredito(entidad, rutarecibo, btn) {
         var valida = true;
         var mensaje = "";
-        $('#btnGuardarCred').button('loading');
+        
         if(valid()){
+            
             if($('#numcreditos').val() == 1 ){
                 if($('#periodo').val() > 1){
                     valida = false;
@@ -216,9 +217,8 @@
                 valida = false;
             }
             if({{ $saldo_en_caja }} < $('#valor_credito').val()){
-                console.log("saldo en caja: "+{{ $saldo_en_caja }});
-                console.log("valor credito: "+$('#valor_credito').val());
                 mensaje = "¡El monto de crédito ingresado, supera el saldo actual en caja!";
+                
                 valida = false;
             }
 
@@ -234,6 +234,7 @@
                 if(val_aval){
                     if($('#selectnom').val() != $('#selectaval').val()){
                         var idformulario = IDFORMMANTENIMIENTO + entidad;
+                        $('#btnGuardarCredito').button('loading');
                         var data = submitForm(idformulario);
                         var respuesta = null;
                         var listar = 'NO';
@@ -243,13 +244,16 @@
                         data.done(function(msg) {
                             respuesta = msg;
                         }).fail(function(xhr, textStatus, errorThrown) {
+                            $('#btnGuardarCredito').removeClass('disabled');
+                                $('#btnGuardarCredito').removeAttr('disabled');
+                                $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
                             respuesta = 'ERROR';
                         }).always(function() {
                             
                             if(respuesta[0] === 'ERROR'){
-                                $('#btnGuardarCred').removeClass('disabled');
-                                $('#btnGuardarCred').removeAttr('disabled');
-                                $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
+                                $('#btnGuardarCredito').removeClass('disabled');
+                                $('#btnGuardarCredito').removeAttr('disabled');
+                                $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
                             }else{
                                 
                                 if (respuesta[0] === 'OK') {
@@ -262,17 +266,18 @@
                                         buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
                                     }        
                                 } else {
-                                    $('#btnGuardarCred').removeClass('disabled');
-                                    $('#btnGuardarCred').removeAttr('disabled');
-                                    $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
+                                    $('#btnGuardarCredito').removeClass('disabled');
+                                    $('#btnGuardarCredito').removeAttr('disabled');
+                                    $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
                                     mostrarErrores(respuesta, idformulario, entidad);
                                 }
                             }
+                   
                         });
                     }else{
-                        $('#btnGuardarCred').removeClass('disabled');
-                        $('#btnGuardarCred').removeAttr('disabled');
-                        $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
+                        $('#btnGuardarCredito').removeClass('disabled');
+                        $('#btnGuardarCredito').removeAttr('disabled');
+                        $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
                         var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
                         $('#divMensajeError{{ $entidad }}').html(msj);
                         $('#divMensajeError{{ $entidad }}').show();
@@ -281,21 +286,24 @@
                 }
                 
             }else{
-                $('#btnGuardarCred').removeClass('disabled');
-                $('#btnGuardarCred').removeAttr('disabled');
-                $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
+                $('#btnGuardarCredito').removeClass('disabled');
+                $('#btnGuardarCredito').removeAttr('disabled');
+                $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
                 var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> "+mensaje+"</div>";
                 $('#divMensajeError{{ $entidad }}').html(msj);
                 $('#divMensajeError{{ $entidad }}').show();
             }
         }else{
-            $('#btnGuardarCred').removeClass('disabled');
-            $('#btnGuardarCred').removeAttr('disabled');
-            $('#btnGuardarCred').html('<i class="fa fa-check fa-lg"></i> Registrar');
+            $('#btnGuardarCredito').removeClass('disabled');
+            $('#btnGuardarCredito').removeAttr('disabled');
+            $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
             var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
                 $('#divMensajeError{{ $entidad }}').html(msj);
                 $('#divMensajeError{{ $entidad }}').show();
         }
+        $('#btnGuardarCredito').removeClass('disabled');
+        $('#btnGuardarCredito').removeAttr('disabled');
+        $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
     }
 
     function abrirmodal(datahtml){

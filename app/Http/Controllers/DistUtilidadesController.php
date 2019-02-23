@@ -29,6 +29,7 @@ class DistUtilidadesController extends Controller
             'index'  => 'distribucion_utilidades.index',
             'verdistribucion' => 'distribucion_utilidades.verdistribucion',
             'reportedistribucionPDF'=>'distribucion_utilidades.reportedistribucionPDF',
+            'listaSociosReciboDistribucionPDF' => 'distribucion_utilidades.listaSociosReciboDistribucionPDF'
         );
 /**
      * Create a new controller instance.
@@ -94,7 +95,7 @@ class DistUtilidadesController extends Controller
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
-
+/*
     public function create(Request $request)
     {
         $anio = $request->input('anio');
@@ -133,14 +134,14 @@ class DistUtilidadesController extends Controller
             }
             $porcentaje_ditribuible = 100;
             $porcentaje_ditr_faltante = 0;
-           /* $saldo_caja_distribuible = $this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaApert), 1);
+        //     $saldo_caja_distribuible = $this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaapert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaapert), 1);
             
-            $saldo_caja_distribuible -= 10.8;
-            echo("saldo distr: ".$saldo_caja_distribuible);
-            if($saldo_caja_distribuible < $utilidad_neta){
-                $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
-                $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
-            }*/
+        //     $saldo_caja_distribuible -= 10.8;
+        //     echo("saldo distr: ".$saldo_caja_distribuible);
+        //     if($saldo_caja_distribuible < $utilidad_neta){
+        //         $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
+        //         $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
+        //     }
 
             $existe = 0;
             $anio_actual=$anio;
@@ -148,7 +149,101 @@ class DistUtilidadesController extends Controller
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
             return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
     }
+*/
+    public function create(Request $request)
+    {
+        $anio = $request->input('anio');
+        $mes = 12;
+        $distrValidar = Caja::where(DB::raw('extract( year from fecha_horaapert)'),'=',$anio)->where(DB::raw('extract( month from fecha_horaapert)'),'=',$mes)->get();
+        $existe = true;
+        $entidad = 'Distribucion';
+        $mensaje = "";
+        $ditr = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio))->get();
+        if(count($distrValidar) < 1){
+            $existe = false;
+            $mensaje = "¡Aún no está disponible la distribución de utilidades para el año seleccionado..!";
+        }else if(count($ditr) > 0){
+            $existe = false;
+            $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
+        }
+        
+        // if($existe){
+            $caja = Caja::where("estado","=","A")->get();
 
+            $idcaja = count($caja) == 0? 0: $caja[0]->id;
+            $configuraciones = Configuraciones::all()->last();
+            $listar = Libreria::getParam($request->input('listar'), 'NO');
+            
+            $ruta = $this->rutas;
+            $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
+            //$anio = date('Y') - 1; 
+            $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            $otros = $sumUBAcumulado[1];
+            $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
+
+            $int_pag_acum= $gastosDUActual[0];
+            $otros_acumulados= $gastosDUActual[1];
+            $gastadmacumulado = $gastosDUActual[2];
+            
+            //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            
+            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+            $du_anterior = (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $utilidad_neta = round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+            $acciones_mensual =  DistribucionUtilidades::list_total_acciones_mes($anio)->get();//Cantidad de acciones por cada mes en el año especificado
+            $numero_acciones_hasta_enero =  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();// conteo de acciones hasta el mes de enero
+            $acciones_mes  = 0;
+            $indice1 = 0;
+            $j1 = 12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
+            }
+            $porcentaje_ditribuible = 100;
+            $porcentaje_ditr_faltante = 0;
+            // $saldo_caja_distribuible = $this->saldoEnCaja($caja[0]); //$this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaapert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaapert), 1);
+            
+            
+            // echo("saldo distr: ".$saldo_caja_distribuible);
+            // if($saldo_caja_distribuible < $utilidad_neta){
+            //     $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
+            //     $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
+            // }
+
+            $existe = 0;
+            $anio_actual=$anio;
+            $formData = array('distribucion_utilidades.store');
+            $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
+        // }else{
+        //     $existe = 1;
+        //     return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));
+        // }
+        
+    }
+
+    public function saldoEnCaja($caja){
+        $monto_inicio = round($caja->monto_iniciado, 1);
+        $egresos=0;
+        $ingresos=0;
+        $saldo_en_caja =0;
+        $saldo = Transaccion::getsaldo($caja->id)->get();
+        for($i=0; $i<count($saldo); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+        $saldo_en_caja= round($ingresos,1) + round($monto_inicio,1) - round($egresos, 1);
+        return $saldo_en_caja;
+    }
 
     public function createOriginal(Request $request)
     {
@@ -195,7 +290,7 @@ class DistUtilidadesController extends Controller
             }
             $porcentaje_ditribuible = 100;
             $porcentaje_ditr_faltante = 0;
-            $saldo_caja_distribuible = $this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaApert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaApert), 1);
+            $saldo_caja_distribuible = $this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaapert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaapert), 1);
             
             $saldo_caja_distribuible -= 10.8;
             echo("saldo distr: ".$saldo_caja_distribuible);
@@ -215,8 +310,6 @@ class DistUtilidadesController extends Controller
         }*/
         
     }
-    
-    
     public function saldocaja(){
         
     }
@@ -394,7 +487,7 @@ class DistUtilidadesController extends Controller
                     $transaccion->usuario_id = Credito::idUser();
                     $transaccion->persona_id = $request->input('persona_id'.$i);
                     $transaccion->caja_id = $caja_id;
-                    $transaccion->fecha = $caja->fecha_horaApert;
+                    $transaccion->fecha = $caja->fecha_horaapert;
                     $transaccion->concepto_id = 19; // distribucion d eutilidad
                     $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
                     $transaccion->utilidad_distribuida = $this->rouNumber($request->input('monto'.$i), 1);
@@ -413,13 +506,13 @@ class DistUtilidadesController extends Controller
                             $ahorro->capital =$this->rouNumber( $request->input('monto'.$i), 1);
                             $ahorro->interes = 0;
                             $ahorro->estado = 'P';
-                            $ahorro->fechai = $caja->fecha_horaApert;
+                            $ahorro->fechai = $caja->fecha_horaapert;
                             $ahorro->persona_id = $request->input('persona_id'.$i);
                             $ahorro->save();
                         }
 
                         $transaccion = new Transaccion();
-                        $transaccion->fecha = $caja->fecha_horaApert;
+                        $transaccion->fecha = $caja->fecha_horaapert;
                         $transaccion->monto = $this->rouNumber($request->input('monto'.$i), 1);
                         $transaccion->monto_ahorro= $this->rouNumber($request->input('monto'.$i), 1);
                         $transaccion->id_tabla = $ahorro->id;
@@ -447,12 +540,12 @@ class DistUtilidadesController extends Controller
                     $ahorroS->capital = $this->rouNumber($request->input('fsocial'), 7);
                     $ahorroS->interes = 0;
                     $ahorroS->estado = 'P';
-                    $ahorroS->fechai = $caja->fecha_horaApert;
+                    $ahorroS->fechai = $caja->fecha_horaapert;
                     $ahorroS->persona_id = $fsocial[0]->id;
                     $ahorroS->save();
                 }
                 $transaccionS = new Transaccion();
-                $transaccionS->fecha = $caja->fecha_horaApert;
+                $transaccionS->fecha = $caja->fecha_horaapert;
                 $transaccionS->monto = $this->rouNumber($request->input('fsocial'), 1);
                 $transaccionS->monto_ahorro= $this->rouNumber($request->input('fsocial'), 1);
                 $transaccionS->id_tabla = $ahorroS->id;
@@ -467,7 +560,7 @@ class DistUtilidadesController extends Controller
                 $transaccionF->usuario_id = Credito::idUser();
                 $transaccionF->persona_id = $fsocial[0]->id;
                 $transaccionF->caja_id =$caja->id;
-                $transaccionF->fecha = $caja->fecha_horaApert;
+                $transaccionF->fecha = $caja->fecha_horaapert;
                 $transaccionF->concepto_id = 19; // distribucion d eutilidad
                 $transaccionF->monto = $this->rouNumber($request->input('fsocial'), 1);
                 $transaccionF->utilidad_distribuida = $this->rouNumber($request->input('fsocial'), 1);
@@ -488,12 +581,12 @@ class DistUtilidadesController extends Controller
                     $ahorroL->capital = $this->rouNumber($request->input('rlegal'), 7);
                     $ahorroL->interes = 0;
                     $ahorroL->estado = 'P';
-                    $ahorroL->fechai = $caja->fecha_horaApert;
+                    $ahorroL->fechai = $caja->fecha_horaapert;
                     $ahorroL->persona_id = $rlegal[0]->id;
                     $ahorroL->save();
                 }
                 $transaccionL = new Transaccion();
-                $transaccionL->fecha = $caja->fecha_horaApert;
+                $transaccionL->fecha = $caja->fecha_horaapert;
                 $transaccionL->monto = $this->rouNumber($request->input('rlegal'), 1);
                 $transaccionL->monto_ahorro= $this->rouNumber($request->input('rlegal'), 1);
                 $transaccionL->id_tabla = $ahorroL->id;
@@ -508,7 +601,7 @@ class DistUtilidadesController extends Controller
                 $transaccionR->usuario_id = Credito::idUser();
                 $transaccionR->persona_id = $rlegal[0]->id;
                 $transaccionR->caja_id =$caja->id;
-                $transaccionR->fecha = $caja->fecha_horaApert;
+                $transaccionR->fecha = $caja->fecha_horaapert;
                 $transaccionR->concepto_id = 19; // distribucion d eutilidad
                 $transaccionR->monto = $this->rouNumber($request->input('rlegal'), 1);
                 $transaccionR->utilidad_distribuida = $this->rouNumber($request->input('rlegal'), 1);
@@ -674,6 +767,117 @@ class DistUtilidadesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+    public function listaSociosReciboDistribucionPDF($distribucion_id=0)
+    {   
+
+        $distribucion = DistribucionUtilidades::find($distribucion_id);
+
+        $anio =date('Y',strtotime($distribucion->fechai));
+        $entidad = 'Distribucion';
+        $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+        $otros = $distribucion->otros;//$sumUBAcumulado[1];
+        $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
+
+        $int_pag_acum= $distribucion->int_pag_acum; //$gastosDUActual[0];
+        $otros_acumulados=  $distribucion->otros_acum;// $gastosDUActual[1];
+        $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
+        
+        $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
+        $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+        $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+        $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
+        $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+        $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
+        $acciones_mes  =0;
+        $indice1 = 0;
+        $j1=12;
+        for($i=1; $i<=12; $i++){
+            if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                $j1--;
+                $indice1++;
+            }
+        }
+        $existe = 0;
+        $reporte =1;
+        $anio_actual=$anio+1;
+
+        $j=12;
+        $indice=0;
+        $sumatotal_acc_mes = 0;
+        
+        for($i=1; $i<=12; $i++){
+            if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
+                $sumatotal_acc_mes += $acciones_mensual[$indice]->cantidad_mes * $j;
+                $j--;
+                $indice++;
+            }
+        }
+        $factores_mes=array();
+        $f=0;
+        $factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
+        for ($i=12; $i >0 ; $i--) { 
+            $factores_mes[$f] = $i * $factor;
+            $f++;
+        }
+
+        $distrib_util = "";
+        $socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
+        $num_indice =0;
+        for($i=0; $i< count($socios); $i++){
+            
+            $listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
+            $num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
+            
+            $utilidades = array();
+            if(count($listaAcciones)>0){
+               $distrib_util = $distrib_util.'<tr><td>'.($num_indice+1).'</td><td>'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>';
+                $l=0;
+                $sumtotalAcciones =0;
+                for($j=1; $j<=12; $j++){
+                    $numaccciones = 0;
+                    if($j == 1){
+                        $numaccciones = count($num_accionesenero)>0?$num_accionesenero[0]->cantidad_total:0;
+                    }
+                        
+                    if(((($l)<count($listaAcciones))?$listaAcciones[$l]->mes:"") == $j){
+                        $numaccciones += $listaAcciones[$l]->cantidad_mes;
+                        // $distrib_util = $distrib_util."<td>".($numaccciones>0?$numaccciones: '-')."</td>";
+                        $utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
+                        $sumtotalAcciones += $numaccciones;
+                        $l++;
+                    }else{
+                        // $distrib_util = $distrib_util."<td>-</td>";
+                        $utilidades[$j-1] = 0;
+                    }
+                }
+                $distrib_util = $distrib_util."<td>".(round($sumtotalAcciones,1) > 0? round($sumtotalAcciones,1): '-')."</td>";
+                    $sumtotal_util = 0;
+                for($j=1; $j<=12; $j++){
+                    // $distrib_util = $distrib_util."<td>".(round($utilidades[$j-1],1) >0?round($utilidades[$j-1],1): '-')."</td>";
+                    $sumtotal_util += $utilidades[$j-1];
+                }
+                
+                $distrib_util = $distrib_util."<td>".round($sumtotal_util,1)."</td><td>________________________</td></tr>";
+                $num_indice++;
+            }
+        }
+        $titulo =$distribucion->titulo;
+        $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ";
+        $view = \View::make('app.distribucionutilidad.listaReciboDistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta', 'distrib_util'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);

@@ -69,7 +69,7 @@ class RecibocuotasController extends Controller
       
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
-        $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
         $anioactual = date('Y',strtotime($fecha_actual));
         $mesactual = date('m',strtotime($fecha_actual));
         

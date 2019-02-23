@@ -132,7 +132,7 @@ class AhorrosController extends Controller
         $idopcion = null;
         $ruta = $this->rutas;
 
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
 
         $cboPers = array(0=>'Seleccione...');
         $resultado = Concepto::listar('I');
@@ -242,7 +242,7 @@ class AhorrosController extends Controller
         $entidad = "Detalleahorro";
         $caja = Caja::where("estado","=","A")->get();
        
-        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaApert))."-01-01";
+        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_apert))."-01-01";
         return view($this->folderview.'.detalles_ahorro')->with(compact('ruta','persona', 'entidad','cbotipo','fecha_pordefecto'));
     }
     
@@ -285,27 +285,6 @@ class AhorrosController extends Controller
    //Metodo para abrir Modal historico de capital + interes 
    public function vistahistoricoahorro ($persona_id, Request $request){
         $ruta = $this->rutas;
-       /* $fecha_actual = date('Y-m-d'); 
-        $datosfac = explode("-", $fecha_actual);
-        $anioactual = $datosfac[0];
-        $cboanio = array(
-            ''.($anioactual+1)=>''.($anioactual+1),
-            ''.$anioactual=>''.$anioactual,
-        ''.($anioactual-1)=>''.($anioactual-1),
-        ''.($anioactual-2)=>''.($anioactual-2),
-        ''.($anioactual-3)=>''.($anioactual-3),
-        ''.($anioactual-4)=>''.($anioactual-4),
-        ''.($anioactual-5)=>''.($anioactual-5),
-        ''.($anioactual-6)=>''.($anioactual-6),
-        ''.($anioactual-7)=>''.($anioactual-7),
-        ''.($anioactual-8)=>''.($anioactual-8),
-        ''.($anioactual-9)=>''.($anioactual-9),
-        ''.($anioactual-10)=>''.($anioactual-10),
-        ''.($anioactual-11)=>''.($anioactual-11),
-        ''.($anioactual-12)=>''.($anioactual-12),
-        ''.($anioactual-13)=>''.($anioactual-13),);
-        */
-
         $cboanio = array();
         $anioInicio = 2007;
         $anioactual = date('Y');
@@ -317,9 +296,9 @@ class AhorrosController extends Controller
         $titulo_vistahistoricoahorro = $this->titulo_vistahistoricoahorro;
         $entidad = "Detallehistorico";
         $caja = Caja::where("estado","=","A")->get();
-        $anio_pordefecto =count($caja) == 0?  date('Y'): date('Y',strtotime($caja[0]->fecha_horaApert));
-
-        return view($this->folderview.'.vistadetallehistorico')->with(compact('ruta','persona_id', 'entidad','cboanio','titulo_vistahistoricoahorro', 'anio_pordefecto'));
+        $anio_pordefecto =count($caja) == 0?  date('Y'): date('Y',strtotime($caja[0]->fecha_apert));
+        $persona = Persona::find($persona_id);
+        return view($this->folderview.'.vistadetallehistorico')->with(compact('ruta','persona', 'entidad','cboanio','titulo_vistahistoricoahorro', 'anio_pordefecto'));
     }
 
    //Metodo para listar historico
@@ -392,7 +371,7 @@ class AhorrosController extends Controller
             $saldo_en_caja= $ingresos-$egresos;
         }
         
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_apert));
         return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id','fecha_pordefecto'));
     }
     //Metodo para registrar el retiro

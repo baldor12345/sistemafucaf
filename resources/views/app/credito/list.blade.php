@@ -27,12 +27,11 @@
 				<td>Pendiente</td>
 				<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver detalle', array('onclick' => 'modal (\''.URL::route($ruta["detallecredito"], array($value->credito_id, 'SI')).'\', \'Detalle de credito\', this);','class' => 'btn btn-xs btn-warning btndetcredito')) !!}</td>
 				<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Eliminar', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->credito_id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-xs btn-danger')) !!}</td>
-				<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Acción', array('onclick' => 'modal (\''.URL::route($ruta["vistaaccion"], array($value->credito_id, 'SI')).'\', \''."Realizar una operación".'\', this);', 'class' => 'btn btn-xs btn-light')) !!}</td>
+				<td>{!! Form::button('<div class="glyphicon glyphicon-remove"></div> Pagar Todo', array('onclick' => 'modal (\''.URL::route($ruta["vistaaccion"], array($value->credito_id, 'SI')).'\', \''."Realizar una operación".'\', this);', 'class' => 'btn btn-xs btn-light')) !!}</td>
+				<td>{!! Form::button('<div class="glyphicon glyphicon-check"></div> Refinanciar', array('onclick' => 'modal (\''.URL::route($ruta["vista_refinanciar"], array('credito_id'=>$value->credito_id)).'\', \''."Refinanciación".'\', this);', 'class' => 'btn btn-xs btn-light')) !!}</td>
 				@else
 				<td>Cancelado</td>
 				<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Ver detalle', array('onclick' => 'modal (\''.URL::route($ruta["detallecredito"], array($value->credito_id, 'SI')).'\', \'Detalle de credito\', this);','class' => 'btn btn-xs btn-warning btndetcredito')) !!}</td>
-				<td>X</td>
-				<td>X</td>
 				@endif
 			</tr>
 		<?php

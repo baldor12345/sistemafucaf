@@ -181,6 +181,8 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/pagarcreditototal', 'CreditoController@pagarcreditototal')->name('creditos.pagarcreditototal');
      Route::get('creditos/ampliar_reducir_cuotas', 'CreditoController@ampliar_reducir_cuotas')->name('creditos.ampliar_reducir_cuotas');
      Route::get('creditos/datos_ampliar_reducir_cuotas', 'CreditoController@datos_ampliar_reducir_cuotas')->name('creditos.datos_ampliar_reducir_cuotas');
+     Route::get('creditos/vista_refinanciar', 'CreditoController@vista_refinanciar')->name('creditos.vista_refinanciar');
+     Route::get('creditos/guardar_refinanciacion', 'CreditoController@guardar_refinanciacion')->name('creditos.guardar_refinanciacion');
      
      
      
@@ -221,6 +223,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('distribucion_utilidades', 'DistUtilidadesController', array('except' => array('show')));
     Route::get('distribucion_utilidades/verdistribucion/{distribucion_id?}', 'DistUtilidadesController@verdistribucion')->name('distribucion_utilidades.verdistribucion');
     Route::get('/reportedistribucionPDF/{distribucion_id?}', 'DistUtilidadesController@reportedistribucionPDF')->name('distribucion_utilidades.reportedistribucionPDF');
+    Route::get('/listaSociosReciboDistribucionPDF/{distribucion_id?}', 'DistUtilidadesController@listaSociosReciboDistribucionPDF')->name('distribucion_utilidades.listaSociosReciboDistribucionPDF');
+
     
     /*CAJA*/
     Route::post('caja/buscar', 'CajaController@buscar')->name('caja.buscar');
