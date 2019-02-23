@@ -7,45 +7,43 @@
 {!! Form::hidden('id_cliente', $credito2->persona_id, array('id' => 'id_cliente')) !!}
 {!! Form::hidden('valor_mora', $cuota->interes_mora, array('id' => 'valor_mora')) !!}
 
+{!! Form::hidden('partecapital', $cuota->parte_capital, array('id' => 'partecapital')) !!}
+{!! Form::hidden('cuotainteres', $cuota->interes, array('id' => 'cuotainteres')) !!}
+{!! Form::hidden('cuotamora', $cuota->interes_mora, array('id' => 'cuotamora')) !!}
+{!! Form::hidden('total', ($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora), array('id' => 'total')) !!}
+
 
 <div class="form-row">
-        <div class="col-sm-12">
-            <div class="form-group" >
-                {!! Form::label('nombreSC', (trim($persona->tipo) =='S'?"Socio: ":"Cliente ").$persona->apellidos." ".$persona->nombres) !!}
-            </div>
-        </div>
-    {{-- ******************************* --}}
+    <div class="card-box table-responsive crbox">
+     
+        {!! Form::label('nombreSC', (trim($persona->tipo) =='S'?"Socio: ":"Cliente ").$persona->apellidos." ".$persona->nombres, array('class' => 'alert alert-success col-12 col-sm-12 col-xs-12') )!!}
+        {!! Form::label('detalle', 'Detalles: ', array('class' => '')) !!}
+        <ul class="">
+            <li>{!! Form::label('partecapital', 'Parte capital: s/. '.$cuota->parte_capital, array('class' => 'psrtcap')) !!}</li>
+          
+            <li>{!! Form::label('cuotainteres', 'Interes: s/.'.$cuota->interes, array('class' => 'interesss')) !!}</li>
+            
+            <li>{!! Form::label('cuotamora', 'Interes Mora: s/.'.$cuota->interes_mora, array('class' => 'morass')) !!}</li>
+          
+            <li>{!! Form::label('comision', 'Comision: s/. 0.20', array('class' => 'comisi')) !!}</li>
+            {{-- {!! Form::text('cuotamora', $cuota->interes_mora, array('class' => 'form-control input-xs', 'id' => 'cuotamora', 'placeholder' => 's/.')) !!} --}}
+        </ul>
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('partecapital', 'Parte capital: ', array('class' => 'psrtcap')) !!}
-            {!! Form::text('partecapital', $cuota->parte_capital, array('class' => 'form-control input-xs', 'id' => 'partecapital', 'placeholder' => 's/.')) !!}
+            {!! Form::label('total', 'total: s/.'.($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + 0.2), array('class' => 'tol')) !!}
         </div>
-        <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('cuotainteres', 'Interes: ', array('class' => 'interesss')) !!}
-            {!! Form::text('cuotainteres', $cuota->interes, array('class' => 'form-control input-xs', 'id' => 'cuotainteres', 'placeholder' => 's/.')) !!}
+       
+        <div class="form-group col-12 col-md-12 col-sm-12" >
+            {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
+            {!! Form::date('fecha_pagoc', $fechapago, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
         </div>
-        <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('cuotamora', 'Mora: ', array('class' => 'morass')) !!}
-            {!! Form::text('cuotamora', $cuota->interes_mora, array('class' => 'form-control input-xs', 'id' => 'cuotamora', 'placeholder' => 's/.')) !!}
-        </div>
-        <div class="form-group col-12 col-md-12 col-sm-12">
-                {!! Form::label('total', 'total: *', array('class' => 'tol')) !!}
-                {!! Form::text('total', ($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora), array('class' => 'form-control input-xs', 'id' => 'total', 'placeholder' => 's/.')) !!}
-            </div>
-        {{-- *************** --}}
-    <div class="form-group col-12 col-md-12 col-sm-12" >
-        {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
-        {!! Form::date('fecha_pagoc', $fechapago, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
     </div>
 </div>
 
-<div class="form-group">
-	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar Cuota', array('class' => 'btn btn-success btn-sm', 'id' => 'btnPagarcuota', 'onclick' => 'guardarPagoCuota(\''.$entidad_cuota.'\', this)')) !!}
-		&nbsp;
-		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad_cuota, 'onclick' => 'cerrarModal();')) !!}
-	</div>
+<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+    {!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar Cuota', array('class' => 'btn btn-success btn-sm', 'id' => 'btnPagarcuota', 'onclick' => 'guardarPagoCuota(\''.$entidad_cuota.'\', this)')) !!}
+    &nbsp;
+    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad_cuota, 'onclick' => 'cerrarModal();')) !!}
 </div>
-
 {!! Form::close() !!}
 <?php
 $fecha_pago = null;
@@ -74,8 +72,6 @@ $fecha_pago = null;
     function guardarPagoCuota(entidad, idboton) {
         var fechap = ($('#fecha_pagoc').val()).split("-");
         var anio_mes = fechap[0]+"-"+fechap[1];
-        // console.log("ANIO_MES: "+ anio_mes);
-        // console.log("anio_mes_programada: {{ date('Y-m',strtotime($cuota->fecha_programada_pago)) }}");
         if(anio_mes >= "{{ date('Y-m',strtotime($cuota->fecha_programada_pago)) }}"){
 
             var idformulario = IDFORMMANTENIMIENTO + entidad;

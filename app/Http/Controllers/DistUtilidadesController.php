@@ -864,7 +864,7 @@ class DistUtilidadesController extends Controller
             }
         }
         $titulo =$distribucion->titulo;
-        $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ";
+        // $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ";
         $view = \View::make('app.distribucionutilidad.listaReciboDistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta', 'distrib_util'));
         $html_content = $view->render();
 

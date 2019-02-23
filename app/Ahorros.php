@@ -22,13 +22,13 @@ class Ahorros extends Model
      * @return sql        sql
      */
    
-    public static function idUser()
+    public function idUser()
     {
         // Obtiene el ID del Usuario Autenticado
         $id = Auth::id();
         return $id;
     }
-    public static function getIdPersona()
+    public function getIdPersona()
     {
         $persona_id = null;
         // Obtiene el objeto del Usuario Autenticado
@@ -55,7 +55,7 @@ class Ahorros extends Model
             'ahorros.capital as capital',
             'ahorros.fechai as fechai'
         )
-        ->where('persona.nombres','LIKE', '%'.$nombre.'%')
+        ->where('persona.nombres','ILIKE', '%'.$nombre.'%')
         ->where('ahorros.estado','=','P')
         ->where('ahorros.deleted_at','=',null)
         ->orderBy('persona.nombres', 'ASC');
@@ -63,12 +63,12 @@ class Ahorros extends Model
     }
 
     //Metodo para obtener el ahorro por persona 
-    public static function getahorropersona($id_persona){
+    public function getahorropersona($id_persona){
         return Ahorros::where('persona_id','=',$id_persona)->where('estado','=','P')->get();
     }
 
     //Metodo para listar el historico de su capital de ahorros y sus ganancias mensuales por año
-    public static function listarhistorico($id_persona, $anio)
+    public function listarhistorico($id_persona, $anio)
     {
         $results = DB::table('ahorros')
         ->select(
@@ -87,7 +87,7 @@ class Ahorros extends Model
     }
 
     // Metodo para listar retiros o depositos de ahorros,  por persona 
-    public static function listaretirodeposito( $id_persona, $fechainicio, $tipo)
+    public function listaretirodeposito( $id_persona, $fechainicio, $tipo)
     {
         $results = DB::table('transaccion')
         ->Join('concepto', 'transaccion.concepto_id', '=', 'concepto.id')

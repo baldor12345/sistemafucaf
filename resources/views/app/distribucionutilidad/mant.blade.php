@@ -30,22 +30,21 @@ use App\Persona;
 		border: 0.9px solid #b4bdc1;
 		font-size: 13px;
 		padding: 2px;
-
 	}
 	.borderond {
 		border-radius: 6px;
 	}
 	.tablesimple thead {
-	color: #000000;
-	font-weight:bold;
-	background-color: #f2f6f7;
-	border: 0.9px solid #b4bdc1;
+		color: #000000;
+		font-weight:bold;
+		background-color: #f2f6f7;
+		border: 0.9px solid #b4bdc1;
 	}
 	.tablesimple th {
-	color: #000000;
-	font-weight:bold;
-	background-color: #f2f6f7;
-	border: 0.9px solid #b4bdc1;
+		color: #000000;
+		font-weight:bold;
+		background-color: #f2f6f7;
+		border: 0.9px solid #b4bdc1;
 	}
 </style>
 
@@ -58,14 +57,12 @@ use App\Persona;
 					<th colspan="2" rowspan="2">UTILIDAD BRUTA</th>
 					<th colspan="1" rowspan="7"></th>
 					<th colspan="2" rowspan="1">GASTOS</th>
-					
 					<th colspan="1" rowspan="7"></th>
 					<th colspan="1" rowspan="2">UTILIDAD NETA</th>
 					<th colspan="1" rowspan="7"></th>
 					<th colspan="2" rowspan="2">Reservas</th>
 					<th colspan="1" rowspan="7"></th>
 					<th colspan="1" rowspan="2">UTILIDAD Distribuible</th>
-
 				</tr>
 				<tr>
 					<th colspan="2" rowspan="1">Gastos Acumulados</th>
@@ -87,14 +84,12 @@ use App\Persona;
 					<td rowspan="5"></td>
 				</tr>
 				<tr>
-						
 					<td>Intereses</td>
 					<td>{{ (round($intereses, 1) == 0?"-":round($intereses, 1)) }}</td>
 					<td  colspan="1" rowspan="1">I. Pag. Acum.</td>
 					<td  colspan="1" rowspan="1">{{ (round($int_pag_acum, 1) == 0?"-":round($int_pag_acum, 1)) }}</td>
 				</tr>
 				<tr>
-						
 					<td>Otros</td>
 					<td>{{ (round($otros, 1) == 0?"-":round($otros, 1)) }}</td>
 					<td  colspan="1" rowspan="1">Otros Acum.</td>
@@ -110,7 +105,6 @@ use App\Persona;
 					<td  rowspan="1" colspan="1">{{ (round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) == 0?"-":round($gastadmacumulado + $int_pag_acum + $otros_acumulados, 1) ) }}</td>
 				</tr>
 				<tr>
-						
 					<td>U.B DU Anterior</td>
 					<td>{{ round($du_anterior, 1)==0?"-": round($du_anterior, 1)}}</td>
 					<td  rowspan="1" colspan="1">Gast. DU Anterior</td>
@@ -502,15 +496,15 @@ use App\Persona;
 		});
 		parametros += "&numerosocios="+i;
 		var accion = $(idformulario).attr('action').toLowerCase();
-		console.log('Accion: form: '+accion+'   param: '+parametros);
+		// console.log('Accion: form: '+accion+'   param: '+parametros);
 		var metodo     = $(idformulario).attr('method').toLowerCase();
-		console.log('Metodo: '+metodo);
+		// console.log('Metodo: '+metodo);
 		var respuesta  = $.ajax({
 			url : accion,
 			type: metodo,
 			data: parametros
 		});
-		console.log('Respuesta: '+respuesta);
+		// console.log('Respuesta: '+respuesta);
 		return respuesta;
 	}
 	function btnclieck(btn){

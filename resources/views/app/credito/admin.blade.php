@@ -54,8 +54,6 @@
 		$diferencia_anios = $anio_mayor - $anio_menor;
 		$numero_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
 	}
-	
-
 ?>
 <div class="row">
     <div class="col-sm-12">

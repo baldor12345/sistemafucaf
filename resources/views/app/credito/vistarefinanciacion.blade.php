@@ -138,7 +138,7 @@
                 }
             }
             function calcularCuota(saldo_restante_ant, tasa_interes){
-                console.log(saldo_restante_ant+" - interes: "+tasa_interes);
+                //console.log(saldo_restante_ant+" - interes: "+tasa_interes);
                 var monto_amortizar = parseFloat($('#monto_amortizar').val() == ""?0:$('#monto_amortizar').val());
                 if(monto_amortizar >= 0){
                     var saldo_restante = parseFloat(saldo_restante_ant) - parseFloat(monto_amortizar);

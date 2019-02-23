@@ -29,8 +29,8 @@ class Credito extends Model
         return $id;
     }
 
-    public function scopelistar($query,$nombreAcreditado, $fechai = '2000-01-01', $estado){
-        $fechai = $fechai==null? '2000-01-01' :  $fechai;
+    public function scopelistar($query,$nombreAcreditado, $fechai = '2009-01-01', $estado){
+        $fechai = $fechai==null? '2009-01-01' :  $fechai;
         $results = DB::table('credito')
         ->leftJoin('persona', 'persona.id', '=', 'credito.persona_id')
         ->select(
@@ -51,6 +51,7 @@ class Credito extends Model
             'credito.estado as estado'
         )
         ->where('persona.nombres','ILIKE', '%'.$nombreAcreditado.'%')
+        // ->where('persona.apellidos','ILIKE', '%'.$nombreAcreditado.'%')
         ->where('credito.fechai','>=',$fechai)
         ->where('credito.estado','=',$estado)
         ->where('credito.deleted_at','=', null)
@@ -58,7 +59,7 @@ class Credito extends Model
         return $results;
     }
 
-    public static function obtenercredito($idcredito){
+    public function obtenercredito($idcredito){
         $results = DB::table('credito')
     ->leftJoin('persona as per', 'per.id', '=', 'credito.persona_id')
     ->leftJoin('persona as per_aval', 'per_aval.id', '=', 'credito.pers_aval_id')
@@ -87,7 +88,7 @@ class Credito extends Model
         return $results->get();
     }
 
-    public static function getpersonacredito($persona_id){
+    public function getpersonacredito($persona_id){
         $persona = Persona::where('id','=',$persona_id)->get();
         $numerocreditos = null;
         $numeroacciones = null;

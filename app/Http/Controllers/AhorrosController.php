@@ -168,7 +168,7 @@ class AhorrosController extends Controller
             }
 
             $error = DB::transaction(function() use($request, $caja_id){
-                $resultado = Ahorros::getahorropersona($request->input('selectpersona'));
+                $resultado = (new Ahorros())->getahorropersona($request->input('selectpersona'));
                 $nuevafecha = $request->input('fechai')." ".date ( 'H:i:s');
                 $id_ahorro=null;
                 if(count($resultado) >0){
@@ -218,7 +218,7 @@ class AhorrosController extends Controller
                 $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
                 $transaccion->concepto_id = $idconcepto;
                 $transaccion->persona_id = $request->input('selectpersona');
-                $transaccion->usuario_id = Ahorros::idUser();
+                $transaccion->usuario_id = (new Ahorros())->idUser();
                 $transaccion->caja_id =  $caja_id;
                 $transaccion->save();
             });
@@ -256,7 +256,7 @@ class AhorrosController extends Controller
        $fechainicio = Libreria::getParam($request->input('fechainicio'));
        $persona = Persona::find($persona_id);
        $entidad = "Detalleahorro";
-       $resultado = Ahorros::listaretirodeposito($persona_id, $fechainicio, $tipo);
+       $resultado = (new Ahorros())->listaretirodeposito($persona_id, $fechainicio, $tipo);
        $lista = $resultado->get();
 
        $cabecera   = array();
@@ -309,7 +309,8 @@ class AhorrosController extends Controller
         $persona_id = Libreria::getParam($request->input('persona_id'));
         $anio = Libreria::getParam($request->input('cboanio'));
         $entidad = "Detallehistorico";
-        $resultado = Ahorros::listarhistorico($persona_id,$anio);
+      
+        $resultado =   (new Ahorros())->listarhistorico($persona_id,$anio);
         
         $lista = $resultado->get();
         $cabecera = array();
@@ -336,7 +337,7 @@ class AhorrosController extends Controller
 /************************************ RETIRAR AHORROS *************************************** */
     //Metodo para abrir modal de retiro
     public function vistaretiro($persona_id, $listarLuego){
-        $resultado = Ahorros::getahorropersona($persona_id);
+        $resultado = (new Ahorros())->getahorropersona($persona_id);
         
         if(count($resultado)>0){
             $ahorro = $resultado[0];
@@ -344,18 +345,14 @@ class AhorrosController extends Controller
             $ahorro = null;
         }
         $persona = Persona::find($persona_id);
-        //$ahorro   = Ahorros::find($id);
         $entidad  = 'Ahorros';
         $ruta = $this->rutas;
         $titulo_vistaretiro = $this->titulo_vistaretiro;
 
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
-        //$caja_id = Caja::where("estado","=","A")->value('id');
-        //$caja_id = ($caja_id != "")?$caja_id:0;
         $saldo_en_caja = 0;
         if($caja_id != 0){
-            //$caja = DB::table('caja')->where('id', $caja_id)->first();
             //calculos
             $ingresos =$caja[0]->monto_iniciado;
             $egresos=0;
@@ -521,7 +518,7 @@ class AhorrosController extends Controller
     public function generareportehistoricoahorrosPDF($persona_id=0,$anyo)
     {   
         $anio = $anyo;
-        $resultado = Ahorros::listarhistorico($persona_id,$anio);
+        $resultado = (new Ahorros())->listarhistorico($persona_id,$anio);
         $lista = $resultado->get();
         $persona = Persona::find($persona_id);
 
@@ -556,7 +553,7 @@ class AhorrosController extends Controller
             $fecha_dep1 = date("Y-m-d", strtotime($ahorro->fecha_deposito));
             $datosfac1 = explode("-", $fecha_actual1);
             $datofdep1 = explode("-", $fecha_dep1); 
-            echo("anio: ".$datofdep1[0]);
+            // echo("anio: ".$datofdep1[0]);
             
             $fechadeposito1 = new DateTime (''.$datofdep1[0].'-'.$datofdep1[1].'-'.$datofdep1[2]);
             $fechafinal1 = new DateTime (''.$datosfac1[0].'-'.$datosfac1[1].'-'.$datosfac1[2]);
