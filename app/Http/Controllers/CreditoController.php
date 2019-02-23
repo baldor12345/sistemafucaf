@@ -66,7 +66,7 @@ class CreditoController extends Controller{
         $title = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $cboEstado = array(0=>'Pendientes', 1 => 'Cancelados');
-        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaApert))."-01-01";
+        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaapert))."-01-01";
         return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta', 'cboEstado','caja_id','configuraciones','fecha_pordefecto' ));
     }
 
@@ -142,7 +142,7 @@ class CreditoController extends Controller{
         $saldo_en_caja= $ingresos+ $monto_inicio - $egresos;
 
         $cboPers = array(0=>'Seleccione...');
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
         return view($this->folderview.'.mant')->with(compact('credito', 'formData', 'entidad', 'boton', 'listar', 'configuraciones','caja_id','ruta','saldo_en_caja', 'cboPers','fecha_pordefecto'));
     }
     
@@ -388,7 +388,7 @@ class CreditoController extends Controller{
         $credito = null;
         $interes_moratorio = $request->get('valor_moratorio');
         //$fechapago = $request->get('fechaselect');
-        $fechapago =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fechapago =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
         $boton = 'Registrar'; 
         $ruta = $this->rutas;
         $cuota = Cuota::find($cuota_id);
@@ -601,7 +601,7 @@ class CreditoController extends Controller{
         $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
         $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
         $ruta = $this->rutas;
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
         return view($this->folderview.'.vistaoperacion')->with(compact('credito','anios','meses','anioactual','mesactual','credito_id','cboacciones', 'entidad_cuota','entidad_credito','fechacaducidad','caja_id','configuraciones', 'ruta', 'persona','fecha_actual','fecha_pordefecto'));
     }
 
@@ -664,7 +664,7 @@ class CreditoController extends Controller{
         $lista = $resultado->get();
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
-        $fecha_actual = $caja[0]->fecha_horaApert;
+        $fecha_actual = $caja[0]->fecha_horaapert;
         $configuraciones = configuraciones::all()->last();
         $credito = Credito::find($credito_id);
        
@@ -1294,8 +1294,8 @@ public function numero_meses($fecha_inico, $fecha_final){
         $error = null;
         if($caja_id != 0){
             $fecha = $request->get('fechaop');
-            $anio = date('Y', strtotime($caja[0]->fecha_horaApert));
-            $mes = date('m', strtotime($caja[0]->fecha_horaApert));
+            $anio = date('Y', strtotime($caja[0]->fecha_horaapert));
+            $mes = date('m', strtotime($caja[0]->fecha_horaapert));
             $credito = Credito::find($request->get('credito_id'));
             $cuotas_alafecha = Cuota::where('credito_id','=', $credito->id)->where('estado','!=', '1')->where('deleted_at', '=', null)
                             ->where(DB::raw('extract( month from fecha_programada_pago)'),'<=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'<=',$anio)->get();
@@ -1313,7 +1313,7 @@ public function numero_meses($fecha_inico, $fecha_final){
                    
 
                     if(count($cuotas)< $nuevo_numero_cuotas){
-                        $fecha_actual = $caja[0]->fecha_horaApert;
+                        $fecha_actual = $caja[0]->fecha_horaapert;
                         $explod = explode('-',date("Y-m-d",strtotime($fecha_actual)));
                         $fechacuota = date($explod[0].'-'.$explod[1].'-01');
                         
@@ -1425,7 +1425,7 @@ public function numero_meses($fecha_inico, $fecha_final){
         $num_cuotas_porpagar = 0;
         if(count($cajas)>0){
             $caja = $cajas[0];
-            $fecha_actual = $caja->fecha_horaApert;
+            $fecha_actual = $caja->fecha_horaapert;
 
             $anio_mes = date('Y-m',strtotime($fecha_actual))."-01";
             $fecha_p = new DateTime($anio_mes);

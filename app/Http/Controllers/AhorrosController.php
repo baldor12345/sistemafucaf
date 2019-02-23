@@ -132,7 +132,7 @@ class AhorrosController extends Controller
         $idopcion = null;
         $ruta = $this->rutas;
 
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
 
         $cboPers = array(0=>'Seleccione...');
         $resultado = Concepto::listar('I');
@@ -242,7 +242,7 @@ class AhorrosController extends Controller
         $entidad = "Detalleahorro";
         $caja = Caja::where("estado","=","A")->get();
        
-        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaApert))."-01-01";
+        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_apert))."-01-01";
         return view($this->folderview.'.detalles_ahorro')->with(compact('ruta','persona', 'entidad','cbotipo','fecha_pordefecto'));
     }
     
@@ -296,7 +296,7 @@ class AhorrosController extends Controller
         $titulo_vistahistoricoahorro = $this->titulo_vistahistoricoahorro;
         $entidad = "Detallehistorico";
         $caja = Caja::where("estado","=","A")->get();
-        $anio_pordefecto =count($caja) == 0?  date('Y'): date('Y',strtotime($caja[0]->fecha_horaApert));
+        $anio_pordefecto =count($caja) == 0?  date('Y'): date('Y',strtotime($caja[0]->fecha_apert));
         $persona = Persona::find($persona_id);
         return view($this->folderview.'.vistadetallehistorico')->with(compact('ruta','persona', 'entidad','cboanio','titulo_vistahistoricoahorro', 'anio_pordefecto'));
     }
@@ -371,7 +371,7 @@ class AhorrosController extends Controller
             $saldo_en_caja= $ingresos-$egresos;
         }
         
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaApert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_apert));
         return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id','fecha_pordefecto'));
     }
     //Metodo para registrar el retiro
