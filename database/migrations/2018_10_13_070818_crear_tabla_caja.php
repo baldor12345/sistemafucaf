@@ -17,8 +17,8 @@ class CrearTablaCaja extends Migration
             $table->increments('id');
             $table->string('titulo', 200)->nullable();
             $table->string('descripcion', 400)->nullable();
-            $table->timestamp('fecha_horaApert')->nullable();
-            $table->timestamp('fecha_horaCierre')->nullable();
+            $table->timestamp('fecha_horaapert')->nullable();
+            $table->timestamp('fecha_horacierre')->nullable();
             $table->decimal('monto_iniciado',20, 7);
             $table->decimal('monto_cierre',20, 7)->nullable();
             $table->decimal('diferencia_monto',20, 7)->nullable();
