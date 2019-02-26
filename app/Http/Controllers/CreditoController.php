@@ -43,11 +43,11 @@ class CreditoController extends Controller{
         'listpersonas' => 'creditos.listpersonas',
         'cuotasalafecha' => 'creditos.cuotasalafecha',
         'pagarcuotainteres'=>'creditos.pagarcuotainteres',
-        'amortizarcuotas' => 'creditos.amortizarcuotas',
+        // 'amortizarcuotas' => 'creditos.amortizarcuotas',
         'obtenermontototal' => 'creditos.obtenermontototal',
         'pagarcreditototal' => 'creditos.pagarcreditototal',
-        'ampliar_reducir_cuotas' => 'creditos.ampliar_reducir_cuotas',
-        'datos_ampliar_reducir_cuotas' => 'creditos.datos_ampliar_reducir_cuotas',
+        // 'ampliar_reducir_cuotas' => 'creditos.ampliar_reducir_cuotas',
+        // 'datos_ampliar_reducir_cuotas' => 'creditos.datos_ampliar_reducir_cuotas',
         'vista_refinanciar' => 'creditos.vista_refinanciar',
         'guardar_refinanciacion' => 'creditos.guardar_refinanciacion',
         'reportecreditos' => 'creditos.reportecreditos',
@@ -1623,25 +1623,29 @@ public function numero_meses($fecha_inico, $fecha_final){
     }
     public function vistareporte(){
         $ruta = $this->rutas;
+       
         $caja = Caja::where('estado','=','A')->where('deleted_at','=',null)->get();
         $fecha_inicio = count($caja) >0? date('Y-m-d', strtotime($caja[0]->fecha_horaapert)) : date('Y-m-d');
         return view('app.credito.vistareporte')->with(compact('fecha_inicio','ruta'));
     }
-    public function reportecreditos($fechainicio, $fechafinal){
-       
+    public function reportecreditos(Request $request){
+        $fechainicio = date('Y-m-d', strtotime($request->get('fechainicio')));
+        $fechafinal = date('Y-m-d', strtotime($request->get('fechafinal')));
         $listaCreditos = (new Credito())->lista_creditos_desde_hasta($fechainicio, $fechafinal);
 
-        $titulo ='Reporte de creditos desde: '.date('d/m/Y', strtotime($fechainicio))." hasta ".date('d/m/Y', strtotime($fechafinal));
+        $titulo ='Reporte de creditos desde: '.date('d/m/Y', strtotime($request->get('fechainicio')))." hasta ".date('d/m/Y', strtotime($request->get('fechafinal')));
         $view = \View::make('app.credito.reportecreditos')->with(compact('listaCreditos', 'fechainicio','fechafinal'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
-        PDF::AddPage('P', 'A4', 'es');
+        PDF::AddPage('L', 'A4', 'es');
         PDF::SetTopMargin(5);
         PDF::SetLeftMargin(5);
         PDF::SetRightMargin(5);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
+
+
     }
 }

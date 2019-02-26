@@ -183,7 +183,7 @@ Route::group(['middleware' => 'auth'], function () {
      Route::get('creditos/datos_ampliar_reducir_cuotas', 'CreditoController@datos_ampliar_reducir_cuotas')->name('creditos.datos_ampliar_reducir_cuotas');
      Route::get('creditos/vista_refinanciar', 'CreditoController@vista_refinanciar')->name('creditos.vista_refinanciar');
      Route::get('creditos/guardar_refinanciacion', 'CreditoController@guardar_refinanciacion')->name('creditos.guardar_refinanciacion');
-     Route::get('/reportecreditos/{fecha_inicio?}/{ fecha_final?}', 'CreditoController@reportecreditos')->name('creditos.reportecreditos');
+     Route::get('/reportecreditos', 'CreditoController@reportecreditos')->name('creditos.reportecreditos');
      Route::get('creditos/vistareporte', 'CreditoController@vistareporte')->name('creditos.vistareporte');
      
      

@@ -138,7 +138,8 @@ class Credito extends Model
         )
         ->where('credito.fechai','>=',$fecha_inicio)
         ->where('credito.fechai','<=',$fecha_fin)
-        ->where('credito.deleted_at','=',null)->get();
+        ->where('credito.deleted_at','=',null)
+        ->orderby('credito.fechai', 'ASC')->get();
         return $results;
         
     }
