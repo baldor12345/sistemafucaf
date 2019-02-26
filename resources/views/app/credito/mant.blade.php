@@ -1,7 +1,8 @@
 
 <div id="divinfo"></div>
-<div id="divInfo{!! $entidad !!}"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="divInfo{!! $entidad !!}"></div>
+
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('numcreditos', 0, array('id' => 'numcreditos')) !!}
@@ -59,7 +60,6 @@
     $(document).ready(function() {
         $('#selectnom').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),
-            
             minimumInputLenght: 2,
             ajax: {
                
@@ -84,20 +84,33 @@
         $('#selectnom').change(function(){
             $('#selectaval').select2("val", "0");
             $.get("creditos/"+$(this).val()+"",function(response, facultad){
+                // console.log("Respuesta persona: "+response[3]);
                 var persona = response[0];
                 var numCreditos = response[1];
                 var numAcciones = response[2];
-
+                 var numMoras = response[3];
+            
                 if(persona.length>0){
                     $("#persona_id").val(persona[0].id);
-                    var msj = "<div class='alert alert-success'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li><li>Tipo: "+(persona[0].tipo.trim() == 'C'? "Cliente": "Socio")+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li></ul> </div>";
+                    var msj = "<div class='alert alert-light'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li>";
+                    msj += "<li>Tipo: "+(persona[0].tipo.trim() == 'C'? 'Cliente': 'Socio')+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li>";
+                    if(numMoras == 0){
+                        msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-success btn-sm'></button></li></ul></div>";
+                    }else if(numMoras>0 && numMoras<=5){
+                        msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-warning'></button></li></ul></div>";
+                    }else{
+                        msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-danger'></button></li></ul></div>";
+                    }
+                   
                         $('#divInfo{{ $entidad }}').html(msj);
                         $('#divInfo{{ $entidad }}').show();
                         $('#numcreditos').val(numCreditos);
                     if( persona[0].tipo.trim() == 'S'){
                         $("#persona_id").attr('tipocl','S');
+                        $(".aval").html('Socio Aval: <sup style="color: blue;">Opcional</sup>');
                     }else{
                         $("#persona_id").attr('tipocl','C');
+                        $(".aval").html('Socio Aval: <sup style="color: red;">Obligatorio</sup>');
                     }
                 }else{
                     $("#persona_id").val(0);
@@ -126,7 +139,8 @@
             }
         });
         $('#selectaval').change(function(){
-            $.get("creditos/"+$(this).val()+"",function(response, facultad){
+            if($(this).val() != 0){
+                $.get("creditos/"+$(this).val()+"",function(response, facultad){
                 var persona = response[0];
                 var numCreditos = response[1];
                 var numAcciones = response[2];
@@ -134,6 +148,7 @@
                 if(persona.length>0){
                     $("#pers_aval_id").val(persona[0].id);
                     $('#pers_aval_id').attr('tipoavl', ''+(persona[0].tipo).trim());
+                    $('#divMensajeError{{ $entidad }}').hide();
                 }else{
                     $("#pers_aval_id").val(0);
                     $('#pers_aval_id').attr('tipoavl', '0');
@@ -142,11 +157,18 @@
                     var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
                     $('#divMensajeError{{ $entidad }}').html(msj);
                     $('#divMensajeError{{ $entidad }}').show();
+                }else if((((persona.length>0)?persona[0].tipo:"").trim())!= 'S'){
+                    var msj = "<div class='alert alert-danger'><strong>¡Alerta!</strong> El aval debe ser obligatoriamente un socio.!</div>";
+                    $('#selectaval').select2("val", "0");
+                    $('#divMensajeError{{ $entidad }}').html(msj);
+                    $('#divMensajeError{{ $entidad }}').show();
                 }else{
                     $('#divMensajeError{{ $entidad }}').html("");
                     $('#divMensajeError{{ $entidad }}').hide();
                 }
             });
+            }
+            
         });
         $(".cliente").html('Socio o Cliente: <sup style="color: red;">Obligatorio</sup>');
         $(".aval").html('Socio Aval: <sup style="color: blue;">Opcional</sup>');
@@ -195,9 +217,47 @@
 	}
     function valid(){
        var res = true;
-        if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#persona_id').val() == 0 || $('#valor_credito').val().length <= 0 || $('#periodo').val() <= 0 || $('#valor_credito').val() <= 0 || $('#selectnom').val() == '0'){
-            res = false;
-        }
+       var msj = "";
+            if($('#selectnom').val() != '0'){
+                if($("#persona_id").attr('tipocl') == 'C'){
+                    if($('#selectaval').val() != '0'){
+                        if($('#valor_credito').val().length > 0 || $('#valor_credito').val() >0){
+                            if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#periodo').val() <= 0 || $('#periodo').val() > 24){
+                                res = false;
+                                msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El periodo debe estar comprendido entre 1 a 24 cuotas.</div>";
+                                $('#periodo').focus();
+                            }
+                        }else{
+                            res = false;
+                            msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El valor de credito debe ser mayor a 0.</div>";
+                            $('#valor_credito').focus();
+                        }
+                    }else{
+                        res = false;
+                        msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Seleccione un Socio como aval.</div>";
+                        $('#selectaval').focus();
+                    }
+                }else{
+                    if($('#valor_credito').val().length > 0 || $('#valor_credito').val() >0){
+                        if(isNaN($('#periodo').val()) || $('#periodo').val().length < 1 || $('#periodo').val() <= 0 || $('#periodo').val() > 24){
+                            res = false;
+                            msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El periodo debe estar comprendido entre 1 a 24 cuotas.</div>";
+                            $('#periodo').focus();
+                        }
+                    }else{
+                        res = false;
+                        msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El valor de credito debe ser mayor a 0.</div>";
+                        $('#valor_credito').focus();
+                    }
+                }
+            }else{
+                res = false;
+                msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Seleccione un Socio o Cliente.</div>";
+                $('#selectnom').focus();
+            }
+
+            $('#divMensajeError{{ $entidad }}').html(msj);
+            $('#divMensajeError{{ $entidad }}').show();
         return  res;
     }
 
@@ -210,7 +270,7 @@
             if($('#numcreditos').val() == 1 ){
                 if($('#periodo').val() > 1){
                     valida = false;
-                    mensaje = "El periodo es mayor a 1, el socio solo puede tener un credito más a una sola cuota.!";
+                    mensaje = "El periodo es mayor a 1, el socio solo puede tener un credito más, a una sola cuota.!";
                 }
             }else if($('#numcreditos').val() >= 2 ){
                 mensaje = "¡El Socio o Cliente no puede obtener más créditos, ya cuenta con 2 créditos activos.!";
@@ -218,8 +278,14 @@
             }
             if({{ $saldo_en_caja }} < $('#valor_credito').val()){
                 mensaje = "¡El monto de crédito ingresado, supera el saldo actual en caja!";
-                
                 valida = false;
+            }
+            
+            if($("#persona_id").attr('tipocl') == 'C'){
+                if($('#pers_aval_id').attr('tipoavl') != 'S'){
+                    mensaje = "¡El aval es obligatorio, y debe ser un socio de FUCAF.!";
+                    valida = false;
+                }
             }
 
             if(valida){
@@ -294,12 +360,13 @@
                 $('#divMensajeError{{ $entidad }}').show();
             }
         }else{
+           
             $('#btnGuardarCredito').removeClass('disabled');
             $('#btnGuardarCredito').removeAttr('disabled');
             $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
-            var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
-                $('#divMensajeError{{ $entidad }}').html(msj);
-                $('#divMensajeError{{ $entidad }}').show();
+           
+            // var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
+                
         }
         $('#btnGuardarCredito').removeClass('disabled');
         $('#btnGuardarCredito').removeAttr('disabled');

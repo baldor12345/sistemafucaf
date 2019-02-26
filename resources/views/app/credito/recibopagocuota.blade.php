@@ -83,7 +83,7 @@
             </tr>
             <tr>
                 <td style="font-size: 8px" colspan="5"></td>
-                <td style="font-size: 8px" colspan="2" class="lineborderleft"><strong>Periodo: </strong></td>
+                <td style="font-size: 8px" colspan="2" class="lineborderleft"><strong>N° Cuotas: </strong></td>
                 <td style="font-size: 8px" colspan="2" class="lineborderleft">{{ $periodocredito }}</td>
             </tr>
             <tr>
@@ -95,12 +95,16 @@
             <tr>
                 <td style="font-size: 8px" colspan="2">TOTAL</td>
                 <td style="font-size: 8px" colspan="3">° Línea de crédito para disposición de efectivo</td>
-                <td style="font-size: 8px" colspan="4"></td>
+                <td style="font-size: 8px" colspan="2" class="lineborderleft">Monto Credito: </td>
+                <td style="font-size: 8px" colspan="2" class="lineborderleft">{{ $credito->valor_credito }} </td>
+                {{-- <td style="font-size: 8px" colspan="4"></td> --}}
             </tr>
             <tr>
                 <td style="font-size: 8px" colspan="2"></td>
                 <td style="font-size: 8px" colspan="3">° No incluye cuotas por vencer</td>
-                <td style="font-size: 8px" colspan="4"> </td>
+                <td style="font-size: 8px" colspan="2" class="lineborderleft">Fecha Credito: </td>
+                <td style="font-size: 8px" colspan="2" class="lineborderleft">{{ $credito->fechai }} </td>
+                {{-- <td style="font-size: 8px" colspan="4"> </td> --}}
             </tr>
             <tr>
                 <td style="font-size: 8px" colspan="2"></td>

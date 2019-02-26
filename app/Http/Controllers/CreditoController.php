@@ -43,13 +43,15 @@ class CreditoController extends Controller{
         'listpersonas' => 'creditos.listpersonas',
         'cuotasalafecha' => 'creditos.cuotasalafecha',
         'pagarcuotainteres'=>'creditos.pagarcuotainteres',
-        'amortizarcuotas' => 'creditos.amortizarcuotas',
+        // 'amortizarcuotas' => 'creditos.amortizarcuotas',
         'obtenermontototal' => 'creditos.obtenermontototal',
         'pagarcreditototal' => 'creditos.pagarcreditototal',
-        'ampliar_reducir_cuotas' => 'creditos.ampliar_reducir_cuotas',
-        'datos_ampliar_reducir_cuotas' => 'creditos.datos_ampliar_reducir_cuotas',
+        // 'ampliar_reducir_cuotas' => 'creditos.ampliar_reducir_cuotas',
+        // 'datos_ampliar_reducir_cuotas' => 'creditos.datos_ampliar_reducir_cuotas',
         'vista_refinanciar' => 'creditos.vista_refinanciar',
-        'guardar_refinanciacion' => 'creditos.guardar_refinanciacion'
+        'guardar_refinanciacion' => 'creditos.guardar_refinanciacion',
+        'reportecreditos' => 'creditos.reportecreditos',
+        'vistareporte' => 'creditos.vistareporte'
     );
 
     public function __construct(){
@@ -66,7 +68,7 @@ class CreditoController extends Controller{
         $title = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $cboEstado = array(0=>'Pendientes', 1 => 'Cancelados');
-        $fecha_pordefecto =count($caja) == 0?  date('Y')."-01-01": date('Y',strtotime($caja[0]->fecha_horaapert))."-01-01";
+        $fecha_pordefecto =count($caja) == 0?  (date('Y')-3)."-01-01": (date('Y',strtotime($caja[0]->fecha_horaapert))-3)."-01-01";
         return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta', 'cboEstado','caja_id','configuraciones','fecha_pordefecto' ));
     }
 
@@ -291,7 +293,7 @@ class CreditoController extends Controller{
         $entidad = 'Credito';
         $formData = array('route' => array('creditos.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
        $boton = "Eliminar";
-        if($caja_id == $transaccion_credito[0]->caja_id){
+        if($caja_id == (count($transaccion_credito)>0?$transaccion_credito[0]->caja_id:0)){
             return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
         }else if($num_cuotas_pendientes == $credito->periodo){
             $mensaje = "¡Error! El credito no se puede eliminar, contiene cuotas pagadas o vigentes de pago a la fecha!";
@@ -1428,13 +1430,15 @@ public function numero_meses($fecha_inico, $fecha_final){
             $fecha_p = new DateTime($anio_mes);
             $fecha_p->modify('last day of this month');
             $fecha_p->format('Y-m-d');
-            $num_cuotas_porpagar = count(Cuota::where('credito_id', '=',$request->get('credito_id'))->where('fecha_programada_pago','<=',$fecha_p)->where('deleted_at','=',null)->get());
-
+            
             $credito = Credito::find($request->get('credito_id'));
+            $num_cuotas_porpagar = count(Cuota::where('credito_id', '=',$credito->id)->where('fecha_programada_pago','<=',$fecha_p)->where('estado','!=','1')->where('deleted_at','=',null)->get());
+            $num_cuotas_totales = count(Cuota::where('parte_capital','!=', 0)->where('credito_id','=',$credito->id)->get());
             $fecha_request = date('Y-m',strtotime($fecha_actual))."-01";
             $fecha_siguiente_cuota = date("Y-m-d",strtotime($fecha_request."+ 1 month"));
             $anio = date('Y',strtotime($fecha_siguiente_cuota)); 
             $mes = date('m',strtotime($fecha_siguiente_cuota)); 
+<<<<<<< HEAD
 
             $cuota_siguiente = Cuota::where('credito_id','=', $request->get('credito_id'))->where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('deleted_at','=',null)->get()[0];
 
@@ -1442,7 +1446,18 @@ public function numero_meses($fecha_inico, $fecha_final){
             $persona = Persona::find($credito->persona_id);
             
             $cuotasPendientes =  Cuota::where('estado','!=','1')->where('credito_id','=',$credito->id)->where('deleted_at','=',null)->get();
+=======
+            $cuotasPendientes = Cuota::where('estado','!=','1')->where('credito_id','=',$credito->id)->where('deleted_at','=',null)->where(DB::raw('extract( month from fecha_programada_pago)'),'>=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'>=',$anio)->get();
+>>>>>>> b60cb85825a1dc3215cffdb8bbd3dcd9357c8fe8
             $numero_cuotas_pendientes = count($cuotasPendientes);
+            $cuota_siguiente = null;
+            if($numero_cuotas_pendientes > 0){
+                $cuota_siguiente = Cuota::where('credito_id','=', $credito->id)->where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('deleted_at','=',null)->get()[0];
+            }
+   
+           
+            $saldo_restante = $cuota_siguiente != null? round($cuota_siguiente->parte_capital + $cuota_siguiente->saldo_restante,1): 0;
+            $persona = Persona::find($credito->persona_id);
             return view($this->folderview.'.vistarefinanciacion')->with(compact('saldo_restante','ruta','credito','persona','caja','numero_cuotas_pendientes','fecha_actual','num_cuotas_porpagar','cuota_siguiente'));
         }else{
             return view($this->folderview.'.vistarefinanciacion')->with(compact('fecha_actual','caja','num_cuotas_porpagar'));
@@ -1615,5 +1630,32 @@ public function numero_meses($fecha_inico, $fecha_final){
             }
         });
         return $error == null?"OK":$error;
+    }
+    public function vistareporte(){
+        $ruta = $this->rutas;
+       
+        $caja = Caja::where('estado','=','A')->where('deleted_at','=',null)->get();
+        $fecha_inicio = count($caja) >0? date('Y-m-d', strtotime($caja[0]->fecha_horaapert)) : date('Y-m-d');
+        return view('app.credito.vistareporte')->with(compact('fecha_inicio','ruta'));
+    }
+    public function reportecreditos(Request $request){
+        $fechainicio = date('Y-m-d', strtotime($request->get('fechainicio')));
+        $fechafinal = date('Y-m-d', strtotime($request->get('fechafinal')));
+        $listaCreditos = (new Credito())->lista_creditos_desde_hasta($fechainicio, $fechafinal);
+
+        $titulo ='Reporte de creditos desde: '.date('d/m/Y', strtotime($request->get('fechainicio')))." hasta ".date('d/m/Y', strtotime($request->get('fechafinal')));
+        $view = \View::make('app.credito.reportecreditos')->with(compact('listaCreditos', 'fechainicio','fechafinal'));
+        $html_content = $view->render();
+
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+
+
     }
 }

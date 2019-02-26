@@ -368,7 +368,7 @@ class AhorrosController extends Controller
             $saldo_en_caja= $ingresos-$egresos;
         }
         
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_apert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
         return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id','fecha_pordefecto'));
     }
     //Metodo para registrar el retiro
@@ -796,17 +796,22 @@ class AhorrosController extends Controller
         //*************************** */
         $ahorro = Ahorros::where('estado','=', 'P')->get();
         $confirm = true;
-        if($transaccion->id_tabla != $ahorro[0]->id){
-            $confirm=false;
-            $mensaje = "¡Error! El registro no se puede eliminar, Existen ahorros o retiros mas actuales que modificaron el monto actual.!";
-        }
-        if($transaccion->concepto_id == 5 ){
-            if($transaccion->monto > $saldo_en_caja){
-                $confirm=false;
-                $mensaje = "¡Error! El registro no se puede eliminar, debido a que el saldo en caja (S/.: ".$saldo_en_caja.") es menor al monto de ahorro (S/.: ".$transaccion->monto.") que intenta eliminar.";
+        if($caja->estado == 'A'){
+            if($transaccion->concepto_id == 5 ){
+                if($transaccion->monto > $saldo_en_caja){
+                    $confirm=false;
+                    $mensaje = "¡Error! El registro no se puede eliminar, debido a que el saldo en caja (S/.: ".round($saldo_en_caja,1).") es menor al monto de ahorro (S/.: ".round($transaccion->monto, 1).") que intenta eliminar.";
+                }
             }
+        }else{
+            $confirm = false;
         }
-        if($caja->estado == 'A' && $confirm){
+        // if($transaccion->id_tabla != $ahorro[0]->id){
+        //     $confirm=false;
+        //     $mensaje = "¡Error! El registro no se puede eliminar, Existen ahorros o retiros mas actuales que modificaron el monto actual.!";
+        // }
+       
+        if($confirm){
             return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar'));
         }else{
             return view($this->folderview.'.mensajealerta')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar','mensaje'));
