@@ -9,7 +9,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use DateTime;
 class caja extends Model
 {
     use SoftDeletes;
@@ -69,7 +69,8 @@ class caja extends Model
                         DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
                         DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
                         DB::raw("SUM(transaccion.acciones_soles) as acciones"),
-                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher"),
+                        DB::raw("SUM(transaccion.rec_capital) as rec_capital")
                     )
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
@@ -95,7 +96,8 @@ class caja extends Model
                         DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
                         DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
                         DB::raw("SUM(transaccion.acciones_soles) as acciones"),
-                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher"),
+                        DB::raw("SUM(transaccion.rec_capital) as rec_capital")
                     )
                     ->where('transaccion.fecha','<', $fechai)
                     ->where('concepto.tipo','=','I')
@@ -125,6 +127,7 @@ class caja extends Model
                     ->where('concepto.id','!=',16)
                     ->where('concepto.id','!=',4)
                     ->where('concepto.id','!=',12)
+                    ->where('concepto.id','!=',22)
                     ->where('transaccion.deleted_at',null);
         return $results;
     }
@@ -149,6 +152,7 @@ class caja extends Model
                     ->where('concepto.id','!=',16)
                     ->where('concepto.id','!=',4)
                     ->where('concepto.id','!=',12)
+                    ->where('concepto.id','!=',22)
                     ->where('transaccion.deleted_at',null);
         return $results;
     }
@@ -552,6 +556,92 @@ GROUP BY persona.id;
                     ->where('transaccion.deleted_at',null);
         return $results;
     }
+
+    //estado de cuenta de los prestamos activos asta la+ fecha
+    public static function listprestamosactivos_asta_la_fecha($anio, $month)
+    {
+        $fecha_p = new DateTime($anio.'-'.$month.'-01');
+        $fecha_p->modify('last day of this month');
+        $day_last = $fecha_p->format('Y-m-d');
+
+        $results = DB::table('persona')
+                    ->join('credito', 'credito.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        'credito.valor_credito as valor_credito'
+                    )
+                    //->where('credito.fechai','<=',$day_last)
+                    ->where('credito.estado','!=','1')
+                    ->where('credito.deleted_at',null)
+                    ->groupBy('persona.id','valor_credito');
+        return $results;
+    }
+
+    public static function listcoutas_pendientes($anio, $month)
+    {
+        $fecha_p = new DateTime($anio.'-'.$month.'-01');
+        $fecha_p->modify('last day of this month');
+        $day_last = $fecha_p->format('Y-m-d');
+
+        $results = DB::table('persona')
+                    ->join('credito', 'credito.persona_id', '=', 'persona.id')
+                    ->join('cuota', 'credito.id', '=', 'cuota.credito_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(cuota.parte_capital) as parte_capital")
+                    )
+                    //->where('credito.fechai','<=',$day_last)
+                    ->where('cuota.estado','!=','1')
+                    ->where('credito.estado','!=','1')
+                    ->where('credito.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
+
+    public static function listacciones_asta_la_fecha($anio, $month)
+    {
+        $fecha_p = new DateTime($anio.'-'.$month.'-01');
+        $fecha_p->modify('last day of this month');
+        $day_last = $fecha_p->format('Y-m-d');
+
+        $results = DB::table('persona')
+                    ->join('acciones', 'acciones.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("COUNT(acciones.estado)*10 as acciones")
+                    )
+                    //->where('acciones.fechai','<=',$day_last)
+                    ->where('acciones.estado','C')
+                    ->where('acciones.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+    //lista de ahorros realizados en el mes seleccionado
+    public static function listahorros_asta_la_fecha($anio, $month)
+    {
+        $fecha_p = new DateTime($anio.'-'.$month.'-01');
+        $fecha_p->modify('last day of this month');
+        $day_last = $fecha_p->format('Y-m-d');
+
+        $results = DB::table('persona')
+                    ->join('ahorros', 'ahorros.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+                        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(ahorros.capital) as deposito_ahorros")
+                    )
+                    //->where(DB::raw('extract(month from ahorros.fechai)'),'<=',$month)
+                    //->where(DB::raw('extract(year from ahorros.fechai)'),'<=',$anio)
+                    ->where('ahorros.estado','P')
+                    ->where('ahorros.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
+
 
 
     /*

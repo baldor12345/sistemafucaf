@@ -136,9 +136,12 @@ class PersonController extends Controller
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
         $formData       = array('persona.store');
+        $acciones =0;
+        $ahorros =0;
+        $credito =0;
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil','cboEstado'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','acciones','ahorros','credito','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil','cboEstado'));
     }
 
     /**
@@ -239,10 +242,16 @@ class PersonController extends Controller
         $cboTipo        = [''=>'Seleccione']+ array('S '=>'Socio','C '=>'Cliente');
         $persona        = Persona::find($id);
         $entidad        = 'Persona';
+
+        //evaluar persona
+        $acciones = Acciones::where('estado','C')->where('persona_id',$id)->where('deleted_at',null)->count();
+        $ahorros = Ahorros::where('estado','P')->where('persona_id',$id)->where('deleted_at',null)->count();
+        $credito = Credito::where('estado','0')->where('persona_id',$id)->where('deleted_at',null)->count();
+
         $formData       = array('persona.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','cboSexo','cboEstadoCivil', 'cboTipo','cboEstado'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','cboSexo','cboEstadoCivil', 'cboTipo','cboEstado','acciones','ahorros','credito'));
     }
 
     /**
@@ -343,14 +352,24 @@ class PersonController extends Controller
             return $existe;
         }
         $listar = "NO";
+        $count_caja = Caja::where('persona_id',$id)->count();
+        $count_ahorros = Ahorros::where('persona_id',$id)->count();
+        $count_acciones = Acciones::where('persona_id',$id)->count();
+        $count_transaccion = Transaccion::where('persona_id',$id)->count();
+        $count_credito = Credito::where('persona_id',$id)->count();
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
         $modelo   = Persona::find($id);
-        $entidad  = 'Persona';//este  
-        $formData = array('route' => array('persona.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $entidad  = 'Persona';//este
         $boton    = 'Eliminar';
-        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        if(($count_caja == 0) && ($count_ahorros == 0) && ($count_acciones==0) && ($count_transaccion == 0) && ($count_credito == 0)){
+            $formData = array('route' => array('persona.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+            return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }else{
+            return view($this->folderview.'.messagepersona')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }  
+        
     }
 
 

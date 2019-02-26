@@ -1441,7 +1441,7 @@ public function numero_meses($fecha_inico, $fecha_final){
             $saldo_restante = round($cuota_siguiente->parte_capital + $cuota_siguiente->saldo_restante,1);
             $persona = Persona::find($credito->persona_id);
             
-            $cuotasPendientes = Cuota::where('estado','!=','1')->where('credito_id','=',$credito->id)->where('deleted_at','=',null)->get();
+            $cuotasPendientes =  Cuota::where('estado','!=','1')->where('credito_id','=',$credito->id)->where('deleted_at','=',null)->get();
             $numero_cuotas_pendientes = count($cuotasPendientes);
             return view($this->folderview.'.vistarefinanciacion')->with(compact('saldo_restante','ruta','credito','persona','caja','numero_cuotas_pendientes','fecha_actual','num_cuotas_porpagar','cuota_siguiente'));
         }else{

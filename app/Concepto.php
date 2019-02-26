@@ -24,6 +24,7 @@ class Concepto extends Model
             ->where('id','!=',16)
             ->where('id','!=',17)
             ->where('id','!=',10)
+            ->where('id','!=',21)
             ->orderBy('titulo', 'ASC');
     }
     

@@ -6,6 +6,15 @@ use Illuminate\Http\Request;
 
 use Validator;
 use App\Configuraciones;
+use App\Persona;
+use App\Caja;
+use App\Acciones;
+use App\Ahorros;
+use App\Credito;
+use App\Cuota;
+use App\Concepto;
+use App\ControlPersona;
+use App\Transaccion;
 use App\Http\Requests;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -247,10 +256,16 @@ class ConfiguracionesController extends Controller
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
+        $count_acciones = Acciones::where('concepto_id',$id)->count();
+
         $modelo   = Configuraciones::find($id);
         $entidad  = 'Configuraciones';
-        $formData = array('route' => array('configuraciones.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton    = 'Eliminar';
-        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        if($count_acciones == 0){
+            $formData = array('route' => array('configuraciones.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+            $boton    = 'Eliminar';
+            return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }else{
+            return view($this->folderview.'.messageconfig')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }
     }
 }

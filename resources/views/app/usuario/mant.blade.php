@@ -3,12 +3,13 @@
 {!! Form::model($usuario, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
-<div class="form-group">
-	{!! Form::label('persona_id', 'Persona:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+<div>
+	{!! Form::label('persona_id', 'Persona:', array('class' => 'col-sm-3 col-xs-12 control-label ')) !!}
 	<div class="col-sm-9 col-xs-12">
-		{!! Form::select('persona_id', $cboPersona, null, array('class' => 'form-control input-xs', 'id' => 'persona_id')) !!}
+		{!! Form::select('persona_id', $cboPer, null, array('class' => 'form-control input-sm', 'id' => 'persona_id')) !!}
 	</div>
 </div>
+<br><br>
 
 <div class="form-group">
 	{!! Form::label('login', 'Usuario:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
@@ -64,5 +65,29 @@
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('400');
+
+		$('#persona_id').select2({
+            dropdownParent: $("#modal"+(contadorModal-1)),
+            
+            minimumInputLenght: 2,
+            ajax: {
+               
+                url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params){
+                    return{
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data){
+                    return{
+                        results: data
+                    };
+                }
+                
+            }
+        });
+
 	}); 
 </script>

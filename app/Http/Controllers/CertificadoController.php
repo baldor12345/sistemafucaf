@@ -386,7 +386,7 @@ class CertificadoController extends Controller
             $certificado->estado = 'C';
             $certificado->save();
 
-            $resultado = Ahorros::getahorropersona(6);
+            $resultado = (new Ahorros())->getahorropersona(6);
 
             $ahorro_id=null;
             if(count($resultado) >0){

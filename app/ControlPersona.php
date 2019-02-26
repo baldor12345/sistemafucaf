@@ -101,9 +101,11 @@ class ControlPersona extends Model
         $results =DB::table('persona')
                     ->select('id','codigo','nombres','apellidos')
                     ->where('tipo','S ')
-                    ->orwhere('tipo','SC')
-                    ->where('id','!=',53)
-                    ->where('id','!=',54);
+                    ->where('estado','A')
+                    ->where('id','!=',3)
+                    ->where('id','!=',4)
+                    ->where('id','!=',5)
+                    ->where('id','!=',6);
         return $results;
     }
 

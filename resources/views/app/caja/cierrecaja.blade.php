@@ -102,13 +102,22 @@ use Illuminate\Support\Facades\DB;
 	
 	function CerrarCaja(entidad){
 		var fechacierre = '{{ $fecha_caja }}';
+		var last_day = '{{$last_day}}';
+
 		var fecharecibida = $('#fecha_horaApert').val();
-		if(fechacierre>fecharecibida){
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura, gracias!</span></div>";
+
+		if(fecharecibida >= fechacierre){
+			if(fecharecibida<=last_day){
+				console.log("entro a guardar");
+			}else{
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha cierre no puede ser mayor que la fecha "+last_day+" </span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
+			}
 		}else{
-			guardar(entidad);
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha cierre no puede ser menor que la fecha de apertura  "+fechacierre+"</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
 		}
+
 	}
 
 

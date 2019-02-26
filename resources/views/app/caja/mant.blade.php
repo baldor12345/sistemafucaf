@@ -51,7 +51,7 @@
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarcaja', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarcaja', 'onclick' => 'aperturarcaja(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -77,10 +77,6 @@
 		}else{
 			var horaAp =fechaActual.getHours()+":"+fechaActual.getMinutes();
 		}
-		
-		
-		console.log(horaAp);
-
 
 		if($('#fechaTemp').val() !== ""){
 			// DD/MM/YYYY
@@ -95,10 +91,27 @@
 			$('#fecha_horaApert').val(fecha_horaApert);
 			$('#hora_apertura').val(horaAp);
 		}
-
 		
 		
 	}); 
+	function aperturarcaja(entidad){
+		var first_day = '{{$first_day}}';
+		var last_day = '{{$last_day}}';
+		var fecha_select = $('#fecha_horaApert').val();
+		if(fecha_select > first_day){
+			if(fecha_select <= last_day){
+				guardar(entidad);
+			}else{
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser menor que "+first_day+"</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+			}
+		}else{
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser mayor que "+last_day+"</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+		}
+
+		
+	}
 </script>
 @else
 <h3 class="text-warning">Cerrar caja aperturada antes de aperturar nueva caja, Gracias!.</h3>

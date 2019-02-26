@@ -57,6 +57,7 @@ class CajaController extends Controller
             'reporteingresosPDF' => 'caja.reporteingresosPDF',
             'reporteegresosPDF' => 'caja.reporteegresosPDF',
             'reporteresumenfinancieroPDF' => 'caja.reporteresumenfinancieroPDF',
+            'reporteresumenfinancierototalPDF' => 'caja.reporteresumenfinancierototalPDF',
             'listpersonas' =>'caja.listpersonas',
             'vistadistribuirfaltante' => 'caja.vistadistribuirfaltante',
             'guardar_distribucion_faltante' => 'caja.guardar_distribucion_faltante'
@@ -275,13 +276,27 @@ class CajaController extends Controller
         if(strlen($count_caja) == 4){
             $titulo = "Caja ".($count_caja+1);
         }
+        $caja_last = Caja::All()->last();
+        $date_caja = Date::parse($caja_last->fecha_horacierre)->format('Y-m-d');
 
+        $fecha_format = date($date_caja);
+
+        $sum_month = date("d-m-Y",strtotime($fecha_format."+ 1 month"));
+        
+        //primer dia del mes
+        $first_day = Date::parse($sum_month)->format('Y-m-01');
+        //ultimo dia del mes 
+        $fecha_p = new DateTime($sum_month);
+        $fecha_p->modify('last day of this month');
+        $last_day = $fecha_p->format('Y-m-d');
+
+        
         $caja_abierta = Caja::where('estado','A')->count();
         $caja        = null;
         $formData       = array('caja.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos','titulo','caja_abierta'));
+        return view($this->folderview.'.mant')->with(compact('caja', 'formData', 'entidad', 'boton', 'listar','ingresos','titulo','caja_abierta','first_day','last_day'));
     }
 
     /**
@@ -367,6 +382,11 @@ class CajaController extends Controller
         //fecha de apertura de caja
         $fecha_caja = Date::parse($result->fecha_horaapert)->format('Y-m-d');
 
+        
+        //ultimo dia del mes 
+        $fecha_p = new DateTime($fecha_caja);
+        $fecha_p->modify('last day of this month');
+        $last_day = $fecha_p->format('Y-m-d');
         $existe = Libreria::verificarExistencia($id, 'caja');
         if ($existe !== true){
             return $existe;
@@ -379,7 +399,7 @@ class CajaController extends Controller
         $formData       = array('caja.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Cerrar Caja';
-        return view($this->folderview.'.cierrecaja')->with(compact( 'formData', 'caja','listar','entidad', 'boton','diferencia','monto_cierre','fecha_caja'));
+        return view($this->folderview.'.cierrecaja')->with(compact( 'formData', 'caja','listar','entidad', 'boton','diferencia','monto_cierre','fecha_caja','last_day'));
     }
 
     /**
@@ -456,7 +476,7 @@ class CajaController extends Controller
 
     /**CARGAR REPORTE */
     public function cargarreporte(){
-        $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos', 'R'=>'Reporte Financiero');
+        $cboTipo        = [''=>'Seleccione'] + array('I'=>'Ingresos', 'E'=>'Egresos', 'R'=>'Reporte Financiero', 'T'=>'Reporte Financiero Total');
         $entidad  = 'Caja';
         $caja = Caja::where('estado','A')->get();
         $fecha_caja = (count($caja) == 0)?date("Y-m"):(Date::parse($caja[0]->fecha_horaapert)->format('Y-m'));
@@ -802,24 +822,47 @@ class CajaController extends Controller
        $persona_id = $request->get('selectnom');
        if($tipo_id == 'I'){
            if($persona_id != ''){
-                $persona = Persona::find($persona_id);
-                $error = DB::transaction(function() use($request, $id, $persona){
-                    $gastos = new Gastos();
-                    $gastos->monto = $request->get('total');
-                    $gastos->fecha = $request->get('fecha');
-                    $gastos->concepto = $request->get('concepto_id');
-                    $gastos->descripcion =  $request->get('comentario');
-                    $gastos->save();
-        
-                    $transaccion = new Transaccion();
-                    $transaccion->fecha = $request->get('fecha');
-                    $transaccion->monto = $request->get('total');
-                    $transaccion->concepto_id = $request->get('concepto_id');
-                    $transaccion->descripcion =  "de: ".$persona->nombres." - ".$request->get('comentario');
-                    $transaccion->usuario_id =Caja::getIdPersona();
-                    $transaccion->caja_id = $id;
-                    $transaccion->save();
-                });
+               $concepto_id = intval($request->get('concepto_id'));
+                if($concepto_id == 22){
+                    $persona = Persona::find($persona_id);
+                    $error = DB::transaction(function() use($request, $id, $persona){
+                        $gastos = new Gastos();
+                        $gastos->monto = $request->get('total');
+                        $gastos->fecha = $request->get('fecha');
+                        $gastos->concepto = $request->get('concepto_id');
+                        $gastos->descripcion =  $request->get('comentario');
+                        $gastos->save();
+            
+                        $transaccion = new Transaccion();
+                        $transaccion->fecha = $request->get('fecha');
+                        $transaccion->monto = $request->get('total');
+                        $transaccion->rec_capital = $request->get('total');
+                        $transaccion->concepto_id = $request->get('concepto_id');
+                        $transaccion->persona_id =  $persona->id;
+                        $transaccion->usuario_id =Caja::getIdPersona();
+                        $transaccion->caja_id = $id;
+                        $transaccion->save();
+                    });
+                }else{
+                    $persona = Persona::find($persona_id);
+                    $error = DB::transaction(function() use($request, $id, $persona){
+                        $gastos = new Gastos();
+                        $gastos->monto = $request->get('total');
+                        $gastos->fecha = $request->get('fecha');
+                        $gastos->concepto = $request->get('concepto_id');
+                        $gastos->descripcion =  $request->get('comentario');
+                        $gastos->save();
+            
+                        $transaccion = new Transaccion();
+                        $transaccion->fecha = $request->get('fecha');
+                        $transaccion->monto = $request->get('total');
+                        $transaccion->concepto_id = $request->get('concepto_id');
+                        $transaccion->descripcion =  $persona->nombres." - ".$request->get('comentario');
+                        $transaccion->usuario_id =Caja::getIdPersona();
+                        $transaccion->caja_id = $id;
+                        $transaccion->save();
+                    });
+                }
            }else{
                 $error = DB::transaction(function() use($request, $id){
                     $gastos = new Gastos();
@@ -859,7 +902,7 @@ class CajaController extends Controller
                     $transaccion->monto = $request->get('total');
                     $transaccion->concepto_id = $request->get('concepto_id');
                     $transaccion->tipo_egreso = $request->get('editable');
-                    $transaccion->descripcion =  "de: ".$persona->nombres." - ".$request->get('comentario');
+                    $transaccion->descripcion =  $persona->nombres." - ".$request->get('comentario');
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->caja_id = $id;
                     $transaccion->save();
@@ -922,6 +965,7 @@ class CajaController extends Controller
             ->where('id', '!=', 19)
             ->where('id', '!=', 12)
             ->where('id', '!=', 18)
+            ->where('id', '!=', 21)
             ->get();
         $retorno .= '><option value="" selected="selected">Seleccione</option>';
 
@@ -1078,6 +1122,7 @@ class CajaController extends Controller
         $sum_acciones_mes_actual=0;
         $sum_otros_mes_actual=0;
         $sum_ingresos_totales_mes_actual=0;
+        $sum_rec_capital_mes_actual =0;
         if(count($lista) >0 ){
             for($i=0; $i<count($lista); $i++){
                 $sum_deposito_ahorros_mes_actual += round($lista[$i]->deposito_ahorros,1) + round($lista[$i]->monto_ahorro,1);
@@ -1085,8 +1130,9 @@ class CajaController extends Controller
                 $sum_interese_recibidos_mes_actual += round($lista[$i]->intereces_recibidos,1);
                 $sum_acciones_mes_actual += round($lista[$i]->acciones,1);
                 $sum_otros_mes_actual += round($lista[$i]->comision_voucher,1);
+                $sum_rec_capital_mes_actual += round($lista[$i]->rec_capital,1);
             }
-            $sum_ingresos_totales_mes_actual=$sum_deposito_ahorros_mes_actual + $sum_pagos_de_capital_mes_actual + $sum_interese_recibidos_mes_actual + $sum_acciones_mes_actual + $sum_otros_mes_actual;
+            $sum_ingresos_totales_mes_actual=$sum_deposito_ahorros_mes_actual + $sum_pagos_de_capital_mes_actual + $sum_interese_recibidos_mes_actual + $sum_acciones_mes_actual + $sum_otros_mes_actual + $sum_rec_capital_mes_actual;
         }else{
             $sum_deposito_ahorros_mes_actual=0;
             $sum_pagos_de_capital_mes_actual=0;
@@ -1125,6 +1171,7 @@ class CajaController extends Controller
         $sum_interese_recibidos_asta_mes_anterior=0;
         $sum_acciones_asta_mes_anterior=0;
         $sum_otros_asta_mes_anterior=0;
+        $sum_rec_capital_asta_mes_anterior =0;
         $sum_ingresos_totales_asta_mes_anterior=0;
         if(count($lista_mes_anterior) >0 ){
             for($i=0; $i<count($lista_mes_anterior); $i++){
@@ -1133,14 +1180,16 @@ class CajaController extends Controller
                 $sum_interese_recibidos_asta_mes_anterior += round($lista_mes_anterior[$i]->intereces_recibidos,1);
                 $sum_acciones_asta_mes_anterior += round($lista_mes_anterior[$i]->acciones,1);
                 $sum_otros_asta_mes_anterior += round($lista_mes_anterior[$i]->comision_voucher,1);
+                $sum_rec_capital_asta_mes_anterior += round($lista_mes_anterior[$i]->rec_capital,1);
             }
-            $sum_ingresos_totales_asta_mes_anterior=$sum_deposito_ahorros_asta_mes_anterior + $sum_pagos_de_capital_asta_mes_anterior + $sum_interese_recibidos_asta_mes_anterior + $sum_acciones_asta_mes_anterior + $sum_otros_asta_mes_anterior;
+            $sum_ingresos_totales_asta_mes_anterior=$sum_deposito_ahorros_asta_mes_anterior + $sum_pagos_de_capital_asta_mes_anterior + $sum_interese_recibidos_asta_mes_anterior + $sum_acciones_asta_mes_anterior + $sum_otros_asta_mes_anterior + $sum_rec_capital_asta_mes_anterior;
         }else{
             $sum_deposito_ahorros_asta_mes_anterior=0;
             $sum_pagos_de_capital_asta_mes_anterior=0;
             $sum_interese_recibidos_asta_mes_anterior=0;
             $sum_acciones_asta_mes_anterior=0;
             $sum_otros_asta_mes_anterior=0;
+            $sum_rec_capital_asta_mes_anterior =0;
             $sum_ingresos_totales_asta_mes_anterior=0;
         }
 
@@ -1164,6 +1213,7 @@ class CajaController extends Controller
         $sum_interese_recibidos_acumulados=0;
         $sum_acciones_acumulados=0;
         $sum_otros_acumulados=0;
+        $sum_rec_capital_acumulados=0;
         $sum_ingresos_totales_acumulados=0;
 
         //-------suma
@@ -1172,6 +1222,7 @@ class CajaController extends Controller
         $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
         $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
         $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
+        $sum_rec_capital_acumulados = ($sum_rec_capital_mes_actual + $sum_rec_capital_asta_mes_anterior);
 
         $sum_ingresos_totales_acumulados=($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
 
@@ -1186,10 +1237,10 @@ class CajaController extends Controller
         $tesorero = Persona::find($usuario2[0]->persona_id);
 
         $titulo = "reporte ".$mes."-".$anio."_Ingresos";
-        $view = \View::make('app.reportes.reporteIngresoPDF')->with(compact('lista','lista_ingresos_por_concepto' ,'id', 'caja', 'mes','anio','mesItm','sum_deposito_ahorros_mes_actual',
+        $view = \View::make('app.reportes.reporteIngresoPDF')->with(compact('lista','lista_ingresos_por_concepto' ,'id', 'caja', 'mes','anio','mesItm','sum_deposito_ahorros_mes_actual','sum_rec_capital_mes_actual',
                                                                             'sum_pagos_de_capital_mes_actual','sum_interese_recibidos_mes_actual','sum_acciones_mes_actual','sum_otros_mes_actual','sum_ingresos_totales_mes_actual','sum_por_concepto_actual',
-                                                                        'sum_deposito_ahorros_asta_mes_anterior','sum_pagos_de_capital_asta_mes_anterior','sum_interese_recibidos_asta_mes_anterior','sum_acciones_asta_mes_anterior','sum_otros_asta_mes_anterior','sum_ingresos_totales_asta_mes_anterior',
-                                                                    'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados','presidente','tesorero'));
+                                                                        'sum_deposito_ahorros_asta_mes_anterior','sum_pagos_de_capital_asta_mes_anterior','sum_interese_recibidos_asta_mes_anterior','sum_acciones_asta_mes_anterior','sum_otros_asta_mes_anterior','sum_rec_capital_asta_mes_anterior','sum_ingresos_totales_asta_mes_anterior',
+                                                                    'sum_deposito_ahorros_acumulados','sum_pagos_de_capital_acumulados','sum_interese_recibidos_acumulados','sum_acciones_acumulados','sum_rec_capital_acumulados','sum_otros_acumulados','sum_ingresos_totales_acumulados','presidente','tesorero'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -1408,6 +1459,7 @@ class CajaController extends Controller
         $sum_interese_recibidos_mes_actual=0;
         $sum_acciones_mes_actual=0;
         $sum_otros_mes_actual=0;
+        $sum_rec_capital_mes_actual =0;
         $sum_ingresos_totales_mes_actual=0;
         if(count($listaingreso) >0 ){
             for($i=0; $i<count($listaingreso); $i++){
@@ -1416,8 +1468,9 @@ class CajaController extends Controller
                 $sum_interese_recibidos_mes_actual += round($listaingreso[$i]->intereces_recibidos,1);
                 $sum_acciones_mes_actual += round($listaingreso[$i]->acciones,1);
                 $sum_otros_mes_actual += round($listaingreso[$i]->comision_voucher,1);
+                $sum_rec_capital_mes_actual += round($listaingreso[$i]->rec_capital,1);
             }
-            $sum_ingresos_totales_mes_actual= $sum_deposito_ahorros_mes_actual + $sum_pagos_de_capital_mes_actual + $sum_interese_recibidos_mes_actual + $sum_acciones_mes_actual + $sum_otros_mes_actual;
+            $sum_ingresos_totales_mes_actual= $sum_deposito_ahorros_mes_actual + $sum_pagos_de_capital_mes_actual + $sum_interese_recibidos_mes_actual + $sum_acciones_mes_actual + $sum_otros_mes_actual + $sum_rec_capital_mes_actual;
         }else{
             $sum_deposito_ahorros_mes_actual=0;
             $sum_pagos_de_capital_mes_actual=0;
@@ -1452,6 +1505,7 @@ class CajaController extends Controller
         $sum_interese_recibidos_asta_mes_anterior=0;
         $sum_acciones_asta_mes_anterior=0;
         $sum_otros_asta_mes_anterior=0;
+        $sum_rec_capital_asta_mes_anterior =0;
         $sum_ingresos_totales_asta_mes_anterior=0;
         if(count($lista_mes_anterioringreso) >0 ){
             for($i=0; $i<count($lista_mes_anterioringreso); $i++){
@@ -1460,13 +1514,15 @@ class CajaController extends Controller
                 $sum_interese_recibidos_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->intereces_recibidos,1);
                 $sum_acciones_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->acciones,1);
                 $sum_otros_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->comision_voucher,1);
+                $sum_rec_capital_asta_mes_anterior += round($lista_mes_anterioringreso[$i]->rec_capital,1);
             }
-            $sum_ingresos_totales_asta_mes_anterior= $sum_deposito_ahorros_asta_mes_anterior + $sum_pagos_de_capital_asta_mes_anterior + $sum_interese_recibidos_asta_mes_anterior + $sum_acciones_asta_mes_anterior + $sum_otros_asta_mes_anterior;
+            $sum_ingresos_totales_asta_mes_anterior= $sum_deposito_ahorros_asta_mes_anterior + $sum_pagos_de_capital_asta_mes_anterior + $sum_interese_recibidos_asta_mes_anterior + $sum_acciones_asta_mes_anterior + $sum_otros_asta_mes_anterior + $sum_rec_capital_asta_mes_anterior;
         }else{
             $sum_deposito_ahorros_asta_mes_anterior=0;
             $sum_pagos_de_capital_asta_mes_anterior=0;
             $sum_interese_recibidos_asta_mes_anterior=0;
             $sum_acciones_asta_mes_anterior=0;
+            $sum_rec_capital_asta_mes_anterior =0;
             $sum_otros_asta_mes_anterior=0;
             $sum_ingresos_totales_asta_mes_anterior=0;
         }
@@ -1499,7 +1555,8 @@ class CajaController extends Controller
         $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
         $sum_acciones_acumulados=($sum_acciones_mes_actual+$sum_acciones_asta_mes_anterior);
         $sum_otros_acumulados=($sum_otros_mes_actual+$sum_otros_asta_mes_anterior);
-
+        $sum_rec_capital_acumulados = ($sum_rec_capital_mes_actual + $sum_rec_capital_asta_mes_anterior);
+        
         $sum_ingresos_totales_acumulados = ($sum_ingresos_totales_mes_actual+$sum_ingresos_totales_asta_mes_anterior);
 
 
@@ -1546,7 +1603,7 @@ class CajaController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
     }
 
-    //reporte de resumen financiero
+    //reporte de resumen financiero mes
     public function reporteresumenfinancieroPDF($fecha)
     {
         //fecha en mes y año separados
@@ -1617,6 +1674,73 @@ class CajaController extends Controller
         $view = \View::make('app.reportes.reporteresumenfinancieroPDF')->with(compact('lista','presidente','tesorero' ,'id', 'caja','arraymonth','month','anio','listacoutas','listacciones','listahorros','listprestamos','sum_cuotas','sum_acciones','sum_ahorros','sum_prestamos',
                                                                                             'listaotrosingresos','sum_otrosingresos','listaotrosegresosadmin','sum_otrosingresosadmin','listaotrosegresosotros',
                                                                                         'sum_otrosingresootros','sum_total_ingresos','sum_total_egresos'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('p','A4',0);
+        PDF::SetTopMargin(0);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
+    //reporte financiero total asta la fecha
+    public function reporteresumenfinancierototalPDF($fecha)
+    {
+        //fecha en mes y año separados
+        $fechaf = explode("-", $fecha);
+        $anio =  $fechaf[0];
+        $month = $fechaf[1];
+
+        //ingresos
+        $listcoutas_pendientes = Caja::listcoutas_pendientes($anio, $month)->get();
+        $sum_cuotas_pendientes =0;
+        foreach($listcoutas_pendientes as $value){
+            $sum_cuotas_pendientes +=$value->parte_capital;
+        }
+
+        $listacciones_asta_la_fecha = Caja::listacciones_asta_la_fecha($anio, $month)->get();
+        $sum_acciones=0;
+        foreach($listacciones_asta_la_fecha as $value){
+            $sum_acciones += $value->acciones;
+        }
+
+        $listahorros_asta_la_fecha = Caja::listahorros_asta_la_fecha($anio, $month)->get();
+        $sum_ahorros_activos =0;
+        foreach ($listahorros_asta_la_fecha as $key => $value) {
+            $sum_ahorros_activos += $value->deposito_ahorros;
+        }
+
+        //egresos
+        $listprestamosactivos_asta_la_fecha = Caja::listprestamosactivos_asta_la_fecha($anio, $month)->get();
+        $sum_prestamos_activos = 0;
+        foreach ($listprestamosactivos_asta_la_fecha as $key => $value) {
+            $sum_prestamos_activos += $value->valor_credito;
+        }
+
+
+        $sum_total_ingresos = 0;
+        $sum_total_egresos =0;
+        $sum_total_ingresos = ($sum_cuotas_pendientes + $sum_acciones+$sum_ahorros_activos);
+        $sum_total_egresos = ($sum_prestamos_activos);
+
+        $arraymonth = array(1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril', 5=>'Mayo', 6=>'Junio', 7=>'Julio',8=>'Agosto', 9=>'Septiembre', 10=>'Octubre',
+                        11=>'Noviembre', 12=>'Diciembre');
+        //presidente y secretario
+        $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',2)->get();
+
+        $presidente = Persona::find($usuario1[0]->persona_id);
+        $tesorero = Persona::find($usuario2[0]->persona_id);
+
+        //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
+
+        $titulo = "resumen_financiero_asta_".$arraymonth[intval($month)]."-".$anio;
+        $view = \View::make('app.reportes.reportefinancierototal')->with(compact('lista','presidente','tesorero' ,'id', 'caja','arraymonth','month','anio','listcoutas_pendientes','listacciones_asta_la_fecha','listahorros_asta_la_fecha','listprestamosactivos_asta_la_fecha','sum_cuotas_pendientes','sum_acciones','sum_ahorros_activos','sum_prestamos_activos',
+                                                                                        'sum_total_ingresos','sum_total_egresos'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
