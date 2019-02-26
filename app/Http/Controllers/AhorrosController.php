@@ -368,7 +368,7 @@ class AhorrosController extends Controller
             $saldo_en_caja= $ingresos-$egresos;
         }
         
-        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_apert));
+        $fecha_pordefecto =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
         return view($this->folderview.'.vistaretirarahorro')->with(compact('ahorro','persona','entidad','entidad', 'ruta','titulo_vistaretiro','saldo_en_caja','caja_id','fecha_pordefecto'));
     }
     //Metodo para registrar el retiro

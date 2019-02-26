@@ -20,7 +20,7 @@
 <div class="form-row">
     <div class="form-group col-md-12 col-sm-12">
 		{!! Form::label('porcentaje_mora', 'Porcentaje de mora diario (%):', array('class' => '')) !!}
-		{!! Form::text('porcentaje_mora', 0.10, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora diario %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
+		{!! Form::text('porcentaje_mora', 5, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora diario %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 	</div>
 </div>
 
@@ -29,11 +29,11 @@
 		{!! Form::label('monto_moratorio', 'Interes mora en 1 dia S/.: ', array('class' => '', 'id'=>'monto_moratorio')) !!}
 	</div>
 </div>
-<div class="form-group">
+{{-- <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
 		{!! Form::label('monto_moratorio2', 'Interes mora en 30 dia S/.: ', array('class' => '', 'id'=>'monto_moratorio2')) !!}
 	</div>
-</div>
+</div> --}}
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
@@ -53,10 +53,16 @@
 		var montomora = $('#porcentaje_mora').val()/100 * saldorestante;
 
 		$('#monto_cuota').val(RoundDecimal(montomora, 4));
-		$('#monto_moratorio').html('Interes mora en 1 dia S/.: '+RoundDecimal(montomora, 1));
-		$('#monto_moratorio2').html('Interes mora en 30 dia S/.: '+RoundDecimal((montomora*30), 1));
-		
+		$('#monto_moratorio').html('Interes mora en un mes S/.: '+RoundDecimal(montomora, 1));
+
+		$("#porcentaje_mora").on('keyup', function(){
+			var saldorest = parseFloat("{{ ($cuota->parte_capital + $cuota->interes) }}");
+			var mont_mora = saldorest* ( $('#porcentaje_mora').val()/100 );
+			$('#monto_moratorio').html('Interes mora en un mes S/.: '+RoundDecimal(mont_mora, 1));
+		}).keyup();
+
 	}); 
+
 	
 	function filterFloat(evt,input){
 		// Backspace = 8, Enter = 13, ‘0′ = 48, ‘9′ = 57, ‘.’ = 46, ‘-’ = 43

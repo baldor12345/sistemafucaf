@@ -167,7 +167,7 @@ class DistUtilidadesController extends Controller
             $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
         }
         
-        // if($existe){
+        //  if($existe){
             $caja = Caja::where("estado","=","A")->get();
 
             $idcaja = count($caja) == 0? 0: $caja[0]->id;
@@ -640,7 +640,7 @@ class DistUtilidadesController extends Controller
             $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
             $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
             $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
-
+            $numero_acciones_hasta_enero =  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();// conteo de acciones hasta el mes de enero
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
             $acciones_mes  =0;
             $indice1 = 0;
@@ -655,7 +655,7 @@ class DistUtilidadesController extends Controller
             $existe = 0;
             $reporte =0;
             $anio_actual=$anio+1;
-        return view($this->folderview.'.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta'));
+        return view($this->folderview.'.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
       
     }
 
