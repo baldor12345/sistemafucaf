@@ -167,7 +167,7 @@ class DistUtilidadesController extends Controller
             $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
         }
         
-        //  if($existe){
+         if($existe){
             $caja = Caja::where("estado","=","A")->get();
 
             $idcaja = count($caja) == 0? 0: $caja[0]->id;
@@ -213,24 +213,22 @@ class DistUtilidadesController extends Controller
             }
             $porcentaje_ditribuible = 100;
             $porcentaje_ditr_faltante = 0;
-            // $saldo_caja_distribuible = $this->saldoEnCaja($caja[0]); //$this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaapert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaapert), 1);
-            
-            
+             $saldo_caja_distribuible = $this->saldoEnCaja($caja[0]); //$this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaapert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaapert), 1);
             // echo("saldo distr: ".$saldo_caja_distribuible);
-            // if($saldo_caja_distribuible < $utilidad_neta){
-            //     $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
-            //     $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
-            // }
+            if($saldo_caja_distribuible < $utilidad_neta){
+                $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
+                $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
+            }
 
             $existe = 0;
             $anio_actual=$anio;
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
             return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
-        // }else{
-        //     $existe = 1;
-        //     return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));
-        // }
+        }else{
+            $existe = 1;
+            return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));
+        }
         
     }
 
