@@ -36,7 +36,7 @@
 
     <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
         {!! Form::label('fechacredito', 'Fecha: *', array('class' => 'fechacred')) !!}
-        {!! Form::date('fechacredito', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechacredito')) !!}
+        {!! Form::date('fechacredito', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechacredito', 'readonly')) !!}
     </div>
     <div class="form-group col-12" >
         {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descrip')) !!}
@@ -421,7 +421,7 @@
             
             abrirmodal(mdCronograma);
             $('#filasTcuotas').empty();
-            var montInteres=0.0;
+            var montInteres=0.0; 
             var montCapital=0.0;
             var montCuota = 0.0;
             var fechac = new Date($('#fechacredito').val());
@@ -431,7 +431,7 @@
             var sumacuotas = 0.0;
             var fila='';
             //FORMULA: CUOTA = (Interes * CpitalInicial)/(1-  (1/ (1+InteresMensual)^NumeroCuotas)  );  Math.pow(7, 2);
-            montCuota =((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo)));
+            montCuota =RoundDecimal(((Interes/100) * CapitalInicial) / (1 - (Math.pow(1/(1+(Interes)/100), periodo))),1);
             var i=0;
             
             for(i=0; i<periodo; i++){
@@ -440,7 +440,11 @@
                 var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
                 montInteres =  (Interes/100)*CapitalInicial;
                 interesAcumulado = montInteres + interesAcumulado;
-                montCapital= (montCuota - montInteres);
+                montCapital= RoundDecimal(montCuota,1)  - RoundDecimal(montInteres, 1);
+                if(i< (periodo -1)){
+                    CapitalInicial = CapitalInicial - montCapital;
+                }
+
                 CapitalInicial = CapitalInicial - montCapital;
                 capitalTotal += montCapital;
                 sumacuotas += montCuota;
