@@ -180,7 +180,7 @@ class DistUtilidadesController extends Controller
             // $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
             // $otros = $sumUBAcumulado[1];
             // $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
-            $fecha = $anio."-01-01";
+            $fecha = ($anio+1)."-01-01";
             $ingresos =(new DistribucionUtilidades())->ingresos($fecha);
             $egresos =(new DistribucionUtilidades())->egresos($fecha);
 

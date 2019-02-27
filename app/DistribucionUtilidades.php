@@ -113,7 +113,7 @@ class DistribucionUtilidades extends Model
         ->where('transaccion.deleted_at','=',null)
         ->where('concepto.tipo','=','E')
         ->groupBy('concepto.tipo')->get();
-$i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
+        $i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
 
 
         $results1 = DB::table('transaccion')
@@ -319,7 +319,6 @@ $i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
         }
 
         $lista_por_concepto_asta_mes_anteriorOthers = Caja::listEgresos_por_concepto_asta_mes_anteriorOthers($fecha_completa)->get();
-        //echo "lista ".$lista_por_concepto_asta_mes_anteriorOthers;
         // calculo del total de egresos del mes actual por concepto
         $sum_otros_egresos_asta_mes_anterior =0;
         if(count($lista_por_concepto_asta_mes_anteriorOthers) >0 ){
