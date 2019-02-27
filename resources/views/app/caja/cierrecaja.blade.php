@@ -108,7 +108,7 @@ use Illuminate\Support\Facades\DB;
 
 		if(fecharecibida >= fechacierre){
 			if(fecharecibida<=last_day){
-				console.log("entro a guardar");
+				guardar(entidad);
 			}else{
 				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha cierre no puede ser mayor que la fecha "+last_day+" </span></div>";
 					$('#divMensajeError{{ $entidad }}').show();

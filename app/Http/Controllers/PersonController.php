@@ -244,9 +244,13 @@ class PersonController extends Controller
         $entidad        = 'Persona';
 
         //evaluar persona
+        $ahorros=0;
         $acciones = Acciones::where('estado','C')->where('persona_id',$id)->where('deleted_at',null)->count();
-        $ahorros = Ahorros::where('estado','P')->where('persona_id',$id)->where('deleted_at',null)->count();
-        $credito = Credito::where('estado','0')->where('persona_id',$id)->where('deleted_at',null)->count();
+        $ahorros1 = Ahorros::where('estado','P')->where('persona_id',$id)->where('deleted_at',null)->get();
+        foreach ($ahorros1 as $key => $value) {
+            $ahorros += $value->capital;
+        }
+        $credito = Credito::where('estado','!=','1')->where('persona_id',$id)->where('deleted_at',null)->count();
 
         $formData       = array('persona.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');

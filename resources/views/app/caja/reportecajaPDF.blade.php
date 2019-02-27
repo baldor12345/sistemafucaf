@@ -92,34 +92,38 @@
 	</div>
 
 	<table width="100%" class="tabla3">
-            <tr>
-                <td width="4%" align="center" class="fondo"><strong>#</strong></td>
-                <td width="8%" align="center" class="fondo"><strong>FECHA</strong></td>
-				<td width="8%" align="center" class="fondo"><strong>IMPORTE</strong></td>
-                <td width="20%" align="center" class="fondo"><strong>CONCEPTO</strong></td>
-                <td width="6%" align="center" class="fondo"><strong>TIPO</strong></td>
-                <td width="25%" align="center" class="fondo"><strong>USUARIO/CLIENTE</strong></td>
-				<td width="30%" align="center" class="fondo"><strong>DESCRIPCION</strong></td>
-            </tr>
-            @foreach($lista as $value )
-            <tr>
-                <td width="4%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
-                <td width="8%" align="center"><span class="text">{{ Date::parse($value->fecha )->format('Y/m/d')}}</span></td>
-                <td width="8%" align="center"><span class="text">{{ number_format($value->monto,1) }}</span></td>
-                <td width="20%" align="left"><span class="text">{{ $value->concepto->titulo }}</span></td>
-				@if ($value->concepto->tipo === 'I')
-                <td width="6%" align="center"><span class="text" style="color:green;font-weight: bold;">Ingreso</span></td>
-				@else
-				<td width="6%" align="center"><span class="text" style="color:red;font-weight: bold;">Egreso</span></td>
-				@endif
-				@if ($value->persona_id !== null)
-				<td width="25%" align="left"><span class="text">{{ $value->persona->nombres.' '.$value->persona->apellidos }}</span></td>
-				@else
-				<td width="25%" align="center"><span class="text">---</span></td>
-				@endif
-				<td width="30%" align="left"><span class="text">{{ $value->descripcion }}</span></td>
-            </tr>
-            @endforeach
+            <thead>
+				<tr>
+					<td width="4%" align="center" class="fondo"><strong>#</strong></td>
+					<td width="8%" align="center" class="fondo"><strong>FECHA</strong></td>
+					<td width="8%" align="center" class="fondo"><strong>IMPORTE</strong></td>
+					<td width="20%" align="center" class="fondo"><strong>CONCEPTO</strong></td>
+					<td width="6%" align="center" class="fondo"><strong>TIPO</strong></td>
+					<td width="25%" align="center" class="fondo"><strong>USUARIO/CLIENTE</strong></td>
+					<td width="30%" align="center" class="fondo"><strong>DESCRIPCION</strong></td>
+				</tr>
+			</thead>
+            <tbody>
+				@foreach($lista as $value )
+				<tr>
+					<td width="4%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
+					<td width="8%" align="center"><span class="text">{{ Date::parse($value->fecha )->format('Y/m/d')}}</span></td>
+					<td width="8%" align="center"><span class="text">{{ number_format($value->monto,1) }}</span></td>
+					<td width="20%" align="left"><span class="text">{{ $value->concepto->titulo }}</span></td>
+					@if ($value->concepto->tipo === 'I')
+					<td width="6%" align="center"><span class="text" style="color:green;font-weight: bold;">Ingreso</span></td>
+					@else
+					<td width="6%" align="center"><span class="text" style="color:red;font-weight: bold;">Egreso</span></td>
+					@endif
+					@if ($value->persona_id !== null)
+					<td width="25%" align="left"><span class="text">{{ $value->persona->nombres.' '.$value->persona->apellidos }}</span></td>
+					@else
+					<td width="25%" align="center"><span class="text">---</span></td>
+					@endif
+					<td width="30%" align="left"><span class="text">{{ $value->descripcion }}</span></td>
+				</tr>
+				@endforeach
+			</tbody>
     </table>
 
 	<br>

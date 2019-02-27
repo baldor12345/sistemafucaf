@@ -256,7 +256,7 @@ class ConfiguracionesController extends Controller
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
-        $count_acciones = Acciones::where('concepto_id',$id)->count();
+        $count_acciones = Acciones::where('configuraciones_id',$id)->count();
 
         $modelo   = Configuraciones::find($id);
         $entidad  = 'Configuraciones';

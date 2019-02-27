@@ -71,7 +71,7 @@
                 <td style="font-size: 10px" colspan="7" rowspan="" align="center"><strong>RESUMEN FINANCIERO TOTAL</strong></td>
             </tr>   
             <tr>
-                <td cellspacing="9" cellpadding="2" colspan="2">{{ '     ' }}ASTA: </td>
+                <td cellspacing="9" cellpadding="2" colspan="2">{{ '     ' }}HASTA: </td>
                 <td style="font-size: 10px" colspan="5" cellpadding="2">{{ $arraymonth[intval($month)].' del año '.$anio }}</td>
             </tr>
             
@@ -88,7 +88,7 @@
                 <td>
                     <table>
                         <tr>
-                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}A. CAPITAL POR COBRAR</td>
+                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}CAPITAL POR COBRAR</td>
                         </tr>
                         @foreach($listcoutas_pendientes  as $value)
                             @if($value->parte_capital == '')
@@ -109,7 +109,7 @@
                 <td>
                     <table>
                         <tr>
-                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}B. ACCIONES</td>
+                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}ACCIONES</td>
                         </tr>
                         @foreach($listacciones_asta_la_fecha  as $value)
                             @if($value->acciones == '')
@@ -140,7 +140,7 @@
                 <td>
                     <table>
                         <tr>
-                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}C. AHORROS</td>
+                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}AHORROS</td>
                         </tr>
                         @foreach($listahorros_asta_la_fecha  as $value)
                             @if($value->deposito_ahorros == '')
@@ -152,7 +152,7 @@
                             @endif
                         @endforeach
                         <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL AHORROS</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL DE AHORROS ACTIVOS</strong></td>
                             <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_ahorros_activos,1)}}</strong></td>
                         </tr>
                     </table>
@@ -160,7 +160,7 @@
                 <td>
                     <table>
                         <tr>
-                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}A. PRÉSTAMOS</td>
+                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}PRÉSTAMOS</td>
                         </tr>
                         @foreach($listprestamosactivos_asta_la_fecha  as $value)
                             @if($value->valor_credito == '')
@@ -172,7 +172,7 @@
                             @endif
                         @endforeach
                         <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL PRESTAMOS</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL DE PRESTAMOS ACTIVOS</strong></td>
                             <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_prestamos_activos,1)}}</strong></td>
                         </tr>
                     </table>

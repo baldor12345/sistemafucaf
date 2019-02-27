@@ -53,11 +53,8 @@ $(document).ready(function() {
 	configurarAnchoModal('650');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
-	var dateA = new Date();
-	var day = ("0"+dateA.getDate()).slice(-2);
-	var month = ("0"+(dateA.getMonth()+1)).slice(-2);
-	var date = (dateA.getFullYear())+"-"+month+"-"+day+"";
-	$('#fecha').val(date);
+	var date_caja = '{{$date_caja}}';
+	$('#fecha').val(date_caja);
 }); 
 
 function cambiartardanza(elemento) {

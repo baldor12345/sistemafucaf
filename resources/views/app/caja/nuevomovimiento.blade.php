@@ -34,8 +34,9 @@ function cargarselect2(entidad){
 
 </script>
 
-<div id="divinfo"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="divinfo"></div>
+<div id="divinfo2"></div>
 {!! Form::open(array('route' => array('caja.registrarmovimiento', $id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
@@ -47,7 +48,7 @@ function cargarselect2(entidad){
 </div>
 
 <div class="form-group">
-	{!! Form::label('tipo', 'Tipo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+	{!! Form::label('tipo_id', 'Tipo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 	<div class="col-sm-9 col-xs-12">
 		{!! Form::select('tipo_id', $cboTipo, null, array('class' => 'form-control input-xs', 'id' => 'tipo_id', 'onchange' => 'cargarselect2("concepto")')) !!}
 	</div>
@@ -119,7 +120,6 @@ function cargarselect2(entidad){
 		var fecha_caja = '{{ $fecha_caja }}';
 		$('#fecha').val(fecha_caja);
 		
-		
 
 		$('#selectnom').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),
@@ -145,6 +145,17 @@ function cargarselect2(entidad){
         });
 
 	}); 
+
+	$("input[name=concepto_id]").change(function(){
+		var concepto_id = $('#concepto_id').val();
+		if(parseInt(concepto_id) == 22){
+			document.getElementById("divinfo2").innerHTML = "<div class='alert alert-info' role='info'><span >por el concepto seleccionado se registrara en el rubro de REC. CAPITAL!</span></div>";
+			$('#divinfo2').show();
+		}
+		
+	});
+
+
 	$('.input-number').on('input', function () { 
     	this.value = this.value.replace(/[^0-9]/g,'');
 	});
@@ -204,20 +215,33 @@ function cargarselect2(entidad){
 		var fecha_seleccionada = $('#fecha').val();
 		var saldo = parseFloat('{{ $diferencia }}');
 		var monto_ingresado = parseFloat($('#total').val());
-		var concepto_id = $('tipo_id').val();
+		var tipo_id = $('#tipo_id').val();
 		if(fecha_de_caja>fecha_seleccionada){
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura de caja, gracias!</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
 		}else{
-			if(concepto_id == 'E'){
-				if(monto_ingresado<=saldo){
+			if(tipo_id === "E"){
+				if(monto_ingresado>saldo){
 					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Saldo de caja insuficiente!</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
 				}else{
 					guardar(entidad);
 				}
-			}else{
-				guardar(entidad);
+			}
+			if(tipo_id === "I"){
+				var concepto_id = $('#concepto_id').val();
+				var persona_id = $('#selectnom').val();
+				if(concepto_id == 22){
+					if(persona_id != 0){
+						guardar(entidad);
+					}else{
+						document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Seleccione socio o cliente</span></div>";
+						$('#divMensajeError{{ $entidad }}').show();
+					}
+				}else{
+					guardar(entidad);
+				}
+				
 			}
 		}
 	}
