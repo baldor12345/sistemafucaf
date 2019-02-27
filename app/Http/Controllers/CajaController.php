@@ -1678,7 +1678,7 @@ class CajaController extends Controller
  
         PDF::SetTitle($titulo);
         PDF::AddPage('p','A4',0);
-        PDF::SetTopMargin(0);
+        PDF::SetTopMargin(5);
         //PDF::SetLeftMargin(40);
         //PDF::SetRightMargin(40);
 
@@ -1745,7 +1745,7 @@ class CajaController extends Controller
  
         PDF::SetTitle($titulo);
         PDF::AddPage('p','A4',0);
-        PDF::SetTopMargin(0);
+        PDF::SetTopMargin(5);
         //PDF::SetLeftMargin(40);
         //PDF::SetRightMargin(40);
 
