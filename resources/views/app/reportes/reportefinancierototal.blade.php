@@ -100,7 +100,7 @@
                             @endif
                         @endforeach
                         <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>CUOTA TOTAL PRESTAMOS</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL CAPITAL POR COBRAR (S/.)</strong></td>
                             <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_cuotas_pendientes,1)}}</strong></td>
                         </tr>
                     </table>
@@ -121,7 +121,7 @@
                             @endif
                         @endforeach
                         <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL ACCIONES</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL ACCIONES (S/.)</strong></td>
                             <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_acciones,1)}}</strong></td>
                         </tr>
                     </table>
@@ -159,24 +159,6 @@
                 </td>
                 <td>
                     <table>
-                    </table>
-                </td>
-            </tr>
-        </table>
-
-        <table width="100%" border="0px" class="">
-            <tr>
-                <td align="left" style="font-size: 11px" colspan="9" ></td>
-            </tr>
-            <tr>
-                <td align="left" style="font-size: 11px" colspan="9" ><strong>EGRESOS</strong></td>
-            </tr>
-        </table>
-
-        <table width="100%" border="0px" class="">
-            <tr>
-                <td>
-                    <table>
                         <tr>
                             <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}A. PRÉSTAMOS</td>
                         </tr>
@@ -195,13 +177,9 @@
                         </tr>
                     </table>
                 </td>
-                <td>
-                    <table>
-                    </table>
-                </td>
-                
             </tr>
         </table>
+
 
         <table width="100%" border="0px" class="">
             <tr>
