@@ -1,5 +1,6 @@
 @if( $day >= $fechaf)
 <div id="infocertidicado"></div>
+<div id="info2"></div>
 {!! Form::model($certificado, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	
@@ -39,6 +40,9 @@
 		$('#fechag').val(fechai);
 		configurarAnchoModal('350');
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+
+		document.getElementById("info2").innerHTML = "<div class='alert alert-info' role='info'><span >certificado, se puede generar trimestral o semestral, asegurese de que ya exista compra de acciones en el rango de meses seleccionadas!</span></div>";
+						$('#info2').show();
 	}); 
 
 	function guardarcertificado(entidad){
@@ -47,36 +51,30 @@
 		var year_select = $('#anio').val();
 		var year_now = new Date();
 		var year = year_now.getFullYear();
-		var date_last = '{{ $certificado_last->fechaf }}';
-		var data =0;
-		if(date_last.length !=0){
-			var data = date_last.split('-');
-		}else{
-			var data = 0;
-		}
-		console.log(data[1]);
+		var date_last = '{{ $date_last }}';
+		var data =date_last.split('-');
+		var month_now = '{{$month_now}}';
+
 		if(year_select >= year ){
-			if(data[1]<2){
-				if(month1_select>parseInt(data[1])){
-					if(month2_select>=(parseInt(data[1])+3)){
-						guardar(entidad);
+			if(month1_select>=parseInt(data[1])){
+				if(month2_select <= parseInt(month_now)){
+					if(month2_select >= (parseInt(data[1])+3)){
+						//guardar(entidad);
+						console.log("paso por aca 123");
 					}else{
 						document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-warning' role='warning'><span >el certificado a generar debe ser de un minimo de tres meses</span></div>";
 						$('#infocertidicado').show();
 					}
-					
 				}else{
-					document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-danger' role='danger'><span >el mes inicio seleccionado debe ser mayor de del periodo anterior</span></div>";
-					$('#infocertidicado').show();
+					document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-danger' role='danger'><span >mes hasta seleccionado incorrecto, debe ser no mayor al mes actual</span></div>";
+								$('#infocertidicado').show();
 				}
+				
 			}else{
-				if(month2_select>=3){
-					guardar(entidad);
-				}else{
-					document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-warning' role='warning'><span >el certificado a generar debe ser de un minimo de tres meses</span></div>";
-					$('#infocertidicado').show();
-				}
+				document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-danger' role='danger'><span >el mes inicio seleccionado debe ser mayor de del periodo anterior</span></div>";
+				$('#infocertidicado').show();
 			}
+			
 			
 		}else{
 			document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-danger' role='danger'><span >año seleccionado incorrecto!</span></div>";

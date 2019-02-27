@@ -277,14 +277,14 @@ class CajaController extends Controller
             $titulo = "Caja ".($count_caja+1);
         }
         $caja_last = Caja::All()->last();
-        $date_caja = Date::parse($caja_last->fecha_horacierre)->format('Y-m-d');
+        $date_caja = Date::parse($caja_last->fecha_horacierre)->format('Y-m-01');
 
         $fecha_format = date($date_caja);
 
         $sum_month = date("d-m-Y",strtotime($fecha_format."+ 1 month"));
         
         //primer dia del mes
-        $first_day = Date::parse($sum_month)->format('Y-m-01');
+        $first_day = Date::parse($sum_month)->format('Y-m-d');
         //ultimo dia del mes 
         $fecha_p = new DateTime($sum_month);
         $fecha_p->modify('last day of this month');
@@ -821,7 +821,7 @@ class CajaController extends Controller
        $tipo_id = $request->input('tipo_id');
        $persona_id = $request->get('selectnom');
        if($tipo_id == 'I'){
-           if($persona_id != ''){
+           if($persona_id != 0){
                $concepto_id = intval($request->get('concepto_id'));
                 if($concepto_id == 22){
                     $persona = Persona::find($persona_id);

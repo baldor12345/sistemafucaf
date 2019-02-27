@@ -102,11 +102,11 @@
 			if(fecha_select <= last_day){
 				guardar(entidad);
 			}else{
-				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser menor que "+first_day+"</span></div>";
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser menor que "+last_day+"</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
 			}
 		}else{
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser mayor que "+last_day+"</span></div>";
+			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser mayor que "+first_day+"</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
 		}
 

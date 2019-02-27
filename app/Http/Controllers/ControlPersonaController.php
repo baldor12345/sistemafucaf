@@ -148,13 +148,17 @@ class ControlPersonaController extends Controller
         $cabecera[]       = array('valor' => 'Asistencia', 'numero' => '1');
 
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
+
+        $caja_status = Caja::where('estado','A')->where('deleted_at',null)->get();
+        $date_caja = (count($caja_status) !=0)? Date::parse($caja_status[0]->fecha_horaapert)->format('Y-m-d'): date('Y-m-d');
+
         $entidad        = 'ControlPersona';
         $controlpersona        = null;
         $formData       = array('controlpersona.store');
         $cboTipo        = [''=>'Seleccione']+ array('I'=>'Ingresos','E'=>'Egresos');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar','lista','cboAsistencia','cabecera','fecha','validList'));
+        return view($this->folderview.'.mant')->with(compact('controlpersona', 'cboTipo','formData', 'entidad', 'boton', 'listar','lista','cboAsistencia','cabecera','fecha','validList','date_caja'));
     }
 
     /**

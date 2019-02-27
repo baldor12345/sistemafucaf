@@ -632,13 +632,12 @@ GROUP BY persona.id;
                     ->select(
                         'persona.nombres as persona_nombres',
                         'persona.apellidos as persona_apellidos',
-                        DB::raw("SUM(ahorros.capital) as deposito_ahorros")
+                        'ahorros.capital as deposito_ahorros'
                     )
                     //->where(DB::raw('extract(month from ahorros.fechai)'),'<=',$month)
                     //->where(DB::raw('extract(year from ahorros.fechai)'),'<=',$anio)
                     ->where('ahorros.estado','P')
-                    ->where('ahorros.deleted_at',null)
-                    ->groupBy('persona.id');
+                    ->where('ahorros.deleted_at',null);
         return $results;
     }
 
