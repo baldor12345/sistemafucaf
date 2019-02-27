@@ -292,7 +292,7 @@ $i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
         $sum_interese_recibidos_acumulados=0;
        
         $sum_otros_acumulados=0;
-        $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
+        $sum_interese_recibidos_acumulados=($sum_interese_recibidos_asta_mes_anterior);
         $sum_otros_acumulados=($sum_otros_asta_mes_anterior);
 
         return array($sum_interese_recibidos_acumulados, $sum_otros_acumulados);
