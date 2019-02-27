@@ -47,8 +47,10 @@
 <?php
 	if($persona != null){
 		echo "<input type='hidden' id='fechaTempNac' value='".Date::parse($persona->fecha_nacimiento )->format('d/m/Y')."'>";
+		echo "<input type='hidden' id='fechaTempIni' value='".Date::parse($persona->fechai)->format('d/m/Y')."'>";
 	}else{
 		echo "<input type='hidden' id='fechaTempNac' value=''>";
+		echo "<input type='hidden' id='fechaTempIni' value=''>";
 	}
 ?>
 
@@ -146,7 +148,7 @@
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarpersona', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarpersona', 'onclick' => 'guardarpersona(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -242,5 +244,34 @@
 		
 	}
 	
-	
+	function guardarpersona(entidad){
+		var acciones = '{{$acciones}}';
+		var ahorros = '{{$ahorros}}';
+		var credito = '{{$credito}}';
+		var estado = $('#estado').val();
+		var tipo = $('#tipo').val();
+		if(estado == 'A'){
+			if(tipo.trim() == 'C'){
+				if(acciones == 0){
+					guardar(entidad)
+				}else{
+					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >accion no pudo ser completada, socio tiene acciones activas, gracias!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+				}
+			}
+			if(tipo.trim() == 'S'){
+				$('#divMensajeError{{ $entidad }}').hide();
+				guardar(entidad)
+			}
+			
+		}
+		if(estado == 'I'){
+			if((acciones == 0) && (ahorros == 0) && (credito == 0)){
+				guardar(entidad);
+			}else{
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >accion no pudo ser completada, socio o cliente tiene credito, ahorros o acciones activas, gracias!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+			}
+		}
+	}
 </script>

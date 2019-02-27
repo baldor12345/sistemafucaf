@@ -8,7 +8,10 @@ use Hash;
 use Validator;
 use App\Http\Requests;
 use App\User;
+use App\Caja;
+use App\Transaccion;
 use App\Persona;
+use App\Directivos;
 use App\Usertype;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -32,6 +35,7 @@ class UsuarioController extends Controller
             'cargarbinnacle'  => 'usuario.cargarbinnacle',
             'generarreporte'  => 'usuario.generarreporte',
             'binnaclePDF' => 'usuario.binnaclePDF',
+            'listpersonas'  =>'usuario.listpersonas'
         );
 
     /**
@@ -112,12 +116,14 @@ class UsuarioController extends Controller
         $entidad        = 'Usuario';
         $usuario        = null;
         $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
+        $cboPer = array(0=>'Seleccione ...');
         $cboTipousuario = array('' => 'Seleccione') + Usertype::pluck('name', 'id')->all();
         $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $formData       = array('usuario.store');
+        $ruta = $this->rutas;
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona','cboEstado'));
+        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona','cboEstado','cboPer','ruta'));
     }
 
     /**
@@ -130,11 +136,11 @@ class UsuarioController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
-            'login'       => 'required|max:20|unique:user,login,NULL,id,deleted_at,NULL',
+            'login'       => 'required|max:20|unique:user,login,NULL,login,deleted_at,NULL',
             'password'    => 'required|max:20',
             'fechai'    => 'required',
-            'persona_id' => 'required|integer|exists:user,id,deleted_at,NULL',
-            'usertype_id' => 'required|integer|exists:user,id,deleted_at,NULL'
+            'persona_id' => 'required|integer',
+            'usertype_id' => 'required|integer|exists:user,usertype_id,deleted_at,NULL'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
@@ -178,15 +184,16 @@ class UsuarioController extends Controller
             return $existe;
         }
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
+        $cboPer = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $cboTipousuario = array('' => 'Seleccione') + Usertype::pluck('name', 'id')->all();
         $cboEstado        = array('A'=>'Activo','I'=>'Inactivo');
         $usuario        = User::find($id);
         $entidad        = 'Usuario';
+        $ruta = $this->rutas;
         $formData       = array('usuario.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPersona','cboEstado'));
+        return view($this->folderview.'.mant')->with(compact('usuario', 'formData', 'entidad', 'boton', 'listar', 'cboTipousuario','cboPer','cboEstado','ruta'));
     }
 
     /**
@@ -203,11 +210,11 @@ class UsuarioController extends Controller
             return $existe;
         }
         $reglas = array(
-            'login'       => 'required|max:20|unique:user,login,'.$id.',id,deleted_at,NULL',
+            'login'       => 'required|max:20',
             'password'    => 'required|max:20',
             'fechai'    => 'required',
-            'persona_id' => 'required|integer|exists:user,id,deleted_at,NULL',
-            'usertype_id' => 'required|integer|exists:user,id,deleted_at,NULL'
+            'persona_id' => 'required|integer',
+            'usertype_id' => 'required|integer|exists:user,usertype_id,deleted_at,NULL'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
@@ -242,10 +249,18 @@ class UsuarioController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-        $error = DB::transaction(function() use($id){
-            $usuario = User::find($id);
-            $usuario->delete();
-        });
+        $error = null;
+        $user_consult = User::find($id);
+        $count_result = Caja::where('persona_id',$user_consult->persona_id)->count();
+        if($count_result == 0){
+            $error = DB::transaction(function() use($id){
+                $usuario = User::find($id);
+                $usuario->delete();
+            });
+        }else{
+            $error = "No se puede completar la accion, ya existe una relacion con otros registros este usuario!";
+        }
+        
         return is_null($error) ? "OK" : $error;
     }
 
@@ -262,14 +277,22 @@ class UsuarioController extends Controller
             return $existe;
         }
         $listar = "NO";
+        $error = null;
+        $user_consult = User::find($id);
+        $count_result = Caja::where('persona_id',$user_consult->persona_id)->count();
         if (!is_null(Libreria::obtenerParametro($listarLuego))) {
             $listar = $listarLuego;
         }
         $modelo   = User::find($id);
         $entidad  = 'Usuario';
-        $formData = array('route' => array('usuario.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
-        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        if($count_result == 0){
+            $formData = array('route' => array('usuario.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+            return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }else{
+            return view($this->folderview.'.message')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+        }
+
     }
 
     /**CARGAR REPORTE */
@@ -309,4 +332,29 @@ class UsuarioController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    public function listpersonas(Request $request){
+        $term = trim($request->q);
+        if (empty($term)) {
+            return \Response::json([]);
+        }
+        $tags = Persona::where("dni",'ILIKE', '%'.$term.'%')->orwhere("nombres",'ILIKE', '%'.$term.'%')->orwhere("apellidos",'ILIKE', '%'.$term.'%')->limit(5)->get();
+        $list_directivos = Directivos::where('estado','A')->get();
+        $formatted_tags = [];
+        foreach ($tags as $tag) {
+            foreach($list_directivos as $value){
+                if(trim($tag->tipo) == 'S'){
+                    if(($tag->id == $value->presidente_id) || ($tag->id == $value->secretario_id) || ($tag->id == $value->tesorero_id) || ($tag->id == $value->vocal_id)){
+                        $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
+                    }
+                }else{
+                    //$formatted_tags[] = ['id'=> '', 'text'=>"seleccione socio"];
+                }
+            }
+            
+        }
+
+        return \Response::json($formatted_tags);
+    }
+
 }

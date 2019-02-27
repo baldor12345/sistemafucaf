@@ -110,6 +110,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('usuario/buscar', 'UsuarioController@buscar')->name('usuario.buscar');
     Route::get('usuario/eliminar/{id}/{listarluego}', 'UsuarioController@eliminar')->name('usuario.eliminar');
     Route::resource('usuario', 'UsuarioController', array('except' => array('show')));
+    Route::get('usuario/listpersonas',  'UsuarioController@listpersonas')->name('usuario.listpersonas');
 
     Route::get('usuario/cargarbinnacle', 'UsuarioController@cargarbinnacle')->name('usuario.cargarbinnacle');
     Route::get('usuario/generarreporte', 'UsuarioController@generarreporte')->name('usuario.generarreporte');
@@ -147,8 +148,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('acciones/buscar', 'AccionesController@buscar')->name('acciones.buscar');
     Route::get('acciones/eliminar/{id}/{listarluego}','AccionesController@eliminar')->name('acciones.eliminar');
     Route::resource('acciones', 'AccionesController', array('except' => array('show')));
+    
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
     Route::get('acciones/buscaraccion', 'AccionesController@buscaraccion')->name('acciones.buscaraccion');
+
+    Route::get('acciones/listresumen', 'AccionesController@listresumen')->name('acciones.listresumen');
+    Route::get('acciones/buscarresumen', 'AccionesController@buscarresumen')->name('acciones.buscarresumen');
+
     Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
     Route::post('acciones/guardarventa/{id}', 'AccionesController@guardarventa')->name('acciones.guardarventa');
     Route::get('/generarvoucheraccionPDF/{id}/{cant}/{fecha}', 'AccionesController@generarvoucheraccionPDF')->name('generarvoucheraccionPDF');
@@ -240,6 +246,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/reporteingresosPDF/{id?}', 'CajaController@reporteingresosPDF')->name('caja.reporteingresosPDF');
     Route::get('/reporteegresosPDF/{id?}', 'CajaController@reporteegresosPDF')->name('caja.reporteegresosPDF');
     Route::get('/reporteresumenfinancieroPDF/{id?}', 'CajaController@reporteresumenfinancieroPDF')->name('caja.reporteresumenfinancieroPDF');
+    Route::get('/reporteresumenfinancierototalPDF/{id?}', 'CajaController@reporteresumenfinancierototalPDF')->name('caja.reporteresumenfinancierototalPDF');
+    
 
     Route::get('caja/nuevomovimiento/{id}', 'CajaController@nuevomovimiento')->name('caja.nuevomovimiento');
     Route::post('caja/registrarmovimiento/{id}', 'CajaController@registrarmovimiento')->name('caja.registrarmovimiento');

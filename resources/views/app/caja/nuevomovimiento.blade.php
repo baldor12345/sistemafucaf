@@ -144,23 +144,6 @@ function cargarselect2(entidad){
             }
         });
 
-		$('#selectnom').change(function(){
-            $.get("creditos/"+$(this).val()+"",function(response, facultad){
-                var persona = response[0];
-                var numCreditos = response[1];
-                var numAcciones = response[2];
-
-                if(persona.length>0){
-                    $("#persona_id").val(persona[0].id);
-                    var msj = "<div class='alert alert-success'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li><li>Tipo: "+(persona[0].tipo.trim() == 'C'? "Cliente": "Socio")+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li></ul> </div>";
-                        $('#divInfo{{ $entidad }}').html(msj);
-                        $('#divInfo{{ $entidad }}').show();
-                }else{
-                    $("#persona_id").val(0);
-                }
-            });
-        });
-
 	}); 
 	$('.input-number').on('input', function () { 
     	this.value = this.value.replace(/[^0-9]/g,'');
@@ -221,17 +204,21 @@ function cargarselect2(entidad){
 		var fecha_seleccionada = $('#fecha').val();
 		var saldo = parseFloat('{{ $diferencia }}');
 		var monto_ingresado = parseFloat($('#total').val());
-
-		if(monto_ingresado<=saldo){
-			if(fecha_de_caja>fecha_seleccionada){
+		var concepto_id = $('tipo_id').val();
+		if(fecha_de_caja>fecha_seleccionada){
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura de caja, gracias!</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
+		}else{
+			if(concepto_id == 'E'){
+				if(monto_ingresado<=saldo){
+					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Saldo de caja insuficiente!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+				}else{
+					guardar(entidad);
+				}
 			}else{
 				guardar(entidad);
 			}
-		}else{
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Saldo de caja insuficiente!</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
 		}
 	}
 

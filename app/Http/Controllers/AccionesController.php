@@ -27,6 +27,7 @@ class AccionesController extends Controller
     protected $tituloRegistrar = 'Compra de Acciones';
     protected $tituloModificar = 'Modificar acciones';
     protected $tituloDetalle = 'Detalle de Acciones';
+    protected $tituloResumen = 'Lista de Socios que ya compraron acciones en esta fecha!';
     protected $tituloVenta = 'Venta de Acciones';
     protected $tituloEliminar  = 'Eliminar acciones';
     protected $rutas           = array('create' => 'acciones.create', 
@@ -40,7 +41,9 @@ class AccionesController extends Controller
             'reciboaccionventapdf' => 'acciones.reciboaccionventapdf',
             'index'  => 'acciones.index',
             'listpersonas' => 'acciones.listpersonas',
-            'buscaraccion'=> 'acciones.buscaraccion'
+            'buscaraccion'=> 'acciones.buscaraccion',
+            'listresumen' => 'acciones.listresumen',
+            'buscarresumen' => 'acciones.buscarresumen'
         );
 
     /**
@@ -108,8 +111,9 @@ class AccionesController extends Controller
         $entidad          = 'Acciones';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
+        $titulo_resumen = $this->tituloResumen;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','idcaja'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'titulo_registrar', 'ruta','idcaja','titulo_resumen'));
     }
 
     /**
@@ -855,6 +859,51 @@ class AccionesController extends Controller
         $formData = array('route' => array('acciones.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+
+    public function listresumen(Request $request)
+    {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+
+        $entidad = "Accion3";
+        $titulo_resumen = $this->tituloResumen;
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+    
+        return view($this->folderview.'.resumen')->with(compact('lista', 'entidad', 'ruta','idcaja','titulo_resumen','caja'));
+    }
+
+    public function buscarresumen(Request $request){
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $entidad ='Accion3';
+        $fecha      = Libreria::getParam($request->input('fecha'));
+        $resultado        = Acciones::listresumen($fecha);
+        $lista            = $resultado->get();
+
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => '#', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Nombres', 'numero' => '1');
+      
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+        
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.listresumen')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar'));
+        }
+        return view($this->folderview.'.listresumen')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar'));
+    
     }
 
 }

@@ -64,7 +64,8 @@
 	</div>
 
 	<table width="100%" class="tabla3">
-            <tr>
+		<thead>
+			<tr>
                 <td rowspan="2" cellspacing="1" width="6%" align="center" style="font-size: 10px" class="fondo"><strong>Item</strong></td>
 				<td rowspan="2" cellspacing="1" width="28%" align="center" style="font-size: 10px" class="fondo"><strong>Concepto y/o Nombre del Socio o Cliente</strong></td>
                 <td rowspan="2" cellspacing="1" width="8%" align="center" style="font-size: 10px" class="fondo"><strong>Retiros Ahorros S/.</strong></td>
@@ -79,7 +80,9 @@
 				<td width="6%" align="center" style="font-size: 10px" class="fondo"><strong>S/.</strong></td>
 				<td width="10%" align="center" style="font-size: 10px" class="fondo"><strong>Especificar</strong></td>
 			</tr>
-            @foreach($lista as $value )
+		</thead>
+		<tbody>
+			@foreach($lista as $value )
             <tr>
 				<td width="6%" align="center" style="font-size: 10px" > <span class="text">{{ $loop->iteration }}</span></td>
 				<td width="28%" align="left" style="font-size: 10px"><span class="text">{{$value->persona_nombres.' '.$value->persona_apellidos}}</span></td>
@@ -193,6 +196,7 @@
 				<td  cellspacing="2" width="10%" align="center" style="font-size: 9px" class="fondo"><strong>-</strong></td>
 				<td  cellspacing="2" width="10%" align="center" style="font-size: 9px" class="fondo"><strong>{{ number_format($sum_egresos_totales_acumulados,1) }}</strong></td>
 			</tr>
+		</tbody>
 
     </table>
 

@@ -1438,7 +1438,17 @@ public function numero_meses($fecha_inico, $fecha_final){
             $fecha_siguiente_cuota = date("Y-m-d",strtotime($fecha_request."+ 1 month"));
             $anio = date('Y',strtotime($fecha_siguiente_cuota)); 
             $mes = date('m',strtotime($fecha_siguiente_cuota)); 
+<<<<<<< HEAD
+
+            $cuota_siguiente = Cuota::where('credito_id','=', $request->get('credito_id'))->where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('deleted_at','=',null)->get()[0];
+
+            $saldo_restante = round($cuota_siguiente->parte_capital + $cuota_siguiente->saldo_restante,1);
+            $persona = Persona::find($credito->persona_id);
+            
+            $cuotasPendientes =  Cuota::where('estado','!=','1')->where('credito_id','=',$credito->id)->where('deleted_at','=',null)->get();
+=======
             $cuotasPendientes = Cuota::where('estado','!=','1')->where('credito_id','=',$credito->id)->where('deleted_at','=',null)->where(DB::raw('extract( month from fecha_programada_pago)'),'>=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'>=',$anio)->get();
+>>>>>>> b60cb85825a1dc3215cffdb8bbd3dcd9357c8fe8
             $numero_cuotas_pendientes = count($cuotasPendientes);
             $cuota_siguiente = null;
             if($numero_cuotas_pendientes > 0){
