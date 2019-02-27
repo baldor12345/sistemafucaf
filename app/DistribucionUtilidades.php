@@ -261,4 +261,83 @@ $i_pag_acum =(count($results0)<1)?0: $results0[0]->interes_ahorro;
             $binnacle->save();
         });
     }
+
+    public function ingresos($fecha)
+    {
+     
+        $fecha_completa= $fecha;
+        $lista_mes_anterior = Caja::listIngresosastamesanterior($fecha_completa)->get();
+        $sum_interese_recibidos_asta_mes_anterior=0;
+        $sum_otros_asta_mes_anterior=0;
+        if(count($lista_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_mes_anterior); $i++){
+                $sum_interese_recibidos_asta_mes_anterior += round($lista_mes_anterior[$i]->intereces_recibidos,1);
+                $sum_otros_asta_mes_anterior += round($lista_mes_anterior[$i]->comision_voucher,1);
+            }
+        }
+
+        //lista de ingresos por concepto
+        $lista_ingresos_por_concepto_mes_anterior = Caja::listIngresos_por_concepto_asta_mes_anterior($fecha_completa)->get();
+        // calculo del total de ingresos del mes actual por concepto
+        $sum_por_concepto_mes_anterior=0;
+        if(count($lista_ingresos_por_concepto_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_ingresos_por_concepto_mes_anterior); $i++){
+                $sum_por_concepto_mes_anterior += $lista_ingresos_por_concepto_mes_anterior[$i]->transaccion_monto;
+            }
+            $sum_otros_asta_mes_anterior += $sum_por_concepto_mes_anterior;
+        }
+
+        //calculo de ingresos acumulados asta la fecha
+     
+        $sum_interese_recibidos_acumulados=0;
+       
+        $sum_otros_acumulados=0;
+        $sum_interese_recibidos_acumulados=($sum_interese_recibidos_mes_actual+$sum_interese_recibidos_asta_mes_anterior);
+        $sum_otros_acumulados=($sum_otros_asta_mes_anterior);
+
+        return array($sum_interese_recibidos_acumulados, $sum_otros_acumulados);
+    }
+    public function egresos($fecha)
+    {    
+        //identifico la fecha actual
+        $fecha_completa= $fecha;
+        $lista_mes_anterior = Caja::listEgresos_asta_mes_anterior($fecha_completa)->get();
+        $sum_interes_pagado_mes_anterior=0;
+        if(count($lista_mes_anterior) >0 ){
+            for($i=0; $i<count($lista_mes_anterior); $i++){
+                $sum_interes_pagado_mes_anterior += round($lista_mes_anterior[$i]->interes_ahorro,1);
+            }
+        }
+        $lista_por_concepto_asta_mes_anteriorAdmin = Caja::listEgresos_por_concepto_asta_mes_anteriorAdmin($fecha_completa)->get();
+
+        // calculo del total de egresos del mes actual por concepto
+        $sum_gasto_administrativo_asta_mes_anterior=0;
+        if(count($lista_por_concepto_asta_mes_anteriorAdmin) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anteriorAdmin); $i++){
+                $sum_gasto_administrativo_asta_mes_anterior += $lista_por_concepto_asta_mes_anteriorAdmin[$i]->transaccion_monto;
+            }
+        }
+
+        $lista_por_concepto_asta_mes_anteriorOthers = Caja::listEgresos_por_concepto_asta_mes_anteriorOthers($fecha_completa)->get();
+        //echo "lista ".$lista_por_concepto_asta_mes_anteriorOthers;
+        // calculo del total de egresos del mes actual por concepto
+        $sum_otros_egresos_asta_mes_anterior =0;
+        if(count($lista_por_concepto_asta_mes_anteriorOthers) >0 ){
+            for($i=0; $i<count($lista_por_concepto_asta_mes_anteriorOthers); $i++){
+                $sum_otros_egresos_asta_mes_anterior += $lista_por_concepto_asta_mes_anteriorOthers[$i]->transaccion_monto;
+            }
+        }
+        //calculo de ingresos acumulados asta la fecha
+        
+        $sum_interes_pagado_acumulados=0;
+        $sum_gasto_administrativo_acumulado =0;
+        $sum_otros_gastos_acumulado =0;
+
+        //-------suma
+        $sum_interes_pagado_acumulados=($sum_interes_pagado_mes_anterior);
+        $sum_gasto_administrativo_acumulado =( $sum_gasto_administrativo_asta_mes_anterior);
+        $sum_otros_gastos_acumulado = ($sum_otros_egresos_asta_mes_anterior);
+        return array($sum_interes_pagado_acumulados, $sum_gasto_administrativo_acumulado, $sum_otros_gastos_acumulado);
+    }
+
 }

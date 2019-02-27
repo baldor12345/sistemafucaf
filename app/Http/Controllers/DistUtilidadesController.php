@@ -175,15 +175,21 @@ class DistUtilidadesController extends Controller
             $listar = Libreria::getParam($request->input('listar'), 'NO');
             
             $ruta = $this->rutas;
-            $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
-            //$anio = date('Y') - 1; 
-            $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
-            $otros = $sumUBAcumulado[1];
-            $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
+            // $sumUBAcumulado = DistribucionUtilidades::sumUBDacumulado($anio);
+            // //$anio = date('Y') - 1; 
+            // $intereses = ($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
+            // $otros = $sumUBAcumulado[1];
+            // $gastosDUActual = DistribucionUtilidades::gastosDUactual($anio);
+            $fecha = $anio."-01-01";
+            $ingresos =(new DistribucionUtilidades())->ingresos($fecha);
+            $egresos =(new DistribucionUtilidades())->egresos($fecha);
 
-            $int_pag_acum= $gastosDUActual[0];
-            $otros_acumulados= $gastosDUActual[1];
-            $gastadmacumulado = $gastosDUActual[2];
+            $intereses = $ingresos[0];
+            $otros  = $ingresos[1];
+
+            $int_pag_acum= $egresos[0];
+            $otros_acumulados= $egresos[2];
+            $gastadmacumulado = $egresos[1];
             
             //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
             

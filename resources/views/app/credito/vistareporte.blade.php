@@ -35,8 +35,7 @@
         var fechaf = $('#fecha_f').val();
 
         rutareportecuotas += "?fechainicio="+fechai+"&fechafinal="+fechaf;
-        console.log("RUTALS: "+rutareportecuotas);
-        modalrecibopdf(ruta, 200,'200');
+        modalrecibopdf(rutareportecuotas, 200,'200');
     }
 
 </script>
