@@ -107,6 +107,23 @@ class Ahorros extends Model
         return $results;
     }
 
+    public function listareporte($anio){
+        $results = DB::table('ahorros')
+        
+        ->select(
+            'ahorros.capital  as  capital',
+            'ahorros.interes as interes',
+            'ahorros.estado as estado',
+            'ahorros.fechai as fechai',
+            'ahorros.persona_id as persona_id',
+            DB::raw('extract( month from ahorros.fechai) as mes'),
+            DB::raw('extract( year from ahorros.fechai) as anio')
+        )
+        ->where(DB::raw('extract( year from ahorros.fechai)'),'=', $anio)
+        ->orderby(DB::raw('extract( year from ahorros.fechai)'),'ASC')->get();
+        return $results;
+    }
+
     public static function boot()
     {
         parent::boot();

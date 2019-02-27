@@ -45,7 +45,10 @@ class AhorrosController extends Controller
             
             'actualizarecapitalizacion' => 'ahorros.actualizarecapitalizacion',
             'generareportehistoricoahorrosPDF' => 'ahorros.generareportehistoricoahorrosPDF',
-            'listpersonas' => 'creditos.listpersonas'
+            'listpersonas' => 'creditos.listpersonas',
+            'vistareporteahorros' => 'ahorros.vistareporteahorros',
+            'reporteahorros' => 'ahorros.reporteahorros'
+           
         );
 
     /**
@@ -839,6 +842,36 @@ class AhorrosController extends Controller
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton = 'Retirar';
         return view($this->folderview.'.detalles_ahorro')->with(compact('ahorros','ruta','montofinal','persona', 'formData', 'entidad', 'boton', 'listar','titulo_retirar'));
+    }
+
+    public function vistareporteahorros(){
+        $ruta = $this->rutas;
+        $caja = Caja::where('estado','=','A')->where('deleted_at','=',null)->get();
+        $anios = array();
+        $anio_actual = date('Y');
+        for($anio = 2009; $anio<= $anio_actual; $anio++){
+            $anios[$anio] = $anio;
+        }
+        return view('app.ahorros.vistareporteahorros')->with(compact('anios','ruta', 'anio_actual'));
+    }
+    public function reporteahorros(Request $request){
+        $anio = $request->get('anio_inicio');
+
+        $listaahorros = (new Ahorros())->listareporte($anio);
+        $personas = Persona::where('estado','=', 'A')->where('deleted_at', '=', null)->orderby('apellidos','ASC')->get();
+        
+        $titulo ='Reporte de ahorros del año '.$anio;
+        $view = \View::make('app.ahorros.reporteahorros')->with(compact('listaahorros', 'anio','titulo','personas'));
+
+        $html_content = $view->render();
+        PDF::SetTitle($titulo);
+        PDF::AddPage('L', 'A4', 'es');
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(5);
+        PDF::SetRightMargin(5);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
     }
 }
 ?>
