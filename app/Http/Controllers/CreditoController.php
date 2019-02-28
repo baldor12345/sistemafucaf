@@ -314,9 +314,6 @@ class CreditoController extends Controller{
         $cuotas = Cuota::where('credito_id','=',$id)->get();
 
         $error = DB::transaction(function() use($id, $cuotas){
-           /* for($i=0; $i<count($cuotas); $i++){
-                $cuotas[$i]->delete();
-            }*/
             foreach($cuotas as $cuota){
                 $cuota->delete();
             }
@@ -835,101 +832,6 @@ class CreditoController extends Controller{
         }
     }
 
-/*************--REFINANCIACIÓN--***************** */
-/*
-    public function refinanciacion($persona_id, $credito_id){
-        $nueva_fecha = $request->input('nueva_fecha');
-        $anio = date('m', strtotime($nueva_fecha));
-        $mes = date('Y',strtotime($nueva_fecha));
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
-        $monto_amortizacion = $request->input('monto_pago');
-        $cuota = Cuota::where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->first();
-        $monto_cuota = $cuota->parte_capital + $cuota->interes + $cuota->interes_mora;
-
-        $diferencia = $monto_amortizacion - $monto_cuota;
-        
-        if(($diferencia<0?-1*$diferencia:$diferencia) < 0.3 ){
-            $cuota->estado = '1';
-            $cuota->fecha_pago = $nueva_fecha.' '.date('H:i:s');
-            $cuota->save();
-
-            $concepto_id_pagocuota = 4;
-            $transaccion = new Transaccion();
-            $transaccion->fecha = $nueva_fecha.' '.date('H:i:s');
-            $transaccion->monto = $monto_cuota;
-            $transaccion->concepto_id =  $concepto_id_pagocuota;
-            $transaccion->descripcion = "Pago de Cuota";
-            $transaccion->persona_id = $persona_id;
-            $transaccion->usuario_id = Credito::idUser();
-            $transaccion->caja_id = $caja_id;
-            $transaccion->cuota_parte_capital = $cuota->parte_capital;
-            $transaccion->cuota_interes = $cuota->interes;
-            $transaccion->cuota_mora = $cuota->interes_mora;
-            $transaccion->save();
-        }else{
-            if($monto_amortizacion<$monto_cuota){
-                $numero_cuota = $cuota->numero_cuota;
-                $saldo_restante = $cuota->saldo_restante + $cuota->parte_capital + $cuota->interes + $cuota->interes_mora - $monto_amortizacion;
-                $parte_capital_s = $cuota->parte_capital + $cuota->parte_capital + $cuota->interes + $cuota->interes_mora - $monto_amortizacion;
-
-                $cuota->estado = 2;//pago Parcial
-                $cuota->fecha_pago = $nueva_fecha.' '.date('H:i:s');
-                $cuota->parte_capital = $monto_amortizacion - $cuota->interes - $cuota->monto_mora;
-                $cuota->save();
-
-                $concepto_id_pagocuota = 4;
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $nueva_fecha.' '.date('H:i:s');
-                $transaccion->monto = $monto_amortizacion;
-                $transaccion->concepto_id =  $concepto_id_pagocuota;
-                $transaccion->descripcion = "Pago parcial de cuota";
-                $transaccion->persona_id = $persona_id;
-                $transaccion->usuario_id = Credito::idUser();
-                $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = round($cuota->parte_capital, 4);
-                $transaccion->cuota_interes = round($cuota->interes, 4);
-                $transaccion->cuota_mora = round($cuota->interes_mora, 4);
-                $transaccion->save();
-
-                $credito = Credito::find($cuota->credito_id);
-
-                $numero_cuota +=1;
-                if($numero_cuota <= $credito->periodo){
-                    $cuota_siguiente = Cuota::where('numero_cuota','=',$numero_cuota)->where('credito_id','=',$cuota->credito_id)->first();
-                    $cuota_siguiente->interes = round(0.025 * $saldo_restante, 4);
-                    $cuota_siguiente->parte_capital = round($parte_capital_s, 4);
-                    $cuota_siguiente->save();
-                }else{
-                    $cuota_extra = new Cuota();
-                    $cuota_extra->credito_id = $credito->id;
-                    $cuota_extra->interes = round(0.025 * $saldo_restante,4);
-                    $cuota_extra->parte_capital = round( $saldo_restante,4);
-                    $fechacuota = date('Y-m', strtotime($cuota->fecha_pago)).'-01';
-                    $fecha_p = new DateTime($fechacuota);
-                        $fecha_p->modify('last day of this month');
-                        $fecha_p->format('Y-m-d');
-                    $cuota_extra->fecha_programada_pago = $fecha_p;
-                    $cuota_extra->caja_id = $caja_id;
-                    $cuota_extra->saldo_restante = 0;
-                    $cuota_extra->estado = 0;
-                    $cuota_extra->interes_mora = 0;
-                    $cuota_extra->numero_cuota = $numero_cuota;
-                    $cuota_extra->save();
-                }
-
-                
-            }else{
-
-
-            }
-
-
-        }
-
-
-    }
-*/
 /*************--LISTA PERSONAS--************ */
     public function listpersonas(Request $request){
         $term = trim($request->q);

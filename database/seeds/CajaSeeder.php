@@ -19,7 +19,7 @@ class CajaSeeder extends Seeder
                 'monto_iniciado'    =>'0',
                 'estado'    =>'A',
                 'persona_id'    =>$persona_id,
-                'fecha_horaApert'=> date('2009-01-24'),
+                'fecha_horaapert'=> date('2009-01-24'),
                 'created_at'     => $now,
 				'updated_at'     => $now
         ));
