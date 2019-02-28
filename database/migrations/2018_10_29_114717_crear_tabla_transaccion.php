@@ -30,7 +30,8 @@ class CrearTablaTransaccion extends Migration
             $table->decimal('utilidad_distribuida',20, 7)->nullable();
             $table->char('tipo_egreso', 1)->nullable();
             $table->integer('id_tabla')->nullable();
-            $table->char('inicial_tabla',2)->nullable();
+            $table->char('inicial_tabla',7)->nullable();
+            $table->decimal('rec_capital',20, 2)->nullable();
             $table->integer('concepto_id')->unsigned()->nullable();
             $table->string('descripcion', 400)->nullable();
             $table->integer('persona_id')->unsigned()->nullable();

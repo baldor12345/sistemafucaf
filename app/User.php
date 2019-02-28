@@ -14,7 +14,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use DateTime;
 
 class User extends Authenticatable
 {
@@ -48,7 +48,7 @@ class User extends Authenticatable
                             $subquery->where('login', 'LIKE', '%'.$login.'%');
                         }
                     })
-                    ->orderBy('login', 'ASC');
+                    ->orderBy('estado', 'ASC');
     }
 
     public function usertype()
@@ -66,21 +66,23 @@ class User extends Authenticatable
         $this->notify(new UserResetPasswordNotification($token));
     }
 
-    public static function listBinnacle($desde, $hasta)
-    {
+    public static function listBinnacle($month, $anio)
+    {   
+        //$month = date('m', strtotime($month));
+        //$anio = date('Y', strtotime($anio));
         $results = DB::table('persona')
                     ->join('binnacle', 'persona.id', '=', 'binnacle.user_id')
                     ->select(
-                        'persona.nombres AS persona_nombres',
-                        'persona.apellidos AS persona_apellidos',
+                        'persona.nombres as persona_nombres',
+                        'persona.apellidos as persona_apellidos',
                         'persona.codigo as persona_codigo',
                         'binnacle.action as accion',
                         'binnacle.table as tabla',
                         'binnacle.date as fecha_hora',
                         'binnacle.detail as detalle'
                     )
-                    ->where(DB::raw("to_char(binnacle.date,'yyyy-mm-dd')"),'>=',$desde)
-                    ->where(DB::raw("to_char(binnacle.date,'yyyy-mm-dd')"),'<=',$hasta);
+                    ->where(DB::raw('extract( year from binnacle.date)'),'=',$anio)
+                    ->where(DB::raw('extract( month from binnacle.date)'),'=',$month);
         return $results;
     }
 

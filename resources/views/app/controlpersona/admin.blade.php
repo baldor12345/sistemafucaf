@@ -18,7 +18,7 @@
     <div class="col-sm-12">
         <div class="card-box table-responsive">
 
-            <div class="row m-b-30">
+            <div class="row m-b-5">
                 <div class="col-sm-12">
 					{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
@@ -46,7 +46,7 @@
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-xs', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-xs', 'id' => 'btnNuevo', 'onclick' => 'modalnuevo (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\');')) !!}
-					{!! Form::button('<i class="fa fa-check fa-lg"></i> Generar Reporte', array('class' => 'btn btn-success btn-xs', 'id' => 'btnGuardar', 'onclick' => 'reporteasistencia(\''.$entidad.'\', \''.URL::route($ruta["generarreporteasistenciaPDF"], array()).'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-folder-open "></i> Reportes', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-xs', 'id' => 'btnNuevoReporte', 'onclick' => 'modal (\''.URL::route($ruta["cargarreporte"], array('listar'=>'SI')).'\', \''.$titulo_reporte.'\', this);')) !!}
 					{!! Form::close() !!}
                 </div>
             </div>
@@ -86,15 +86,6 @@
 		var rutamodal = ruta+'&fecha='+$('#fechaf').val();
 		modal(rutamodal, titulo);
 	}
-
-
-	function reporteasistencia(entidad, rutarecibo) {
-
-		var fechai = $('#fechai').val();
-		var fechaf = $('#fechaf').val();
-		var tipo = $('#tipo').val();
-		modalrecibopdf(rutarecibo+"/"+fechai+"/"+fechaf, '100', 'recibo credito');
-    }
 
 
 	function modalrecibopdf(url_pdf, ancho_modal, titulo_modal) {

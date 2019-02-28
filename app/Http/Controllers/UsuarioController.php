@@ -298,36 +298,70 @@ class UsuarioController extends Controller
     /**CARGAR REPORTE */
     public function cargarbinnacle(){
         $entidad  = 'Usuario';
+        $anioactual = date('Y');
+        $cboAnios = array();
+        $anioi =2008;
+        for($anyo=$anioactual; $anyo >=$anioi;  $anyo --){
+            $cboAnios[$anyo] = $anyo;
+        }
+
+        $cboMonth = array('01'=>'Enero',
+                        '02'=>'Febrero',
+                        '03'=>'Marzo',
+                        '04'=>'Abril',
+                        '05'=>'Mayo',
+                        '06'=>'Junio',
+                        '07'=>'Julio',
+                        '08'=>'Agosto',
+                        '09'=>'Septiembre',
+                        '10'=>'Octubre',
+                        '11'=>'Noviembre',
+                        '12'=>'Diciembre');
+        $month_now = date('m');
+
         $ruta = $this->rutas;
         $titulo_bitacora = $this->titulo_bitacora;
-        return view($this->folderview.'.cargarbinnacle')->with(compact('entidad', 'ruta', 'titulo_bitacora'));
+        return view($this->folderview.'.cargarbinnacle')->with(compact('entidad', 'ruta', 'titulo_bitacora','cboMonth','cboAnios','month_now'));
     }
 
     /**GENERAR REPORTES DE CAJA Y EGRESOS E INGRESOS DEL MES */
     public function generarreporte(Request $request)
     {
         $res = null;
-        $desde = $request->get('desde');
-        $hasta = $request->get('hasta');
+        $month = $request->get('month');
+        $anio = $request->get('anio');
         $res = is_null($res) ? "OK" : $res;
-        $respuesta = array($res, $desde, $hasta);
+        $respuesta = array($res, $month, $anio);
         return $respuesta;
     }
 
-    public function binnaclePDF($desde, $hasta, Request $request)
+    public function binnaclePDF($month, $anio, Request $request)
     {    
 
-        $binnacle        = User::listBinnacle($desde, $hasta);
-        $lista           = $binnacle->get();
-        $titulo = 'bitacora_'.$desde;
-        $view = \View::make('app.usuario.binnaclePDF')->with(compact('lista','desde','hasta'));
+        $binnacle        = User::listBinnacle($month, $anio);
+        $lista1           = $binnacle->get();
+        $cboMonth = array('01'=>'Enero',
+                        '02'=>'Febrero',
+                        '03'=>'Marzo',
+                        '04'=>'Abril',
+                        '05'=>'Mayo',
+                        '06'=>'Junio',
+                        '07'=>'Julio',
+                        '08'=>'Agosto',
+                        '09'=>'Septiembre',
+                        '10'=>'Octubre',
+                        '11'=>'Noviembre',
+                        '12'=>'Diciembre');
+
+        $titulo = 'bitacora_'.$month.'_de_'.$anio;
+        $view = \View::make('app.usuario.binnaclePDF')->with(compact('lista1','month','anio','cboMonth'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
         PDF::AddPage('P', 'A4', 'es');
-        PDF::SetTopMargin(0);
-        //PDF::SetLeftMargin(40);
-        //PDF::SetRightMargin(110);
+        PDF::SetTopMargin(5);
+        PDF::SetLeftMargin(10);
+        PDF::SetRightMargin(10);
         PDF::SetDisplayMode('fullpage');
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');

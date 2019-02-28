@@ -136,7 +136,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('controlpersona/cambiartardanza', 'ControlPersonaController@cambiartardanza')->name('controlpersona.cambiartardanza');
     Route::get('controlpersona/cargarpagarmulta/{id}/{listarluego}', 'ControlPersonaController@cargarpagarmulta')->name('controlpersona.cargarpagarmulta');
     Route::get('controlpersona/guardarpagarmulta', 'ControlPersonaController@guardarpagarmulta')->name('controlpersona.guardarpagarmulta');
+    
+    Route::get('controlpersona/cargarjustificar/{id}/{listarluego}', 'ControlPersonaController@cargarjustificar')->name('controlpersona.cargarjustificar');
+    Route::get('controlpersona/guardarjustificar', 'ControlPersonaController@guardarjustificar')->name('controlpersona.guardarjustificar');
+
+    Route::get('controlpersona/cargarreporte', 'ControlPersonaController@cargarreporte')->name('controlpersona.cargarreporte');
+
     Route::get('controlpersona/generarreporteasistenciaPDF/{fechai?}/{fechaf?}/{tipo?}', 'ControlPersonaController@generarreporteasistenciaPDF')->name('controlpersona.generarreporteasistenciaPDF');
+    Route::get('controlpersona/generarreportejustificadaPDF/{fechai?}/{fechaf?}/{tipo?}', 'ControlPersonaController@generarreportejustificadaPDF')->name('controlpersona.generarreportejustificadaPDF');
     Route::get('controlpersona/buscarpersona', 'ControlPersonaController@buscarpersona')->name('controlpersona.buscarpersona');
 
     /*CONFIGURACIONES*/

@@ -26,7 +26,9 @@ class ControlPersonaController extends Controller
     protected $tituloRegistrar = 'Nuevo Control de Asistencia';
     protected $tituloModificar = 'Modificar concepto';
     protected $tituloEliminar  = 'Eliminar concepto';
+    protected $titulo_reporte  = 'Generar Reportes!';
     protected $titulo_pagarmulta = 'Pago de Multa por Tardanza o Inasistencia';
+    protected $titulo_justificar = 'Justificar falta o tardanza';
     protected $rutas           = array('create' => 'controlpersona.create', 
             'edit'   => 'controlpersona.edit', 
             'delete' => 'controlpersona.eliminar',
@@ -34,7 +36,12 @@ class ControlPersonaController extends Controller
             'index'  => 'controlpersona.index',
             'cargarpagarmulta'   => 'controlpersona.cargarpagarmulta',
             'guardarpagarmulta'  => 'controlpersona.guardarpagarmulta',
-            'generarreporteasistenciaPDF'  => 'controlpersona.generarreporteasistenciaPDF'
+            'cargarjustificar'  => 'controlpersona.cargarjustificar',
+            'guardarjustificar' => 'controlpersona.guardarjustificar',
+
+            'cargarreporte' => 'controlpersona.cargarreporte',
+            'generarreporteasistenciaPDF'  => 'controlpersona.generarreporteasistenciaPDF',
+            'generarreportejustificadaPDF'  => 'controlpersona.generarreportejustificadaPDF'
         );
 
     /**
@@ -94,6 +101,7 @@ class ControlPersonaController extends Controller
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
         $titulo_pagarmulta = "Pagar Multa";
+        $titulo_justificar = $this->titulo_justificar;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -104,7 +112,7 @@ class ControlPersonaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta','titulo_pagarmulta','cboAsistencia','idCaja','Month'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta','titulo_pagarmulta','cboAsistencia','idCaja','Month','titulo_justificar'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -121,9 +129,10 @@ class ControlPersonaController extends Controller
         $entidad          = 'ControlPersona';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
+        $titulo_reporte   = $this->titulo_reporte;
         $cboTipo        = [''=>'Todo']+ array('F'=>'Faltas','T'=>'Tardanzas');
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad','cboTipo' ,'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad','cboTipo' ,'title', 'titulo_registrar', 'ruta','titulo_reporte'));
     }
 
     /**
@@ -139,7 +148,6 @@ class ControlPersonaController extends Controller
         $lista            = $resultado->get();
         $cboAsistencia        = array('A'=>'Asistió','F'=>'Faltó','T'=>'Tardanza');
 
-        $validList = DB::table('control_socio')->where('fecha', $fecha)->count();
 
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
@@ -151,6 +159,8 @@ class ControlPersonaController extends Controller
 
         $caja_status = Caja::where('estado','A')->where('deleted_at',null)->get();
         $date_caja = (count($caja_status) !=0)? Date::parse($caja_status[0]->fecha_horaapert)->format('Y-m-d'): date('Y-m-d');
+
+        $validList = DB::table('control_socio')->where('fecha', $date_caja)->count();
 
         $entidad        = 'ControlPersona';
         $controlpersona        = null;
@@ -307,6 +317,35 @@ class ControlPersonaController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
+    //JUSTIFICAR FALTA O TARDANZA
+    public function cargarjustificar($id, $listarLuego){
+        $entidad  = 'ControlPersona';
+        $ruta = $this->rutas;
+        $titulo_justificar = "Justificar falta o tardanza";
+        return view($this->folderview.'.justificarasist')->with(compact('entidad', 'id','ruta', 'titulo_justificar'));
+    }
+
+    public function guardarjustificar(Request $request) {
+
+        $control_id         = $request->get('control_id');
+
+        $existe = Libreria::verificarExistencia($control_id, 'control_socio');
+        if ($existe !== true) {
+            return $existe;
+        }
+
+        $error = DB::transaction(function() use($request, $control_id){
+            $control_socio            = ControlPersona::find($control_id);
+            $control_socio->asistencia = 'J';
+            $control_socio->estado = 'P';
+            $control_socio->descripcion = $request->get('descripcion');
+            $control_socio->save();
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
+
+
 
     public function cargarpagarmulta($id, $listarLuego){
 
@@ -399,6 +438,19 @@ class ControlPersonaController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
+
+    public function cargarreporte(){
+        $cboTipo        = [''=>'Seleccione'] + array('I'=>'Lista de faltas o tardanzas', 'E'=>'Lista de tardanzas o faltas justificadas');
+        $entidad  = 'ControlPersona';
+        $ruta = $this->rutas;
+        $date_first = date('Y-01');
+        $date_last = date('Y-m');
+
+        $titulo_reporte = $this->titulo_reporte;
+        return view($this->folderview.'.reporte')->with(compact('entidad', 'ruta', 'titulo_reporte','cboTipo','date_first','date_last'));
+    }
+
+
     public function generarreporteasistenciaPDF($fechai, $fechaf, Request $request)
     {    
         $control_socioT = ControlPersona::listAsistenciaT($fechai, $fechaf);
@@ -406,7 +458,6 @@ class ControlPersonaController extends Controller
 
         $control_socioF = ControlPersona::listAsistenciaF($fechai, $fechaf);
         $listaF = $control_socioF->get();
-        $fecha = $fechaf;
         $Month = array(1=>'Enero',
                         2=>'Febrero',
                         3=>'Marzo',
@@ -421,7 +472,7 @@ class ControlPersonaController extends Controller
                         12=>'Diciembre');
 
         $titulo = "reporte_control_asistencia_hasta".$fechaf;
-        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('listaT','listaF', 'fecha','Month'));
+        $view = \View::make('app.controlpersona.generarreporteasistenciaPDF')->with(compact('listaT','listaF', 'fechai','fechaf','Month'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);
@@ -434,4 +485,37 @@ class ControlPersonaController extends Controller
  
         PDF::Output($titulo.'.pdf', 'I');
     }
+
+    public function generarreportejustificadaPDF($fechai, $fechaf, Request $request)
+    {    
+        $control_socioT = ControlPersona::listJustificadas($fechai, $fechaf);
+        $listaT = $control_socioT->get();
+        $Month = array(1=>'Enero',
+                        2=>'Febrero',
+                        3=>'Marzo',
+                        4=>'Abril',
+                        5=>'Mayo',
+                        6=>'Junio',
+                        7=>'Julio',
+                        8=>'Agosto',
+                        9=>'Septiembre',
+                        10=>'Octubre',
+                        11=>'Noviembre',
+                        12=>'Diciembre');
+
+        $titulo = "reporte_control_asistencia_justificadas".$fechaf;
+        $view = \View::make('app.controlpersona.generarreportejustificada')->with(compact('listaT', 'fechai','fechaf','Month'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('A','A4',0);
+        PDF::SetTopMargin(5);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+ 
+        PDF::Output($titulo.'.pdf', 'I');
+    }
+
 }

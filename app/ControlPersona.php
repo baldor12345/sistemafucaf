@@ -59,8 +59,15 @@ class ControlPersona extends Model
     //lista de ingresos por persona del mes actual
     public static function listAsistenciaF($fechai, $fechaf)
     {
-        $fecha1 = date('Y-m-d', strtotime($fechai));
-        $fecha2 = date('Y-m-d', strtotime($fechaf));
+        $fechai = date('Y-m-01', strtotime($fechai));
+        $fechaf = date('Y-m-01', strtotime($fechaf));
+
+        $month1 = date('m', strtotime($fechai));
+        $year1 = date('Y', strtotime($fechai));
+
+        $month2 = date('m', strtotime($fechaf));
+        $year2 = date('Y', strtotime($fechaf));
+
         $results = DB::table('persona')
                     ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
                     ->select(
@@ -71,16 +78,25 @@ class ControlPersona extends Model
                     )
                     ->where('control_socio.estado','N')
                     ->where('control_socio.asistencia','F')
-                    ->where('control_socio.fecha','>=',$fecha1)
-                    ->where('control_socio.fecha','<=',$fecha2)
+                    ->where(DB::raw('extract( month from control_socio.fecha )'),'>=',$month1)
+                    ->where(DB::raw('extract( year from control_socio.fecha )'),'>=',$year1)
+                    ->where(DB::raw('extract( month from control_socio.fecha )'),'<=',$month2)
+                    ->where(DB::raw('extract( year from control_socio.fecha )'),'<=',$year2)
                     ->groupBy('persona.id');
         return $results;
     }
 
     public static function listAsistenciaT($fechai, $fechaf)
     {
-        $fecha1 = date('Y-m-d', strtotime($fechai));
-        $fecha2 = date('Y-m-d', strtotime($fechaf));
+        $fechai = date('Y-m-01', strtotime($fechai));
+        $fechaf = date('Y-m-01', strtotime($fechaf));
+
+        $month1 = date('m', strtotime($fechai));
+        $year1 = date('Y', strtotime($fechai));
+
+        $month2 = date('m', strtotime($fechaf));
+        $year2 = date('Y', strtotime($fechaf));
+
         $results = DB::table('persona')
                     ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
                     ->select(
@@ -91,11 +107,42 @@ class ControlPersona extends Model
                     )
                     ->where('control_socio.estado','N')
                     ->where('control_socio.asistencia','T')
-                    ->where('control_socio.fecha','>=',$fecha1)
-                    ->where('control_socio.fecha','<=',$fecha2)
+                    ->where(DB::raw('extract( month from control_socio.fecha )'),'>=',$month1)
+                    ->where(DB::raw('extract( year from control_socio.fecha )'),'>=',$year1)
+                    ->where(DB::raw('extract( month from control_socio.fecha )'),'<=',$month2)
+                    ->where(DB::raw('extract( year from control_socio.fecha )'),'<=',$year2)
                     ->groupBy('persona.id');
         return $results;
     }
+
+    public static function listJustificadas($fechai, $fechaf)
+    {
+        $fechai = date('Y-m-01', strtotime($fechai));
+        $fechaf = date('Y-m-01', strtotime($fechaf));
+
+        $month1 = date('m', strtotime($fechai));
+        $year1 = date('Y', strtotime($fechai));
+
+        $month2 = date('m', strtotime($fechaf));
+        $year2 = date('Y', strtotime($fechaf));
+
+        $results = DB::table('persona')
+                    ->join('control_socio', 'control_socio.persona_id', '=', 'persona.id')
+                    ->select(
+                        'persona.codigo as persona_codigo',
+                        'persona.nombres as persona_nombres',
+                        'persona.apellidos as persona_apellidos',
+                        'control_socio.fecha as fecha',
+                        'control_socio.descripcion as descripcion'
+                    )
+                    ->where(DB::raw('extract( month from control_socio.fecha )'),'>=',$month1)
+                    ->where(DB::raw('extract( year from control_socio.fecha )'),'>=',$year1)
+                    ->where(DB::raw('extract( month from control_socio.fecha )'),'<=',$month2)
+                    ->where(DB::raw('extract( year from control_socio.fecha )'),'<=',$year2)
+                    ->where('control_socio.descripcion','!=',null);
+        return $results;
+    }
+
 
     public static function listSocios(){
         $results =DB::table('persona')
