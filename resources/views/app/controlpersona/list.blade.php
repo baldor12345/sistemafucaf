@@ -32,9 +32,9 @@
             }
         ?>
         @if($value->asistencia != 'J')
-        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');')) !!}</td>
+        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'modal(\''.URL::route($ruta["cargarjustificar"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_justificar.'\', \''.$idCaja.'\');')) !!}</td>
         @else
-        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'cambiartardanza('. $value->id .');','disabled')) !!}</td>
+        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'modal(\''.URL::route($ruta["cargarjustificar"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_justificar.'\', \''.$idCaja.'\');','disabled')) !!}</td>
         @endif
         @if($value->asistencia != 'J')
         <td style='color:red;font-weight: bold; font-size:12px' >No Pagó</td>
@@ -58,6 +58,8 @@
 </table>
 @endif
 <script>
+
+    /*
     function cambiartardanza(idpersona) {
         bootbox.confirm("Por favor tenga la amabilidad de confirmar la justificacion de la asistencia, Gracias!", function(result){ 
             if(result){
@@ -83,6 +85,7 @@
 		});
 
     }
+    */
 
     function abrirmodalpagomulta(controlador, titulo, idcaja){
 		if(idcaja !=0){
@@ -109,5 +112,30 @@
 		}
 		
 	}
+    /*
+    function abrirmodaljustificar(controlador, titulo, idcaja){
+        if(idcaja !=0){
+			modal(controlador, titulo);
+		}else{
+			bootbox.confirm({
+				title: "Mensaje de error",
+				message: "Caja no aperturada",
+				buttons: {
+					cancel: {
+						label: 'Cancelar'
+					},
+					confirm: {
+						label: 'Aceptar'
+					}
+				},
+				callback: function (result) {
+					if(result){
+						
+					}
+				}
+			});
+
+		}
+    }*/
     
 </script>

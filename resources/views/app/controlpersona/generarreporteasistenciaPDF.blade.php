@@ -37,11 +37,16 @@
     </style>
 </head>
 <body>
-	<div >
-		<table width="100%" border="0px" class="">
-            <tr>
-                <td align="center" style="font-size: 12px" colspan="7" ><strong>REPORTE DE CONTROL DE ASISTENCIA HASTA {{ Date::parse($fecha)->format('d').' de '.$Month[intval(Date::parse($fecha)->format('m'))].' del '.Date::parse($fecha)->format('Y') }}</strong></td>
-            </tr>
+    <table>
+        <tr>
+            <td align="center" style="font-size: 12px" width="100%" ><strong>Reporte de control de asistencia desde {{$Month[intval(Date::parse($fechai)->format('m'))]}} de {{Date::parse($fechai)->format('Y')}}  hasta {{$Month[intval(Date::parse($fechaf)->format('m'))]}} {{Date::parse($fechaf)->format('Y') }}</strong></td>
+        </tr>
+        <tr>
+            <td align="center" style="font-size: 12px" width="100%"></td>
+        </tr>
+    </table>
+    <table>
+        <thead>
             <tr>
                 <td align="left" style="font-size: 12px" colspan="7" >TARDANZAS</td>
             </tr>
@@ -53,6 +58,8 @@
                 <td colspan="1" ></td>
                 
             </tr>
+        </thead>
+        <tbody>
             @foreach($listaT as $value)
             <tr>
                 <td colspan="1"></td>
@@ -62,6 +69,10 @@
                 <td colspan="1"></td>
             </tr>
             @endforeach
+        </tbody>
+    </table>
+    <table>
+        <thead>
             <tr>
                 <td align="left" style="font-size: 12px" colspan="7" >FALTAS</td>
             </tr>
@@ -72,7 +83,8 @@
                 <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter"><strong>TOTAL</strong></td>
                 <td colspan="1"></td>
             </tr>
-
+        </thead>
+        <tbody>
             @foreach($listaF as $value)
             <tr>
              <td colspan="1"></td>
@@ -82,11 +94,7 @@
                 <td colspan="1"></td>
             </tr>
             @endforeach
-
-
-		</table>
-
-        
-	</div>
+        </tbody>
+    </table>
 </body>
 </html>
