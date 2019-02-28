@@ -3,20 +3,20 @@
     {!! Form::open(['route' => $ruta["generarreporte"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-horizontal', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formMantenimientoUsuario']) !!}
     {!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 
-    <div class="form-group ">
-        {!! Form::label('desde', 'Desde:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
-        <div class="col-sm-9 col-xs-12">
-            {!! Form::date('desde', null, array('class' => 'form-control input-xs', 'id' => 'desde', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
-        </div>
-    </div>
-
-    <div class="form-group ">
-        {!! Form::label('hasta', 'Hasta:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
-        <div class="col-sm-9 col-xs-12">
-            {!! Form::date('hasta', null, array('class' => 'form-control input-xs', 'id' => 'hasta', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
-        </div>
-    </div>
-
+    <div class="form-row">
+		<div class="form-group">
+			{!! Form::label('month', 'Mes:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+			<div class="col-sm-8 col-xs-12">
+				{!! Form::select('month', $cboMonth,$month_now ,array('class' => 'form-control input-xs', 'id' => 'month')) !!}
+			</div>
+		</div>
+		<div class="form-group">
+			{!! Form::label('anio', 'Año:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+			<div class="col-sm-8 col-xs-12">
+				{!! Form::select('anio', $cboAnios, null, array('class' => 'form-control input-xs', 'id' => 'anio')) !!}
+			</div>
+		</div>
+	</div>
     
     {!! Form::close() !!}
     
@@ -29,13 +29,7 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-        configurarAnchoModal('400');
-        var fechaActual = new Date();
-		var day = ("0" + fechaActual.getDate()).slice(-2);
-		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
-        var fechai = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
-        $('#desde').val(fechai);
-        $('#hasta').val(fechai);
+        configurarAnchoModal('350');
                 
     });
 

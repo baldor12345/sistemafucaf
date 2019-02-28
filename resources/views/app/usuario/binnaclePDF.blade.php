@@ -5,78 +5,103 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
-        .contenedor{
-            border-collapse: collapse;
-            border:1px solid #808080;
-        }
-        td{
-            font-size: 10px;
-        }
-        
-        .lineborderleft{
-            border: 0.9px solid #3f3f3f;
-            text-align : left;;
-        }
-        .linebordercenter{
-            border: 0.9px solid #3f3f3f;
-            text-align : center;
-        }
-        .line_h_b{
-            border-bottom: 0.9px solid #3f3f3f;
-        }
-        .line_h_b2{
-            border-bottom: 0.2px solid #afafaf;
-        }
-        .line_h_t{
-            border-top: 0.9px solid #3f3f3f;
-        }
-        .line_v_id{
-            border-left: 0.9px solid #3f3f3f;
-            border-right: 0.9px solid #3f3f3f;
-        }
-    </style>
+	table{
+        border-collapse: collapse;
+    }
+    td{
+        font-size: 8px;
+    }
+    h1{
+        font-size: 8px;
+        text-align:center;
+        font-weight: bold;
+    }
+    .tabla2 {
+        margin-bottom: 10px;
+    }
+
+    .tabla3 td{
+        border: 0.9px solid #000;
+        text-align : left;;
+    }
+    .emisor{
+        color: red;
+    }
+    .linea{
+        border-bottom: 1px dotted #000;
+    }
+    .border{
+        border: 1px solid #000;
+    }
+    .fondo{
+        background-color: #dfdfdf;
+    }
+    .fisico{
+        color: #fff;
+    }
+    .fisico td{
+        color: #fff;
+    }
+    .fisico .border{
+        border: 1px solid #fff;
+    }
+    .fisico .tabla3 td{
+        border: 1px solid #fff;
+    }
+    .fisico .linea{
+        border-bottom: 1px dotted #fff;
+    }
+</style>
+
 </head>
 <body>
-	<div >
-		<table width="100%" border="0px" class="">
-            <tr>
-                <td align="center" style="font-size: 11px" colspan="9" >BITACORA DESDE {{ $desde }} hasta {{ $hasta }}</td>
-            </tr>
-            <tr>
-                <td align="center" colspan="2" style="font-size: 8px" class="linebordercenter" >NOMBRES</td>
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter" >CODIGO</td>
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">ACCION</td>
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">FORMULARIO</td>
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">FECHA</td>
-                <td align="center" colspan="3" style="font-size: 6px" class="linebordercenter">DETALLE</td>
-                
-            </tr>
-            @foreach($lista as $value)
-            <tr>
-                <td align="center" colspan="2" style="font-size: 8px" class="linebordercenter" >{{ $value->persona_nombres.' '.$value->persona_apellidos }}</td>
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter" >{{ $value->persona_codigo }}</td>
-                @if($value->accion == 'I')
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">Insertar</td>
-                @elseif($value->accion == 'U')
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">Modificar</td>
-                @else
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">Eliminar</td>
-                @endif
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">{{ $value->tabla }}</td>
-                <td align="center" colspan="1" style="font-size: 8px" class="linebordercenter">{{ $value->fecha_hora }}</td>
-                @if($value->accion == 'I')
-                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">se hizo un nuevo registro en {{ $value->tabla }} </td>
-                @elseif($value->accion == 'U')
-                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">ha modificado un registro en {{ $value->tabla }}</td>
-                @else
-                <td align="center" colspan="3" style="font-size: 8px" class="linebordercenter">ha eliminado un regitro en {{ $value->tabla }}</td>
-                @endif
-            </tr>
-            @endforeach
-
+	<div class="contenedor">
+		<table border="0" cellspacing="3" cellpadding="2" style="margin: 50px;" class="table table-striped">
+			<tr>
+			<td style="text-transform: uppercase;" align="center" style="font-size: 15px" colspan="4">Bitarora del mes de {{ $cboMonth[$month] }} del {{ $anio }}</td>
+			</tr>
 		</table>
-
-        
 	</div>
+
+	<table width="100%" class="tabla3">
+            <thead>
+                <tr>
+                    <td cellspacing="1" width="5%" align="center" class="fondo"><strong>#</strong></td>
+                    <td cellspacing="1" width="25%" align="center" class="fondo"><strong>NOMBRES</strong></td>
+                    <td cellspacing="1" width="10%" align="center" class="fondo"><strong>CODIGO</strong></td>
+                    <td cellspacing="1" width="10%" align="center" class="fondo"><strong>ACCION</strong></td>
+                    <td cellspacing="1" width="10%" align="center" class="fondo"><strong>FORMULARIO</strong></td>
+                    <td cellspacing="1" width="15%" align="center" class="fondo"><strong>FECHA</strong></td>
+                    <td cellspacing="1" width="25%" align="center" class="fondo"><strong>DETALLE</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($lista1 as $value )
+                <tr>
+                    <td width="5%" align="center"><span class="text">{{ $loop->iteration }}</span></td>
+                    <td width="25%" align="left"><span class="text">{{ $value->persona_nombres.' '.$value->persona_apellidos }}</span></td>
+                    <td width="10%" align="center"><span class="text">{{ $value->persona_codigo }}</span></td>
+                    @if($value->accion == 'I')
+                    <td width="10%" align="center"><span class="text">Insertar</span></td>
+                    @elseif($value->accion == 'U')
+                    <td width="10%" align="center"><span class="text">Modificar</span></td>
+                    @else
+                    <td width="10%" align="center"><span class="text">Eliminar</span></td>
+                    @endif
+                    <td width="10%" align="center"><span>{{$value->tabla}}</span></td>
+                    <td width="15%" align="center"><span>{{$value->fecha_hora}}</span></td>
+
+                    @if($value->accion == 'I')
+                    <td width="25%" align="center"><span class="text" style="color:green;font-weight: bold;">se hizo un nuevo registro en {{ $value->tabla }}</span></td>
+                    @elseif($value->accion == 'U')
+                    <td width="25%" align="center"><span class="text" style="color:wite;font-weight: bold;">ha modificado un registro en {{ $value->tabla }}</span></td>
+                    @else
+                    <td width="25%" align="center"><span class="text" style="color:red;font-weight: bold;">ha eliminado un regitro en {{ $value->tabla }}</span></td>
+                    @endif
+                </tr>
+                @endforeach
+            </tbody>
+
+	</table>
 </body>
 </html>
