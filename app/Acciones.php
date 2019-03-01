@@ -62,7 +62,6 @@ class Acciones extends Model
                     'persona.nombres as persona_nombres',
                     'persona.apellidos as persona_apellidos',
                     'configuraciones.codigo AS configuraciones_codigo',
-                    'acciones.persona_id',
                     'acciones.estado',
                     'configuraciones.precio_accion AS precio_accion',
                     DB::raw('count(acciones.estado) as cantidad_accion_comprada')
@@ -70,8 +69,10 @@ class Acciones extends Model
             ->where('acciones.estado', '=', 'C')
             ->where('acciones.deleted_at',null)
             ->groupBy('persona.id','persona.codigo','persona.dni','persona.nombres',
-                                'persona.apellidos','configuraciones.codigo','acciones.persona_id',
-                                'acciones.estado','configuraciones.precio_accion');
+                                'persona.apellidos','configuraciones.codigo',
+                                'acciones.estado','configuraciones.precio_accion')
+            ->orderBy('persona.codigo','ASC')
+            ->orderBy('persona.tipo','DSC');
         return $results;
         			
     }

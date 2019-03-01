@@ -152,7 +152,9 @@ class ControlPersona extends Model
                     ->where('id','!=',3)
                     ->where('id','!=',4)
                     ->where('id','!=',5)
-                    ->where('id','!=',6);
+                    ->where('id','!=',6)
+                    ->orderBy('codigo', 'ASC')
+                    ->orderBy('tipo','DSC');
         return $results;
     }
 

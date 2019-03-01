@@ -1714,18 +1714,12 @@ class CajaController extends Controller
             $sum_ahorros_activos += $value->deposito_ahorros;
         }
 
-        //egresos
-        $listprestamosactivos_asta_la_fecha = Caja::listprestamosactivos_asta_la_fecha($anio, $month)->get();
-        $sum_prestamos_activos = 0;
-        foreach ($listprestamosactivos_asta_la_fecha as $key => $value) {
-            $sum_prestamos_activos += $value->valor_credito;
-        }
 
 
-        $sum_total_ingresos = 0;
-        $sum_total_egresos =0;
-        $sum_total_ingresos = ($sum_cuotas_pendientes + $sum_acciones+$sum_ahorros_activos);
-        $sum_total_egresos = ($sum_prestamos_activos);
+        $sum_cuentas_por_cobrar = 0;
+        $sum_cuentas_por_pagar =0;
+        $sum_cuentas_por_cobrar = $sum_cuotas_pendientes;
+        $sum_cuentas_por_pagar = ($sum_acciones+$sum_ahorros_activos);
 
         $arraymonth = array(1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril', 5=>'Mayo', 6=>'Junio', 7=>'Julio',8=>'Agosto', 9=>'Septiembre', 10=>'Octubre',
                         11=>'Noviembre', 12=>'Diciembre');
@@ -1739,8 +1733,8 @@ class CajaController extends Controller
         //$persona = DB::table('persona')->where('id', $caja->persona_id)->first();
 
         $titulo = "resumen_financiero_asta_".$arraymonth[intval($month)]."-".$anio;
-        $view = \View::make('app.reportes.reportefinancierototal')->with(compact('lista','presidente','tesorero' ,'id', 'caja','arraymonth','month','anio','listcoutas_pendientes','listacciones_asta_la_fecha','listahorros_asta_la_fecha','listprestamosactivos_asta_la_fecha','sum_cuotas_pendientes','sum_acciones','sum_ahorros_activos','sum_prestamos_activos',
-                                                                                        'sum_total_ingresos','sum_total_egresos'));
+        $view = \View::make('app.reportes.reportefinancierototal')->with(compact('lista','presidente','tesorero' ,'id', 'caja','arraymonth','month','anio','listcoutas_pendientes','listacciones_asta_la_fecha','listahorros_asta_la_fecha','sum_cuotas_pendientes', 'sum_acciones','sum_ahorros_activos',
+                                                                                        'sum_cuentas_por_cobrar','sum_cuentas_por_pagar'));
         $html_content = $view->render();      
  
         PDF::SetTitle($titulo);

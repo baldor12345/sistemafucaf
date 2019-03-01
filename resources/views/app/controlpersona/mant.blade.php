@@ -31,7 +31,7 @@
 			<tr>
 				<td>{{ $contador }}</td>
 				<td>{{ $value->codigo}}</td>
-				<td>{{ $value->nombres.' '.$value->apellidos }} </td>
+				<td>{{ $value->apellidos.'  '.$value->nombres }} </td>
 				<td>{!! Form::select('asistencia', $cboAsistencia,'A', array('class' => 'form-control input-xs select_asist', 'id' => 'asistencia','persona_id'=>''.$value->id,'asist'=>'A', 'onchange' => 'cambiartardanza(this);')) !!}</td>
 			</tr>
 			<?php

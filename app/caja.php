@@ -558,25 +558,6 @@ GROUP BY persona.id;
     }
 
     //estado de cuenta de los prestamos activos asta la+ fecha
-    public static function listprestamosactivos_asta_la_fecha($anio, $month)
-    {
-        $fecha_p = new DateTime($anio.'-'.$month.'-01');
-        $fecha_p->modify('last day of this month');
-        $day_last = $fecha_p->format('Y-m-d');
-
-        $results = DB::table('persona')
-                    ->join('credito', 'credito.persona_id', '=', 'persona.id')
-                    ->select(
-                        'persona.nombres as persona_nombres',
-				        'persona.apellidos as persona_apellidos',
-                        'credito.valor_credito as valor_credito'
-                    )
-                    //->where('credito.fechai','<=',$day_last)
-                    ->where('credito.estado','!=','1')
-                    ->where('credito.deleted_at',null)
-                    ->groupBy('persona.id','valor_credito');
-        return $results;
-    }
 
     public static function listcoutas_pendientes($anio, $month)
     {
@@ -592,11 +573,11 @@ GROUP BY persona.id;
 				        'persona.apellidos as persona_apellidos',
                         DB::raw("SUM(cuota.parte_capital) as parte_capital")
                     )
-                    //->where('credito.fechai','<=',$day_last)
                     ->where('cuota.estado','!=','1')
                     ->where('credito.estado','!=','1')
                     ->where('credito.deleted_at',null)
-                    ->groupBy('persona.id');
+                    ->groupBy('persona.id')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 
@@ -614,10 +595,10 @@ GROUP BY persona.id;
 				        'persona.apellidos as persona_apellidos',
                         DB::raw("COUNT(acciones.estado)*10 as acciones")
                     )
-                    //->where('acciones.fechai','<=',$day_last)
                     ->where('acciones.estado','C')
                     ->where('acciones.deleted_at',null)
-                    ->groupBy('persona.id');
+                    ->groupBy('persona.id')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
     //lista de ahorros realizados en el mes seleccionado
@@ -634,8 +615,6 @@ GROUP BY persona.id;
                         'persona.apellidos as persona_apellidos',
                         'ahorros.capital as deposito_ahorros'
                     )
-                    //->where(DB::raw('extract(month from ahorros.fechai)'),'<=',$month)
-                    //->where(DB::raw('extract(year from ahorros.fechai)'),'<=',$anio)
                     ->where('ahorros.estado','P')
                     ->where('ahorros.deleted_at',null);
         return $results;

@@ -25,25 +25,26 @@ class Persona extends Model
         return $query->where(function($subquery) use($codigo)
 		            {
 		            	if (!is_null($codigo)) {
-		            		$subquery->where('codigo', 'LIKE', '%'.$codigo.'%');
+		            		$subquery->where('codigo', 'ILIKE', '%'.$codigo.'%');
 		            	}
 		            })->where(function($subquery) use($nombre)
 		            {
 		            	if (!is_null($nombre)) {
-		            		$subquery->where('nombres', 'LIKE', '%'.$nombre.'%');
+		            		$subquery->where('nombres', 'ILIKE', '%'.$nombre.'%');
 		            	}
                     })->where(function($subquery) use($dni)
                     {
                         if (!is_null($dni)) {
-		            		$subquery->where('dni', 'LIKE', '%'.$dni.'%');
+		            		$subquery->where('dni', 'ILIKE', '%'.$dni.'%');
 		            	}
                     })->where(function($subquery) use($tipo)
                     {
                         if (!is_null($tipo)) {
-		            		$subquery->where('tipo', 'LIKE', '%'.$tipo.'%');
+		            		$subquery->where('tipo', 'ILIKE', '%'.$tipo.'%');
 		            	}
                     })
-                    ->orderBy('tipo', 'DSC');
+                    ->orderBy('tipo', 'DSC')
+                    ->orderBy('codigo', 'ASC');
     }
 
     public static function personas($dni){

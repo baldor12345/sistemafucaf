@@ -76,6 +76,30 @@ use Illuminate\Support\Facades\DB;
 	</div>
 </div>	
 
+<div class="row" id='oculto1' style="display:none;">
+	<fieldset> 
+		<div class="col-md-12">
+			<p style="font-family: italic; font size: 16px; color:#FF0000">Contribucion de Ingreso como nuevo Socio</p>
+		</div>
+		<div class="col-md-6">
+			<div class="form-group">
+				{!! Form::label('contribucion_id', 'Concepto:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+				<div class="col-sm-8 col-xs-12">
+					{!! Form::select('contribucion_id', $cboContribucion, null, array('class' => 'form-control input-xs', 'id' => 'contribucion_id')) !!}
+				</div>
+			</div>	
+		</div>
+		<div class="col-md-6">
+			<div class="form-group ">
+				{!! Form::label('monto', 'Monto S/.:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
+				<div class="col-sm-7 col-xs-12">
+					{!! Form::text('monto', null , array('class' => 'form-control input-xs', 'id' => 'monto', 'placeholder' => 'Ingrese Fecha inicio...')) !!}
+				</div>
+			</div>
+		</div>
+	</fieldset>
+</div>
+
 
 
 <div class="form-group">
@@ -84,6 +108,7 @@ use Illuminate\Support\Facades\DB;
 		{!! Form::text('descripcion', null, array('class' => 'form-control input-xs', 'id' => 'descripcion', 'placeholder' => 'descripcion')) !!}
 	</div>
 </div>
+
 
 
 <div class="form-group">
@@ -123,6 +148,17 @@ use Illuminate\Support\Facades\DB;
 				$('#total').val('0.0');
 			}
 		});
+
+		$("input[name=cantidad_accion]").change(function(event){
+			var cantidad = parseInt($('#cantaccionpersona').val());
+			
+			if(cantidad == 0){
+				document.getElementById('oculto1').style.display = 'block';
+			}else{
+				document.getElementById('oculto1').style.display = 'hide';
+			}
+		});
+
 
 
 		$('#selectnom').select2({
@@ -203,49 +239,100 @@ use Illuminate\Support\Facades\DB;
 	function guardaraccionventa(entidad, rutarecibo) {
 		var  cant_persona = parseInt('{{ $cant_acciones }}');
 		var  cantidad = parseInt($('#cantidad_accion').val());
-		if(cantidad > cant_persona){
-			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones para la venta!!</span></div>";
-									$('#divMensajeError{{ $entidad }}').show();
+		var accion_first = parseInt($('#cantaccionpersona').val());
+
+		if(accion_first != 0){
+			if(cantidad > cant_persona){
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones para la venta!!</span></div>";
+										$('#divMensajeError{{ $entidad }}').show();
+			}else{
+				var idformulario = IDFORMMANTENIMIENTO + entidad;
+				var data         = submitForm(idformulario);
+				var respuesta    = null;
+				var listar       = 'NO';
+				if ($(idformulario + ' :input[id = "listar"]').length) {
+					var listar = $(idformulario + ' :input[id = "listar"]').val()
+				};
+				$('#btnGuardaraccionventa').button('loading');
+				data.done(function(msg) {
+					respuesta = msg;
+				}).fail(function(xhr, textStatus, errorThrown) {
+					respuesta = 'ERROR';
+					$('#btnGuardaraccionventa').removeClass('disabled');
+					$('#btnGuardaraccionventa').removeAttr('disabled');
+					$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
+				}).always(function() {
+					if(respuesta[0] === 'ERROR'){
+					}else{
+						
+						if (respuesta[0] === 'OK') {
+							cerrarModal();
+							modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3]+"/"+respuesta[4], '100', 'recibo accion');
+							if (listar === 'SI') {
+								if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+									entidad = entidad2;
+								}
+								buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+							}        
+						} else {
+							mostrarErrores(respuesta, idformulario, entidad);
+							$('#btnGuardaraccionventa').removeClass('disabled');
+							$('#btnGuardaraccionventa').removeAttr('disabled');
+							$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
+						}
+					}
+				});
+			}
 		}else{
-			$('#divMensajeError{{ $entidad }}').hide();
-			var cant = $('')
-			var idformulario = IDFORMMANTENIMIENTO + entidad;
-			var data         = submitForm(idformulario);
-			var respuesta    = null;
-			var listar       = 'NO';
-			if ($(idformulario + ' :input[id = "listar"]').length) {
-				var listar = $(idformulario + ' :input[id = "listar"]').val()
-			};
-			$('#btnGuardaraccionventa').button('loading');
-			data.done(function(msg) {
-				respuesta = msg;
-			}).fail(function(xhr, textStatus, errorThrown) {
-				respuesta = 'ERROR';
-				$('#btnGuardaraccionventa').removeClass('disabled');
-				$('#btnGuardaraccionventa').removeAttr('disabled');
-				$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
-			}).always(function() {
-				if(respuesta[0] === 'ERROR'){
+			var contribucion = $('#monto').val();
+			if(contribucion != ''){
+				if(cantidad > cant_persona){
+					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >No cuenta con esa cantidad de acciones para la venta!!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
 				}else{
-					
-					if (respuesta[0] === 'OK') {
-						cerrarModal();
-						modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3]+"/"+respuesta[4], '100', 'recibo accion');
-						if (listar === 'SI') {
-							if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-								entidad = entidad2;
-							}
-							buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-						}        
-					} else {
-						mostrarErrores(respuesta, idformulario, entidad);
+					var idformulario = IDFORMMANTENIMIENTO + entidad;
+					var data         = submitForm(idformulario);
+					var respuesta    = null;
+					var listar       = 'NO';
+					if ($(idformulario + ' :input[id = "listar"]').length) {
+						var listar = $(idformulario + ' :input[id = "listar"]').val()
+					};
+					$('#btnGuardaraccionventa').button('loading');
+					data.done(function(msg) {
+						respuesta = msg;
+					}).fail(function(xhr, textStatus, errorThrown) {
+						respuesta = 'ERROR';
 						$('#btnGuardaraccionventa').removeClass('disabled');
 						$('#btnGuardaraccionventa').removeAttr('disabled');
 						$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
-					}
+					}).always(function() {
+						if(respuesta[0] === 'ERROR'){
+						}else{
+							
+							if (respuesta[0] === 'OK') {
+								cerrarModal();
+								modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3]+"/"+respuesta[4], '100', 'recibo accion');
+								if (listar === 'SI') {
+									if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+										entidad = entidad2;
+									}
+									buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+								}        
+							} else {
+								mostrarErrores(respuesta, idformulario, entidad);
+								$('#btnGuardaraccionventa').removeClass('disabled');
+								$('#btnGuardaraccionventa').removeAttr('disabled');
+								$('#btnGuardaraccionventa').html('<i class="fa fa-check fa-lg"></i>Guardar');
+							}
+						}
+					});
 				}
-			});
+			}else{
+				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Ingrese monto de contribucion de ingreso como nuevo socio!</span></div>";
+					$('#divMensajeError{{ $entidad }}').show();
+			}
 		}
+		
 		
 	}
 

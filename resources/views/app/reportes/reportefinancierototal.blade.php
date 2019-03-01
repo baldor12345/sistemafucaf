@@ -79,7 +79,7 @@
 
         <table width="100%" border="0px" class="">
             <tr>
-                <td align="left" style="font-size: 11px" colspan="9" ><strong>INGRESOS </strong></td>
+                <td align="left" style="font-size: 11px" colspan="9" ><strong>CUENTAS POR COBRAR </strong></td>
             </tr>
         </table>
 
@@ -87,9 +87,6 @@
             <tr>
                 <td>
                     <table>
-                        <tr>
-                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}CAPITAL POR COBRAR</td>
-                        </tr>
                         @foreach($listcoutas_pendientes  as $value)
                             @if($value->parte_capital == '')
                             @else
@@ -106,6 +103,26 @@
                     </table>
                 </td>
                 
+                <td>
+                    <table>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table width="100%" border="0px" class="">
+            <tr>
+                <td align="center" style="font-size: 11px" colspan="9" ></td>
+            </tr>
+        </table>
+        <table width="100%" border="0px" class="">
+            <tr>
+                <td align="left" style="font-size: 11px" colspan="9" ><strong>CUENTAS POR PAGAR</strong></td>
+            </tr>
+        </table>
+
+        <table width="100%" border="0px" class="">
+            <tr>
                 <td>
                     <table>
                         <tr>
@@ -126,17 +143,7 @@
                         </tr>
                     </table>
                 </td>
-            </tr>
-        </table>
 
-        <table width="100%" border="0px" class="">
-            <tr>
-                <td align="center" style="font-size: 11px" colspan="9" ></td>
-            </tr>
-        </table>
-
-        <table width="100%" border="0px" class="">
-            <tr>
                 <td>
                     <table>
                         <tr>
@@ -147,33 +154,13 @@
                             @else
                             <tr>
                                 <td align="left" style="font-size: 10px" colspan="3" class="linebordercenter">{{ '  '.$value->persona_apellidos.' '.$value->persona_nombres}}</td>
-                                <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($value->deposito_ahorros,1)}}</td>
+                                <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($value->deposito_ahorros,1)}}</strong></td>
                             </tr>
                             @endif
                         @endforeach
                         <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL DE AHORROS ACTIVOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_ahorros_activos,1)}}</strong></td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td align="left" style="font-size: 11px" colspan="4" >{{ ' '}}PRÉSTAMOS</td>
-                        </tr>
-                        @foreach($listprestamosactivos_asta_la_fecha  as $value)
-                            @if($value->valor_credito == '')
-                            @else
-                            <tr>
-                                <td align="left" style="font-size: 10px" colspan="3" class="linebordercenter">{{ '  '.$value->persona_apellidos.' '.$value->persona_nombres}}</td>
-                                <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($value->valor_credito,1)}}</td>
-                            </tr>
-                            @endif
-                        @endforeach
-                        <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL DE PRESTAMOS ACTIVOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_prestamos_activos,1)}}</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL DE AHORROS ACTIVOS (S/.)</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($sum_ahorros_activos,1)}}</td>
                         </tr>
                     </table>
                 </td>
@@ -195,66 +182,12 @@
                 <td>
                     <table>
                         <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>INGRESOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>TOTAL</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL CUENTAS POR COBRAR (S/.)</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_cuentas_por_cobrar,1)}}</strong></td>
                         </tr>
                         <tr>
-                            <td align="left" style="font-size: 10px" colspan="3" class="linebordercenter">Cuotas Préstamos</td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($sum_cuotas_pendientes,1) }}</td>
-                        </tr>
-                        <tr>
-                            <td align="left" style="font-size: 10px" colspan="3" class="linebordercenter">Compra de Acciones</td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($sum_acciones,1) }}</td>
-                        </tr>
-                        <tr>
-                            <td align="left" style="font-size: 10px" colspan="3" class="linebordercenter">Ahorros</td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($sum_ahorros_activos,1) }}</td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL INGRESOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_total_ingresos,1)}}</strong></td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>EGRESOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>TOTAL</strong></td>
-                        </tr>
-                        <tr>
-                            <td align="left" style="font-size: 10px" colspan="3" class="linebordercenter">Préstamos Activos</td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter">{{ number_format($sum_prestamos_activos,1) }}</td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL EGRESOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_total_egresos,1)}}</strong></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-
-        <table width="100%" border="0px" class="">
-            <tr>
-                <td align="left" style="font-size: 11px" colspan="9" ></td>
-            </tr>
-            <tr>
-                <td align="left" style="font-size: 11px" colspan="9" ></td>
-            </tr>
-        </table>
-
-        <table width="100%" border="0px" class="">
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL INGRESOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_total_ingresos,1)}}</strong></td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL EGRESOS</strong></td>
-                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_total_egresos,1)}}</strong></td>
+                            <td align="center" style="font-size: 10px" colspan="3" class="linebordercenter"><strong>TOTAL CUENTAS POR PAGAR (S/.) </strong></td>
+                            <td align="center" style="font-size: 10px" colspan="1" class="linebordercenter"><strong>{{ number_format($sum_cuentas_por_pagar,1)}}</strong></td>
                         </tr>
                     </table>
                 </td>

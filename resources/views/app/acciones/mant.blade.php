@@ -5,6 +5,7 @@ use App\Configuraciones;
 use Illuminate\Support\Facades\DB;
 ?>
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="infoaccion2"></div>
 <div id="infoaccion"></div>
 {!! Form::model($acciones, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\DB;
 		<div class="form-group">
 			{!! Form::label('configuraciones_id', 'Precio:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 			<div class="col-sm-8 col-xs-12">
-				{!! Form::select('configuraciones_id', $cboConfiguraciones, null, array('class' => 'form-control input-xs', 'id' => 'configuraciones_id')) !!}
+				{!! Form::select('configuraciones_id', $cboConfiguraciones, $id_config, array('class' => 'form-control input-xs', 'id' => 'configuraciones_id')) !!}
 			</div>
 		</div>
 	</div>
@@ -112,7 +113,7 @@ use Illuminate\Support\Facades\DB;
 	$(document).ready(function() {
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('550');
+		configurarAnchoModal('570');
 
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
@@ -165,7 +166,7 @@ use Illuminate\Support\Facades\DB;
 					$('#cantacciontotal').val(cantAcciones);
 				});
 				
-				document.getElementById("infoaccion").innerHTML = "<div align='center' class='alert alert-success' role='success'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
+				document.getElementById("infoaccion").innerHTML = "<div class='alert alert-success' role='success'><span >Estimado Socio!</br>solo puede adquirir el 20% de la "+
 								"cantidad total de las acciones por el cual usted puede adquirir solo: "+ cantidad_limite+" acciones GRACIAS!</span></div>";
 					$('#infoaccion').show();
 			});
@@ -215,51 +216,107 @@ use Illuminate\Support\Facades\DB;
 		var accion_persona1 = parseInt($('#cantaccionpersona').val());
 		var lmite = (cantidad_limite-accion_persona1);
 		var cantid = $('#cantidad_accion').val();
-		if(lmite>=cantid){
-			var idformulario = IDFORMMANTENIMIENTO + entidad;
-			var data         = submitForm(idformulario);
-			var respuesta    = null;
-			var listar       = 'NO';
-			if ($(idformulario + ' :input[id = "listar"]').length) {
-				var listar = $(idformulario + ' :input[id = "listar"]').val()
-			};
-			$('#btnGuardaraccion').button('loading');
-			data.done(function(msg) {
-				respuesta = msg;
-			}).fail(function(xhr, textStatus, errorThrown) {
-				respuesta = 'ERROR';
+		var accion_inicio = parseInt($('#cantaccionpersona').val());
+		if(accion_inicio !=0){
+			if(lmite>=cantid){
+				var idformulario = IDFORMMANTENIMIENTO + entidad;
+				var data         = submitForm(idformulario);
+				var respuesta    = null;
+				var listar       = 'NO';
+				if ($(idformulario + ' :input[id = "listar"]').length) {
+					var listar = $(idformulario + ' :input[id = "listar"]').val()
+				};
+				$('#btnGuardaraccion').button('loading');
+				data.done(function(msg) {
+					respuesta = msg;
+				}).fail(function(xhr, textStatus, errorThrown) {
+					respuesta = 'ERROR';
+					$('#btnGuardaraccion').removeClass('disabled');
+					$('#btnGuardaraccion').removeAttr('disabled');
+					$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
+				}).always(function() {
+					
+					if(respuesta[0] === 'ERROR'){
+					}else{
+						
+						if (respuesta[0] === 'OK') {
+							cerrarModal();
+							modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3], '100', 'recibo accion');
+							if (listar === 'SI') {
+								if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+									entidad = entidad2;
+								}
+								buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+							}        
+						} else {
+							mostrarErrores(respuesta, idformulario, entidad);
+							$('#btnGuardaraccion').removeClass('disabled');
+							$('#btnGuardaraccion').removeAttr('disabled');
+							$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
+						}
+					}
+				});
+			}else{
+				document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
+				$('#infoaccion').show();
 				$('#btnGuardaraccion').removeClass('disabled');
 				$('#btnGuardaraccion').removeAttr('disabled');
 				$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
-			}).always(function() {
-				
-				if(respuesta[0] === 'ERROR'){
-				}else{
-					
-					if (respuesta[0] === 'OK') {
-						cerrarModal();
-						modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3], '100', 'recibo accion');
-						if (listar === 'SI') {
-							if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-								entidad = entidad2;
-							}
-							buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-						}        
-					} else {
-						mostrarErrores(respuesta, idformulario, entidad);
+			}
+		}else{
+			var contribucion = $('#monto').val();
+			if(contribucion != ''){
+				if(lmite>=cantid){
+					var idformulario = IDFORMMANTENIMIENTO + entidad;
+					var data         = submitForm(idformulario);
+					var respuesta    = null;
+					var listar       = 'NO';
+					if ($(idformulario + ' :input[id = "listar"]').length) {
+						var listar = $(idformulario + ' :input[id = "listar"]').val()
+					};
+					$('#btnGuardaraccion').button('loading');
+					data.done(function(msg) {
+						respuesta = msg;
+					}).fail(function(xhr, textStatus, errorThrown) {
+						respuesta = 'ERROR';
 						$('#btnGuardaraccion').removeClass('disabled');
 						$('#btnGuardaraccion').removeAttr('disabled');
 						$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
-					}
+					}).always(function() {
+						
+						if(respuesta[0] === 'ERROR'){
+						}else{
+							
+							if (respuesta[0] === 'OK') {
+								cerrarModal();
+								modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3], '100', 'recibo accion');
+								if (listar === 'SI') {
+									if(typeof entidad2 != 'undefined' && entidad2 !== ''){
+										entidad = entidad2;
+									}
+									buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+								}        
+							} else {
+								mostrarErrores(respuesta, idformulario, entidad);
+								$('#btnGuardaraccion').removeClass('disabled');
+								$('#btnGuardaraccion').removeAttr('disabled');
+								$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
+							}
+						}
+					});
+				}else{
+					document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
+					$('#infoaccion').show();
+					$('#btnGuardaraccion').removeClass('disabled');
+					$('#btnGuardaraccion').removeAttr('disabled');
+					$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
 				}
-			});
-		}else{
-			document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
-			$('#infoaccion').show();
-			$('#btnGuardaraccion').removeClass('disabled');
-			$('#btnGuardaraccion').removeAttr('disabled');
-			$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
+			}else{
+				document.getElementById("infoaccion2").innerHTML = "<div class='alert alert-danger' role='danger'><span >por favor ingrese monto contribucion de ingreso</span></div>";
+					$('#infoaccion2').show();
+			}
 		}
+		
         
 	}
 	
