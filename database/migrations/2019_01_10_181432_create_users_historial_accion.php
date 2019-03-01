@@ -18,7 +18,7 @@ class CreateUsersHistorialAccion extends Migration
             $table->integer('cantidad');
             $table->char('estado',1)->nullable();//C=compra V=venta
             $table->timestamp('fecha')->nullable();
-            $table->string('descripcion', 20000)->nullable();
+            $table->string('descripcion', 10000)->nullable();
             $table->integer('persona_id')->unsigned();
             $table->integer('configuraciones_id')->unsigned()->nullable();
             $table->integer('caja_id')->unsigned()->nullable();
