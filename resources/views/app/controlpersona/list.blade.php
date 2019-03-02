@@ -19,7 +19,7 @@
     <tr>
         <td>{{ $contador }}</td>
         <td style="font-size:12px;">{{ $value->persona->codigo}}</td>
-        <td style="font-size:12px;">{{ $value->persona->nombres.' '.$value->persona->apellidos }} </td>
+        <td style="font-size:12px;">{{ $value->persona->apellidos.'  '.$value->persona->nombres }} </td>
         <td style="font-size:12px;">{{ Date::parse($value->fecha )->format('d').' de '.$Month[intval(Date::parse($value->fecha)->format('m'))].' del '.Date::parse($value->fecha )->format('Y') }} </td>
         <?php
             $cboasist = array();

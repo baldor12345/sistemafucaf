@@ -133,6 +133,7 @@ class AccionesController extends Controller
         $acciones        = null;
         $config = Configuraciones::All()->last();
         $precio_accion = $config->precio_accion;
+        $id_config = $config->id;
 
         $caja = Caja::where("estado","=","A")->get();
         $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaapert)->format('Y-m-d');
@@ -142,7 +143,7 @@ class AccionesController extends Controller
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion','fecha_caja'));
+        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'id_config','listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion','fecha_caja'));
     }
 
     /**
@@ -456,6 +457,19 @@ class AccionesController extends Controller
         }
     }
 
+    //listar cantidad de acciones compradas en la fecha 
+    public function get_acciones_fecha(Request $request, $persona_id, $fecha, $x, $z){
+        $fecha = Date::parse($fecha)->format('Y-m-d');
+        $persona_id = intval($persona_id);
+        if($request->ajax()){
+            $year = Date::parse($fecha)->format('Y');
+            $month = Date::parse($fecha)->format('m');
+            $day = Date::parse($fecha)->format('d');
+            $dato = Acciones::where('persona_id',$persona_id)->where(DB::raw('extract(year from fechai)'),'=',$year)->where(DB::raw('extract(month from fechai)'),'=',$month)->where(DB::raw('extract(day from fechai)'),'=',$day)->where('deleted_at',null)->count();
+            return response()->json($dato);
+        }
+    }
+
     //venta de acciones
     public function cargarventa($id, Request $request)
     {
@@ -474,6 +488,8 @@ class AccionesController extends Controller
         $config = Configuraciones::All()->last();
         $precio_accion = $config->precio_accion;
 
+        $cboContribucion  =array(11=>'Contribución de Ingreso');
+
         $caja = Caja::where("estado","=","A")->get();
         $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaapert)->format('Y-m-d');
 
@@ -485,7 +501,7 @@ class AccionesController extends Controller
         $entidad        = 'Acciones';
 
         $boton          = 'Vender Acciones';
-        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','ruta','nom','cant_acciones','cboPers','precio_accion','fecha_caja'));
+        return view($this->folderview.'.venderaccion')->with(compact('acciones','persona', 'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','cboContribucion','ruta','nom','cant_acciones','cboPers','precio_accion','fecha_caja'));
     }
 
     public function guardarventa(Request $request, $id)
@@ -541,7 +557,7 @@ class AccionesController extends Controller
 
                     $acciones               = new Acciones();    
                     $acciones->estado        = 'C';
-                    $acciones->fechai        = $request->input('fechai').date(" H:i:s");
+                    $acciones->fechai        = $value->fechai;
                     $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $value->persona_id)->value('nombres');
                     $acciones->persona_id        = $request->input('selectnom');
                     $acciones->codigo               =$value->codigo;
@@ -596,6 +612,20 @@ class AccionesController extends Controller
                 $transaccion->inicial_tabla ="AC";
                 $transaccion->caja_id =$idCaja;
                 $transaccion->save();
+
+                $contribucion = $request->input('monto');
+
+                if($contribucion != ''){
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->input('fechai').date(" H:i");
+                    $transaccion->monto = $contribucion;
+                    $transaccion->concepto_id = $request->input('contribucion_id');
+                    $transaccion->descripcion = $persona_comprador;
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->inicial_tabla ="AC";
+                    $transaccion->caja_id =$idCaja;
+                    $transaccion->save();
+                }
                 
             });
 

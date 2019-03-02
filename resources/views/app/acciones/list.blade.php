@@ -19,8 +19,8 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			<td>{{ $value->persona_dni }}</td>
-			<td>{{ $value->persona_nombres.'  '.$value->persona_apellidos }}</td>
-			<td>{{ $value->cantidad_accion_comprada }}</td>
+			<td>{{ $value->persona_apellidos.'  '.$value->persona_nombres }}</td>
+			<td align="center" ><strong>{{ $value->cantidad_accion_comprada }}</strong></td>
 			<td>{{ $value->precio_accion }}</td>
 			<td>{!! Form::button('<div class="glyphicon  glyphicon-list"></div> Ver Historial', array('onclick' => 'modal (\''.URL::route($ruta["listacciones"], array($value->persona_id, 'listar'=>'SI')).'\', \''.'Lista de acciones del socio: '.$value->persona_apellidos.' '.$value->persona_nombres.'\'   , this);', 'class' => 'btn  btn-xs btn-success')) !!}</td>
 			@if($idcaja == 0)
