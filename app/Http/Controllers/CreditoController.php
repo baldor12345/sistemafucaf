@@ -8,6 +8,7 @@ use App\Credito;
 use App\Persona;
 use App\Cuota;
 use App\Caja;
+use App\Ahorros;
 use App\Transaccion;
 use App\Configuraciones;
 use App\Librerias\Libreria;
@@ -400,10 +401,10 @@ class CreditoController extends Controller{
         $cuota = Cuota::find($cuota_id);
         $cuota->interes_mora = round($interes_moratorio, 1);
         
-        if($cuota->fecha_iniciomora != null){
-            $numero_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechapago);
-            $cuota->interes += $cuota->interes * $numero_meses;
-        }
+        // if($cuota->fecha_iniciomora != null){
+        //     $numero_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechapago);
+        //     $cuota->interes += $cuota->interes * $numero_meses;
+        // }
    
         $credito2 = Credito::find($cuota->credito_id);
         $persona = Persona::find($credito2->persona_id);
@@ -470,6 +471,43 @@ class CreditoController extends Controller{
                     $cuota_interes = $cuota->interes;
                     $cuota_interesMora = $cuota->interes_mora;
                 //}
+     /*********************Mora de cuota */
+                    if($cuotamora > 0){
+                        $resultado = (new Ahorros())->getahorropersona(6);
+
+                        $ahorro_id=null;
+                        if(count($resultado) >0){
+                            $ahorro_actual = $resultado[0];
+                            $ahorro_actual->capital = $ahorro_actual->capital + $cuotamora;
+                            $ahorro_actual->estado = 'P';
+                            $ahorro_actual->save();
+                            $ahorro_id = $ahorro_actual->id;
+                        }else{
+                            $ahorro = new Ahorros();
+                            $ahorro->capital = $cuotamora;
+                            $ahorro->interes = 0;
+                            $ahorro->estado = 'P';
+                            $ahorro->fechai = $fecha_pago;
+                            $ahorro->persona_id = 6;
+                            $ahorro->save();
+                            $ahorro_id = $ahorro->id;
+                        }
+                    }
+                 $persona = Persona::find($id_cliente);
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $fecha_pago;
+                    $transaccion->monto =  $cuotamora;
+                    $transaccion->monto_ahorro=  $cuotamora;
+                    $transaccion->id_tabla = $ahorro_id;
+                    $transaccion->inicial_tabla = 'AH';//AH = INICIAL DE TABLA AHORROS
+                    $transaccion->concepto_id = 5;// concepto deposito de ahorros
+                    $transaccion->persona_id = 6;
+                    $transaccion->descripcion =  "Se ahorró S/. ".$cuotamora." por morosidad de cuota de ".$persona->apellidos." ".$persona->nombres;
+                    $transaccion->usuario_id = (new Credito())->idUser();
+                    $transaccion->caja_id =  $caja_id;
+                    $transaccion->save();
+           
+    /******************** ***********/
                 $concepto_id_pagocuota = 4;
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $fecha_pago;
@@ -684,7 +722,7 @@ class CreditoController extends Controller{
 
 /*************--REPORTE DE CUOTAS PDF--********** */
     public function generareportecuotasPDF($credito_id){   
-        $resultado = Cuota::listar($credito_id);
+        $resultado = Cuota::listartodo($credito_id);
         $lista = $resultado->get();
         $credito = Credito::find($credito_id);
         $cliente = Persona::find($credito->persona_id);

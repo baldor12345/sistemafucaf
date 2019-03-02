@@ -29,10 +29,10 @@
             {{-- {!! Form::text('cuotamora', $cuota->interes_mora, array('class' => 'form-control input-xs', 'id' => 'cuotamora', 'placeholder' => 's/.')) !!} --}}
         </ul>
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('total', 'total: s/.'.($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + 0.2), array('class' => 'tol')) !!}
+            {!! Form::label('total', 'Total: s/.'.($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + 0.2), array('class' => 'tol label-md ','style'=>'color: black;')) !!}
         </div>
        
-        <div class="form-group col-12 col-md-12 col-sm-12" >
+        <div class="form-group col-12 col-md-12 col-sm-12">
             {!! Form::label('fecha_pago', 'Fecha de pago: *', array('class' => '')) !!}
             {!! Form::date('fecha_pagoc', $fechapago, array('class' => 'form-control input-xs', 'id' => 'fecha_pagoc')) !!}
         </div>

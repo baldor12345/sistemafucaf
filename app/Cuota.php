@@ -54,6 +54,7 @@ class Cuota extends Model
             'cuota.parte_capital as parte_capital',
             'cuota.interes as interes',
             'cuota.interes_mora as interes_mora',
+            'cuota.saldo_restante as saldo_restante',
             'cuota.fecha_programada_pago as fecha_pagar',
             'cuota.fecha_iniciomora as fecha_iniciomora',
             'cuota.fecha_pago as fecha_pago',
