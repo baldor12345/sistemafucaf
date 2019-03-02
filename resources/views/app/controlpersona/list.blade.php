@@ -32,9 +32,9 @@
             }
         ?>
         @if($value->asistencia != 'J')
-        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'modal(\''.URL::route($ruta["cargarjustificar"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_justificar.'\', \''.$idCaja.'\');')) !!}</td>
+        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'modalJustificarFalta(\''.URL::route($ruta["cargarjustificar"], array($value->id, 'listar'=>'SI', 'indiceCbo'=>''.$value->asistencia)).'\', \''.$titulo_justificar.'\',this);')) !!}</td>
         @else
-        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'modal(\''.URL::route($ruta["cargarjustificar"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_justificar.'\', \''.$idCaja.'\');','disabled')) !!}</td>
+        <td style="font-size:12px;">{!! Form::select('asistencia'.$value->id, $cboasist, $value->asistencia, array('class' => 'form-control input-xs', 'style'=>'font-size:12px', 'id' => 'asistencia'.$value->id, 'onchange' => 'modalJustificarFalta(\''.URL::route($ruta["cargarjustificar"], array($value->id, 'listar'=>'SI', 'indiceCbo'=>''.$value->asistencia)).'\', \''.$titulo_justificar.'\',this);','disabled')) !!}</td>
         @endif
         @if($value->asistencia != 'J')
         <td style='color:red;font-weight: bold; font-size:12px' >No Pagó</td>
@@ -59,6 +59,11 @@
 @endif
 <script>
 
+    function modalJustificarFalta(ruta,tituloModal, comboSelet){
+        if($(comboSelet).val() == 'J'){
+            modal(ruta, tituloModal);
+        }
+    }
     /*
     function cambiartardanza(idpersona) {
         bootbox.confirm("Por favor tenga la amabilidad de confirmar la justificacion de la asistencia, Gracias!", function(result){ 

@@ -98,7 +98,7 @@ function guardar_control(entidad, idboton) {
 		}
 	});
 }
-function submitForm_control (idformulario) {
+function submitForm_control(idformulario) {
 	var i=0;
 	var datos="";
 	$('.select_asist').each(function() {
