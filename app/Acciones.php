@@ -9,7 +9,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use App\Librerias\Libreria;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use DateTime;
 class Acciones extends Model
 {
     use SoftDeletes;
@@ -71,8 +71,7 @@ class Acciones extends Model
             ->groupBy('persona.id','persona.codigo','persona.dni','persona.nombres',
                                 'persona.apellidos','configuraciones.codigo',
                                 'acciones.estado','configuraciones.precio_accion')
-            ->orderBy('persona.codigo','ASC')
-            ->orderBy('persona.tipo','DSC');
+            ->orderBy('persona.apellidos','ASC');
         return $results;
         			
     }

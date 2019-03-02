@@ -44,7 +44,7 @@ class Persona extends Model
 		            	}
                     })
                     ->orderBy('tipo', 'DSC')
-                    ->orderBy('codigo', 'ASC');
+                    ->orderBy('apellidos', 'ASC');
     }
 
     public static function personas($dni){

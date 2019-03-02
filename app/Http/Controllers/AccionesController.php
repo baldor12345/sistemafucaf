@@ -457,6 +457,19 @@ class AccionesController extends Controller
         }
     }
 
+    //listar cantidad de acciones compradas en la fecha 
+    public function get_acciones_fecha(Request $request, $persona_id, $fecha, $x, $z){
+        $fecha = Date::parse($fecha)->format('Y-m-d');
+        $persona_id = intval($persona_id);
+        if($request->ajax()){
+            $year = Date::parse($fecha)->format('Y');
+            $month = Date::parse($fecha)->format('m');
+            $day = Date::parse($fecha)->format('d');
+            $dato = Acciones::where('persona_id',$persona_id)->where(DB::raw('extract(year from fechai)'),'=',$year)->where(DB::raw('extract(month from fechai)'),'=',$month)->where(DB::raw('extract(day from fechai)'),'=',$day)->where('deleted_at',null)->count();
+            return response()->json($dato);
+        }
+    }
+
     //venta de acciones
     public function cargarventa($id, Request $request)
     {

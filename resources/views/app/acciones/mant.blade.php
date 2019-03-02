@@ -5,6 +5,7 @@ use App\Configuraciones;
 use Illuminate\Support\Facades\DB;
 ?>
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="infoaccion3"></div>
 <div id="infoaccion2"></div>
 <div id="infoaccion"></div>
 {!! Form::model($acciones, $formData) !!}
@@ -173,6 +174,21 @@ use Illuminate\Support\Facades\DB;
 		});
 
 		
+		$('#selectnom').change(function(event){
+			var fecha = $('#fechai').val();
+			$.get("acciones/"+$(this).val()+"/"+fecha+"/1/1", function(response, acciones){
+				var cant_acciones=0;
+				var cant_acciones = response;
+				if(cant_acciones != 0){
+					document.getElementById("infoaccion3").innerHTML = "<div class='alert alert-warning' role='warning'><span >Socio seleccionado ya compro "+cant_acciones+" en esta fecha</span></div>";
+					$('#infoaccion').show();
+				}
+				
+			});
+		});
+
+
+		
 		$("#imprimir_voucher").change(function(event) {
             var checkbox = event.target;
             if (checkbox.checked) {
@@ -215,6 +231,9 @@ use Illuminate\Support\Facades\DB;
 		var cantidad_limite = parseInt($('#cantacciontotal').val()*0.2);
 		var accion_persona1 = parseInt($('#cantaccionpersona').val());
 		var lmite = (cantidad_limite-accion_persona1);
+		if(lmite < 0){
+			lmite =0;
+		}
 		var cantid = $('#cantidad_accion').val();
 		var accion_inicio = parseInt($('#cantaccionpersona').val());
 		if(accion_inicio !=0){
@@ -257,8 +276,8 @@ use Illuminate\Support\Facades\DB;
 					}
 				});
 			}else{
-				document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
-				$('#infoaccion').show();
+				document.getElementById("infoaccion2").innerHTML = "<div class='alert alert-danger' role='danger'><span >la cantidad maxima que puede adquirir es "+lmite+"</span></div>";
+				$('#infoaccion2').show();
 				$('#btnGuardaraccion').removeClass('disabled');
 				$('#btnGuardaraccion').removeAttr('disabled');
 				$('#btnGuardaraccion').html('<i class="fa fa-check fa-lg"></i>Guardar');
@@ -305,7 +324,7 @@ use Illuminate\Support\Facades\DB;
 						}
 					});
 				}else{
-					document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es '"+lmite+"'</span></div>";
+					document.getElementById("infoaccion").innerHTML = "<div class='alert alert-warning' role='warning'><span >la cantidad maxima que puede adquirir es "+lmite+"</span></div>";
 					$('#infoaccion').show();
 					$('#btnGuardaraccion').removeClass('disabled');
 					$('#btnGuardaraccion').removeAttr('disabled');

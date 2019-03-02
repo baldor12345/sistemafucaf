@@ -27,14 +27,8 @@ class caja extends Model
 
     public static function getIdPersona()
     {
-        $persona_id = null;
-        // Obtiene el objeto del Usuario Autenticado
-        $user = Auth::user();
-        // Obtiene el ID del Usuario Autenticado
         $id = Auth::id();
-        $user = DB::table('user')->where('id', $id)->first();
-        $persona_id=$user->persona_id;
-        return $persona_id;
+        return $id;
     }
 
     public function scopelistar($query, $titulo)

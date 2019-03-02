@@ -98,21 +98,6 @@
             }
         });
 
-
-        $('#presidente_id').change(function(){
-            $.get("directivos/"+$(this).val()+"",function(response, facultad){
-                var persona = response[0];
-                var numCreditos = response[1];
-                var numAcciones = response[2];
-
-                if(persona.length>0){
-                    
-                }else{
-                    $("#presidente_id").val(0);
-                }
-            });
-        });
-
 		//secretario
 		$('#secretario_id').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),
@@ -135,21 +120,6 @@
                 }
                 
             }
-        });
-
-
-        $('#secretario_id').change(function(){
-            $.get("directivos/"+$(this).val()+"",function(response, facultad){
-                var persona = response[0];
-                var numCreditos = response[1];
-                var numAcciones = response[2];
-
-                if(persona.length>0){
-                    
-                }else{
-                    $("#secretario_id").val(0);
-                }
-            });
         });
 
 		//tesorero_id
@@ -175,21 +145,6 @@
                 
             }
         });
-
-
-        $('#tesorero_id').change(function(){
-            $.get("directivos/"+$(this).val()+"",function(response, facultad){
-                var persona = response[0];
-                var numCreditos = response[1];
-                var numAcciones = response[2];
-
-                if(persona.length>0){
-                    
-                }else{
-                    $("#tesorero_id").val(0);
-                }
-            });
-        });
 		//vocal_id
 		$('#vocal_id').select2({
             dropdownParent: $("#modal"+(contadorModal-1)),
@@ -214,20 +169,6 @@
             }
         });
 
-
-        $('#vocal_id').change(function(){
-            $.get("directivos/"+$(this).val()+"",function(response, facultad){
-                var persona = response[0];
-                var numCreditos = response[1];
-                var numAcciones = response[2];
-
-                if(persona.length>0){
-                    
-                }else{
-                    $("#vocal_id").val(0);
-                }
-            });
-        });
 		
 	}); 
 </script>
