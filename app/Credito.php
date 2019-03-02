@@ -113,6 +113,7 @@ class Credito extends Model
     }
 
     public function lista_creditos_desde_hasta($fecha_inicio, $fecha_fin){
+        
         $results = DB::table('credito')
         ->leftJoin('persona as per', 'per.id', '=', 'credito.persona_id')
         ->leftJoin('persona as per_aval', 'per_aval.id', '=', 'credito.pers_aval_id')

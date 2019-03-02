@@ -1626,7 +1626,7 @@ public function numero_meses($fecha_inico, $fecha_final){
                         $cuotas[$i]->interes = 0;
                         $cuotas[$i]->saldo_restante = 0;
                         $cuotas[$i]->estado = '1';
-                        $cuotas->save();
+                        $cuotas[$i]->save();
                         //$cuotas[$i]->delete();
                     }
                 }

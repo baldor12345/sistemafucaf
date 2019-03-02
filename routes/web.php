@@ -222,6 +222,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('ahorros/listarhistorico', 'AhorrosController@listarhistorico')->name('ahorros.listarhistorico');
     Route::get('ahorros/vistareporteahorros', 'AhorrosController@vistareporteahorros')->name('ahorros.vistareporteahorros');
     Route::get('/reporteahorros', 'AhorrosController@reporteahorros')->name('ahorros.reporteahorros');
+    // Route::get('/reporteahorrosactivos', 'AhorrosController@reporteahorros')->name('ahorros.reporteahorros');
     
     Route::get('/generareciboahorroPDF', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF');
     Route::get('/generareciboahorroPDF1/{transaccion_id?}', 'AhorrosController@generareciboahorroPDF')->name('ahorros.generareciboahorroPDF1');

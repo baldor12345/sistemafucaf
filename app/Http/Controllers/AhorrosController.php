@@ -48,6 +48,7 @@ class AhorrosController extends Controller
             'listpersonas' => 'creditos.listpersonas',
             'vistareporteahorros' => 'ahorros.vistareporteahorros',
             'reporteahorros' => 'ahorros.reporteahorros'
+            // 'reporteahorrosactivos' => 'ahorros.reporteahorrosactivos'
            
         );
 
@@ -856,17 +857,29 @@ class AhorrosController extends Controller
     }
     public function reporteahorros(Request $request){
         $anio = $request->get('anio_inicio');
-
-        $listaahorros = (new Ahorros())->listareporte($anio);
-        $personas = Persona::where('estado','=', 'A')->where('deleted_at', '=', null)->orderby('apellidos','ASC')->get();
+        $tipo = $request->get('tipo_reporte');
+      
+        if($tipo == '1'){
+            $listaahorros = (new Ahorros())->listareporte($anio);
+            $personas = Persona::where('estado','=', 'A')->where('deleted_at', '=', null)->orderby('apellidos','ASC')->get();
+            $titulo ='Ahorros en el año '.$anio;
+            $view = \View::make('app.ahorros.reporteahorros')->with(compact('listaahorros', 'anio','titulo','personas'));
+        }else{
+            $listaAhorrosActivos = (new Ahorros)->listarActivos()->get();
+            $titulo ='Ahorros activos a la fecha '.date('d/m/Y');
+            $view = \View::make('app.ahorros.reporteahorrosactivos')->with(compact('listaAhorrosActivos','titulo'));
+        }
         
-        $titulo ='Reporte de ahorros del año '.$anio;
-        $view = \View::make('app.ahorros.reporteahorros')->with(compact('listaahorros', 'anio','titulo','personas'));
-
         $html_content = $view->render();
         PDF::SetTitle($titulo);
-        PDF::AddPage('L', 'A4', 'es');
-        PDF::SetTopMargin(5);
+        if($tipo == '1'){
+            PDF::AddPage('L', 'A4', 'es');
+        }else{
+            PDF::AddPage('P', 'A4', 'es');
+        }
+        
+        
+        PDF::SetTopMargin(0);
         PDF::SetLeftMargin(5);
         PDF::SetRightMargin(5);
         PDF::SetDisplayMode('fullpage');

@@ -3,11 +3,11 @@
 <div class="form-row">
     <div class="card-box table-responsive crbox">
         <div class="form-group col-12 col-md-12 col-sm-12" >
-            {!! Form::label('fecha_i', 'Fecha de pago: *', array('class' => '')) !!}
+            {!! Form::label('fecha_i', 'Desde la fecha: *', array('class' => '')) !!}
             {!! Form::date('fecha_i', $fecha_inicio, array('class' => 'form-control input-xs', 'id' => 'fecha_i')) !!}
         </div>
         <div class="form-group col-12 col-md-12 col-sm-12" >
-            {!! Form::label('fecha_f', 'Fecha de pago: *', array('class' => '')) !!}
+            {!! Form::label('fecha_f', 'Hasta la fecha: *', array('class' => '')) !!}
             {!! Form::date('fecha_f', $fecha_inicio, array('class' => 'form-control input-xs', 'id' => 'fecha_f')) !!}
         </div>
     </div>

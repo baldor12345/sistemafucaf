@@ -141,12 +141,12 @@
                 //console.log(saldo_restante_ant+" - interes: "+tasa_interes);
                 var monto_amortizar = parseFloat($('#monto_amortizar').val() == ""?0:$('#monto_amortizar').val());
                 if(monto_amortizar >= 0){
-                    var saldo_restante = parseFloat(saldo_restante_ant) - parseFloat(monto_amortizar);
+                    var saldo_restante = RoundDecimal(parseFloat(saldo_restante_ant) - parseFloat(monto_amortizar), 1);
                     var num_cuotas_nuevas = parseInt($('#num_cu_nuevo').val()==""?0:$('#num_cu_nuevo').val());
                     var valor_cuota =RoundDecimal(((tasa_interes/100) * saldo_restante) / (1 - (Math.pow(1/(1+(tasa_interes)/100), num_cuotas_nuevas))), 1);
-                    $('#lblNuevosaldorest').html('Nuevo valor de deuda: S/. '+saldo_restante);
-                    $('#lblNuevovalcuota').html('Nuevo valor de cuota: '+valor_cuota);
-                    $('#nuevo_saldo_rest').val(saldo_restante);
+                    $('#lblNuevosaldorest').html('Nuevo valor de deuda: S/. '+ RoundDecimal(saldo_restante, 1));
+                    $('#lblNuevovalcuota').html('Nuevo valor de cuota: '+RoundDecimal(valor_cuota, 1));
+                    $('#nuevo_saldo_rest').val(RoundDecimal(saldo_restante, 1));
                 }else{
                     $('#lblNuevosaldorest').html('El monto de amortizacion debe ser mayor o ygual a 0 ');
                 }

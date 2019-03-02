@@ -123,6 +123,25 @@ class Ahorros extends Model
         ->orderby(DB::raw('extract( year from ahorros.fechai)'),'ASC')->get();
         return $results;
     }
+    public function listarActivos()
+    {
+        $results = DB::table('ahorros')
+        ->leftJoin('persona', 'persona.id', '=', 'ahorros.persona_id')
+        ->select(
+            'persona.id as persona_id',
+            'persona.nombres as nombres',
+            'persona.apellidos as apellidos',
+            'persona.tipo as tipo',
+            'persona.codigo as codigo',
+            'persona.dni as dni',
+            'ahorros.capital as capital',
+            'ahorros.fechai as fechai'
+        )
+        ->where('ahorros.estado','=','P')
+        ->where('ahorros.deleted_at','=',null)
+        ->orderBy('persona.apellidos', 'ASC');
+        return $results;
+    }
 
     public static function boot()
     {

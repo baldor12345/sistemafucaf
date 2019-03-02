@@ -138,7 +138,13 @@ class ConceptoSeeder extends Seeder
             'created_at'     => $now,
             'updated_at'     => $now
         ));
-
+        DB::table('concepto')->insert(array(
+            'id'        => 23,
+            'titulo'        => 'Refinanciación',
+            'tipo'       => 'I',
+            'created_at'     => $now,
+            'updated_at'     => $now
+        ));
 
     }
 }
