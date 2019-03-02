@@ -20,7 +20,7 @@
 			<tr>
 				<td>{{ $contador }}</td>
 				<td>{{ $value->dni }}</td>
-				<td>{{ $value->nombres." ".$value->apellidos}} </td>
+				<td>{{ $value->apellidos." ".$value->nombres}} </td>
 				<td>{{ round($value->valor_credito,1) }}</td>
 				<td>{{ $value->periodo }}</td>
 				@if ($value->estado === '0')

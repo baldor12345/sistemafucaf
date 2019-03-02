@@ -22,7 +22,7 @@
 		<tr>
 			<td>{{ $contador }}</td>
 			<td>{{ $value->dni }}</td>
-			<td>{{ $value->nombres." ".$value->apellidos}} </td>
+			<td>{{ $value->apellidos." ".$value->nombres}} </td>
 			<td>{{ round($value->capital,1) }}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> DETALLE', array('onclick' => 'modal (\''.URL::route($ruta["vistadetalleahorro"], array($value->persona_id, 'listar'=>'SI')).'\', \''.$titulo_vistadetalleahorro.'\', this);','class' => 'btn btn-xs btn-light')) !!}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> HISTORICO', array('onclick' => 'modal (\''.URL::route($ruta["vistahistoricoahorro"], array($value->persona_id, 'listar'=>'SI')).'\', \''.$titulo_vistahistoricoahorro.'\', this);','class' => 'btn btn-xs btn-warning')) !!}</td>

@@ -63,7 +63,7 @@
 		?>
 		<tr>
 			<td>{{ $contador }}</td>
-			<td>{{ $value->nombres.'  '.$value->apellidos }}</td>
+			<td>{{ $value->apellidos.'  '.$value->nombres }}</td>
 			<td>{{ $value->numero_cuota.'/'.$value->periodo }}</td>
 			<td>{{ round($value->parte_capital +  $value->interes, 1) }}</td>
 			<td>{{ round($interes_ganado, 1) }}</td>
