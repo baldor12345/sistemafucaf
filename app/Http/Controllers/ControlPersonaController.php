@@ -318,11 +318,12 @@ class ControlPersonaController extends Controller
     }
 
     //JUSTIFICAR FALTA O TARDANZA
-    public function cargarjustificar($id, $listarLuego){
+    public function cargarjustificar(Request $request, $id, $listarLuego){
         $entidad  = 'ControlPersona';
         $ruta = $this->rutas;
         $titulo_justificar = "Justificar falta o tardanza";
-        return view($this->folderview.'.justificarasist')->with(compact('entidad', 'id','ruta', 'titulo_justificar'));
+        $indiceCbo = $request->get('indiceCbo');
+        return view($this->folderview.'.justificarasist')->with(compact('entidad', 'id','ruta', 'titulo_justificar','indiceCbo'));
     }
 
     public function guardarjustificar(Request $request) {

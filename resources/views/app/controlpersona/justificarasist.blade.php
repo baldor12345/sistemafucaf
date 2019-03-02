@@ -19,7 +19,9 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		configurarAnchoModal('400');
-        
+        $("#modal"+(contadorModal - 1)).on('hidden.bs.modal', function () {
+            $('#asistencia{{ $id }}').val('{{ $indiceCbo }}');
+        });
     });
 
     function guardarjustificacion(id){
@@ -38,11 +40,9 @@
                     $('#btnGuardarjust').button('loading');
                 },
                 success: function(res){
-                    
+                    cerrarModal();
                     mostrarMensaje ("Justificacion Realizada!", "OK");
                     buscar('{{$entidad}}');
-                    cerrarModal();
-            
                 }
             }).fail(function(){
                 mostrarMensaje ("Error de servidor", "ERROR");
@@ -52,8 +52,4 @@
             });
         }
     }
-    function cerrarModal(){
-        buscar('{{$entidad}}');
-    }
-    
 </script>
