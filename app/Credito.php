@@ -55,7 +55,8 @@ class Credito extends Model
         ->where('credito.fechai','>=',$fechai)
         ->where('credito.estado','=',$estado)
         ->where('credito.deleted_at','=', null)
-        ->orderBy('credito.fechai', 'DSC');
+        ->orderBy('persona.apellidos', 'ASC');
+        // ->orderBy('credito.fechai', 'DSC');
         return $results;
     }
 

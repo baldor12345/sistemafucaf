@@ -472,10 +472,11 @@ class CreditoController extends Controller{
                     $cuota_interesMora = $cuota->interes_mora;
                 //}
      /*********************Mora de cuota */
+                    $ahorro_id=null;
                     if($cuotamora > 0){
                         $resultado = (new Ahorros())->getahorropersona(6);
 
-                        $ahorro_id=null;
+                        
                         if(count($resultado) >0){
                             $ahorro_actual = $resultado[0];
                             $ahorro_actual->capital = $ahorro_actual->capital + $cuotamora;

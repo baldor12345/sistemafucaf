@@ -98,9 +98,16 @@ class RecibocuotasController extends Controller
         $fecha_actual = Libreria::getParam($request->input('fecha_recibocuotas'));
         
         $nombre = Libreria::getParam($request->input('nombres'));
-        $resultado  = Cuota::listarCuotasAlafecha($anio,$mes, $nombre);
-        
-        $lista = $resultado->get();
+        $caja = Caja::where('estado','=','A')->where('deleted_at','=', null)->get();
+        $lista = null;
+        $resultado= null;
+        if(count($caja)> 0){
+            $resultado  = Cuota::listarCuotasAlafecha($anio,$mes, $nombre);
+            $lista = $resultado->get();
+        }else{
+            $lista = array();
+        }
+       
         $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
         $cabecera[] = array('valor' => 'SOCIO/CLIENTE', 'numero' => '1');

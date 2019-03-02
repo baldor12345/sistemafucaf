@@ -74,7 +74,7 @@ class Cuota extends Model
         ->where('cuota.estado','!=', '1')
         ->where('cuota.deleted_at','=', null)
         ->where('cuota.fecha_programada_pago','<=',$fecha_p)
-        ->orderBy('cuota.numero_cuota', 'ASC');
+        ->orderBy('persona.apellidos', 'ASC');
         return $results;
     }
 

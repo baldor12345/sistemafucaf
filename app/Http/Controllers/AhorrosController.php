@@ -409,7 +409,7 @@ class AhorrosController extends Controller
                 $transaccion1->concepto_id = $idconcepto;
                 $transaccion1->descripcion = "Retiro de S/. ".$monto_retiro." de ahorros";
                 $transaccion1->persona_id = $persona_id;
-                $transaccion1->usuario_id = Ahorros::idUser();
+                $transaccion1->usuario_id = (new Ahorros())->idUser();
                 $transaccion1->caja_id =  $caja_id;
                 $transaccion1->save();
             });
