@@ -20,19 +20,14 @@ class Persona extends Model
      * @return sql        sql
      */
 
-    public function scopelistar($query, $codigo, $nombre, $dni, $tipo){
+    public function scopelistar($query, $nombre, $dni, $tipo){
 
-        return $query->where(function($subquery) use($codigo)
-		            {
-		            	if (!is_null($codigo)) {
-		            		$subquery->where('codigo', 'ILIKE', '%'.$codigo.'%');
-		            	}
-		            })->where(function($subquery) use($nombre)
+        return $query->where(function($subquery) use($nombre)
 		            {
 		            	if (!is_null($nombre)) {
 		            		$subquery->where('nombres', 'ILIKE', '%'.$nombre.'%');
 		            	}
-                    })->where(function($subquery) use($dni)
+		            })->where(function($subquery) use($dni)
                     {
                         if (!is_null($dni)) {
 		            		$subquery->where('dni', 'ILIKE', '%'.$dni.'%');
@@ -44,7 +39,8 @@ class Persona extends Model
 		            	}
                     })
                     ->orderBy('tipo', 'DSC')
-                    ->orderBy('apellidos', 'ASC');
+                    ->orderBy('apellidos', 'ASC')
+                    ->where('deleted_at',null);
     }
 
     public static function personas($dni){

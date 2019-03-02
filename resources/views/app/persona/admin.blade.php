@@ -24,10 +24,6 @@
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 					<div class="form-group">
-						{!! Form::label('codigo', 'Código:', array('class' => 'input-sm')) !!}
-						{!! Form::text('codigo', '', array('class' => 'form-control input-sm', 'id' => 'codigo')) !!}
-					</div>
-					<div class="form-group">
 						{!! Form::label('dni', 'Dni:', array('class' => 'input-sm')) !!}
 						{!! Form::text('dni', '', array('class' => 'form-control input-sm', 'id' => 'dni')) !!}
 					</div>

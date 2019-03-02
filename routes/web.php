@@ -127,6 +127,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('persona/cargarpagarmulta/{id}/{listarluego}', 'PersonController@cargarpagarmulta')->name('persona.cargarpagarmulta');
     Route::get('persona/guardarpagarmulta', 'PersonController@guardarpagarmulta')->name('persona.guardarpagarmulta');
     Route::get('/generarestadocuentaPDF/{id}', 'PersonController@generarestadocuentaPDF')->name('generarestadocuentaPDF');
+    Route::get('persona/listpersonas',  'PersonController@listpersonas')->name('persona.listpersonas');
 
 
     /*CONTROL PERSONA ASISTENCIA*/

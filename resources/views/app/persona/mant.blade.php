@@ -1,5 +1,6 @@
 
 <div id="divMensajeError{!! $entidad !!}"></div>
+<div id="info2"></div>
 {!! Form::model($persona, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 
@@ -122,27 +123,14 @@
 </div>
 
 
-<div class="form-row" id='oculto' style="display:none;">
+<div class="form-group" id='oculto' style="display:none;">
 		<legend>Datos del Apoderado:</legend>
-		<div class="form-row">
-			{!! Form::label('nombres_apoderado', 'Nombres y Apellidos del apoderado:', array('class' => '')) !!}
-			{!! Form::text('nombres_apoderado', null, array('class' => 'form-control input-xs', 'id' => 'nombres_apoderado', 'placeholder' => 'Ingrese Nombres y apellidos del apoderado...')) !!}
+		<div class="col-lg-12 col-md-12 col-sm-12">
+			{!! Form::label('apoderado_id', 'Apoderado:', array('class' => '')) !!}
+			{!! Form::select('apoderado_id', $cboPers, null, array('class' => ' input-sm', 'id' => 'apoderado_id')) !!}
 		</div>
-
-		<div class="form-row">
-			<div class="form-group col-md-3 col-sm-3">
-					{!! Form::label('dni_apoderado', 'DNI', array('class' => '')) !!}
-					{!! Form::text('dni_apoderado', null, array('class' => 'form-control input-xs input-number', 'id' => 'dni_apoderado', 'placeholder' => 'Ingrese DNI', 'maxlength' => '8')) !!}
-			</div>
-			<div class="form-group col-md-3 col-sm-3" style="margin-left: 12.5px;">
-					{!! Form::label('telefono_fijo_apoderado', 'Telefono', array('class' => '')) !!}
-					{!! Form::text('telefono_fijo_apoderado', null, array('class' => 'form-control input-xs input-number', 'id' => 'telefono_fijo_apoderado', 'placeholder' => 'Ingrese telefono', 'maxlength' => '15')) !!}
-			</div>
-			<div class="form-group col-md-6 col-sm-6" style="margin-left: 12.5px;">
-				{!! Form::label('direccion_apoderado', 'Direccion ', array('class' => '')) !!}
-				{!! Form::text('direccion_apoderado', null, array('class' => 'form-control input-xs', 'id' => 'direccion_apoderado', 'placeholder' => 'Ingrese direccion')) !!}
-			</div>
-		</div>
+		
+		
 </div>
 
 
@@ -160,6 +148,30 @@
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('650');
 		evaluarFecha();
+
+		$('#apoderado_id').select2({
+			dropdownParent: $("#modal"+(contadorModal-1)),
+			
+			minimumInputLenght: 2,
+			ajax: {
+				
+				url: "{{ URL::route($ruta['listpersonas'], array()) }}",
+				dataType: 'json',
+				delay: 250,
+				data: function(params){
+					return{
+						q: $.trim(params.term)
+					};
+				},
+				processResults: function(data){
+					return{
+						results: data
+					};
+				}
+				
+			}
+		});
+
 	}); 
 
 	$('.input-number').on('input', function () { 
@@ -185,6 +197,8 @@
 		}
 		
 	}
+
+		
 
 	var fechaActual = new Date();
 	var day = ("0" + fechaActual.getDate()).slice(-2);
@@ -250,27 +264,63 @@
 		var credito = '{{$credito}}';
 		var estado = $('#estado').val();
 		var tipo = $('#tipo').val();
+
+
+		var $fecha_n = $('#fecha_nacimiento').val();
+		var year_eval = $fecha_n.split('-');
+		var date_now = new Date();
+		var  year_now = date_now.getFullYear();
+
 		if(estado == 'A'){
 			if(tipo.trim() == 'C'){
 				if(acciones == 0){
-					guardar(entidad)
+					if((year_now-year_eval[0])>=18){
+						$('#info2').hide();
+						guardar(entidad)
+						console.log("entra aca a y c");
+					}else{
+						var apoderado = $('#apoderado_id').val();
+						if(apoderado != ''){
+							$('#info2').hide();
+							guardar(entidad)
+							console.log("entra aca a y s");
+						}else{
+							document.getElementById("info2").innerHTML = "<div class='alert alert-danger' role='alert'><span >por favor seleccione apoderado, el siguiente socio o cliente ingresado es menor de edad!</span></div>";
+							$('#info2').show();
+						}
+					}
+					
 				}else{
-					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >accion no pudo ser completada, socio tiene acciones activas, gracias!</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+					document.getElementById("info2").innerHTML = "<div class='alert alert-danger' role='alert'><span >accion no pudo ser completada, socio tiene acciones activas, gracias!</span></div>";
+					$('#info2').show();
 				}
 			}
 			if(tipo.trim() == 'S'){
-				$('#divMensajeError{{ $entidad }}').hide();
-				guardar(entidad)
+				if((year_now-year_eval[0])>=18){
+					$('#info2').hide();
+					guardar(entidad)
+					console.log("entra aca s y mayor");
+				}else{
+					var apoderado2 = $('#apoderado_id').val();
+					if(apoderado2 != ''){
+						$('#info2').hide();
+						console.log(guardar(entidad));
+						console.log("entra aca s y menor");
+					}else{
+						document.getElementById("info2").innerHTML = "<div class='alert alert-danger' role='alert'><span >por favor seleccione apoderado, el siguiente socio o cliente ingresado es menor de edad!</span></div>";
+						$('#info2').show();
+					}
+				}
 			}
 			
 		}
 		if(estado == 'I'){
 			if((acciones == 0) && (ahorros == 0) && (credito == 0)){
+				$('#info2').hide();
 				guardar(entidad);
 			}else{
-				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >accion no pudo ser completada, socio o cliente tiene credito, ahorros o acciones activas, gracias!</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+				document.getElementById("info2").innerHTML = "<div class='alert alert-danger' role='alert'><span >accion no pudo ser completada, socio o cliente tiene credito, ahorros o acciones activas, gracias!</span></div>";
+					$('#info2').show();
 			}
 		}
 	}
