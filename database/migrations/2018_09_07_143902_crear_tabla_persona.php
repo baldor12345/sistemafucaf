@@ -22,11 +22,7 @@ class CrearTablaPersona extends Migration
             $table->string('apellidos', 100)->nullable();
             $table->date('fecha_nacimiento')->nullable();
             //en caso de ser menor de edad =>apoderado
-                $table->char('dni_apoderado',8)->nullable();
-                $table->string('nombres_apoderado', 100)->nullable();
-                $table->string('telefono_fijo_apoderado',18)->nullable();
-                $table->string('direccion_apoderado', 80)->nullable();
-
+            $table->integer('apoderado_id')->unsigned()->nullable();
             $table->char('sexo', 1)->nullable(); // M->Masculino, F->Femenino
             $table->char('estado_civil', 2)->nullable(); // S->Soltero, C=>Casado, V=>Viudo, D=>Divorciado
             $table->integer('personas_en_casa')->nullable();
@@ -42,6 +38,7 @@ class CrearTablaPersona extends Migration
             //acciones
             $table->char('tipo',2)->nullable(); // S=>socio, C=>Cliente, 2=>SC
             $table->date('fechai')->nullable();
+            $table->foreign('apoderado_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
             $table->softDeletes();
         });

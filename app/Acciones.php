@@ -125,7 +125,8 @@ class Acciones extends Model
                     ->where('persona.tipo','=','S')
                     ->where('acciones.estado','C')
                     ->where('acciones.deleted_at',null)
-                    ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos');
+                    ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 

@@ -39,6 +39,8 @@ class PersonController extends Controller
             'guardarpagarmulta'  => 'persona.guardarpagarmulta',
             'cargarbinnacle'  => 'persona.cargarbinnacle',
             'generarreporte'  => 'persona.generarreporte',
+
+            'listpersonas'  =>'directivos.listpersonas'
             
         );
 
@@ -57,16 +59,16 @@ class PersonController extends Controller
      * 
      * @return Response 
      */
+
     public function buscar(Request $request)
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Persona';
-        $codigo             = Libreria::getParam($request->input('codigo'));
         $nombres             = Libreria::getParam($request->input('nombres'));
         $dni             = Libreria::getParam($request->input('dni'));
         $tipo             = Libreria::getParam($request->input('tipoi'));
-        $resultado        = Persona::listar($codigo, $nombres, $dni, $tipo);
+        $resultado        = Persona::listar($nombres, $dni, $tipo);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
@@ -96,6 +98,7 @@ class PersonController extends Controller
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
+
 
     /**
      * Display a listing of the resource.
@@ -136,12 +139,14 @@ class PersonController extends Controller
         $cboSexo        = [''=>'Seleccione']+ array('M'=>'Masculino','F' => 'Femenino');
         $cboEstadoCivil        = [''=>'Seleccione']+ array('SO'=>'Soltero','CA' => 'Casado', 'VI' => 'Viudo','CO'=>'Conviviente');
         $formData       = array('persona.store');
+        $cboPers = array(0=>'Seleccione apoderado que este registrado como socio...          ');
         $acciones =0;
         $ahorros =0;
         $credito =0;
+        $ruta             = $this->rutas;
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','acciones','ahorros','credito','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil','cboEstado'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad','acciones','ahorros','credito','ruta','codigo_generado', 'boton', 'listar', 'cboTipo','cboSexo','cboEstadoCivil','cboEstado','cboPers'));
     }
 
     /**
@@ -171,7 +176,6 @@ class PersonController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
-
             $codigo_generado = $request->input('codigo');
             if($request->input('tipo') == "S"){
                 $codigo_generado = "S".$codigo_generado;
@@ -181,33 +185,57 @@ class PersonController extends Controller
                 $codigo_generado = "SC".$codigo_generado;
             }
 
-            $perosna               = new Persona();
-            $perosna->codigo        = $codigo_generado;
-            $perosna->dni        = $request->input('dni');
-            $perosna->nombres        = $request->input('nombres');
-            $perosna->apellidos        = $request->input('apellidos');
-            $perosna->tipo        = $request->input('tipo');
-            $perosna->fechai        = $request->input('fechai');
-            $perosna->direccion        = $request->input('direccion');
-            $perosna->fecha_nacimiento        = $request->input('fecha_nacimiento');
+            $apoderado_id        = $request->input('apoderado_id');
 
-            $perosna->nombres_apoderado        = $request->input('nombres_apoderado');
-            $perosna->dni_apoderado        = $request->input('dni_apoderado');
-            $perosna->telefono_fijo_apoderado        = $request->input('telefono_fijo_apoderado');
-            $perosna->direccion_apoderado        = $request->input('direccion_apoderado');
+            if($apoderado_id != 0){
+                $persona               = new Persona();
+                $persona->codigo        = $codigo_generado;
+                $persona->dni        = $request->input('dni');
+                $persona->nombres        = $request->input('nombres');
+                $persona->apellidos        = $request->input('apellidos');
+                $persona->tipo        = $request->input('tipo');
+                $persona->fechai        = $request->input('fechai');
+                $persona->direccion        = $request->input('direccion');
+                $persona->fecha_nacimiento        = $request->input('fecha_nacimiento');
 
-            $perosna->sexo        = $request->input('sexo');
-            $perosna->estado_civil        = $request->input('estado_civil');
-            $perosna->ocupacion        = $request->input('ocupacion');
-            $perosna->personas_en_casa        = $request->input('personas_en_casa');
-            $perosna->ingreso_personal        = $request->input('ingreso_personal');
-            $perosna->ingreso_familiar        = $request->input('ingreso_familiar');
-            $perosna->telefono_fijo        = $request->input('telefono_fijo');
-            $perosna->telefono_movil1        = $request->input('telefono_movil1');
-            $perosna->telefono_movil2        = $request->input('telefono_movil2');
-            $perosna->estado        = $request->input('estado');
-            $perosna->email        = $request->input('email');
-            $perosna->save();
+                $persona->apoderado_id        = $request->input('apoderado_id');
+
+                $persona->sexo        = $request->input('sexo');
+                $persona->estado_civil        = $request->input('estado_civil');
+                $persona->ocupacion        = $request->input('ocupacion');
+                $persona->personas_en_casa        = $request->input('personas_en_casa');
+                $persona->ingreso_personal        = $request->input('ingreso_personal');
+                $persona->ingreso_familiar        = $request->input('ingreso_familiar');
+                $persona->telefono_fijo        = $request->input('telefono_fijo');
+                $persona->telefono_movil1        = $request->input('telefono_movil1');
+                $persona->telefono_movil2        = $request->input('telefono_movil2');
+                $persona->estado        = $request->input('estado');
+                $persona->email        = $request->input('email');
+                $persona->save();
+            }else{
+                $persona               = new Persona();
+                $persona->codigo        = $codigo_generado;
+                $persona->dni        = $request->input('dni');
+                $persona->nombres        = $request->input('nombres');
+                $persona->apellidos        = $request->input('apellidos');
+                $persona->tipo        = $request->input('tipo');
+                $persona->fechai        = $request->input('fechai');
+                $persona->direccion        = $request->input('direccion');
+                $persona->fecha_nacimiento        = $request->input('fecha_nacimiento');
+
+                $persona->sexo        = $request->input('sexo');
+                $persona->estado_civil        = $request->input('estado_civil');
+                $persona->ocupacion        = $request->input('ocupacion');
+                $persona->personas_en_casa        = $request->input('personas_en_casa');
+                $persona->ingreso_personal        = $request->input('ingreso_personal');
+                $persona->ingreso_familiar        = $request->input('ingreso_familiar');
+                $persona->telefono_fijo        = $request->input('telefono_fijo');
+                $persona->telefono_movil1        = $request->input('telefono_movil1');
+                $persona->telefono_movil2        = $request->input('telefono_movil2');
+                $persona->estado        = $request->input('estado');
+                $persona->email        = $request->input('email');
+                $persona->save();
+            }
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -250,12 +278,14 @@ class PersonController extends Controller
         foreach ($ahorros1 as $key => $value) {
             $ahorros += $value->capital;
         }
+        $cboPers = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
         $credito = Credito::where('estado','!=','1')->where('persona_id',$id)->where('deleted_at',null)->count();
 
         $formData       = array('persona.update', $id);
+        $ruta             = $this->rutas;
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','cboSexo','cboEstadoCivil', 'cboTipo','cboEstado','acciones','ahorros','credito'));
+        return view($this->folderview.'.mant')->with(compact('persona', 'formData', 'entidad', 'boton', 'listar','ruta','cboSexo','cboEstadoCivil', 'cboTipo','cboEstado','acciones','ahorros','credito','cboPers'));
     }
 
     /**
@@ -293,33 +323,30 @@ class PersonController extends Controller
             $tipo_selected = $request->input('tipo');
             $codigo_generado =  substr_replace($valor , $tipo_selected, 0, 1);
 
-            $perosna                 = Persona::find($id);
-            $perosna->codigo        = $codigo_generado;
-            $perosna->dni        = $request->input('dni');
-            $perosna->nombres        = $request->input('nombres');
-            $perosna->apellidos        = $request->input('apellidos');
-            $perosna->tipo        = $request->input('tipo');
-            $perosna->fechai        = $request->input('fechai');
-            $perosna->direccion        = $request->input('direccion');
-            $perosna->fecha_nacimiento        = $request->input('fecha_nacimiento');
+            $persona                 = Persona::find($id);
+            $persona->codigo        = $codigo_generado;
+            $persona->dni        = $request->input('dni');
+            $persona->nombres        = $request->input('nombres');
+            $persona->apellidos        = $request->input('apellidos');
+            $persona->tipo        = $request->input('tipo');
+            $persona->fechai        = $request->input('fechai');
+            $persona->direccion        = $request->input('direccion');
+            $persona->fecha_nacimiento        = $request->input('fecha_nacimiento');
 
-            $perosna->nombres_apoderado        = $request->input('nombres_apoderado');
-            $perosna->dni_apoderado        = $request->input('dni_apoderado');
-            $perosna->telefono_fijo_apoderado        = $request->input('telefono_fijo_apoderado');
-            $perosna->direccion_apoderado        = $request->input('direccion_apoderado');
+            $persona->apoderado_id        = $request->input('apoderado_id');
 
-            $perosna->sexo        = $request->input('sexo');
-            $perosna->estado_civil        = $request->input('estado_civil');
-            $perosna->ocupacion        = $request->input('ocupacion');
-            $perosna->personas_en_casa        = $request->input('personas_en_casa');
-            $perosna->ingreso_personal        = $request->input('ingreso_personal');
-            $perosna->ingreso_familiar        = $request->input('ingreso_familiar');
-            $perosna->telefono_fijo        = $request->input('telefono_fijo');
-            $perosna->telefono_movil1        = $request->input('telefono_movil1');
-            $perosna->telefono_movil2        = $request->input('telefono_movil2');
-            $perosna->estado        = $request->input('estado');
-            $perosna->email        = $request->input('email');
-            $perosna->save();
+            $persona->sexo        = $request->input('sexo');
+            $persona->estado_civil        = $request->input('estado_civil');
+            $persona->ocupacion        = $request->input('ocupacion');
+            $persona->personas_en_casa        = $request->input('personas_en_casa');
+            $persona->ingreso_personal        = $request->input('ingreso_personal');
+            $persona->ingreso_familiar        = $request->input('ingreso_familiar');
+            $persona->telefono_fijo        = $request->input('telefono_fijo');
+            $persona->telefono_movil1        = $request->input('telefono_movil1');
+            $persona->telefono_movil2        = $request->input('telefono_movil2');
+            $persona->estado        = $request->input('estado');
+            $persona->email        = $request->input('email');
+            $persona->save();
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -551,4 +578,21 @@ class PersonController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
     }
 
+    public function listpersonas(Request $request){
+        $term = trim($request->q);
+        if (empty($term)) {
+            return \Response::json([]);
+        }
+        $tags = Persona::where("dni",'ILIKE', '%'.$term.'%')->orwhere("nombres",'ILIKE', '%'.$term.'%')->orwhere("apellidos",'ILIKE', '%'.$term.'%')->limit(5)->get();
+        $formatted_tags = [];
+        foreach ($tags as $tag) {
+            if(trim($tag->tipo) == 'S'){
+                $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];
+            }else{
+                //$formatted_tags[] = ['id'=> '', 'text'=>"seleccione socio"];
+            }
+        }
+
+        return \Response::json($formatted_tags);
+    }
 }
