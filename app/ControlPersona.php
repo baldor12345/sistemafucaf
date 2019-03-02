@@ -82,7 +82,8 @@ class ControlPersona extends Model
                     ->where(DB::raw('extract( year from control_socio.fecha )'),'>=',$year1)
                     ->where(DB::raw('extract( month from control_socio.fecha )'),'<=',$month2)
                     ->where(DB::raw('extract( year from control_socio.fecha )'),'<=',$year2)
-                    ->groupBy('persona.id');
+                    ->groupBy('persona.id')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 
@@ -111,7 +112,8 @@ class ControlPersona extends Model
                     ->where(DB::raw('extract( year from control_socio.fecha )'),'>=',$year1)
                     ->where(DB::raw('extract( month from control_socio.fecha )'),'<=',$month2)
                     ->where(DB::raw('extract( year from control_socio.fecha )'),'<=',$year2)
-                    ->groupBy('persona.id');
+                    ->groupBy('persona.id')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 
@@ -139,7 +141,8 @@ class ControlPersona extends Model
                     ->where(DB::raw('extract( year from control_socio.fecha )'),'>=',$year1)
                     ->where(DB::raw('extract( month from control_socio.fecha )'),'<=',$month2)
                     ->where(DB::raw('extract( year from control_socio.fecha )'),'<=',$year2)
-                    ->where('control_socio.descripcion','!=',null);
+                    ->where('control_socio.descripcion','!=',null)
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 
