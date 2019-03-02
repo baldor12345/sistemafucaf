@@ -51,10 +51,10 @@
                 <td align="left" style="font-size: 12px" colspan="7" >TARDANZAS</td>
             </tr>
             <tr>
-                <td colspan="1"></td>
-                <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter" ><strong>CODIGO</strong></td>
-                <td align="center" colspan="2" style="font-size: 10px" class="linebordercenter" ><strong>NOMBRES</strong></td>
-                <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter"><strong>TOTAL</strong></td>
+                <td colspan="1" width="12%"></td>
+                <td align="center" width="15%" colspan="1" style="font-size: 10px" class="linebordercenter" ><strong>CODIGO</strong></td>
+                <td align="center" width="50%" colspan="2" style="font-size: 10px" class="linebordercenter" ><strong>NOMBRES</strong></td>
+                <td align="center" width="10%" colspan="1" style="font-size: 10px" class="linebordercenter"><strong>TOTAL</strong></td>
                 <td colspan="1" ></td>
                 
             </tr>
@@ -62,10 +62,10 @@
         <tbody>
             @foreach($listaT as $value)
             <tr>
-                <td colspan="1"></td>
-                <td align="left" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_codigo }}</td>
-                <td align="left" colspan="2" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_nombres.' '.$value->persona_apellidos }}</td>
-                <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->control_tardanzas }}</td>
+                <td colspan="1" width="12%"></td>
+                <td align="left" width="15%" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_codigo }}</td>
+                <td align="left"  width="50%" colspan="2" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_apellidos.'  '.$value->persona_nombres }}</td>
+                <td align="center" width="10%"  colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->control_tardanzas }}</td>
                 <td colspan="1"></td>
             </tr>
             @endforeach
@@ -77,20 +77,20 @@
                 <td align="left" style="font-size: 12px" colspan="7" >FALTAS</td>
             </tr>
             <tr>
-                <td colspan="1"></td>
-                <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter" ><strong>CODIGO</strong></td>
-                <td align="center" colspan="2" style="font-size: 10px" class="linebordercenter" ><strong>NOMBRES</strong></td>
-                <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter"><strong>TOTAL</strong></td>
+                <td colspan="1" width="12%"></td>
+                <td align="center" width="15%" colspan="1" style="font-size: 10px" class="linebordercenter" ><strong>CODIGO</strong></td>
+                <td align="center"  width="50%" colspan="2" style="font-size: 10px" class="linebordercenter" ><strong>NOMBRES</strong></td>
+                <td align="center" width="10%" colspan="1" style="font-size: 10px" class="linebordercenter"><strong>TOTAL</strong></td>
                 <td colspan="1"></td>
             </tr>
         </thead>
         <tbody>
             @foreach($listaF as $value)
             <tr>
-             <td colspan="1"></td>
-                <td align="left" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_codigo }}</td>
-                <td align="left" colspan="2" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_nombres.' '.$value->persona_apellidos }}</td>
-                <td align="center" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->control_faltas }}</td>
+             <td colspan="1" width="12%"></td>
+                <td align="left" width="15%" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_codigo }}</td>
+                <td align="left" width="50%" colspan="2" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_apellidos.'  '.$value->persona_nombres }}</td>
+                <td align="center" width="10%" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->control_faltas }}</td>
                 <td colspan="1"></td>
             </tr>
             @endforeach

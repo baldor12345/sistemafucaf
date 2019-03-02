@@ -58,7 +58,7 @@
             @foreach($listaT as $value)
             <tr>
                 <td align="left" colspan="1" style="font-size: 10px" class="linebordercenter" >{{ ' '.Date::parse($value->fecha)->format('d').' de '.$Month[intval(Date::parse($value->fecha)->format('m'))] }}</td>
-                <td align="left" colspan="2" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_nombres.' '.$value->persona_apellidos }}</td>
+                <td align="left" colspan="2" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->persona_apellidos.'  '.$value->persona_nombres }}</td>
                 <td align="center" colspan="4" style="font-size: 10px" class="linebordercenter" >{{ ' '.$value->descripcion }}</td>
             </tr>
             @endforeach
