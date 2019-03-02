@@ -46,8 +46,8 @@
                     <td style="font-size: 8px" colspan="1">{{ $credito->periodo }}</td>
                     <td style="font-size: 8px" colspan="1"></td>
                     <td style="font-size: 8px" colspan="2">Estado de Cuota: </td>
-                    <td style="font-size: 8px" colspan="3">P=Pagada C=Pago total capital</td>
-                    <td style="font-size: 8px" colspan="2"> </td>
+                    <td style="font-size: 8px" colspan="5">P=Pagada, C=Pago total capital, M=Moroso </td>
+                    
                 </tr>
                 <tr>
                     <th style="font-size: 8px" colspan="1"><strong>FECHA PRESTAMO</strong></th>
@@ -89,7 +89,7 @@
                         <td style="font-size: 8px" colspan="1">{{ round($value->interes_mora, 1) }}</td>
                         <td style="font-size: 8px" colspan="1">{{ round($value->parte_capital + $value->interes + $value->interes_mora, 1) }}</td>
                         <td style="font-size: 8px" colspan="1">{{ round($value->saldo_restante, 1) }}</td>
-                        <td style="font-size: 8px" colspan="1">{{ ($value->estado != 0 )?'P':'-' }}</td>
+                        <td style="font-size: 8px" colspan="1">{{ ($value->estado == '1' && $value->interes_mora>0 )?'P-M':(($value->estado == '1')?'P':(($value->estado == 'm')?'M':'-')) }}</td>
                     </tr>
                 @endforeach
 

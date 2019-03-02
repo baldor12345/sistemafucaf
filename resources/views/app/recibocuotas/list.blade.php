@@ -34,20 +34,12 @@
 		$interes_ganado =0;
 		
 		if($value->fecha_iniciomora != null){
-			// $fecha_init = date("Y-m-d", strtotime($value->fecha_iniciomora));
-			// $fecha_inicial = new DateTime($fecha_init);
 			 $fecha_fin =null;
 			if($value->fecha_pago == null){
 				$fecha_fin= date("Y-m-d", strtotime($fecha_actual));
 			}else{
 				$fecha_fin= date("Y-m-d", strtotime($value->fecha_pago));
 			}
-			// $fecha_final = new DateTime($fecha_fin);
-			// $diferencia = $fecha_inicial->diff( $fecha_final);
-			// $numeroDias = $diferencia->format('%R%a días');
-			// echo("numerodias: ".$numeroDias);
-
-
 			//******************************************
 
 			$anio_menor= date("Y", strtotime($value->fecha_iniciomora));
@@ -61,11 +53,10 @@
 			}else if($anio_mayor > $anio_menor){
 				$diferencia_anios = $anio_mayor - $anio_menor;
 				$num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
-				
 			}
 			//******************************************
 			if($num_meses>0){
-				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->interes);
+				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
 			}
 		}
 			 

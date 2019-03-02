@@ -1,6 +1,8 @@
 
 <div id="divInfo" class="alert alert-success">Acreditado: {{ $persona->nombres." ".$persona->apellidos }}
 	<ul>
+		<li>Capital: {{ round($cuota->parte_capital,1)}}</li>
+		<li>Interes: {{ round($cuota->interes,1)}}</li>
 		<li>Monto Cuota: {{ round($cuota->parte_capital + $cuota->interes,1)}}</li>
 		<li>Saldo Restante: {{ round($cuota->saldo_restante,1)}}</li>
 		<li>Numero cuota: {{ round($cuota->numero_cuota."/".$credito->periodo, 1)}}</li>
@@ -49,14 +51,14 @@
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('450');
-		var saldorestante = "{{ ($cuota->parte_capital + $cuota->interes) }}";
+		var saldorestante = "{{ ($cuota->parte_capital + $cuota->saldo_restante) }}";
 		var montomora = $('#porcentaje_mora').val()/100 * saldorestante;
 
 		$('#monto_cuota').val(RoundDecimal(montomora, 4));
 		$('#monto_moratorio').html('Interes mora en un mes S/.: '+RoundDecimal(montomora, 1));
 
 		$("#porcentaje_mora").on('keyup', function(){
-			var saldorest = parseFloat("{{ ($cuota->parte_capital + $cuota->interes) }}");
+			var saldorest = parseFloat("{{ ($cuota->parte_capital + $cuota->saldo_restante) }}");
 			var mont_mora = saldorest* ( $('#porcentaje_mora').val()/100 );
 			$('#monto_moratorio').html('Interes mora en un mes S/.: '+RoundDecimal(mont_mora, 1));
 		}).keyup();
