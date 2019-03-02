@@ -16,7 +16,11 @@
     <tbody>
         <?php
             $contador = 1;
-            $saldo_restante = $credito->valor_credito;
+           
+            if(!($opcion == "vigentes" || $opcion == "cancelados")){
+                $saldo_restante = $credito->valor_credito;
+            }
+            
             $nombremes = array('1'=>'Ene',
             '1'=>'Ene',
             '01'=>'Ene',

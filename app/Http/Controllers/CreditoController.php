@@ -652,6 +652,21 @@ class CreditoController extends Controller{
         $entidad_cuota = 'Cuota';
         $entidad_credito = 'Credito';
         $cabecera = array();
+        /*********************** */
+        $caja = Caja::where('estado','=','A')->where('deleted_at','=',null)->get();
+        $anio = count($caja)>0?date('Y', strtotime($caja[0]->fecha_horaapert)): date('Y');
+        $mes = count($caja)>0?date('m', strtotime($caja[0]->fecha_horaapert)): date('m');
+        $cuotasPendientes = Cuota::where('estado','!=','1')->where('credito_id','=',$credito_id)->where('deleted_at','=',null)->orderby('numero_cuota','ASC')->get();
+
+        // $numero_cuotas_pendientes = count($cuotasPendientes);
+        // $cuota_siguiente = null;
+        // if($numero_cuotas_pendientes > 0){
+        //     $cuota_siguiente = Cuota::where('credito_id','=', $credito_id)->where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('deleted_at','=',null)->get()[0];
+        // }
+        $saldo_restante= count($cuotasPendientes) >0?round($cuotasPendientes[0]->parte_capital + $cuotasPendientes[0]->saldo_restante, 1): 0;
+        // $saldo_restante = $cuota_siguiente != null? round($cuota_siguiente->parte_capital + $cuota_siguiente->saldo_restante,1): 0;
+        
+        /*************************** */
         if($opcion == "vigentes"){
            
             $resultado = Cuota::listar($credito_id);
@@ -716,7 +731,7 @@ class CreditoController extends Controller{
             $paginaactual = $paramPaginacion['nuevapagina'];
             $lista = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.listdetallecredito')->with(compact('lista','credito', 'paginacion', 'inicio', 'fin', 'entidad_credito','entidad_cuota', 'cabecera','titulo_pagocuota','credito_id','ruta','caja_id', 'opcion','fecha_actual'));
+            return view($this->folderview.'.listdetallecredito')->with(compact('lista','credito', 'paginacion', 'inicio', 'fin', 'entidad_credito','entidad_cuota', 'cabecera','titulo_pagocuota','credito_id','ruta','caja_id', 'opcion','fecha_actual', 'saldo_restante'));
         }
         return view($this->folderview.'.listdetallecredito')->with(compact('lista','entidad_credito','entidad_cuota','fecha_actual'));
     }
@@ -1388,6 +1403,7 @@ public function numero_meses($fecha_inico, $fecha_final){
                 $cuota_siguiente = Cuota::where('credito_id','=', $credito->id)->where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('deleted_at','=',null)->get()[0];
             }
             $saldo_restante = $cuota_siguiente != null? round($cuota_siguiente->parte_capital + $cuota_siguiente->saldo_restante,1): 0;
+            
             $persona = Persona::find($credito->persona_id);
             return view($this->folderview.'.vistarefinanciacion')->with(compact('saldo_restante','ruta','credito','persona','caja','numero_cuotas_pendientes','fecha_actual','num_cuotas_porpagar','cuota_siguiente'));
         }else{
