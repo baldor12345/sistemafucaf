@@ -64,10 +64,10 @@ class ControlPersonaController extends Controller
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'ControlPersona';
-        $fechai             = Libreria::getParam($request->input('fechai'));
-        $fechaf             = Libreria::getParam($request->input('fechaf'));
-        $tipo              = Libreria:: getParam($request->input('tipo'));
-        $resultado        = ControlPersona::listar($fechai,$fechaf,$tipo);
+        $fechaini             = Libreria::getParam($request->input('fechaini'));
+        $fechafin             = Libreria::getParam($request->input('fechafin'));
+        $tipoi             = Libreria:: getParam($request->input('tipoi'));
+        $resultado        = ControlPersona::listar($fechaini,$fechafin,$tipoi);
         $lista            = $resultado->get();
         
         $caja = Caja::where("estado","=","A")->get();

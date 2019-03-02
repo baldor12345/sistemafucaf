@@ -25,19 +25,19 @@
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 
 					<div class="form-group">
-						{!! Form::label('fechai', 'Desde:', array('class' => 'input-sm')) !!}
-						{!! Form::date('fechai', null, array('class' => 'form-control input-xs', 'id' => 'fechai',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::label('fechaini', 'Desde:', array('class' => 'input-sm')) !!}
+						{!! Form::date('fechaini', null, array('class' => 'form-control input-xs', 'id' => 'fechaini',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 						
 					</div>
 					<div class="form-group">
-						{!! Form::label('fechaf', 'Hasta:', array('class' => 'input-sm')) !!}
-						{!! Form::date('fechaf', null, array('class' => 'form-control input-xs', 'id' => 'fechaf',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::label('fechafin', 'Hasta:', array('class' => 'input-sm')) !!}
+						{!! Form::date('fechafin', null, array('class' => 'form-control input-xs', 'id' => 'fechafin',  'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 						
 					</div>
 
 					<div class="form-group">
-						{!! Form::label('tipo', 'Tipo:', array('class' => 'input-sm')) !!}
-						{!! Form::select('tipo', $cboTipo, null, array('class' => 'form-control input-sm', 'id' => 'tipo')) !!}
+						{!! Form::label('tipoi', 'Tipo:', array('class' => 'input-sm')) !!}
+						{!! Form::select('tipoi', $cboTipo, null, array('class' => 'form-control input-sm', 'id' => 'tipoi')) !!}
 					</div>
 					
 					<div class="form-group">
@@ -68,9 +68,9 @@
         var fechaactualr = (fechaActual.getFullYear()) +"-"+month+"-"+day+"";
 		var fechai = (fechaActual.getFullYear()) +"-"+month+"-01";
 		//fecha inicial
-		$('#fechaf').val(fechaactualr);
+		$('#fechafin').val(fechaactualr);
 		//fecha final
-        $('#fechai').val(fechai);
+        $('#fechaini').val(fechai);
 
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
 		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="login"]').keyup(function (e) {
