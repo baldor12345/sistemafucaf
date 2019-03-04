@@ -131,25 +131,36 @@ class Acciones extends Model
     }
 
     public static function listresumen($fecha){
+        $fecha = date('Y-m-d', strtotime($fecha));
         $year = date('Y', strtotime($fecha));
         $month = date('m', strtotime($fecha));
         $day = date('d', strtotime($fecha));
         $fechai;
+        $result1 = DB::table('persona')
+        ->leftjoin('acciones','persona.id','=','acciones.persona_id')
+        ->select(
+            'persona.id as persona_id'
+        )
+        ->whereDate('acciones.fechai','=',$fecha)
+        ->where('persona.estado','A')
+        ->where('persona.tipo','=','S ')->get();
+        $ids = array();
+       
+        foreach ($result1 as $user) {
+            $ids[] = $user->persona_id;
+        }
+       
         $result = DB::table('persona')
-                    ->leftjoin('acciones','persona.id','=','acciones.persona_id')
                     ->select(
                         'persona.id as persona_id',
                         'persona.codigo as persona_codigo',
                         'persona.nombres as persona_nombres',
-                        'persona.apellidos as persona_apellidos',
-                        DB::raw("COUNT(acciones.estado) as cantidad_accion")
+                        'persona.apellidos as persona_apellidos'
                     )
-                    ->where(DB::raw('extract( year from acciones.fechai)'),'=',$year)
-                    ->where(DB::raw('extract( month from acciones.fechai)'),'=',$month)
-                    ->where(DB::raw('extract( day from acciones.fechai)'),'=',$day)
+                    ->whereNotIn('persona.id', $ids)
                     ->where('persona.estado','A')
                     ->where('persona.tipo','=','S ')
-                    ->groupBy('persona.id')
+                   
                     ->orderBy('persona.apellidos','ASC');
         return $result;
     }
