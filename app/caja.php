@@ -70,7 +70,8 @@ class caja extends Model
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
                     ->where('transaccion.deleted_at',null)
-                    ->groupBy('persona.id');
+                    ->groupBy('persona.id')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 
@@ -173,7 +174,8 @@ class caja extends Model
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','E')
                     ->where('transaccion.deleted_at',null)
-                    ->groupBy('persona.id');
+                    ->groupBy('persona.id')
+                    ->orderBy('persona.apellidos','ASC');
         return $results;
     }
 
