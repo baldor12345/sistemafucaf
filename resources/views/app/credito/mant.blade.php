@@ -1,13 +1,18 @@
 
 <div id="divinfo"></div>
 <div id="divMensajeError{!! $entidad !!}"></div>
-<div id="divInfo{!! $entidad !!}"></div>
+<div class="row">
+    <div id="divInfo{!! $entidad !!}" class="col-12 col-md-6" ></div>
+    <div id="divInfoaval" class="col-12 col-md-6" ></div>
+</div>
+
 
 {!! Form::model($credito, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('numcreditos', 0, array('id' => 'numcreditos')) !!}
 {!! Form::hidden('estado', 'I', array('id' => 'estado')) !!}
 <div class="form-row">
+    
     <div class="form-group col-6 col-md-6 col-sm-12">
         {!! Form::label('selectnom', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
         {!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
@@ -79,8 +84,6 @@
                 
             }
         });
-
-
         $('#selectnom').change(function(){
             $('#selectaval').select2("val", "0");
             $.get("creditos/"+$(this).val()+"",function(response, facultad){
@@ -101,8 +104,8 @@
                     }else{
                         msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-danger'></button></li></ul></div>";
                     }
-                   
                         $('#divInfo{{ $entidad }}').html(msj);
+                        // $('#divInfoaval').html(msj);
                         $('#divInfo{{ $entidad }}').show();
                         $('#numcreditos').val(numCreditos);
                     if( persona[0].tipo.trim() == 'S'){
@@ -141,34 +144,44 @@
         $('#selectaval').change(function(){
             if($(this).val() != 0){
                 $.get("creditos/"+$(this).val()+"",function(response, facultad){
-                var persona = response[0];
-                var numCreditos = response[1];
-                var numAcciones = response[2];
-                $('#pers_aval_id').val('');
-                if(persona.length>0){
-                    $("#pers_aval_id").val(persona[0].id);
-                    $('#pers_aval_id').attr('tipoavl', ''+(persona[0].tipo).trim());
-                    $('#divMensajeError{{ $entidad }}').hide();
-                }else{
-                    $("#pers_aval_id").val(0);
-                    $('#pers_aval_id').attr('tipoavl', '0');
-                }
-                if($('#selectnom').val() == $('#selectaval').val()){
-                    var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
-                    $('#divMensajeError{{ $entidad }}').html(msj);
-                    $('#divMensajeError{{ $entidad }}').show();
-                }else if((((persona.length>0)?persona[0].tipo:"").trim())!= 'S'){
-                    var msj = "<div class='alert alert-danger'><strong>¡Alerta!</strong> El aval debe ser obligatoriamente un socio.!</div>";
-                    $('#selectaval').select2("val", "0");
-                    $('#divMensajeError{{ $entidad }}').html(msj);
-                    $('#divMensajeError{{ $entidad }}').show();
-                }else{
-                    $('#divMensajeError{{ $entidad }}').html("");
-                    $('#divMensajeError{{ $entidad }}').hide();
-                }
-            });
+                    var persona = response[0];
+                    var numCreditos = response[1];
+                    var numAcciones = response[2];
+                    var numMoras = response[3];
+                    $('#pers_aval_id').val('');
+                    var msj = "<div class='alert alert-light'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li>";
+                    msj += "<li>Tipo: "+(persona[0].tipo.trim() == 'C'? 'Cliente': 'Socio')+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li>";
+                    if(numMoras == 0){
+                        msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-success btn-sm'></button></li></ul></div>";
+                    }else if(numMoras>0 && numMoras<=5){
+                        msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-warning'></button></li></ul></div>";
+                    }else{
+                        msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-danger'></button></li></ul></div>";
+                    }
+                    $('#divInfoaval').html(msj);
+                    if(persona.length>0){
+                        $("#pers_aval_id").val(persona[0].id);
+                        $('#pers_aval_id').attr('tipoavl', ''+(persona[0].tipo).trim());
+                        $('#divMensajeError{{ $entidad }}').hide();
+                    }else{
+                        $("#pers_aval_id").val(0);
+                        $('#pers_aval_id').attr('tipoavl', '0');
+                    }
+                    if($('#selectnom').val() == $('#selectaval').val()){
+                        var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> El aval no debe ser el mismo que el acreditado.!</div>";
+                        $('#divMensajeError{{ $entidad }}').html(msj);
+                        $('#divMensajeError{{ $entidad }}').show();
+                    }else if((((persona.length>0)?persona[0].tipo:"").trim())!= 'S'){
+                        var msj = "<div class='alert alert-danger'><strong>¡Alerta!</strong> El aval debe ser obligatoriamente un socio.!</div>";
+                        $('#selectaval').select2("val", "0");
+                        $('#divMensajeError{{ $entidad }}').html(msj);
+                        $('#divMensajeError{{ $entidad }}').show();
+                    }else{
+                        $('#divMensajeError{{ $entidad }}').html("");
+                        $('#divMensajeError{{ $entidad }}').hide();
+                    }
+                });
             }
-            
         });
         $(".cliente").html('Socio o Cliente: <sup style="color: red;">Obligatorio</sup>');
         $(".aval").html('Socio Aval: <sup style="color: blue;">Opcional</sup>');
@@ -364,8 +377,6 @@
             $('#btnGuardarCredito').removeClass('disabled');
             $('#btnGuardarCredito').removeAttr('disabled');
             $('#btnGuardarCredito').html('<i class="fa fa-check fa-lg"></i> Registrar');
-           
-            // var msj = "<div class='alert alert-danger'><strong>¡Error!</strong> Asegurese de rellenar los correctamente los campos, dni, valor credito (el valor debe ser mayor a '0'), periodo (el valor debe ser mayor a '0'), y fecha</div>";
                 
         }
         $('#btnGuardarCredito').removeClass('disabled');
