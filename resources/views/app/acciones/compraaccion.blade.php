@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\DB;
 		<div class="form-group">
 			{!! Form::label('cantidad_accion', ' Cantidad:', array('class' => 'col-sm-6  col-xs-12 control-label')) !!}
 			<div class="col-sm-6 col-xs-12">
-				{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs', 'id' => 'cantidad_accion', 'placeholder' => '....', 'maxlength' => '3')) !!}
+				{!! Form::text('cantidad_accion', null, array('class' => 'form-control input-xs input-number', 'id' => 'cantidad_accion', 'placeholder' => '....', 'maxlength' => '3')) !!}
 			</div>
 		</div>
 	</div>
@@ -117,7 +117,7 @@ use Illuminate\Support\Facades\DB;
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('570');
-
+		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="cantidad_accion"]').focus();
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
 		var month = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
@@ -177,11 +177,11 @@ use Illuminate\Support\Facades\DB;
 	});
 
 	function guardaraccion(entidad, rutarecibo) {
-		var lmite = $('#cantidad_limite').val();
+		var lmite = parseInt($('#cantidad_limite').val());
 		if(lmite < 0){
 			lmite =0;
 		}
-		var cantid = $('#cantidad_accion').val();
+		var cantid = parseInt($('#cantidad_accion').val());
 		var accion_inicio = parseInt('{{ $cantaccionpersona }}');
 		if(accion_inicio !=0){
 			if(lmite>=cantid){
