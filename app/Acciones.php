@@ -49,31 +49,35 @@ class Acciones extends Model
         return  Acciones::where('dni','=',$id)->get();
     }
 
-    public function scopelistar($codigo, $dni){
-
-
-        $results = DB::table('acciones')
-            ->join('persona', 'acciones.persona_id', '=', 'persona.id')
-            ->join('configuraciones', 'acciones.configuraciones_id', '=', 'configuraciones.id')
-            ->select( 
-                    'persona.id as persona_id',
-                    'persona.codigo AS persona_codigo',
-                    'persona.dni as persona_dni',
-                    'persona.nombres as persona_nombres',
-                    'persona.apellidos as persona_apellidos',
-                    'configuraciones.codigo AS configuraciones_codigo',
-                    'acciones.estado',
-                    'configuraciones.precio_accion AS precio_accion',
-                    DB::raw('count(acciones.estado) as cantidad_accion_comprada')
+    public static  function listar($fecha){     
+        $fecha = date('Y-m-d', strtotime($fecha));
+        $result1 = DB::table('persona')
+        ->leftjoin('acciones','persona.id','=','acciones.persona_id')
+        ->select(
+            'persona.id as persona_id'
+        )
+        ->whereDate('acciones.fechai','=',$fecha)
+        ->where('persona.estado','A')
+        ->where('persona.tipo','=','S ')->get();
+        $ids = array();
+       
+        foreach ($result1 as $user) {
+            $ids[] = $user->persona_id;
+        }       
+        $result = DB::table('persona')
+                    ->select(
+                        'persona.id as persona_id',
+                        'persona.dni as persona_dni',
+                        'persona.codigo as persona_codigo',
+                        'persona.nombres as persona_nombres',
+                        'persona.apellidos as persona_apellidos'
                     )
-            ->where('acciones.estado', '=', 'C')
-            ->where('acciones.deleted_at',null)
-            ->groupBy('persona.id','persona.codigo','persona.dni','persona.nombres',
-                                'persona.apellidos','configuraciones.codigo',
-                                'acciones.estado','configuraciones.precio_accion')
-            ->orderBy('persona.apellidos','ASC');
-        return $results;
-        			
+                    ->whereNotIn('persona.id', $ids)
+                    ->where('persona.estado','A')
+                    ->where('persona.tipo','=','S ')
+                   
+                    ->orderBy('persona.apellidos','ASC');
+        return $result;
     }
 
     public static function listAcciones($persona_id){

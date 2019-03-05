@@ -160,8 +160,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
     Route::get('acciones/buscaraccion', 'AccionesController@buscaraccion')->name('acciones.buscaraccion');
 
-    Route::get('acciones/listresumen', 'AccionesController@listresumen')->name('acciones.listresumen');
-    Route::get('acciones/buscarresumen', 'AccionesController@buscarresumen')->name('acciones.buscarresumen');
+    Route::get('acciones/cargarcompra/{id}', 'AccionesController@cargarcompra')->name('acciones.cargarcompra');
+    Route::post('acciones/guardarcompra/{id}', 'AccionesController@guardarcompra')->name('acciones.guardarcompra');
 
     Route::get('acciones/cargarventa/{id}', 'AccionesController@cargarventa')->name('acciones.cargarventa');
     Route::post('acciones/guardarventa/{id}', 'AccionesController@guardarventa')->name('acciones.guardarventa');
