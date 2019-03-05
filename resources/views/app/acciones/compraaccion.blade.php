@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 {!! Form::open(array('route' => array('acciones.guardarcompra',$id),'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off')) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('persona_id', $id, array('id' => 'persona_id')) !!}
+<div class="card-box">
 <div class="form-group">
 	{!! Form::label('nombres', 'Nombres:', array('class' => 'col-sm-2 col-xs-12 control-label')) !!}
 	<div class="col-sm-10 col-xs-12">
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\DB;
 {!! Form::hidden('cantidad_limite', null, array('id' => 'cantidad_limite')) !!}
 
 <div class="row">
-	<div class="col-md-4 col-sm-12 col-xs-12">
+	<div class=" col-sm-4 col-xs-12">
 		<div class="form-group">
 			{!! Form::label('cantidad_accion', ' Cantidad:', array('class' => 'col-sm-6  col-xs-12 control-label')) !!}
 			<div class="col-sm-6 col-xs-12">
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\DB;
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4 col-sm-12 col-xs-12">
+	<div class=" col-sm-4 col-xs-12">
 		<div class="form-group">
 			{!! Form::label('configuraciones_id', 'Precio:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 			<div class="col-sm-8 col-xs-12">
@@ -41,7 +42,7 @@ use Illuminate\Support\Facades\DB;
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4 col-sm-12 col-xs-12">
+	<div class=" col-sm-4 col-xs-12">
 		<div class="form-group">
 			{!! Form::label('total', 'Total S/.:', array('class' => 'col-sm-6 col-xs-12 control-label')) !!}
 			<div class="col-sm-6 col-xs-12">
@@ -52,7 +53,7 @@ use Illuminate\Support\Facades\DB;
 </div>
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-sm-6">
 		<div class="form-group ">
 			{!! Form::label('fechai', 'Fecha:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 			<div class="col-sm-8 col-xs-12">
@@ -60,7 +61,7 @@ use Illuminate\Support\Facades\DB;
 			</div>
 		</div>
 	</div>
-	<div class="col-md-6">
+	<div class="col-sm-6">
 		<div class="form-group">
 			{!! Form::label('concepto_id', 'Concepto:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 			<div class="col-sm-9 col-xs-12">
@@ -70,12 +71,13 @@ use Illuminate\Support\Facades\DB;
 	</div>
 </div>
 
+
 <div class="row" id='oculto' style="display:none;">
 	<fieldset> 
 		<div class="col-md-12">
 			<p style="font-family: italic; font size: 16px; color:#FF0000">Contribucion de Ingreso como nuevo Socio</p>
 		</div>
-		<div class="col-md-6">
+		<div class="col-sm-6">
 			<div class="form-group">
 				{!! Form::label('contribucion_id', 'Concepto:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 				<div class="col-sm-8 col-xs-12">
@@ -83,7 +85,7 @@ use Illuminate\Support\Facades\DB;
 				</div>
 			</div>	
 		</div>
-		<div class="col-md-6">
+		<div class="col-sm-6">
 			<div class="form-group ">
 				{!! Form::label('monto', 'Monto S/.:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
 				<div class="col-sm-7 col-xs-12">
@@ -98,6 +100,34 @@ use Illuminate\Support\Facades\DB;
 	{!! Form::label('descripcion', 'Descripcion:', array('class' => 'col-sm-2 col-xs-12 control-label')) !!}
 	<div class="col-sm-10 col-xs-12">
 		{!! Form::text('descripcion', null, array('class' => 'form-control input-xs', 'id' => 'descripcion', 'placeholder' => 'descripcion')) !!}
+	</div>
+</div>
+</div>
+
+<div class="row">
+	<div class=" col-sm-4 col-xs-12">
+		<div class="form-group">
+			{!! Form::label('monto_recibido', 'Monto Recibido S/.:', array('class' => 'col-sm-7  col-xs-12 control-label')) !!}
+			<div class="col-sm-5 col-xs-12">
+				{!! Form::text('monto_recibido', null, array('class' => 'form-control input-xs input-number', 'id' => 'monto_recibido', 'placeholder' => '....', 'maxlength' => '6')) !!}
+			</div>
+		</div>
+	</div>
+	<div class=" col-sm-4 col-xs-12">
+		<div class="form-group">
+			{!! Form::label('monto_pago', 'Monto Pago S/.:', array('class' => 'col-sm-7 col-xs-12 control-label')) !!}
+			<div class="col-sm-5 col-xs-12">
+				{!! Form::text('monto_pago', 0.0, array('class' => 'form-control input-xs', 'id' => 'monto_pago', 'readonly')) !!}
+			</div>
+		</div>
+	</div>
+	<div class=" col-sm-4 col-xs-12">
+		<div class="form-group">
+			{!! Form::label('monto_devolver', 'Diferencia S/.:', array('class' => 'col-sm-7 col-xs-12 control-label')) !!}
+			<div class="col-sm-5 col-xs-12">
+				{!! Form::text('monto_devolver', 0.0, array('class' => 'form-control input-xs', 'id' => 'monto_devolver', 'readonly')) !!}
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -116,7 +146,7 @@ use Illuminate\Support\Facades\DB;
 	$(document).ready(function() {
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('570');
+		configurarAnchoModal('650');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="cantidad_accion"]').focus();
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
@@ -157,8 +187,25 @@ use Illuminate\Support\Facades\DB;
 			var precio = '{{ $precio_accion }}';
 			if(cantidad_ingresad != 0){
 				$('#total').val(cantidad_ingresad*precio);
+				$('#monto_pago').val(cantidad_ingresad*precio);
 			}else{
 				$('#total').val('0.0');
+				$('#monto_pago').val('0.0');
+			}
+		});
+
+		$("input[name=monto_recibido]").change(function(event){
+			var monto_recibido = parseFloat($('#monto_recibido').val());
+			var monto_pago = parseFloat($('#monto_pago').val());
+			if(monto_recibido<monto_pago){
+				document.getElementById("infoaccion2").innerHTML = "<div class='alert alert-danger' role='danger'><span >Monto Recibido debe ser mayor a Monto de pago</span></div>";
+				$('#infoaccion2').show();
+			}else{
+				if(monto_recibido != 0.0){
+					$('#monto_devolver').val(monto_recibido-monto_pago);
+				}else{
+					$('#monto_devolver').val('0.0');	
+				}
 			}
 		});
 

@@ -22,8 +22,10 @@ use Illuminate\Support\Facades\DB;
 
 <input type="hidden" id="cantaccionpersona", name="cantaccionpersona" value="">
 <input type="hidden" id="cantacciontotal", name="cantacciontotal" value="">
+<div class="card-box">
+
 <div class="row">
-	<div class="col-md-4 col-sm-12 col-xs-12">
+	<div class=" col-sm-4 col-xs-12">
 		<div class="form-group">
 			{!! Form::label('cantidad_accion', ' Cantidad:', array('class' => 'col-sm-6  col-xs-12 control-label')) !!}
 			<div class="col-sm-6 col-xs-12">
@@ -31,7 +33,7 @@ use Illuminate\Support\Facades\DB;
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4 col-sm-12 col-xs-12">
+	<div class=" col-sm-4 col-xs-12">
 		<div class="form-group">
 			{!! Form::label('configuraciones_id', 'Precio:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 			<div class="col-sm-8 col-xs-12">
@@ -39,7 +41,7 @@ use Illuminate\Support\Facades\DB;
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4 col-sm-12 col-xs-12">
+	<div class=" col-sm-4 col-xs-12">
 		<div class="form-group">
 			{!! Form::label('total', 'Total S/.:', array('class' => 'col-sm-6 col-xs-12 control-label')) !!}
 			<div class="col-sm-6 col-xs-12">
@@ -51,7 +53,7 @@ use Illuminate\Support\Facades\DB;
 
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-sm-6">
 		<div class="form-group ">
 			{!! Form::label('fechai', 'Fecha:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 			<div class="col-sm-8 col-xs-12">
@@ -59,7 +61,7 @@ use Illuminate\Support\Facades\DB;
 			</div>
 		</div>
 	</div>
-	<div class="col-md-6">
+	<div class="col-sm-6">
 		<div class="form-group">
 			{!! Form::label('concepto_id', 'Concepto:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
 			<div class="col-sm-9 col-xs-12">
@@ -81,7 +83,7 @@ use Illuminate\Support\Facades\DB;
 		<div class="col-md-12">
 			<p style="font-family: italic; font size: 16px; color:#FF0000">Contribucion de Ingreso como nuevo Socio</p>
 		</div>
-		<div class="col-md-6">
+		<div class="col-sm-6">
 			<div class="form-group">
 				{!! Form::label('contribucion_id', 'Concepto:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 				<div class="col-sm-8 col-xs-12">
@@ -89,7 +91,7 @@ use Illuminate\Support\Facades\DB;
 				</div>
 			</div>	
 		</div>
-		<div class="col-md-6">
+		<div class="col-sm-6">
 			<div class="form-group ">
 				{!! Form::label('monto', 'Monto S/.:', array('class' => 'col-sm-5 col-xs-12 control-label')) !!}
 				<div class="col-sm-7 col-xs-12">
@@ -110,6 +112,7 @@ use Illuminate\Support\Facades\DB;
 </div>
 
 
+</div>
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
@@ -125,7 +128,7 @@ use Illuminate\Support\Facades\DB;
 	$(document).ready(function() {
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('600');
+		configurarAnchoModal('650');
 
 		var fechaActual = new Date();
 		var day = ("0" + fechaActual.getDate()).slice(-2);
@@ -138,7 +141,6 @@ use Illuminate\Support\Facades\DB;
 			$('#fechai').val(fechai);
 		}
 		
-
 		$("input[name=cantidad_accion]").change(function(event){
 			var cantidad_ingresad = parseInt($('#cantidad_accion').val());
 			var precio = '{{ $precio_accion }}';

@@ -11,6 +11,7 @@ use App\Persona;
 use App\Caja;
 use App\Concepto;
 use App\Transaccion;
+use App\Pagos;
 use App\HistorialAccion;
 use App\Configuraciones;
 use App\Librerias\Libreria;
@@ -175,6 +176,7 @@ class AccionesController extends Controller
                 'selectnom'        => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'fechai'        => 'required|max:100',
+                'monto_recibido' =>'required',
                 'configuraciones_id'        => 'required|max:100'
             );
 
@@ -511,7 +513,7 @@ class AccionesController extends Controller
         if (isset($listarParam)) {
             $listar = $listarParam;
         }
-        $nom = '  DNI: '.$persona->dni.'   NOMBRES: '.$persona->nombres.' '.$persona->apellidos;
+        $nom = '  DNI: '.$persona->dni.'   NOMBRES: '.'  '.$persona->apellidos.'  '.$persona->nombres;
 
         $boton          = 'Comprar Accion';
         return view($this->folderview.'.compraaccion')->with(compact('acciones','persona','cantaccionpersona','cant_menos_id_select','cant_total' ,'id' ,'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','cboContribucion','ruta','nom','id_config','precio_accion','fecha_caja'));
@@ -533,6 +535,7 @@ class AccionesController extends Controller
             $reglas = array(
                 'cantidad_accion'        => 'required|max:100',
                 'fechai'        => 'required|max:100',
+                'monto_recibido' =>'required',
                 'configuraciones_id'        => 'required|max:100'
             );
 
@@ -630,6 +633,17 @@ class AccionesController extends Controller
                     $transaccion->inicial_tabla ="AC";
                     $transaccion->caja_id =$idCaja;
                     $transaccion->save();
+                }
+
+                $monto_recibido = intval($request->input('monto_recibido'));
+                if($monto_recibido != 0){
+                    $pagos = new Pagos();
+                    $pagos->monto_recibido = $request->input('monto_recibido');
+                    $pagos->monto_pago = $request->input('monto_pago');
+                    $pagos->ini_tabla = 'AC';
+                    $pagos->fecha = $request->input('fechai').date(" H:i");
+                    $pagos->persona_id = $request->input('persona_id');
+                    $pagos->save();
                 }
 
             });
