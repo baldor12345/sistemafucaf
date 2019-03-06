@@ -11,6 +11,7 @@ use App\Persona;
 use App\Caja;
 use App\Concepto;
 use App\Transaccion;
+use App\Pagos;
 use App\HistorialAccion;
 use App\Configuraciones;
 use App\Librerias\Libreria;
@@ -35,6 +36,10 @@ class AccionesController extends Controller
             'listacciones' => 'acciones.listacciones',
             'delete' => 'acciones.eliminar',
             'search' => 'acciones.buscar',
+
+            'cargarcompra' => 'acciones.cargarcompra',
+            'guardarcompra' => 'acciones.guardarcompra',
+
             'cargarventa'   => 'acciones.cargarventa',
             'updateventa'   => 'acciones.updateventa',
             'reciboaccionpdf' => 'acciones.reciboaccionpdf',
@@ -69,20 +74,24 @@ class AccionesController extends Controller
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Acciones';
-        $codigo             = Libreria::getParam($request->input('codigo'));
-        $dni             = Libreria::getParam($request->input('dni'));
-        $resultado        = Acciones::listar($codigo,$dni);
+
+        $caja_fecha = Caja::where("estado","=","A")->value('fecha_horaapert');
+        $caja_fecha = ($caja_fecha != "")?$caja_fecha:date('Y-m-d');
+
+        $resultado        = Acciones::listar($caja_fecha);
         $lista            = $resultado->get();
+        
         $cabecera         = array();
         $cabecera[]       = array('valor' => '#', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CODIGO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NOMBRES', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'ACCIONES', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'PRECIO ACCION', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'MOVIMIENTOS', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'OPERACIONES', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
+        $titulo_registrar = $this->tituloRegistrar;
         $titulo_ventaaccion = $this->tituloVenta;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
@@ -94,7 +103,7 @@ class AccionesController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'titulo_ventaaccion', 'ruta','idcaja'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'titulo_ventaaccion','titulo_registrar', 'ruta','idcaja'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad','idcaja'));
     }
@@ -167,6 +176,7 @@ class AccionesController extends Controller
                 'selectnom'        => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'fechai'        => 'required|max:100',
+                'monto_recibido' =>'required',
                 'configuraciones_id'        => 'required|max:100'
             );
 
@@ -469,6 +479,187 @@ class AccionesController extends Controller
             return response()->json($dato);
         }
     }
+
+    //compra de acciones
+    public function cargarcompra($id, Request $request){
+        $existe = Libreria::verificarExistencia($id, 'persona');
+        if ($existe !== true) {
+            return $existe;
+        }
+
+        $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
+        $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
+        $cboConcepto  =array(1=>'Compra de Acciones');
+        $cboContribucion  =array(11=>'Contribución de Ingreso');
+        $entidad        = 'Acciones';
+        $acciones        = null;
+        $config = Configuraciones::All()->last();
+        $precio_accion = $config->precio_accion;
+        $id_config = $config->id;
+
+        $cantaccionpersona = Acciones::where('estado','C')->where('deleted_at',null)->where('persona_id',$id)->count();
+        $cant_menos_id_select = Acciones::where('estado','C')->where('deleted_at',null)->where('persona_id','!=',$id)->count();
+        $cant_total = $cantaccionpersona+ $cant_menos_id_select;
+
+
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaapert)->format('Y-m-d');
+        $listar = "NO";
+        $ruta = $this->rutas;
+        $cboPers = array(0=>'Seleccione...');
+        $formData       = array('acciones.store');
+
+        $persona = Persona::find($id);
+        if (isset($listarParam)) {
+            $listar = $listarParam;
+        }
+        $nom = '  DNI: '.$persona->dni.'   NOMBRES: '.'  '.$persona->apellidos.'  '.$persona->nombres;
+
+        $boton          = 'Comprar Accion';
+        return view($this->folderview.'.compraaccion')->with(compact('acciones','persona','cantaccionpersona','cant_menos_id_select','cant_total' ,'id' ,'entidad', 'boton', 'listar','cboConfiguraciones','cboConcepto','cboContribucion','ruta','nom','id_config','precio_accion','fecha_caja'));
+    }
+
+    public function guardarcompra(Request $request, $id)
+    {
+        $existe = Libreria::verificarExistencia($id, 'persona');
+        if ($existe !== true) {
+            return $existe;
+        }
+
+        //evaluando los datos que vienen del view
+        $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja_id = ($caja_id != "")?$caja_id:0;
+
+        $res = null;
+        if(count($caja_id) != 0){//validamos si existe caja aperturada
+            $reglas = array(
+                'cantidad_accion'        => 'required|max:100',
+                'fechai'        => 'required|max:100',
+                'monto_recibido' =>'required',
+                'configuraciones_id'        => 'required|max:100'
+            );
+
+            $validacion = Validator::make($request->all(),$reglas);
+            if ($validacion->fails()) {
+                return $validacion->messages()->toJson();
+            }
+
+            $error = DB::transaction(function() use($request){
+                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+                $cantidad_accion= $request->input('cantidad_accion');
+                if($cantidad_accion !== ''){
+
+                    $can_moment = DB::table('acciones')->where('deleted_at',null)->count();
+                    $codigo = (count($can_moment) ==0)?0:$can_moment;
+                    for($i=0; $i< $cantidad_accion; $i++){
+                        $codigo++;
+                        $acciones               = new Acciones();    
+                        $acciones->estado        = 'C';
+                        $acciones->fechai        = $request->input('fechai').date(" H:i");
+                        if(strlen($codigo) == 1){
+                            $acciones->codigo = "000000".($codigo);
+                        }
+                        if(strlen($codigo) == 2){
+                            $acciones->codigo = "00000".($codigo);
+                        }
+                        if(strlen($codigo) == 3){
+                            $acciones->codigo = "0000".($codigo);
+                        }
+                        if(strlen($codigo) == 4){
+                            $acciones->codigo = "000".($codigo);
+                        }
+                        $acciones->descripcion        = $request->input('descripcion');
+                        $acciones->persona_id        = $request->input('persona_id');
+                        $acciones->configuraciones_id        = $request->input('configuraciones_id');
+                        $acciones->caja_id = $idCaja;
+                        $acciones->concepto_id        = $request->input('concepto_id');
+                        $acciones->save();
+                    }
+                }
+
+                $buy_last = Acciones::where('estado','C')->where('persona_id',$request->input('persona_id'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'DSC')->get();
+                $descrp = "";
+                foreach($buy_last as $value){
+                    $descrp .= $value->codigo.',';
+                }
+
+                if($cantidad_accion !== ''){
+                    $historial_accion               = new HistorialAccion();    
+                    $historial_accion->cantidad        =  $request->input('cantidad_accion');
+                    $historial_accion->estado        = 'C';
+                    $historial_accion->fecha        = $request->input('fechai').date(" H:i");
+                    $historial_accion->descripcion        = $descrp;
+                    $historial_accion->persona_id        = $request->input('persona_id');
+                    $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
+                    $historial_accion->caja_id = $idCaja;
+                    $historial_accion->concepto_id        = $request->input('concepto_id');
+                    $historial_accion->save();
+                    
+                }
+
+                $cantidad_accion = $request->input('cantidad_accion');
+                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+                $configuracion= Configuraciones::all();
+                $result= $configuracion->last();
+                $precio = $result->precio_accion;
+                $monto_ingreso = ($cantidad_accion*$precio);
+                //datos de la persona
+                $persona_nombre = DB::table('persona')->where('id', $request->input('persona_id'))->value('nombres');
+
+                //comision voucher si esque desea imprimirlo
+                $transaccion = new Transaccion();
+                $transaccion->fecha = $request->input('fechai').date(" H:i");
+                $transaccion->monto = $monto_ingreso;
+                $transaccion->acciones_soles = $monto_ingreso;
+                $transaccion->concepto_id = $request->input('concepto_id');
+                $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
+                $transaccion->persona_id = $request->input('persona_id');
+                $transaccion->inicial_tabla ="AC";
+                $transaccion->usuario_id =Caja::getIdPersona();
+                $transaccion->caja_id =$idCaja;
+                $transaccion->save();
+
+                $contribucion = $request->input('monto');
+                $accion_last = Acciones::All()->last();
+                $persona_last = Persona::find($accion_last->persona_id);
+
+                if($contribucion != ''){
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $request->input('fechai').date(" H:i");
+                    $transaccion->monto = $contribucion;
+                    $transaccion->concepto_id = $request->input('contribucion_id');
+                    $transaccion->descripcion = $persona_last->nombres;
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->inicial_tabla ="AC";
+                    $transaccion->caja_id =$idCaja;
+                    $transaccion->save();
+                }
+
+                $monto_recibido = intval($request->input('monto_recibido'));
+                if($monto_recibido != 0){
+                    $pagos = new Pagos();
+                    $pagos->monto_recibido = $request->input('monto_recibido');
+                    $pagos->monto_pago = $request->input('monto_pago');
+                    $pagos->ini_tabla = 'AC';
+                    $pagos->fecha = $request->input('fechai').date(" H:i");
+                    $pagos->persona_id = $request->input('persona_id');
+                    $pagos->save();
+                }
+
+            });
+            $ultima_accion = Acciones::all()->last();
+            $cant = $request->input('cantidad_accion');
+            $fecha = $request->input('fechai').date(" H:i:s");
+            $res = $error;
+        }else{
+            $res = "No hay una caja aperturada, por favor aperture una caja ...!";
+        }
+        $ultima_accion = Acciones::all()->last();
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $ultima_accion->persona_id, $cant, $fecha);
+        return $respuesta;
+    }
+
 
     //venta de acciones
     public function cargarventa($id, Request $request)
@@ -891,49 +1082,5 @@ class AccionesController extends Controller
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
-
-    public function listresumen(Request $request)
-    {
-        $caja = Caja::where("estado","=","A")->get();
-        $idcaja = count($caja) == 0? 0: $caja[0]->id;
-
-        $entidad = "Accion3";
-        $titulo_resumen = $this->tituloResumen;
-        $ruta             = $this->rutas;
-        $inicio           = 0;
-    
-        return view($this->folderview.'.resumen')->with(compact('lista', 'entidad', 'ruta','idcaja','titulo_resumen','caja'));
-    }
-
-    public function buscarresumen(Request $request){
-        $pagina           = $request->input('page');
-        $filas            = $request->input('filas');
-        $entidad ='Accion3';
-        $fecha      = Libreria::getParam($request->input('fecha'));
-        $resultado        = Acciones::listresumen($fecha);
-        $lista            = $resultado->get();
-
-        $cabecera         = array();
-        $cabecera[]       = array('valor' => '#', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Nombres', 'numero' => '1');
-      
-        $ruta             = $this->rutas;
-        $inicio           = 0;
-        
-        if (count($lista) > 0) {
-            $clsLibreria     = new Libreria();
-            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
-            $paginacion      = $paramPaginacion['cadenapaginacion'];
-            $inicio          = $paramPaginacion['inicio'];
-            $fin             = $paramPaginacion['fin'];
-            $paginaactual    = $paramPaginacion['nuevapagina'];
-            $lista           = $resultado->paginate($filas);
-            $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.listresumen')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar'));
-        }
-        return view($this->folderview.'.listresumen')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar'));
-    
-    }
 
 }
