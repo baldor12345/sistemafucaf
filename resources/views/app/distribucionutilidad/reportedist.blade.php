@@ -134,16 +134,21 @@
                 
                 for($i=1; $i<=12; $i++){
                     if((($ind<count($acciones_mensual))?$acciones_mensual[$ind]->mes: "") == "".$i){
-                        echo("<td align='center'>".$acciones_mensual[$ind]->cantidad_mes."</td>");
+                        if($ind == 0){
+                            echo('<td align="center">'.($acciones_mensual[$ind]->cantidad_mes + $numero_acciones_hasta_enero[0]->cantidad_total)."</td>");
+                        }else{
+                            echo('<td align="center">'.$acciones_mensual[$ind]->cantidad_mes."</td>");
+                        }
+                        
                         $total_acc_mensual += $acciones_mensual[$ind]->cantidad_mes;
                         $ind ++;
                     }else{
-                        echo("<td align='center'>-</td>");
+                        echo('<td align="center">-</td>');
                     }
                 }
                 ?>
                 <td>-</td>
-                <td>{{ $total_acc_mensual }}</td>
+                <td>{{ ($total_acc_mensual + $numero_acciones_hasta_enero[0]->cantidad_total) }}</td>
             </tr>
             <tr>
                 <td colspan="2" align='center'>Meses "trabajados"</td>
@@ -163,20 +168,26 @@
                 
                 for($i=1; $i<=12; $i++){
                     if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
-                        $sumatotal_acc_mes += $acciones_mensual[$indice]->cantidad_mes * $j;
-                        echo("<td align='center'>".round($acciones_mensual[$indice]->cantidad_mes * $j, 1)."</td>");
+                        if($indice == 0){
+                            $sumatotal_acc_mes += ($numero_acciones_hasta_enero[0]->cantidad_total + $acciones_mensual[$indice]->cantidad_mes) * $j;
+                            echo('<td align="center">'.round(( $numero_acciones_hasta_enero[0]->cantidad_total + $acciones_mensual[$indice]->cantidad_mes) * $j, 1)."</td>");
+                        }else{
+                            $sumatotal_acc_mes += $acciones_mensual[$indice]->cantidad_mes * $j;
+                            echo('<td align="center">'.round($acciones_mensual[$indice]->cantidad_mes * $j, 1)."</td>");
+                        }
+                        
                         $j--;
                         $indice++;
                     }else{
-                        echo("<td align='center'>-</td>");
+                        echo('<td align="center">-</td>');
                     }
                 }
                 
                 ?>
-                <td>-</td><td>{{ $sumatotal_acc_mes }}</td>
+               <td align="center">-</td><td align="center">{{ $sumatotal_acc_mes }}</td>
             </tr>
 
-            <tr><td colspan="17"></td></tr>
+            {{-- <tr><td colspan="17"></td></tr> --}}
         </tbody>
     </table>
 </div>
@@ -196,10 +207,7 @@
         </thead>
     </table>
 </div>
-<div>
-</div>
-<div>
-</div>
+
 <div>
     <table class="linebordercenter" width ="100%">
         <thead>
@@ -230,7 +238,7 @@
                 $factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
                     for ($i=12; $i >0 ; $i--) { 
                         echo("<td align='center'>".round($i * $factor,1)."</td>");
-                        $factores_mes[$f] = $i * $factor;
+                        $factores_mes[$f] = round(($i * $factor),4);
                         $f++;
                     }
                 ?>
@@ -273,11 +281,17 @@
                 <?php
                     $total_acc_mensual  = 0;
                     $ind = 0;
-                    
                     for($i=1; $i<=12; $i++){
                         if((($ind<count($acciones_mensual))?$acciones_mensual[$ind]->mes: "") == "".$i){
-                            echo("<th align='center'>".($acciones_mensual[$ind]->cantidad_mes > 0?$acciones_mensual[$ind]->cantidad_mes : "-" )."</th>");
-                            $total_acc_mensual += $acciones_mensual[$ind]->cantidad_mes;
+                            if($ind == 0){
+                                
+                                echo("<th align='center'>".($acciones_mensual[$ind]->cantidad_mes + $numero_acciones_hasta_enero[0]->cantidad_total)."</th>");
+                                $total_acc_mensual += ($acciones_mensual[$ind]->cantidad_mes +  $numero_acciones_hasta_enero[0]->cantidad_total);
+                            }else{
+                                echo("<th align='center'>".($acciones_mensual[$ind]->cantidad_mes)."</th>");
+                                $total_acc_mensual += ($acciones_mensual[$ind]->cantidad_mes);
+                            }
+                            
                             $ind ++;
                         }else{
                             echo("<th align='center'>-</th>");
@@ -296,12 +310,19 @@
                     
                     for($i=1; $i<=12; $i++){
                         if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
-                            $sumatotal_utilidades += $acciones_mensual[$indice]->cantidad_mes * $factor*$j;
-                            echo("<th align='center'>".(round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1) > 0?round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1) : "-" )."</th>");
+                            if($indice == 0){
+                                $sumatotal_utilidades += ($acciones_mensual[$indice]->cantidad_mes+$numero_acciones_hasta_enero[0]->cantidad_total ) * $factor*$j;
+                                echo("<th align='center'>".round(($acciones_mensual[$indice]->cantidad_mes + $numero_acciones_hasta_enero[0]->cantidad_total) * $factor *$j, 1)."</th>");
+                            }else{
+                                $sumatotal_utilidades += $acciones_mensual[$indice]->cantidad_mes * $factor*$j;
+                            echo("<th align='center'>".round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1)."</th>");
+                            }
+                            
+
                             $j--;
                             $indice++;
                         }else{
-                            echo("<th align='center'>-</th>");
+                            echo("<th align='center'>0</th>");
                         }
                     }
                     

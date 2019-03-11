@@ -189,8 +189,6 @@ class AhorrosController extends Controller
                         $ahorro->persona_id = $request->input('selectpersona');
                         $ahorro->save();
                         $id_ahorro = $ahorro->id;
-
-                        
                         $ahorro_actual->estado = 'C';
                         $ahorro_actual->fechaf = $nuevafecha;
                         $ahorro_actual->save();
