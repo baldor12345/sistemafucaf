@@ -5,25 +5,33 @@
 	<div class="row">
 	<div class="card-box table-responsive crbox">
 		<div class="form-group">
-			<div class="form-group col-6 col-md-6 col-sm-12">
-				{!! Form::label('selectpersona', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
-				{!! Form::select('selectpersona', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectpersona')) !!}
-				<input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
+			<div class=" col-6 col-md-6 col-sm-12">
+				<div class="form-group col-md-12">
+					{!! Form::label('selectpersona', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
+					{!! Form::select('selectpersona', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectpersona')) !!}
+					<input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
+				</div>
 			</div>
 			
-			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px">
-				{!! Form::label('capital', 'Importe S/.: *', array('class' => '')) !!}
-				{!! Form::text('capital', null, array('class' => 'form-control input-md', 'id' => 'capital', 'placeholder' => 'Ingrese el monto de ahorro', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+			<div class="col-6 col-md-6 col-sm-12">
+				<div class="form-group col-12 col-md-12 col-sm-12">
+					{!! Form::label('capital', 'Importe S/.: *', array('class' => '')) !!}
+					{!! Form::text('capital', null, array('class' => 'form-control input-md', 'id' => 'capital', 'placeholder' => 'Ingrese el monto de ahorro', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+				</div>
 			</div>
 		</div>
 		<div class = "form-group">
-			<div class="form-group col-6 col-md-6 col-sm-6">
-				{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
-				{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
+			<div class="col-6 col-md-6 col-sm-12">
+				<div class="form-group col-12 col-md-12 col-sm-12">
+					{!! Form::label('interes', 'Interes mensual (%): *', array('class' => '')) !!}
+					{!! Form::text('interes',($configuraciones->tasa_interes_ahorro*100), array('class' => 'form-control input-xs', 'id' => 'interes', 'placeholder' => 'Interes mensual', 'onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
+				</div>
 			</div>
-			<div class="form-group col-6 col-md-6 col-sm-6" style="margin-left: 15px" >
-				{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
-				{!! Form::date('fechai', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechai')) !!}
+			<div class="col-6 col-md-6 col-sm-12">
+				<div class="form-group col-12 col-md-12 col-sm-12">
+					{!! Form::label('fechai', 'Fecha de deposito: *', array('class' => '')) !!}
+					{!! Form::date('fechai', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechai')) !!}
+				</div>
 			</div>
 		</div>
 		<div class="form-group col-12 col-md-12 col-sm-12" >
@@ -44,7 +52,7 @@
 $(document).ready(function() {
 	// console.log("FECHA_DEFECTO: {{ $fecha_pordefecto }}");
 
-	configurarAnchoModal('650');
+	configurarAnchoModal('750');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 	$('#selectpersona').select2({
 		dropdownParent: $("#modal"+(contadorModal-1)),

@@ -189,7 +189,6 @@ class AhorrosController extends Controller
                         $ahorro->persona_id = $request->input('selectpersona');
                         $ahorro->save();
                         $id_ahorro = $ahorro->id;
-
                         $ahorro_actual->estado = 'C';
                         $ahorro_actual->fechaf = $nuevafecha;
                         $ahorro_actual->save();
@@ -810,11 +809,6 @@ class AhorrosController extends Controller
         }else{
             $confirm = false;
         }
-        // if($transaccion->id_tabla != $ahorro[0]->id){
-        //     $confirm=false;
-        //     $mensaje = "¡Error! El registro no se puede eliminar, Existen ahorros o retiros mas actuales que modificaron el monto actual.!";
-        // }
-       
         if($confirm){
             return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar', 'titulo_eliminar'));
         }else{

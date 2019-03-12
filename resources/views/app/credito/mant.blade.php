@@ -11,44 +11,70 @@
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 {!! Form::hidden('numcreditos', 0, array('id' => 'numcreditos')) !!}
 {!! Form::hidden('estado', 'I', array('id' => 'estado')) !!}
-<div class="form-row">
-    
-    <div class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('selectnom', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
-        {!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
-        <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
-    </div>
+<div class="row">
+    <div class="card-box table-responsive crbox">
+        <div class = "form-group">
+            <div class=" col-6 col-md-6 col-sm-12">
+                    <div class="form-group col-md-12">
+                        {!! Form::label('selectnom', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
+                        {!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom', 'style'=>'width: 100%')) !!}
+                        <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
+                    </div>
+                </div>
+            {{-- <div class="col-6 col-md-6 col-md-12">
+                <div class="form-group col-md-12">
+                    {!! Form::label('selectnom', 'Socio o Cliente: ', array('class' => 'cliente')) !!}
+                    {!! Form::select('selectnom', $cboPers, null, array('class' => 'form-control input-sm', 'id' => 'selectnom')) !!}
+                    <input type="hidden" id="persona_id" name="persona_id" value="" tipocl=''>
+                </div>
+            </div> --}}
+            <div class="col-6 col-md-6 col-md-12">
+                <div class="form-group col-12 col-md-12">
+                    {!! Form::label('selectaval', 'Aval: ', array('class' => 'aval')) !!}
+                    {!! Form::select('selectaval', $cboPers, 0, array('class' => 'form-control input-sm', 'id' => 'selectaval', 'style'=>'width: 100%')) !!}
+                    <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="0" tipoavl=''>
+                </div>
+            </div>
+        </div>
+        <div class = "form-group">
+            <div class="col-6 col-md-6 col-md-12">
+                <div class="form-group col-md-12">
+                    {!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => 'valor_cred')) !!}
+                    {!! Form::text('valor_credito', null, array('class' => 'form-control input-sm ', 'id' => 'valor_credito', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+                </div>
+            </div>
+   
+            <div class=" col-6 col-md-6 col-md-12" >
+                <div class="form-group col-sm-12" >
+                    {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => 'tasa_int')) !!}
+                    {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-sm', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
+                </div>
+            </div>
+        </div>
+        <div class = "form-group">
+            <div class="col-6 col-md-6 col-md-12">
+                <div class="form-group col-sm-12">
+                    {!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => 'period')) !!}
+                    {!! Form::text('periodo', null, array('class' => 'form-control input-sm', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses', 'onkeypress'=>'return filterFloat(event,this);')) !!}
+                </div>
+            </div>
 
-    <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
-        {!! Form::label('selectaval', 'Aval: ', array('class' => 'aval')) !!}
-        {!! Form::select('selectaval', $cboPers, 0, array('class' => 'form-control input-sm', 'id' => 'selectaval')) !!}
-        <input type="hidden" id="pers_aval_id", name="pers_aval_id" value="0" tipoavl=''>
-    </div>
-
-    <div class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('valor_credito', 'Valor de Credito: *', array('class' => 'valor_cred')) !!}
-        {!! Form::text('valor_credito', null, array('class' => 'form-control input-xs', 'id' => 'valor_credito', 'placeholder' => 's/.','onkeypress'=>'return filterFloat(event,this);')) !!}
-    </div>
-    <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
-        {!! Form::label('tasa_interes', 'Interes mensual (%):', array('class' => 'tasa_int')) !!}
-        {!! Form::text('tasa_interes', ($configuraciones->tasa_interes_credito*100).'', array('class' => 'form-control input-xs', 'id' => 'tasa_interes', 'placeholder' => 'Ingrese el interes mensual %','onkeypress'=>'return filterFloat(event,this);', 'readonly')) !!}
-    </div>
-
-    <div class="form-group col-6 col-md-6 col-sm-12">
-        {!! Form::label('periodo', 'Periodo (N° Meses): *', array('class' => 'period')) !!}
-        {!! Form::text('periodo', null, array('class' => 'form-control input-xs', 'id' => 'periodo', 'placeholder' => 'Ingrese Numero de meses', 'onkeypress'=>'return filterFloat(event,this);')) !!}
-    </div>
-
-    <div class="form-group col-6 col-md-6 col-sm-12" style="margin-left: 10px">
-        {!! Form::label('fechacredito', 'Fecha: *', array('class' => 'fechacred')) !!}
-        {!! Form::date('fechacredito', $fecha_pordefecto, array('class' => 'form-control input-xs', 'id' => 'fechacredito', 'readonly')) !!}
-    </div>
-    <div class="form-group col-12" >
-        {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descrip')) !!}
-        {!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 4, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
+            <div class="col-6 col-md-6 col-md-12">
+                <div class="form-group col-sm-12" >
+                    {!! Form::label('fechacredito', 'Fecha: *', array('class' => 'fechacred')) !!}
+                    {!! Form::date('fechacredito', $fecha_pordefecto, array('class' => 'form-control input-sm', 'id' => 'fechacredito', 'readonly')) !!}
+                </div>
+            </div>
+        </div>
+    <div class="col-12 col-md-12" >
+        <div class="form-group col-12 col-md-12" >
+            {!! Form::label('descripcion', 'Descripción: ', array('class' => 'descrip')) !!}
+            {!! Form::textarea('descripcion', null, array('class' => 'form-control input-sm','rows' => 3, 'id' => 'descripcion', 'placeholder' => 'Ingrese descripción')) !!}
+        </div>
     </div>
     <div class="form-group col-6 col-md-6 col-sm-6" >
         {!! Form::button('<i class="fa fa-check fa-lg"></i>Ver Cronograma Cuotas', array('class' => 'btn btn-success btn-sm', 'id' => 'btnCronograma', 'onclick' => 'generarCronograma();')) !!}
+    </div>
     </div>
 </div>
 
@@ -95,8 +121,9 @@
             
                 if(persona.length>0){
                     $("#persona_id").val(persona[0].id);
-                    var msj = "<div class='alert alert-light'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li>";
+                    var msj = "<div class='alert alert-light'><strong>¡Detalles de Clinte: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li>";
                     msj += "<li>Tipo: "+(persona[0].tipo.trim() == 'C'? 'Cliente': 'Socio')+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li>";
+                    msj += "<li>Ingresos Personales: "+persona[0].ingreso_personal+"</li><li>Ingresos Familiares: "+persona[0].ingreso_familiar+"</li>";
                     if(numMoras == 0){
                         msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-success btn-sm'></button></li></ul></div>";
                     }else if(numMoras>0 && numMoras<=5){
@@ -105,7 +132,7 @@
                         msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-danger'></button></li></ul></div>";
                     }
                         $('#divInfo{{ $entidad }}').html(msj);
-                        // $('#divInfoaval').html(msj);
+                      
                         $('#divInfo{{ $entidad }}').show();
                         $('#numcreditos').val(numCreditos);
                     if( persona[0].tipo.trim() == 'S'){
@@ -149,8 +176,9 @@
                     var numAcciones = response[2];
                     var numMoras = response[3];
                     $('#pers_aval_id').val('');
-                    var msj = "<div class='alert alert-light'><strong>¡Detalles: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li>";
+                    var msj = "<div class='alert alert-light'><strong>¡Detalles del Aval: !</strong><ul><li>Nombre: "+persona[0].nombres+" "+persona[0].apellidos+"</li>";
                     msj += "<li>Tipo: "+(persona[0].tipo.trim() == 'C'? 'Cliente': 'Socio')+"</li><li>Creditos activos: "+numCreditos+"</li><li>Acciones: "+numAcciones+"</li>";
+                    msj += "<li>Ingresos Personales: "+persona[0].ingreso_personal+"</li><li>Ingresos Familiares: "+persona[0].ingreso_familiar+"</li>";
                     if(numMoras == 0){
                         msj += "<li>N° Moras: "+numMoras+" <button class='btn btn-success btn-sm'></button></li></ul></div>";
                     }else if(numMoras>0 && numMoras<=5){
@@ -191,7 +219,7 @@
         $('.descrip').html(' Descripción: <sup style="color: blue;">Opcional</sup>');
         init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
         $(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="dnicliente"]').focus();
-        configurarAnchoModal('650');
+        configurarAnchoModal('700');
         $('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ round($saldo_en_caja, 1) }}</div>');
     
     });
