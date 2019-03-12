@@ -22,7 +22,10 @@ class CreatePagosTable extends Migration
             $table->char('ini_tabla',2)->nullable();//inicial tabla: AC=>accion, AH=>ahorro, CR=>credito , etc
             $table->timestamp('fecha')->nullable();
             $table->integer('persona_id')->unsigned()->nullable();
+            $table->integer('caja_id')->unsigned()->nullable();
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('caja_id')->references('id')->on('caja')->onDelete('restrict')->onUpdate('restrict');
+            
             $table->timestamps();
             $table->softDeletes();
         });

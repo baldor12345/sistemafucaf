@@ -643,6 +643,7 @@ class AccionesController extends Controller
                     $pagos->ini_tabla = 'AC';
                     $pagos->fecha = $request->input('fechai').date(" H:i");
                     $pagos->persona_id = $request->input('persona_id');
+                    $pagos->caja_id =$idCaja;
                     $pagos->save();
                 }
 
