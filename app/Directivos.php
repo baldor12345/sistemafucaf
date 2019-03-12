@@ -32,7 +32,7 @@ class Directivos extends Model
         $user = Auth::user();
         // Obtiene el ID del Usuario Autenticado
         $id = Auth::id();
-        $user = DB::table('user')->where('id', $id)->first();
+        $user = DB::table('usuario')->where('id', $id)->first();
         $persona_id=$user->persona_id;
         return $persona_id;
     }

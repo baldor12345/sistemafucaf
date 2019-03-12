@@ -136,11 +136,11 @@ class UsuarioController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas = array(
-            'login'       => 'required|max:20|unique:user,login,NULL,login,deleted_at,NULL',
+            'login'       => 'required|max:20|unique:usuario,login,NULL,login,deleted_at,NULL',
             'password'    => 'required|max:20',
             'fechai'    => 'required',
             'persona_id' => 'required|integer',
-            'usertype_id' => 'required|integer|exists:user,usertype_id,deleted_at,NULL'
+            'usertype_id' => 'required|integer|exists:usuario,usertype_id,deleted_at,NULL'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
@@ -179,7 +179,7 @@ class UsuarioController extends Controller
      */
     public function edit($id, Request $request)
     {
-        $existe = Libreria::verificarExistencia($id, 'user');
+        $existe = Libreria::verificarExistencia($id, 'usuario');
         if ($existe !== true) {
             return $existe;
         }
@@ -205,7 +205,7 @@ class UsuarioController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $existe = Libreria::verificarExistencia($id, 'user');
+        $existe = Libreria::verificarExistencia($id, 'usuario');
         if ($existe !== true) {
             return $existe;
         }
@@ -214,7 +214,7 @@ class UsuarioController extends Controller
             'password'    => 'required|max:20',
             'fechai'    => 'required',
             'persona_id' => 'required|integer',
-            'usertype_id' => 'required|integer|exists:user,usertype_id,deleted_at,NULL'
+            'usertype_id' => 'required|integer|exists:usuario,usertype_id,deleted_at,NULL'
             );
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
@@ -245,7 +245,7 @@ class UsuarioController extends Controller
      */
     public function destroy($id)
     {
-        $existe = Libreria::verificarExistencia($id, 'user');
+        $existe = Libreria::verificarExistencia($id, 'usuario');
         if ($existe !== true) {
             return $existe;
         }
@@ -272,7 +272,7 @@ class UsuarioController extends Controller
      */
     public function eliminar($id, $listarLuego)
     {
-        $existe = Libreria::verificarExistencia($id, 'user');
+        $existe = Libreria::verificarExistencia($id, 'usuario');
         if ($existe !== true) {
             return $existe;
         }

@@ -20,7 +20,7 @@ class User extends Authenticatable
 {
     use Notifiable;
     use SoftDeletes;
-    protected $table = 'user';
+    protected $table = 'usuario';
 
     /**
      * The attributes that are mass assignable.
@@ -71,7 +71,8 @@ class User extends Authenticatable
         //$month = date('m', strtotime($month));
         //$anio = date('Y', strtotime($anio));
         $results = DB::table('persona')
-                    ->join('binnacle', 'persona.id', '=', 'binnacle.user_id')
+                    ->join('usuario', 'persona.id', '=', 'usuario.persona_id')
+                    ->join('binnacle', 'usuario.id', '=', 'binnacle.user_id')
                     ->select(
                         'persona.nombres as persona_nombres',
                         'persona.apellidos as persona_apellidos',
