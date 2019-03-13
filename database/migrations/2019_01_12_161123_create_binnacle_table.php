@@ -24,7 +24,7 @@ class CreateBinnacleTable extends Migration
             $table->text('detail');
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('user_id')->references('id')->on('user')->onDelete('restrict')->onUpdate('restrict');  
+            $table->foreign('user_id')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');  
         });
     }
 

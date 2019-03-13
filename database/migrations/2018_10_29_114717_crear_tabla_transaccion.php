@@ -39,7 +39,7 @@ class CrearTablaTransaccion extends Migration
             $table->integer('caja_id')->unsigned();
             $table->foreign('concepto_id')->references('id')->on('concepto')->onDelete('restrict')->onUpdate('restrict');
             $table->foreign('persona_id')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
-            $table->foreign('usuario_id')->references('id')->on('user')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('usuario_id')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->foreign('caja_id')->references('id')->on('caja')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
             $table->softDeletes();
