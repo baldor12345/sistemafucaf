@@ -47,7 +47,8 @@ function cargarselect2(entidad){
 					{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 				</div>
 								
-				{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+				{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+				<a target="_blank" href="{{ route('generarresumenPDF', array('id' => $id)) }}" class="btn btn-primary waves-effect waves-light btn-sm" ><i class="glyphicon glyphicon-download-alt" ></i> Resumen</a>
 			</div>
 		</div>
 		{!! Form::close() !!}

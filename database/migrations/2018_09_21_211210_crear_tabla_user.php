@@ -13,7 +13,7 @@ class CrearTablaUser extends Migration
      */
     public function up()
     {
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('usuario', function (Blueprint $table) {
             $table->increments('id');
             $table->string('login',400);
             $table->string('password',100);
@@ -37,6 +37,6 @@ class CrearTablaUser extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user');
+        Schema::dropIfExists('usuario');
     }
 }

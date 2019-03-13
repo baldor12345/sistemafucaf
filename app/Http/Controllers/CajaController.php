@@ -15,6 +15,7 @@ use App\Configuraciones;
 use App\DistribucionUtilidades;
 use App\Gastos;
 use App\User;
+use App\Pagos;
 use App\Credito;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -1750,6 +1751,82 @@ class CajaController extends Controller
 
 
 
+    //metodo para generar resumen de cobros y pagos o vueltos
+    public function generarresumenPDF(Request $request, $id)
+    {    
+        $list_cuotas        = Pagos::getresumen_pago_cuotas($id);
+        $lista_cuotas           = $list_cuotas->get();
+        $sum_m_r_cuotas=0;
+        $sum_m_p_cuotas =0;
+        $sum_v_cuotas=0;
+
+        foreach ($lista_cuotas as $key => $value) {
+            $sum_m_r_cuotas += $value->monto_recibido;
+            $sum_m_p_cuotas += $value->monto_pago;
+            $sum_v_cuotas   += $value->monto_recibido-$value->monto_pago;
+        }
+
+        $list_acciones          = Pagos::getresumen_acciones($id);
+        $lista_acciones           = $list_acciones->get();
+
+        $sum_m_r_acciones=0;
+        $sum_m_p_acciones =0;
+        $sum_v_acciones=0;
+        foreach ($lista_acciones as $key => $value) {
+            $sum_m_r_acciones += $value->monto_recibido;
+            $sum_m_p_acciones += $value->monto_pago;
+            $sum_v_acciones   += $value->monto_recibido-$value->monto_pago;
+        }
+
+
+        $list_ahorros        = Pagos::getresumen_ahorros($id);
+        $lista_ahorros           = $list_ahorros->get();
+
+        $sum_m_r_ahorros=0;
+        $sum_m_p_ahorros =0;
+        $sum_v_ahorros=0;
+        foreach ($lista_ahorros as $key => $value) {
+            $sum_m_r_ahorros += $value->monto_recibido;
+            $sum_m_p_ahorros += $value->monto_pago;
+            $sum_v_ahorros   += $value->monto_recibido-$value->monto_pago;
+        }
+
+        $caja = Caja::where('id',$id)->get();
+        $date_caja = $caja[0]->fecha_horaapert;
+
+        $year = date('Y', strtotime($date_caja));
+        $month = date('m', strtotime($date_caja));
+        $day = date('d', strtotime($date_caja));
+
+        $arraymonth = array('01'=>'Enero',
+                        '02'=>'Febrero',
+                        '03'=>'Marzo',
+                        '04'=>'Abril',
+                        '05'=>'Mayo',
+                        '06'=>'Junio',
+                        '07'=>'Julio',
+                        '08'=>'Agosto',
+                        '09'=>'Septiembre',
+                        '10'=>'Octubre',
+                        '11'=>'Noviembre',
+                        '12'=>'Diciembre');
+
+        $titulo = "resumen_cobros_vueltos_".$caja[0]->titulo;
+        $view = \View::make('app.caja.resumenPDF')->with(compact('caja','lista_acciones','sum_m_r_acciones','sum_m_p_acciones','sum_v_acciones',
+                                                                'lista_cuotas','sum_m_r_cuotas','sum_m_p_cuotas','sum_v_cuotas', 
+                                                                'lista_ahorros','sum_m_r_ahorros','sum_m_p_ahorros','sum_v_ahorros',
+                                                                'arraymonth','year','month','day'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P', 'A4', 'es');
+        PDF::SetTopMargin(0);
+        PDF::SetLeftMargin(15);
+        PDF::SetRightMargin(15);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+        PDF::Output($titulo.'.pdf', 'I');
+    }
 
     //Metodo para redondear numero decimal
     public function rouNumber($numero, $decimales) { 
