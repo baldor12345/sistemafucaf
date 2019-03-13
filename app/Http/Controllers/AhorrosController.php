@@ -10,6 +10,7 @@ use App\Ahorros;
 use App\Detalle_ahorro;
 use App\Concepto;
 use App\Caja;
+use App\Pagos;
 use App\Persona;
 use App\Transaccion;
 use App\Credito;
@@ -212,7 +213,7 @@ class AhorrosController extends Controller
                 }
                 
                 //Guardar en tabla transacciones **********
-                $idconcepto = $request->input('concepto');
+                $idconcepto = 5;// $request->input('concepto');
                 $transaccion = new Transaccion();
                 $transaccion->fecha = $nuevafecha;
                 $transaccion->monto = $request->input('capital');
@@ -224,6 +225,19 @@ class AhorrosController extends Controller
                 $transaccion->usuario_id = (new Ahorros())->idUser();
                 $transaccion->caja_id =  $caja_id;
                 $transaccion->save();
+
+                $monto_pago = $request->get('monto_ahorro_ah');
+                $monto_recibido = $request->get('monto_recibido_ah');
+
+                $pago = new Pagos();
+                $pago->monto_pago = round($monto_pago, 1);
+                $pago->monto_recibido = round($monto_recibido,1);
+                $pago->parte_entregado = 0;
+                $pago->estado = 'F';
+                $pago->ini_tabla = 'AH';
+                $pago->fecha = $nuevafecha;
+                $pago->persona_id =  $request->input('selectpersona');
+                $pago->save();
             });
 
         }else{

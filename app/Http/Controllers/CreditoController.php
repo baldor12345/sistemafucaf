@@ -8,6 +8,7 @@ use App\Credito;
 use App\Persona;
 use App\Cuota;
 use App\Caja;
+use App\Pagos;
 use App\Ahorros;
 use App\Transaccion;
 use App\Configuraciones;
@@ -532,6 +533,21 @@ class CreditoController extends Controller{
                     $credito->estado = 1;
                     $credito->save();
                 }
+
+                $monto_pago = $request->get('monto_pago_p');
+                $monto_recibido = $request->get('monto_recibido_p');
+                $monto_recibido = $request->get('monto_recibido_p');
+
+                $pago = new Pagos();
+                $pago->monto_pago = round($monto_pago, 1);
+                $pago->monto_recibido = round($monto_recibido,1);
+                $pago->parte_entregado = 0;
+                $pago->estado = 'F';
+                $pago->ini_tabla = 'CU';
+                $pago->fecha = $fecha_pago;
+                $pago->persona_id = $credito->persona_id;
+                $pago->save();
+
             });
             $res = $error;
         }else{
