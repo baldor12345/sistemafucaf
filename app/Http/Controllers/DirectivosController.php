@@ -345,6 +345,8 @@ class DirectivosController extends Controller
     {
         
         $directivos = DB::table('directivos')->where('id', $persona_id)->first();
+        $estado = $directivos->estado;
+
         $entidad = "Directivos";
         $ruta             = $this->rutas;
         $inicio           = 0;
@@ -360,7 +362,7 @@ class DirectivosController extends Controller
         //vocal
         $vocal = Persona::where('id', $directivos->vocal_id)->first();
     
-        return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta','directivos','presidente','secretario','tesorero','vocal'));
+        return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta','directivos','presidente','secretario','tesorero','vocal','estado'));
     }
 
     public function directivosPDF($id, Request $request)

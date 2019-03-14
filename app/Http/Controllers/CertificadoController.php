@@ -144,6 +144,9 @@ class CertificadoController extends Controller
         $date_last = (count($certificado_last) != 0) ? Date::parse($certificado_last->fechaf )->format('Y-m-01') : null;
         
         $date_last = date("Y-m-d",strtotime($date_last."+ 1 month"));
+        
+        $month_first = intval(date("m",strtotime($date_last)));
+        $month_last = intval($month_first)+5;
 
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
         $entidad        = 'Certificado';
@@ -151,7 +154,7 @@ class CertificadoController extends Controller
         $formData       = array('certificado.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Generar Certificados'; 
-        return view($this->folderview.'.mant')->with(compact('certificado', 'formData', 'entidad', 'boton', 'listar','cboAnios','cboMonth','fechaf','day','certificado_last','month_now','date_last'));
+        return view($this->folderview.'.mant')->with(compact('certificado', 'formData','month_first','month_last', 'entidad', 'boton', 'listar','cboAnios','cboMonth','fechaf','day','certificado_last','month_now','date_last'));
     }
 
     /**
