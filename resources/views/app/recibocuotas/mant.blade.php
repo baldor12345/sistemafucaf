@@ -21,14 +21,14 @@
 </div>
 <div class="form-row">
     <div class="form-group col-md-12 col-sm-12">
-		{!! Form::label('porcentaje_mora', 'Porcentaje de mora diario (%):', array('class' => '')) !!}
+		{!! Form::label('porcentaje_mora', 'Tasa de interes mora (%):', array('class' => '')) !!}
 		{!! Form::text('porcentaje_mora', 5, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora diario %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 	</div>
 </div>
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::label('monto_moratorio', 'Interes mora en 1 dia S/.: ', array('class' => '', 'id'=>'monto_moratorio')) !!}
+		{!! Form::label('monto_moratorio', 'Interes mora en 1 dia S/.: ', array('class' => 'hide', 'id'=>'monto_moratorio')) !!}
 	</div>
 </div>
 {{-- <div class="form-group">

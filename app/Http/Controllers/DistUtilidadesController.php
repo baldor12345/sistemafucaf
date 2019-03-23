@@ -167,7 +167,7 @@ class DistUtilidadesController extends Controller
             $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
         }
         
-        //  if($existe){
+          if($existe){
             $caja = Caja::where("estado","=","A")->get();
 
             $idcaja = count($caja) == 0? 0: $caja[0]->id;
@@ -225,10 +225,10 @@ class DistUtilidadesController extends Controller
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
             return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
-        // }else{
-        //     $existe = 1;
-        //     return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));
-        // }
+        }else{
+            $existe = 1;
+            return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));
+        }
         
     }
 
