@@ -235,6 +235,8 @@ class AhorrosController extends Controller
                 $pago->parte_entregado = 0;
                 $pago->estado = 'F';
                 $pago->ini_tabla = 'AH';
+                $pago->tabla_id =  $transaccion->id;
+                $pago->caja_id = $caja_id;
                 $pago->fecha = $nuevafecha;
                 $pago->persona_id =  $request->input('selectpersona');
                 $pago->save();
@@ -746,6 +748,11 @@ class AhorrosController extends Controller
                 
                 $transaccion = Transaccion::find($transact->id);
                 $transaccion->delete();
+
+                $pago = Pagos::where('ini_tabla','=','AH')->where('tabla_id','=',$transaccion->id)->get();
+                if(count($pago)>0){
+                    $pago[0]->delete();
+                }
             });   
         
         }else{
@@ -864,13 +871,13 @@ class AhorrosController extends Controller
         $html_content = $view->render();
         PDF::SetTitle($titulo);
         if($tipo == '1'){
-            PDF::AddPage('L', 'A4', 'es');
+            PDF::AddPage('L', 'A4', 0);
         }else{
-            PDF::AddPage('P', 'A4', 'es');
+            PDF::AddPage('P', 'A4', 0);
         }
         
         
-        PDF::SetTopMargin(0);
+        PDF::SetTopMargin(5);
         PDF::SetLeftMargin(5);
         PDF::SetRightMargin(5);
         PDF::SetDisplayMode('fullpage');

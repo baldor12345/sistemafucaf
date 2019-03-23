@@ -700,7 +700,7 @@ class CreditoController extends Controller{
     
         }else if($opcion == 'cancelados'){
            
-            $resultado = Transaccion::where('id_tabla','=',$credito_id)->where('inicial_tabla','=', 'CU'); //CU = inical de tabla Cuota
+            $resultado = Transaccion::where('id_tabla','=',$credito_id)->where('inicial_tabla','=', 'CU')->where('deleted_at','=',null); //CU = inical de tabla Cuota
             $cabecera[] = array('valor' => 'N°', 'numero' => '1');
             $cabecera[] = array('valor' => 'Num. Cuota', 'numero' => '1');
             $cabecera[] = array('valor' => 'Monto Cuota S/.', 'numero' => '1');

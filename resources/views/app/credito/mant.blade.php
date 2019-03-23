@@ -453,7 +453,7 @@
                         "<th style='width: 25%' class='text-center'>FECHA DE PAGO</th>"+
                         "</tr></thead><tbody id='filasTcuotas'></tbody></table>"+
                         "<div class='form-row'><div class='form-group col-12' >"+
-                        "<label for='' id='interesTotal' class=''>Interes total: </label>"+
+                        "<label for='' id='interesTotal' class=''>Interes total: </label> <br>"+
                         "<label for='' id='capitalTotal' class=''>Capital total: </label>"+
                         "</div></div><div class='modal-footer'><button type='button' class='btn btn-secondary' id='btncerraCronograma' >Close</button></div>"+
                         "</fieldset>";
@@ -479,14 +479,21 @@
                 var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
                 montInteres =  (Interes/100)*CapitalInicial;
                 interesAcumulado = montInteres + interesAcumulado;
-                montCapital= RoundDecimal(montCuota,1)  - RoundDecimal(montInteres, 1);
+                montCapital = RoundDecimal(montCuota,1)  - RoundDecimal(montInteres, 1);
+
                 if(i< (periodo -1)){
                     CapitalInicial = CapitalInicial - montCapital;
                 }
+                if(i == (periodo - 1)){
+                    montCapital = CapitalInicial;
+                    montInteres =  montCuota - montCapital;
+                    CapitalInicial = 0;
+                }
 
-                CapitalInicial = CapitalInicial - montCapital;
-                capitalTotal += montCapital;
-                sumacuotas += montCuota;
+                // CapitalInicial = CapitalInicial - montCapital;
+                 capitalTotal += montCapital;
+                // sumacuotas += montCuota;
+
                 fila = fila + "<tr>"
                         +"<td>"+(i+1)+"</td>"
                         +"<td>"+RoundDecimal(montInteres,1)+"</td>"
@@ -494,6 +501,7 @@
                         +"<td>"+RoundDecimal(montCuota,1)+"</td>"
                         +"<td>"+fechac.getDate()+"/"+(fechac.getMonth()+1)+"/"+(fechac.getFullYear())+"</td>"
                         +"</tr>";
+
             }
             
             interesAcumulado = interesAcumulado;
@@ -503,8 +511,8 @@
             $("#filasTcuotas").append(fila);
             $('#interesToal').empty();
             $('#capitalTotal').empty();
-            $('#interesTotal').text("Interes total: " +RoundDecimal(interesAcumulado,1));
-            $('#capitalTotal').text("Total al finalizar: " + (RoundDecimal(capitalTotal,1)+RoundDecimal(interesAcumulado,1)));
+            $('#interesTotal').text("Interes total: " +RoundDecimal(interesAcumulado,1)+ " s/.");
+            $('#capitalTotal').text("Total al finalizar: " + (RoundDecimal(capitalTotal,1)+RoundDecimal(interesAcumulado,1))+" s/.");
         }
 	}
 

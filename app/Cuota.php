@@ -26,6 +26,23 @@ class Cuota extends Model
 
     public function scopelistar($query,$idcredito){
         $results = DB::table('cuota')
+        ->select(
+            'cuota.id as id',
+            'cuota.parte_capital as parte_capital',
+            'cuota.interes as interes',
+            'cuota.interes_mora as interes_mora',
+            'cuota.saldo_restante as saldo_restante',
+            'cuota.fecha_programada_pago as fecha_programada_pago',
+            'cuota.fecha_iniciomora as fecha_iniciomora',
+            'cuota.fecha_pago as fecha_pago',
+            'cuota.tasa_interes_mora as tasa_interes_mora',
+            'cuota.estado as estado',
+            'cuota.numero_cuota as numero_cuota',
+            DB::raw('extract( month from cuota.fecha_programada_pago) as mes'),
+            DB::raw('extract( month from cuota.fecha_pago) as mesp'),
+            DB::raw('extract( year from cuota.fecha_programada_pago) as anio'),
+            DB::raw('extract( year from cuota.fecha_pago) as aniop')
+        )
         ->where('cuota.credito_id','=',$idcredito)
         ->where('cuota.deleted_at','=',null)
         ->where('cuota.estado','!=','1')
@@ -34,6 +51,23 @@ class Cuota extends Model
     }
     public static function listartodo($idcredito){
         $results = DB::table('cuota')
+        ->select(
+            'cuota.id as id',
+            'cuota.parte_capital as parte_capital',
+            'cuota.interes as interes',
+            'cuota.interes_mora as interes_mora',
+            'cuota.saldo_restante as saldo_restante',
+            'cuota.fecha_programada_pago as fecha_programada_pago',
+            'cuota.fecha_iniciomora as fecha_iniciomora',
+            'cuota.fecha_pago as fecha_pago',
+            'cuota.tasa_interes_mora as tasa_interes_mora',
+            'cuota.estado as estado',
+            'cuota.numero_cuota as numero_cuota',
+            DB::raw('extract( month from cuota.fecha_programada_pago) as mes'),
+            DB::raw('extract( month from cuota.fecha_pago) as mesp'),
+            DB::raw('extract( year from cuota.fecha_programada_pago) as anio'),
+            DB::raw('extract( year from cuota.fecha_pago) as aniop')
+        )
         ->where('cuota.credito_id','=',$idcredito)
         ->where('cuota.deleted_at','=',null)
         ->orderBy('cuota.fecha_programada_pago', 'ASC');
