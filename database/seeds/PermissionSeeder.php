@@ -36,7 +36,7 @@ class PermissionSeeder extends Seeder
 				)
 			));
 		
-		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Créditos y Pago de Cuotas')->first()->id;
+		$menuoption_id = DB::table('menuoption')->where('name', '=', 'Créditos')->first()->id;
 		DB::table('permission')->insert(array(
 			array(
 				'usertype_id' => $usertype_id,

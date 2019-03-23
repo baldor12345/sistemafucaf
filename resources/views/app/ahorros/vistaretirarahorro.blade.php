@@ -1,9 +1,9 @@
 @if($caja_id !=  0)
 <div id="divinforetiro"></div>
 <div id="divMensajeErrorRetiro"></div>
-<div class="card-box table-responsive crbox">
+<div class="card-box row">
         <div class="col-sm-12">
-            {!! Form::open(['route' => $ruta["retiro"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formRetiro']) !!}
+            {!! Form::open(['route' => $ruta["retiro"] , 'method' => 'GET' ,'onsubmit' => 'return false;', 'class' => '', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formRetiro']) !!}
             {!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
             
             <div class="form-group col-12 col-md-12 col-sm-12" >
@@ -14,34 +14,37 @@
                 {!! Form::hidden('ahorro_id', $ahorro->id, array('id' => 'ahorro_id')) !!}
                 {!! Form::hidden('persona_id', $persona->id, array('id' => 'persona_id')) !!}
             </div>
-            <div class = "form-group">
-                <div class="form-group col-12 col-md-12 col-sm-12">
-                    {!! Form::label('montoretiro', 'Monto a retirar S/.: *', array('class' => '')) !!}
-                </div>
-                 <div class="form-group col-12 col-md-12 col-sm-12">
-                    {!! Form::text('montoretiro', null, array('class' => 'form-control input-md', 'id' => 'montoretiro', 'placeholder' => 'Monto a retirar S/.','onkeypress'=>'return filterFloat(event,this);')) !!}
-                </div>
-            </div>
-            <br>
-            <br>
-            <div class = "form-group">
+           
+            <div class = "col-12 col-md-12">
                 <div class="form-group col-12 col-md-12 col-sm-12">
                 {!! Form::label('fechar', 'Fecha de retiro: *', array('class' => '')) !!}
-                </div>
-                <div class="form-group col-12 col-md-12 col-sm-12">
+               
                 {!! Form::date('fechar', $fecha_pordefecto, array('class' => 'form-control input-md', 'id' => 'fechar')) !!}
                 </div>
             </div>
-            <br>
-            <br>
+            <div class = "col-12 col-md-12">
+                <div class="form-group col-12 col-md-12 col-sm-12">
+                    {!! Form::label('montoretiro', 'Monto a retirar S/.: *', array('class' => '')) !!}
+               
+                    {!! Form::text('montoretiro', null, array('class' => 'form-control input-md', 'id' => 'montoretiro', 'placeholder' => 'Monto a retirar S/.','onkeypress'=>'return filterFloat(event,this);')) !!}
+                </div>
+            </div>
+            <div class="col-12 col-md-12" >
+                <div class="form-group col-12 col-md-12" >
+                    {!! Form::label('descripcionAH', 'Descripción: ', array('class' => 'descripAH')) !!}
+                    {!! Form::textarea('descripcionAH', null, array('class' => 'form-control input-sm','rows' => 3, 'id' => 'descripcionAH', 'placeholder' => 'Ingrese descripción')) !!}
+                </div>
+            </div>
+            
             {!! Form::close() !!}
     </div>
     
-    <div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
-        {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Retirar ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'retirar(\''.$persona->id.'\', \''.URL::route($ruta["generareciboretiroPDF"], array()).'\')')) !!}
-        &nbsp;
-        {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
-    </div>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 text-right contbtn">
+    {!! Form::button('<i class="glyphicon glyphicon-remove"></i> Retirar ', array('class' => 'btn btn-success btn-sm', 'id' => 'btnRetirar', 'onclick' => 'retirar(\''.$persona->id.'\', \''.URL::route($ruta["generareciboretiroPDF"], array()).'\')')) !!}
+    &nbsp;
+    {!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cerrar', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 </div>
 
 <script type="text/javascript">

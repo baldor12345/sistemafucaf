@@ -44,11 +44,11 @@
             '11'=>'Nov',
             '12'=>'Dic',);
         ?>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td>
-        </tr>
-       
         @if($opcion == "vigentes")
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td>
+        
+        </tr>
             @foreach ($lista as $key => $value)
                 @php
                     if($value->estado == 'm'){
@@ -60,8 +60,8 @@
                         $numeroDias = $diferencia->format('%R%a días');
                         
                         if($numeroDias>0){
-                            $interes_ganado = $numeroDias*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->interes);
-                            $value->interes_mora += $interes_ganado;
+                            // $interes_ganado = $numeroDias*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->interes);
+                            // $value->interes_mora += $interes_ganado;
                             //********************num meses ***************
                             $anio_menor= date("Y", strtotime($fecha_inicio));
                             $mes_menor= date("m", strtotime($fecha_inicio));
@@ -74,7 +74,7 @@
                                 $diferencia_anios = $anio_mayor - $anio_menor;
                                 $num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
                             }
-                            $value->interes += $value->interes * $num_meses;
+                            $value->interes_mora += $value->saldo_restante * $num_meses*($value->tasa_interes_mora/100);
                         }
                     }
                 @endphp
@@ -90,7 +90,7 @@
                     <td>{{  round($value->saldo_restante,1)}}</td>
                    
                     <td> @if($value->estado == 'I') <button class="btn btn-warning btn-sm"></button>@endif @if($value->estado =='m')<button class="btn btn-danger btn-sm"></button>@endif</td>
-                    <td>{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-xs', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI','nan')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td>
+                    {{-- <td>{!! Form::button('<i class="fa fa-check fa-lg"></i> Pagar', array('class' => 'btn btn-success btn-xs', 'id' => 'btnpago', 'onclick' => 'modal(\''.URL::route($ruta["vistapagocuota"], array($value->id, 'SI','nan')).'\',  \''.$titulo_pagocuota.'\')')) !!}</td> --}}
                  
                 </tr>
                 <?php
@@ -99,6 +99,9 @@
                 ?>
             @endforeach
         @elseif($opcion == "cancelados")
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td>
+        </tr>
             @foreach ($lista as $key => $value)
                 @php
                     if($value->estado == 'm'){
@@ -151,7 +154,9 @@
                 ?>
             @endforeach
         @elseif($opcion == "todo")
-           
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td><td></td>
+        </tr>
             @foreach ($lista as $key => $value)
                 @php
                     if($value->estado == 'm'){
@@ -180,7 +185,6 @@
                             $value->interes += $value->interes * $num_meses;
                         }
                     }
-                  
                 @endphp
                 <tr>
                 

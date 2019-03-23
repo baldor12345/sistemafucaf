@@ -150,7 +150,6 @@
                 }else{
                     $('#lblNuevosaldorest').html('El monto de amortizacion debe ser mayor o ygual a 0 ');
                 }
-                
             }
         </script>
     @else

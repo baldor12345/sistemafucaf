@@ -80,8 +80,9 @@ class Ahorros extends Model
             'ahorros.persona_id as persona_id',
             DB::raw('extract( month from ahorros.fechai) as mes')
         )
-        ->where('ahorros.persona_id','=', $id_persona)
+        ->where('persona_id','=', $id_persona)
         ->where(DB::raw('extract( year from ahorros.fechai)'),'=',$anio)
+        ->where('deleted_at','=',null)
         ->orderBy(DB::raw('extract( month from ahorros.fechai)'), 'ASC');
         return $results;
     }
@@ -119,7 +120,8 @@ class Ahorros extends Model
             DB::raw('extract( month from ahorros.fechai) as mes'),
             DB::raw('extract( year from ahorros.fechai) as anio')
         )
-        ->where(DB::raw('extract( year from ahorros.fechai)'),'=', $anio)
+        ->whereYear('ahorros.fechai','=', $anio)
+        ->where('deleted_at','=', null)
         ->orderby(DB::raw('extract( year from ahorros.fechai)'),'ASC')->get();
         return $results;
     }

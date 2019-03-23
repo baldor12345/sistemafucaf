@@ -696,7 +696,7 @@ class CreditoController extends Controller{
             $cabecera[] = array('valor' => 'Mont. Real Cuota s/.', 'numero' => '1');
             $cabecera[] = array('valor' => 'Saldo s/.', 'numero' => '1');
             $cabecera[] = array('valor' => 'Estado', 'numero' => '1');
-            $cabecera[] = array('valor' => 'Operaciones', 'numero' => '1');
+            // $cabecera[] = array('valor' => 'Operaciones', 'numero' => '1');
     
         }else if($opcion == 'cancelados'){
            
@@ -1608,69 +1608,33 @@ public function numero_meses($fecha_inico, $fecha_final){
         if( $caja_id != 0){
 
         
-        $saldo_restante_credito = $request->get('saldo_rest');
-        $credito = Credito::find($request->get('credito_id'));
-        $num_cuotas_anterior_p = $request->get('num_cuotas_anterior_p');
-        $num_cuotas_nuevos_p = $request->get('num_cuotas_nuevas_p');
-        $monto_amortizar = $request->get('monto_amortizar');
-        $persona = Persona::find($credito->persona_id);
-        // $tipo = $request->get('tipomodo');
-        $fecha = $request->get('fecha_ref');
-        $montorestante = $saldo_restante_credito;
-        $error = DB::transaction(function() use($montorestante,$saldo_restante_credito, $num_cuotas_nuevos_p,$num_cuotas_anterior_p,  $credito,$persona, $fecha, $monto_amortizar, $caja_id){
-            
-            $valor_saldo =  $saldo_restante_credito;
-            $nuevo_valor_cuota =  (($credito->tasa_interes/100) * $valor_saldo) / (1 - (pow(1/(1+($credito->tasa_interes/100)), $num_cuotas_nuevos_p)));
-            $cuotas = Cuota::where('credito_id','=', $credito->id)->where('estado','!=', '1')->where('deleted_at', '=', null)->get();
-            // $numero_cuota = $credito->periodo - $num_cuotas_anterior_p + 1;
-            $numero_cuota = count(Cuota::where('credito_id','=', $credito->id)->where('fecha_pago','!=', null)->where('deleted_at','=', null)->get()) +1;
-            $numero_ultima_cuota_pagada = ($numero_cuota -1);
-            $ult_cuota = Cuota::where('credito_id','=',$credito->id)->where('numero_cuota','=',($numero_cuota - 1))->where('deleted_at','=',null)->get();
-            $ultima_cuota_pagada = count($ult_cuota)> 0?$ult_cuota[0]: null;
-            if(count($cuotas) == $num_cuotas_nuevos_p){
-                $explod = explode('-',date("Y-m-d",strtotime($fecha)));
-                $fechacuota = date($explod[0].'-'.$explod[1].'-01');
-                $interesAcumulado = 0.00;
-                for($i=0;$i<count($cuotas); $i++){
-                    $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month"));
-                    $montInteres = ($credito->tasa_interes/100) * $montorestante;
-                    $interesAcumulado +=  $montInteres;
-                    $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
+            $saldo_restante_credito = $request->get('saldo_rest');
+            $credito = Credito::find($request->get('credito_id'));
+            $num_cuotas_anterior_p = $request->get('num_cuotas_anterior_p');
+            $num_cuotas_nuevos_p = $request->get('num_cuotas_nuevas_p');
+            $monto_amortizar = $request->get('monto_amortizar');
+            $persona = Persona::find($credito->persona_id);
+            // $tipo = $request->get('tipomodo');
+            $fecha = $request->get('fecha_ref');
+            $montorestante = $saldo_restante_credito;
+            $error = DB::transaction(function() use($montorestante,$saldo_restante_credito, $num_cuotas_nuevos_p,$num_cuotas_anterior_p,  $credito,$persona, $fecha, $monto_amortizar, $caja_id){
                 
-                    if($i < (int)($num_cuotas_nuevos_p - 1)){
-                        $montorestante = $montorestante - $montCapital;
-                    }
-                    if($i == (int)($num_cuotas_nuevos_p - 1)){
-                        $montCapital = round($montorestante, 1);
-                        $montInteres =  round($nuevo_valor_cuota, 1) - $montCapital;
-                        $montorestante = 0;
-                    }
-                    $fecha_p = new DateTime($fechacuota);
-                    $fecha_p->modify('last day of this month');
-                    $fecha_p->format('Y-m-d');
-
-                    $cuotas[$i]->parte_capital = round($montCapital, 1); 
-                    $cuotas[$i]->interes = round($montInteres, 1);
-                    $cuotas[$i]->saldo_restante = round($montorestante, 1);
-                    $cuotas[$i]->numero_cuota = $numero_cuota;
-                    $cuotas[$i]->fecha_programada_pago = $fecha_p;
-                    $cuotas[$i]->save();
-                    $numero_cuota++;
-                }
-                 $credito->descripcion =  $credito->descripcion.". Ref. el: ".date('d/m/Y',strtotime($fecha)) ; 
-                 $credito->save();
-
-            }else if(count($cuotas) > $num_cuotas_nuevos_p){
-                $explod = explode('-',date("Y-m-d",strtotime($fecha)));
-                $fechacuota = date($explod[0].'-'.$explod[1].'-01');
-                $interesAcumulado = 0.00;
-                for($i=0;$i<count($cuotas); $i++){
-                     
-                    if($i<$num_cuotas_nuevos_p){
+                $valor_saldo =  $saldo_restante_credito;
+                $nuevo_valor_cuota =  (($credito->tasa_interes/100) * $valor_saldo) / (1 - (pow(1/(1+($credito->tasa_interes/100)), $num_cuotas_nuevos_p)));
+                $cuotas = Cuota::where('credito_id','=', $credito->id)->where('estado','!=', '1')->where('deleted_at', '=', null)->get();
+                // $numero_cuota = $credito->periodo - $num_cuotas_anterior_p + 1;
+                $numero_cuota = count(Cuota::where('credito_id','=', $credito->id)->where('fecha_pago','!=', null)->where('deleted_at','=', null)->get()) +1;
+                $numero_ultima_cuota_pagada = ($numero_cuota -1);
+                $ult_cuota = Cuota::where('credito_id','=',$credito->id)->where('numero_cuota','=',($numero_cuota - 1))->where('deleted_at','=',null)->get();
+                $ultima_cuota_pagada = count($ult_cuota)> 0?$ult_cuota[0]: null;
+                if(count($cuotas) == $num_cuotas_nuevos_p){
+                    $explod = explode('-',date("Y-m-d",strtotime($fecha)));
+                    $fechacuota = date($explod[0].'-'.$explod[1].'-01');
+                    $interesAcumulado = 0.00;
+                    for($i=0;$i<count($cuotas); $i++){
                         $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month"));
                         $montInteres = ($credito->tasa_interes/100) * $montorestante;
                         $interesAcumulado +=  $montInteres;
-                    
                         $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
                     
                         if($i < (int)($num_cuotas_nuevos_p - 1)){
@@ -1692,106 +1656,142 @@ public function numero_meses($fecha_inico, $fecha_final){
                         $cuotas[$i]->fecha_programada_pago = $fecha_p;
                         $cuotas[$i]->save();
                         $numero_cuota++;
-                    }else{
-                        $cuotas[$i]->parte_capital = 0; 
-                        $cuotas[$i]->interes = 0;
-                        $cuotas[$i]->saldo_restante = 0;
-                        $cuotas[$i]->estado = '1';
-                        $cuotas[$i]->save();
-                        //$cuotas[$i]->delete();
                     }
-                }
-               // $credito->periodo = $numero_cuota -1 ;
-                $credito->descripcion =  $credito->descripcion.". Ref. el: ".date('d/m/Y',strtotime($fecha)) ; 
-                $credito->save();
-            }else if(count($cuotas) < $num_cuotas_nuevos_p){
-                $explod = explode('-',date("Y-m-d",strtotime($fecha)));
-                $fechacuota = date($explod[0].'-'.$explod[1].'-01');
-                $interesAcumulado = 0.00;
+                    $credito->descripcion =  $credito->descripcion.". Ref. el: ".date('d/m/Y',strtotime($fecha)) ; 
+                    $credito->save();
 
-                for($i=0;$i<count($cuotas); $i++){
-                    $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month")); 
-                    $montInteres = ($credito->tasa_interes/100) * $montorestante; 
-                    $interesAcumulado +=  $montInteres; 
-                
-                    $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
-                    $montorestante = $montorestante - $montCapital;
-                    $fecha_p = new DateTime($fechacuota);
-                    $fecha_p->modify('last day of this month');
-                    $fecha_p->format('Y-m-d');
-                
-                    //$cuota = new Cuota();
-                    $cuotas[$i]->parte_capital = round($montCapital, 1); 
-                    $cuotas[$i]->interes = round($montInteres, 1);
-                    $cuotas[$i]->interes_mora = 0.00;
-                    $cuotas[$i]->saldo_restante = round($montorestante, 1);
-                    $cuotas[$i]->numero_cuota = $numero_cuota;
-                    $cuotas[$i]->fecha_programada_pago = $fecha_p;
-                    $cuotas[$i]->estado = '0';//0=PENDIENTE; 1 = PAGADO; m = MOROSO
-                    $cuotas[$i]->save();
-                    $numero_cuota++;
-                }
-                for($i=count($cuotas);$i< $num_cuotas_nuevos_p; $i++){
-                    $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month")); 
-                    $montInteres = ($credito->tasa_interes/100) * $montorestante; 
-                    $interesAcumulado +=  $montInteres; 
-                
-                    $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
-                    //$montorestante = $montorestante - $montCapital;
-                    if($i < (int)($num_cuotas_nuevos_p - 1)){
+                }else if(count($cuotas) > $num_cuotas_nuevos_p){
+                    $explod = explode('-',date("Y-m-d",strtotime($fecha)));
+                    $fechacuota = date($explod[0].'-'.$explod[1].'-01');
+                    $interesAcumulado = 0.00;
+                    for($i=0;$i<count($cuotas); $i++){
+                        
+                        if($i<$num_cuotas_nuevos_p){
+                            $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month"));
+                            $montInteres = ($credito->tasa_interes/100) * $montorestante;
+                            $interesAcumulado +=  $montInteres;
+                        
+                            $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
+                        
+                            if($i < (int)($num_cuotas_nuevos_p - 1)){
+                                $montorestante = $montorestante - $montCapital;
+                            }
+                            if($i == (int)($num_cuotas_nuevos_p - 1)){
+                                $montCapital = round($montorestante, 1);
+                                $montInteres =  round($nuevo_valor_cuota, 1) - $montCapital;
+                                $montorestante = 0;
+                            }
+                            $fecha_p = new DateTime($fechacuota);
+                            $fecha_p->modify('last day of this month');
+                            $fecha_p->format('Y-m-d');
+
+                            $cuotas[$i]->parte_capital = round($montCapital, 1); 
+                            $cuotas[$i]->interes = round($montInteres, 1);
+                            $cuotas[$i]->saldo_restante = round($montorestante, 1);
+                            $cuotas[$i]->numero_cuota = $numero_cuota;
+                            $cuotas[$i]->fecha_programada_pago = $fecha_p;
+                            $cuotas[$i]->save();
+                            $numero_cuota++;
+                        }else{
+                            $cuotas[$i]->parte_capital = 0; 
+                            $cuotas[$i]->interes = 0;
+                            $cuotas[$i]->saldo_restante = 0;
+                            $cuotas[$i]->estado = '1';
+                            $cuotas[$i]->save();
+                            //$cuotas[$i]->delete();
+                        }
+                    }
+                // $credito->periodo = $numero_cuota -1 ;
+                    $credito->descripcion =  $credito->descripcion.". Ref. el: ".date('d/m/Y',strtotime($fecha)) ; 
+                    $credito->save();
+                }else if(count($cuotas) < $num_cuotas_nuevos_p){
+                    $explod = explode('-',date("Y-m-d",strtotime($fecha)));
+                    $fechacuota = date($explod[0].'-'.$explod[1].'-01');
+                    $interesAcumulado = 0.00;
+
+                    for($i=0;$i<count($cuotas); $i++){
+                        $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month")); 
+                        $montInteres = ($credito->tasa_interes/100) * $montorestante; 
+                        $interesAcumulado +=  $montInteres; 
+                    
+                        $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
                         $montorestante = $montorestante - $montCapital;
-                    }
+                        $fecha_p = new DateTime($fechacuota);
+                        $fecha_p->modify('last day of this month');
+                        $fecha_p->format('Y-m-d');
                     
-                    $fecha_p = new DateTime($fechacuota);
-                    $fecha_p->modify('last day of this month');
-                    $fecha_p->format('Y-m-d');
-                    
-                    if($i == (int)($num_cuotas_nuevos_p - 1)){
-                        $montCapital = round($montorestante, 1);
-                        $montInteres =  round($nuevo_valor_cuota, 1) - $montCapital;
-                        $montorestante = 0;
+                        //$cuota = new Cuota();
+                        $cuotas[$i]->parte_capital = round($montCapital, 1); 
+                        $cuotas[$i]->interes = round($montInteres, 1);
+                        $cuotas[$i]->interes_mora = 0.00;
+                        $cuotas[$i]->saldo_restante = round($montorestante, 1);
+                        $cuotas[$i]->numero_cuota = $numero_cuota;
+                        $cuotas[$i]->fecha_programada_pago = $fecha_p;
+                        $cuotas[$i]->estado = '0';//0=PENDIENTE; 1 = PAGADO; m = MOROSO
+                        $cuotas[$i]->save();
+                        $numero_cuota++;
                     }
-                    $cuota = new Cuota();
-                    $cuota->parte_capital = round($montCapital, 1); 
-                    $cuota->interes = round($montInteres, 1);
-                    $cuota->interes_mora = 0;
-                    $cuota->saldo_restante = round($montorestante, 1);
-                    $cuota->numero_cuota = $numero_cuota;
-                    $cuota->fecha_programada_pago = $fecha_p;
-                    $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; m = MOROSO
-                    $cuota->credito_id = $credito->id;
-                    $cuota->save();
-                    $numero_cuota++;
+                    for($i=count($cuotas);$i< $num_cuotas_nuevos_p; $i++){
+                        $fechacuota = date("Y-m-d",strtotime($fechacuota."+ 1 month")); 
+                        $montInteres = ($credito->tasa_interes/100) * $montorestante; 
+                        $interesAcumulado +=  $montInteres; 
+                    
+                        $montCapital = round($nuevo_valor_cuota, 1) - round($montInteres, 1); 
+                        //$montorestante = $montorestante - $montCapital;
+                        if($i < (int)($num_cuotas_nuevos_p - 1)){
+                            $montorestante = $montorestante - $montCapital;
+                        }
+                        
+                        $fecha_p = new DateTime($fechacuota);
+                        $fecha_p->modify('last day of this month');
+                        $fecha_p->format('Y-m-d');
+                        
+                        if($i == (int)($num_cuotas_nuevos_p - 1)){
+                            $montCapital = round($montorestante, 1);
+                            $montInteres =  round($nuevo_valor_cuota, 1) - $montCapital;
+                            $montorestante = 0;
+                        }
+                        $cuota = new Cuota();
+                        $cuota->parte_capital = round($montCapital, 1); 
+                        $cuota->interes = round($montInteres, 1);
+                        $cuota->interes_mora = 0;
+                        $cuota->saldo_restante = round($montorestante, 1);
+                        $cuota->numero_cuota = $numero_cuota;
+                        $cuota->fecha_programada_pago = $fecha_p;
+                        $cuota->estado = '0';//0=PENDIENTE; 1 = PAGADO; m = MOROSO
+                        $cuota->credito_id = $credito->id;
+                        $cuota->save();
+                        $numero_cuota++;
+                    }
+                    $credito->periodo = $numero_cuota -1 ;
+                    $credito->descripcion =  $credito->descripcion.". Ref. el: ".date('d/m/Y',strtotime($fecha)) ; 
+                    $credito->save();
                 }
-                $credito->periodo = $numero_cuota -1 ;
-                $credito->descripcion =  $credito->descripcion.". Ref. el: ".date('d/m/Y',strtotime($fecha)) ; 
-                $credito->save();
-            }
-            if( $ultima_cuota_pagada != null){
-                $ultima_cuota_pagada->parte_capital = round($ultima_cuota_pagada->parte_capital +  $monto_amortizar, 1);
-                $ultima_cuota_pagada->saldo_restante = round($ultima_cuota_pagada->saldo_restante - $monto_amortizar, 1);
-                $ultima_cuota_pagada->save();
+                if( $ultima_cuota_pagada != null){
+                    $ultima_cuota_pagada->parte_capital = round($ultima_cuota_pagada->parte_capital +  $monto_amortizar, 1);
+                    $ultima_cuota_pagada->saldo_restante = round($ultima_cuota_pagada->saldo_restante - $monto_amortizar, 1);
+                    $ultima_cuota_pagada->save();
 
-                $concepto_id_refinanc = 23;
-                
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $fecha;
-                $transaccion->monto = round($monto_amortizar,1);
-                $transaccion->concepto_id =  $concepto_id_refinanc;
-                $transaccion->descripcion = "Refinanciacion de credito";
-                $transaccion->persona_id = $persona->id;
-                $transaccion->usuario_id = (new Credito())->idUser();
-                $transaccion->caja_id = $caja_id;
-                $transaccion->cuota_parte_capital = round($monto_amortizar,1);
-                $transaccion->id_tabla = $credito->id;
-                $transaccion->inicial_tabla = 'RC';
-                $transaccion->save();
+                    $concepto_id_refinanc = 23;
+                    
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $fecha;
+                    $transaccion->monto = round($monto_amortizar,1);
+                    $transaccion->concepto_id =  $concepto_id_refinanc;
+                    $transaccion->descripcion = "Refinanciacion de credito";
+                    $transaccion->persona_id = $persona->id;
+                    $transaccion->usuario_id = (new Credito())->idUser();
+                    $transaccion->caja_id = $caja_id;
+                    $transaccion->cuota_parte_capital = round($monto_amortizar,1);
+                    $transaccion->id_tabla = $credito->id;
+                    $transaccion->inicial_tabla = 'RC';
+                    $transaccion->save();
 
-            }
-        });
-    }else{
-        $error ="Asegurese de aperturar caja primero";
-    }
+                }
+            });
+        }else{
+            $error ="Asegurese de aperturar caja primero";
+        }
         return $error == null?"OK":$error;
     }
     public function vistareporte(){
@@ -1801,6 +1801,7 @@ public function numero_meses($fecha_inico, $fecha_final){
         $fecha_inicio = count($caja) >0? date('Y-m-d', strtotime($caja[0]->fecha_horaapert)) : date('Y-m-d');
         return view('app.credito.vistareporte')->with(compact('fecha_inicio','ruta'));
     }
+
     public function reportecreditos(Request $request){
         $fechainicio = date('Y-m-d', strtotime($request->get('fechainicio')));
         $fechafinal = date('Y-m-d', strtotime($request->get('fechafinal')));
