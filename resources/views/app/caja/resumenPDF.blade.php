@@ -162,7 +162,7 @@
                 <td></td>
             </tr>
             <tr>
-                <td align="left" style="font-size: 11px" colspan="9" ><strong>PAGO DE CUOTAS </strong></td>
+                <td align="left" style="font-size: 11px" colspan="9" ><strong>AHORROS</strong></td>
             </tr>
         </table>
         <table>
