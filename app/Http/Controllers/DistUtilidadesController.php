@@ -314,9 +314,7 @@ class DistUtilidadesController extends Controller
     //     }*/
         
     // }
-    public function saldocaja(){
-        
-    }
+
     public function getSaldoDistribuible($fecha){
         echo("fecha: ".$fecha);
         $anio =date('Y',strtotime($fecha));

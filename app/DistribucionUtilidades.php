@@ -204,6 +204,22 @@ class DistribucionUtilidades extends Model
 
         return $results;
     }
+    public static function list_acciones_por_persona_mes($persona_id, $anio)
+    {
+       
+        $results = DB::table('acciones')
+            ->select(
+                DB::raw("COUNT(*) as cantidad_mes"),
+                DB::raw("extract( month from fechai) as mes")
+            )
+            ->where('persona_id','=',$persona_id)
+            ->where('deleted_at','=',null)
+            ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+            ->groupBy(DB::raw('extract( month from fechai)'))
+            ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
+
+        return $results;
+    }
 
     public static function list_enero($persona_id, $anio_anterior){
         $results = DB::table('historial_accion')

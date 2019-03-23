@@ -282,9 +282,9 @@ use App\Persona;
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
-				<tr ><th colspan="20" >PASO 6: Se sumasn estas utilidades mensuales y se obtiene  la UTILIDAD TOTAL del socio en el año (última columna de la derecha).</th></tr>
-				<tr ><th rowspan="2">N°</th><th rowspan="2" colspan="2">SOCIOS</th><th colspan="12" >{{ $anio }}</th><th>{{ $anio +1 }}</th><th rowspan="2">TOTAL</th><th rowspan="1">DISTR.</th><th colspan="2">OPPERACION</th></tr>
-				<tr >
+				<tr><th colspan="20" >PASO 6: Se sumasn estas utilidades mensuales y se obtiene  la UTILIDAD TOTAL del socio en el año (última columna de la derecha).</th></tr>
+				<tr><th rowspan="2">N°</th><th rowspan="2" colspan="2">SOCIOS</th><th colspan="12" >{{ $anio }}</th><th>{{ $anio +1 }}</th><th rowspan="2">TOTAL</th><th rowspan="1">DISTR.</th><th colspan="2">OPPERACION</th></tr>
+				<tr>
 					<th>E</th><th>F</th><th>M</th><th>A</th><th>M</th><th>J</th><th>J</th><th>A</th><th>S</th><th>O</th><th>N</th><th>D</th><th>E</th>
 					<th>{{ $porcentaje_ditribuible."%" }}</th><th>REITRAR</th><th>AHORRAR</th>
 				</tr>
@@ -298,7 +298,7 @@ use App\Persona;
 			
 				for($i=0; $i< count($socios); $i++){
 					
-					$listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
+					$listaAcciones = DistribucionUtilidades::list_acciones_por_persona_mes($socios[$i]->id, $anio)->get();
 					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
 					
 					$utilidades = array();

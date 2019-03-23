@@ -58,24 +58,21 @@ class MenuoptionSeeder extends Seeder
 					'name' => 'Caja',
 					'link'   => 'caja'
 				),
-
-				array(
-					'name' => 'Créditos y Pago de Cuotas',
-					'link'   => 'creditos'
-				),
-
 				array(
 					'name' => 'Compra y Venta de Acciones',
 					'link'   => 'acciones'
 				),
-
+				array(
+					'name' => 'Pago de Cuotas',
+					'link'   => 'recibocuotas'
+				),
+				array(
+					'name' => 'Créditos',
+					'link'   => 'creditos'
+				),
 				array(
 					'name' => 'Deposito y Retiro de Ahorros',
 					'link'   => 'ahorros'
-				),
-				array(
-					'name' => 'Recibos de Cuotas a la fecha',
-					'link'   => 'recibocuotas'
 				),
 				array(
 					'name' => 'Distribucion de Utilidades',
