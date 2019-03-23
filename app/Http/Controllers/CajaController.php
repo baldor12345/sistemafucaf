@@ -967,6 +967,7 @@ class CajaController extends Controller
             ->where('id', '!=', 12)
             ->where('id', '!=', 18)
             ->where('id', '!=', 21)
+            ->where('id', '!=', 23)
             ->get();
         $retorno .= '><option value="" selected="selected">Seleccione</option>';
 
