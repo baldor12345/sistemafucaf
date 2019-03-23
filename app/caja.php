@@ -123,6 +123,7 @@ class caja extends Model
                     ->where('concepto.id','!=',4)
                     ->where('concepto.id','!=',12)
                     ->where('concepto.id','!=',22)
+                    ->where('concepto.id','!=',23)
                     ->where('transaccion.deleted_at',null);
         return $results;
     }
@@ -148,6 +149,7 @@ class caja extends Model
                     ->where('concepto.id','!=',4)
                     ->where('concepto.id','!=',12)
                     ->where('concepto.id','!=',22)
+                    ->where('concepto.id','!=',23)
                     ->where('transaccion.deleted_at',null);
         return $results;
     }
@@ -436,6 +438,7 @@ GROUP BY persona.id;
                     ->where('concepto.id','!=',16)
                     ->where('concepto.id','!=',4)
                     ->where('concepto.id','!=',12)
+                    ->where('concepto.id','!=',23)
                     ->where('transaccion.deleted_at',null);
         return $results;
     }
