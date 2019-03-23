@@ -118,6 +118,9 @@
                     echo($tbody1);
                     ?>
                 </tbody>
+                <tfoot>
+                    <tr><th colspan="16"></th></tr>
+                </tfoot>
             </table>
         </div>
         <div>

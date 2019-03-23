@@ -84,7 +84,7 @@
                     <td>{{  round($value->interes + $value->parte_capital,1)}}</td>
                     <td>{{  round($value->parte_capital,1)}}</td>
                     <td>{{  round($value->interes,1)}}</td>
-                    <td>{{  ($value->fecha_pago != null)?Date::parse($value->fecha_pago)->format('d/m/Y'):"" }}</td>
+                    <td>{{  ($value->mesp != null?($nombremes[$value->mesp]." - ".$value->aniop):"")}}</td>
                     <td>{{  round($value->interes_mora,1)}}</td>
                     <td>{{  round($value->parte_capital + $value->interes + $value->interes_mora,1)}}</td>
                     <td>{{  round($value->saldo_restante,1)}}</td>
@@ -141,7 +141,8 @@
                     <td>{{  round($value->cuota_interes + $value->cuota_parte_capital,1)}}</td>
                     <td>{{  round($value->cuota_parte_capital,1)}}</td>
                     <td>{{  round($value->cuota_interes,1)}}</td>
-                    <td>{{  ($value->fecha != null)?Date::parse($value->fecha)->format('d/m/Y'):"" }}</td>
+                    {{-- <td>{{  ($value->fecha != null)?Date::parse($value->fecha)->format('d/m/Y'):"" }}</td> --}}
+                    <td>{{  $nombremes[date('m',strtotime($value->fecha))]." - ".date('Y',strtotime($value->fecha))}}</td>
                     <td>{{  round($value->cuota_interes_mora,1)}}</td>
                     <td>{{  round($value->monto,1)}}</td>
                     <td>{{  round($saldo_restante,1)}}</td>
@@ -193,7 +194,7 @@
                     <td>{{  round($value->interes + $value->parte_capital,1)}}</td>
                     <td>{{  round($value->parte_capital,1)}}</td>
                     <td>{{  round($value->interes,1)}}</td>
-                    <td>{{  Date::parse($value->fecha_programada_pago)->format('d/m/Y') }}</td>
+                    <td>{{  $nombremes[$value->mes]." - ".$value->anio }}</td>
                     <td>{{  round($value->interes_mora,1)}}</td>
                     <td>{{  round($value->interes + $value->parte_capital + $value->interes_mora,1)}}</td>
                     <td>{{  round($value->saldo_restante,1)}}</td>
