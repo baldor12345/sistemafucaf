@@ -1,7 +1,16 @@
 @if(count($lista) == 0)
 	<h3 class="text-warning">No se encontraron resultados.</h3>
 @else
-{!! $paginacion or '' !!}
+<div class="row">
+	{!! Form::label('codigo', 'COMPRADAS:', array('class' => 'col-sm-2 col-xs-12 control-label')) !!}
+	@if($cant_acciones != 0)
+	{!! Form::label('codigo', $cant_acciones, array('class' => 'col-sm-10 col-xs-12 control-label')) !!}
+	@else
+	{!! Form::label('codigo', '--', array('class' => 'col-sm-8 col-xs-12 control-label')) !!}
+	@endif
+</div>
+</br>
+
 <table id="example1" class="table table-bordered table-striped table-condensed table-hover">
 	<thead>
 		<tr>
@@ -51,4 +60,5 @@
 		@endforeach
 	</tbody>
 </table>
+{!! $paginacion or '' !!}
 @endif

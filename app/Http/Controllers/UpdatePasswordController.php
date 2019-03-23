@@ -25,7 +25,7 @@ class UpdatePasswordController extends Controller
         $ruta             = $this->rutas;
         $entidad          = 'usuario';
         $user           = Auth::user();
-        $existe = Libreria::verificarExistencia($user->id, 'user');
+        $existe = Libreria::verificarExistencia($user->id, 'usuario');
         if ($existe !== true) {
             return $existe;
         }

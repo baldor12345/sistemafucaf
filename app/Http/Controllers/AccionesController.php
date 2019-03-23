@@ -408,7 +408,9 @@ class AccionesController extends Controller
         $inicio           = 0;
 
         $caja = Caja::where("estado","=","A")->get();
-        $fecha_caja = count($caja) == 0? 0: Date::parse( $caja[0]->fecha_horaapert )->format('Y-m') ;
+        $fecha_caja = count($caja) == 0? date('Y-m'): Date::parse( $caja[0]->fecha_horaapert )->format('Y-m') ;
+
+        $cant_acciones = Acciones::where('estado','C')->where('persona_id',$persona_id)->where('deleted_at',null)->count();
 
         $Month = array(1=>'Enero',
                         2=>'Febrero',
@@ -432,9 +434,9 @@ class AccionesController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar','fecha_caja'));
+            return view($this->folderview.'.listdetalle')->with(compact('concepto_id','cant_acciones','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio','Month','titulo_eliminar','fecha_caja'));
         }
-        return view($this->folderview.'.listdetalle')->with(compact('concepto_id','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar','fecha_caja'));
+        return view($this->folderview.'.listdetalle')->with(compact('concepto_id','cant_acciones','lista', 'paginacion', 'entidad', 'cabecera', 'ruta', 'inicio', 'Month','titulo_eliminar','fecha_caja'));
     
     }
 
@@ -686,7 +688,7 @@ class AccionesController extends Controller
         $fecha_caja = count($caja) == 0? 0: Date::parse($caja[0]->fecha_horaapert)->format('Y-m-d');
 
         $cboPers = array(0=>'Seleccione...');
-        $nom = '  dni: '.$persona->dni.'   nom: '.$persona->nombres.' '.$persona->apellidos;
+        $nom =  'NOM: '.$persona->nombres.' '.$persona->apellidos.' ACCIONES: '.$cant_acciones;
         $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
         $cboConcepto  =array(2=>'Venta de Acciones');
         $acciones        = Acciones::find($id);
@@ -993,68 +995,70 @@ class AccionesController extends Controller
 
         $error = DB::transaction(function() use($id){
             $acciones = Acciones::find($id);
-            $fecha = $acciones->fechai;
-            $configuraciones = Configuraciones::find($acciones->configuraciones_id);
+            if($acciones->estado == 'C'){
+                $fecha = $acciones->fechai;
+                $configuraciones = Configuraciones::find($acciones->configuraciones_id);
 
-            $history_acc = HistorialAccion::where('persona_id',$acciones->persona_id)->where('fecha',Date::parse( $acciones->fechai )->format('Y-m-d  H:i:00'))->get();
-            foreach($history_acc as $valor){
-                //datos 
-                $history_cant = $valor->cantidad;
-                $history_estado = $valor->estado;
-                $history_fecha = $valor->fecha;
-                $history_persona_id = $valor->persona_id;
-                $history_config = $valor->configuraciones_id;
-                $history_caja = $valor->caja_id;
-                $history_concepto = $valor->concepto_id;
+                $history_acc = HistorialAccion::where('persona_id',$acciones->persona_id)->where('fecha',Date::parse( $acciones->fechai )->format('Y-m-d  H:i:00'))->get();
+                foreach($history_acc as $valor){
+                    //datos 
+                    $history_cant = $valor->cantidad;
+                    $history_estado = $valor->estado;
+                    $history_fecha = $valor->fecha;
+                    $history_persona_id = $valor->persona_id;
+                    $history_config = $valor->configuraciones_id;
+                    $history_caja = $valor->caja_id;
+                    $history_concepto = $valor->concepto_id;
 
-                $accionid = explode(',',$valor->descripcion);
-                $cant = count($accionid);
-                for($i=0;$i<count($accionid); $i++){
-                  if($accionid[$i] == $acciones->codigo){
-                        $valor->delete();
-                        unset($accionid[$i]);
-                  } 
-                }
-                if(($cant-1) == count($accionid)){
-                    $dat = "";
-                    foreach ($accionid as $x) {
-                        $dat .=$x.',';
+                    $accionid = explode(',',$valor->descripcion);
+                    $cant = count($accionid);
+                    for($i=0;$i<count($accionid); $i++){
+                    if($accionid[$i] == $acciones->codigo){
+                            $valor->delete();
+                            unset($accionid[$i]);
+                    } 
                     }
-                    $historial_accion               = new HistorialAccion();    
-                    $historial_accion->cantidad        = ($history_cant-1);
-                    $historial_accion->estado        = $history_estado;
-                    $historial_accion->fecha        = $history_fecha;
-                    $historial_accion->descripcion        = $dat;
-                    $historial_accion->persona_id        = $history_persona_id;
-                    $historial_accion->configuraciones_id        = $history_config;
-                    $historial_accion->caja_id = $history_caja;
-                    $historial_accion->concepto_id        = $history_concepto;
-                    $historial_accion->save();
+                    if(($cant-1) == count($accionid)){
+                        $dat = "";
+                        foreach ($accionid as $x) {
+                            $dat .=$x.',';
+                        }
+                        $historial_accion               = new HistorialAccion();    
+                        $historial_accion->cantidad        = ($history_cant-1);
+                        $historial_accion->estado        = $history_estado;
+                        $historial_accion->fecha        = $history_fecha;
+                        $historial_accion->descripcion        = $dat;
+                        $historial_accion->persona_id        = $history_persona_id;
+                        $historial_accion->configuraciones_id        = $history_config;
+                        $historial_accion->caja_id = $history_caja;
+                        $historial_accion->concepto_id        = $history_concepto;
+                        $historial_accion->save();
+                    }
                 }
-            }
-            
-            $concepto_id = $acciones->concepto_id;
-            $persona_id = $acciones->persona_id;
-            $transacciones = Transaccion::where('persona_id',$acciones->persona_id)->where('fecha',Date::parse( $acciones->fechai )->format('Y-m-d  H:i:00'))->where('inicial_tabla','AC')->get();
-            
-            if(count($transacciones) != 0){
-                $cantidad = ((($transacciones[0]->monto)/($configuraciones->precio_accion))-1);
-                $caja_id =$transacciones[0]->caja_id;
-                $transacciones[0]->delete();
+                
+                $concepto_id = $acciones->concepto_id;
+                $persona_id = $acciones->persona_id;
+                $transacciones = Transaccion::where('persona_id',$acciones->persona_id)->where('fecha',Date::parse( $acciones->fechai )->format('Y-m-d  H:i:00'))->where('inicial_tabla','AC')->get();
+                
+                if(count($transacciones) != 0){
+                    $cantidad = ((($transacciones[0]->monto)/($configuraciones->precio_accion))-1);
+                    $caja_id =$transacciones[0]->caja_id;
+                    $transacciones[0]->delete();
 
-                $transaccion = new Transaccion();
-                $transaccion->fecha = $fecha;
-                $transaccion->monto = ($cantidad*($configuraciones->precio_accion));
-                $transaccion->acciones_soles = ($cantidad*($configuraciones->precio_accion));
-                $transaccion->concepto_id = $concepto_id;
-                $transaccion->descripcion = " compro ".$cantidad." acciones";
-                $transaccion->persona_id = $persona_id;
-                $transaccion->inicial_tabla ="AC";
-                $transaccion->usuario_id =Caja::getIdPersona();
-                $transaccion->caja_id =$caja_id;
-                $transaccion->save();
+                    $transaccion = new Transaccion();
+                    $transaccion->fecha = $fecha;
+                    $transaccion->monto = ($cantidad*($configuraciones->precio_accion));
+                    $transaccion->acciones_soles = ($cantidad*($configuraciones->precio_accion));
+                    $transaccion->concepto_id = $concepto_id;
+                    $transaccion->descripcion = " compro ".$cantidad." acciones";
+                    $transaccion->persona_id = $persona_id;
+                    $transaccion->inicial_tabla ="AC";
+                    $transaccion->usuario_id =Caja::getIdPersona();
+                    $transaccion->caja_id =$caja_id;
+                    $transaccion->save();
+                }
+                $acciones->delete();
             }
-            $acciones->delete();
 
         });
         return is_null($error) ? "OK" : $error;

@@ -8,10 +8,10 @@
 		<div class="form-group">
 			{!! Form::label('month1', 'Seleccione Periodo:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 			<div class="col-sm-8 col-xs-12">
-				{!! Form::select('month1', $cboMonth, ((count($certificado_last)==0)?1:intval(Date::parse($certificado_last->fechaf)->format('m')+1)), array('class' => 'form-control input-xs', 'id' => 'month1')) !!}
+				{!! Form::select('month1', $cboMonth, $month_first , array('class' => 'form-control input-xs', 'id' => 'month1')) !!}
 			</div>
 			<div class="col-sm-8 col-xs-12">
-				{!! Form::select('month2', $cboMonth, ((count($certificado_last)==0)?6:intval(Date::parse($certificado_last->fechaf)->format('m')+6)), array('class' => 'form-control input-xs', 'id' => 'month2')) !!}
+				{!! Form::select('month2', $cboMonth, $month_last, array('class' => 'form-control input-xs', 'id' => 'month2')) !!}
 			</div>
 		</div>
 		<div class="form-group">
@@ -58,9 +58,8 @@
 		if(year_select >= year ){
 			if(month1_select>=parseInt(data[1])){
 				if(month2_select <= parseInt(month_now)){
-					if(month2_select >= (parseInt(data[1])+3)){
-						//guardar(entidad);
-						console.log("paso por aca 123");
+					if(month2_select >= (parseInt(data[1])+2)){
+						guardar(entidad);
 					}else{
 						document.getElementById("infocertidicado").innerHTML = "<div class='alert alert-warning' role='warning'><span >el certificado a generar debe ser de un minimo de tres meses</span></div>";
 						$('#infocertidicado').show();

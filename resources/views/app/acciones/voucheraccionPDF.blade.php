@@ -38,18 +38,18 @@
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="2">
-					<b>Fecha:</b> {{ Date::parse($fecha)->format('d/m/y') }} <br>
+					<b>Fecha:</b> {{ Date::parse($fecha)->format('d/m/y') }}
 				</td>
 				<td align="left" style="font-size: 10px" colspan="2">
-					<b>Hora:</b> {{ Date::parse($fecha)->format('H:i:s') }} <br>
+					<b>Hora:</b> {{ Date::parse($fecha)->format('H:i:s') }}
 				</td>
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="1">
-					<b>N° OPE.:</b>  <br>
+					<b>N° OPE.:</b> 
 				</td>
 				<td align="left" style="font-size: 10px" colspan="3">
-					<b>COD. CLI:</b> {{ $persona->codigo }} <br>
+					<b>COD. CLI:</b> {{ $persona->codigo }}
 				</td>
 			</tr>
 			<tr>
@@ -59,7 +59,7 @@
 			</tr>
 			<tr>
 				<td align="left" style="font-size: 10px" colspan="4">
-					<b>SOCIO:</b> {{ $persona->nombres }} {{ $persona->apellidos }} <br>
+					<b>SOCIO:</b> {{ $persona->nombres }} {{ $persona->apellidos }} 
 				</td>
 			</tr>
 			<tr>

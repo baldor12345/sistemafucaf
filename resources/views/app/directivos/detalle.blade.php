@@ -37,6 +37,16 @@
 	@endif
 </div>
 </br>
+<div class="row">
+    {!! Form::label('codigo', 'ESTADO:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+	@if($estado == 'A')
+	{!! Form::label('codigo', 'Activo', array('class' => 'col-sm-8 col-xs-12 control-label')) !!}
+	@else
+	{!! Form::label('codigo', 'Inactivo', array('class' => 'col-sm-8 col-xs-12 control-label')) !!}
+	@endif
+</div>
+</br>
+
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-rigth">
         &nbsp;
