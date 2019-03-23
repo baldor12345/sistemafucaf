@@ -209,6 +209,18 @@ use Illuminate\Support\Facades\DB;
 			}
 		});
 
+		$("input[name=monto]").change(function(event){
+			var contribucion = parseFloat($('#monto').val());
+			var cantidad_ingresado = parseInt($('#cantidad_accion').val());
+			var precio = '{{ $precio_accion }}';
+			if(contribucion != 0){
+				$('#monto_pago').val(cantidad_ingresado*precio+contribucion);
+
+				var total_ = parseFloat($('#monto_pago').val());
+				$('#monto_devolver').val(total_-(cantidad_ingresado*precio+contribucion));
+			}
+		});
+
 		var cantidad = parseInt('{{$cantaccionpersona}}');
 		if(cantidad == 0){
 			document.getElementById('oculto').style.display = 'block';
@@ -231,7 +243,7 @@ use Illuminate\Support\Facades\DB;
 		var cantid = parseInt($('#cantidad_accion').val());
 		var accion_inicio = parseInt('{{ $cantaccionpersona }}');
 		if(accion_inicio !=0){
-			if(lmite>=cantid){
+			if(lmite<=cantid){
 				var idformulario = IDFORMMANTENIMIENTO + entidad;
 				var data         = submitForm(idformulario);
 				var respuesta    = null;
@@ -279,7 +291,7 @@ use Illuminate\Support\Facades\DB;
 		}else{
 			var contribucion = $('#monto').val();
 			if(contribucion != ''){
-				if(lmite>=cantid){
+				if(lmite<=cantid){
 					var idformulario = IDFORMMANTENIMIENTO + entidad;
 					var data         = submitForm(idformulario);
 					var respuesta    = null;
