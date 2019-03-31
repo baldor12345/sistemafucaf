@@ -477,9 +477,9 @@
                 fechac.setMonth(fechac.getMonth() + 1);
                 var day = ("0" + fechac.getDate()).slice(-2);
                 var month = ("0" + (fechac.getMonth() + 1)).slice(-2);
-                montInteres =  (Interes/100)*CapitalInicial;
-                interesAcumulado = montInteres + interesAcumulado;
-                montCapital = RoundDecimal(montCuota,1)  - RoundDecimal(montInteres, 1);
+                montInteres =  RoundDecimal((Interes/100)*CapitalInicial, 1);
+               
+                montCapital = RoundDecimal(montCuota  - montInteres, 1);
 
                 if(i< (periodo -1)){
                     CapitalInicial = CapitalInicial - montCapital;
@@ -488,11 +488,12 @@
                     montCapital = CapitalInicial;
                     montInteres =  montCuota - montCapital;
                     CapitalInicial = 0;
-                }
 
+                }
+                interesAcumulado += montInteres;
                 // CapitalInicial = CapitalInicial - montCapital;
                  capitalTotal += montCapital;
-                // sumacuotas += montCuota;
+                 sumacuotas += montCuota;
 
                 fila = fila + "<tr>"
                         +"<td>"+(i+1)+"</td>"
@@ -504,7 +505,7 @@
 
             }
             
-            interesAcumulado = interesAcumulado;
+            // interesAcumulado = interesAcumulado;
             fila += "<tr><td>TOTAL</td><td>"+RoundDecimal(interesAcumulado,1)+"</td><td>"+
                     RoundDecimal(capitalTotal,1)+"</td><td>"+RoundDecimal(sumacuotas,1)+"</td></tr>";
             

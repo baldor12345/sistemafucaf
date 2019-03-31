@@ -29,6 +29,8 @@ class RecibocuotasController extends Controller
             'vistapagocuota' => 'creditos.vistapagocuota',
             'aplicarmora' => 'recibocuotas.aplicarmora',
             'vistaaplicarmora' => 'recibocuotas.vistaaplicarmora',
+            'vistasimulador' => 'recibocuotas.vistasimulador',
+            'listsimulador' => 'recibocuotas.listsimulador',
         );
 
         
@@ -176,6 +178,97 @@ class RecibocuotasController extends Controller
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
+    }
+
+    public function vistasimulador(){
+        $caja = Caja::all()->last();
+        $fecha_simulacion = date('Y-m',strtotime($caja->fecha_horaapert))."-01";
+        $fecha_simulacion = date("Y-m",strtotime($fecha_simulacion."+ 1 month")); 
+
+        $entidad = 'Simulador';
+        $ruta = $this->rutas;
+        return view($this->folderview.'.vistasimulador')->with(compact('entidad','ruta','fecha_simulacion'));
+    }
+
+    public function listsimulador(Request $request){
+        
+        $pagina = $request->input('page');
+        $filas = $request->input('filas');
+        $entidad = 'Simulador';
+        // $fecha_simulador = $request->input('fecha_simulador');
+
+       $nombre = $request->get('nombres');
+        $fecha_simulador = $request->input('fecha_simulador').'-01';
+        $fecha_actual = $fecha_simulador;
+        $anio = date('Y', strtotime( $fecha_simulador ));
+        $mes = date('m', strtotime( $fecha_simulador ));
+       
+        $resultado  = Cuota::listarCuotasAlafecha($anio,$mes, $nombre);
+        $lista = $resultado->get();
+
+        $Total = 0;
+        $interes_total = 0;
+        $interes_mora_total = 0;
+        $capital_total = 0;
+        foreach ($lista as $key => $value) {
+            $interes_ganado =0;
+            if($value->fecha_iniciomora != null){
+                $fecha_fin =null;
+                if($value->fecha_pago == null){
+                    $fecha_fin= date("Y-m-d", strtotime($fecha_actual));
+                }else{
+                    $fecha_fin= date("Y-m-d", strtotime($value->fecha_pago));
+                }
+                //******************************************
+
+                $anio_menor= date("Y", strtotime($value->fecha_iniciomora));
+                $mes_menor= date("m", strtotime($value->fecha_iniciomora));
+
+                $anio_mayor= date("Y", strtotime($fecha_fin));
+                $mes_mayor= date("m", strtotime($fecha_fin));
+                $num_meses = 0;
+                if($anio_mayor == $anio_menor){
+                    $num_meses = $mes_mayor - $mes_menor;
+                }else if($anio_mayor > $anio_menor){
+                    $diferencia_anios = $anio_mayor - $anio_menor;
+                    $num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
+                }
+                //******************************************
+                if($num_meses>0){
+                    $interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
+                }
+            }
+            $Total +=  round($value->parte_capital +  $value->interes + $interes_ganado, 1);
+            $interes_total +=  round( $value->interes, 1);
+            $capital_total +=  round( $value->parte_capital, 1);
+            $interes_mora_total +=  round( $interes_ganado, 1);
+            
+        }
+        $Total = $interes_total + $interes_mora_total + $capital_total;
+
+        $cabecera = array();
+        $cabecera[] = array('valor' => '#', 'numero' => '1');
+        $cabecera[] = array('valor' => 'SOCIO/CLIENTE', 'numero' => '1');
+        $cabecera[] = array('valor' => 'N° CUOTA', 'numero' => '1');
+        $cabecera[] = array('valor' => 'MONTO S/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'INTERES MORA S/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'TOTAL s/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'ESTADO', 'numero' => '1');
+        $cabecera[] = array('valor' => 'FECHA', 'numero' => '1');
+        $ruta = $this->rutas;
+        
+        if (count($lista) > 0) {
+            $clsLibreria = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion = $paramPaginacion['cadenapaginacion'];
+            $inicio = $paramPaginacion['inicio'];
+            $fin = $paramPaginacion['fin'];
+            $paginaactual = $paramPaginacion['nuevapagina'];
+            $lista = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.listsimulador')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta','fecha_actual','Total','interes_total', 'interes_mora_total','capital_total'));
+        }
+        return view($this->folderview.'.listsimulador')->with(compact('lista', 'entidad'));
     }
 
 

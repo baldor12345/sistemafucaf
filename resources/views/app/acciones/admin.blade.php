@@ -24,16 +24,13 @@
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 					{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 					<div class="form-group">
-						{!! Form::label('dni', 'Dni:', array('class' => 'input-sm')) !!}
+						{!! Form::label('dni', 'Nombre:', array('class' => 'input-sm')) !!}
 						{!! Form::text('dni', '', array('class' => 'form-control input-sm', 'id' => 'dni')) !!}
 					</div>
-					<div class="form-group">
-						{!! Form::label('codigo', 'Codigo:', array('class' => 'input-sm')) !!}
-						{!! Form::text('codigo', '', array('class' => 'form-control input-sm', 'id' => 'codigo')) !!}
-					</div>
+					
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
-						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::selectRange('filas', 1, 30, 11, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					<a target="_blank" href="{{ route('generarnormasaccionPDF') }}" class="btn btn-primary waves-effect waves-light btn-sm" ><i class="glyphicon glyphicon-download-alt" ></i> Normas 20%</a>
@@ -43,8 +40,6 @@
 
 			<div id="listado{{ $entidad }}"></div>
 			
-            <table id="datatable" class="table table-striped table-bordered">
-            </table>
         </div>
     </div>
 </div>

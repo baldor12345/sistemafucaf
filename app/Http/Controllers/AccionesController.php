@@ -71,6 +71,7 @@ class AccionesController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $idcaja = count($caja) == 0? 0: $caja[0]->id;
 
+        $nombres           = $request->input('dni');
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Acciones';
@@ -78,7 +79,7 @@ class AccionesController extends Controller
         $caja_fecha = Caja::where("estado","=","A")->value('fecha_horaapert');
         $caja_fecha = ($caja_fecha != "")?$caja_fecha:date('Y-m-d');
 
-        $resultado        = Acciones::listar($caja_fecha);
+        $resultado        = Acciones::listar($caja_fecha, $nombres);
         $lista            = $resultado->get();
         
         $cabecera         = array();

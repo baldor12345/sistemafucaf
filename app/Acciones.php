@@ -49,7 +49,7 @@ class Acciones extends Model
         return  Acciones::where('dni','=',$id)->get();
     }
 
-    public static  function listar($fecha){     
+    public static  function listar($fecha, $nombre){     
         $fecha = date('Y-m-d', strtotime($fecha));
         $result1 = DB::table('persona')
         ->leftjoin('acciones','persona.id','=','acciones.persona_id')
@@ -75,8 +75,10 @@ class Acciones extends Model
                     ->whereNotIn('persona.id', $ids)
                     ->where('persona.estado','A')
                     ->where('persona.tipo','=','S ')
-                   
+                    ->where('persona.deleted_at','=',null)
+                    ->where('persona.nombres','ILIKE','%'.$nombre.'%')
                     ->orderBy('persona.apellidos','ASC');
+           
         return $result;
     }
 

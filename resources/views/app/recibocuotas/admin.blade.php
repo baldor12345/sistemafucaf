@@ -35,6 +35,9 @@
 						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+					
+					{!! Form::button('<i class="glyphicon glyphicon-list"></i> Simular', array('class' => 'btn btn-info btn-xs', 'id' => 'btnSimulador', 'onclick' => 'modal(\''.URL::route($ruta["vistasimulador"], array('fecha'=>$fecha_actual)).'\', \''."Simulador".'\')')) !!}
+			
 					{!! Form::close() !!}
                 </div>
             </div>
