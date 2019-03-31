@@ -53,11 +53,13 @@ class Acciones extends Model
         $fecha = date('Y-m-d', strtotime($fecha));
         $result1 = DB::table('persona')
         ->leftjoin('acciones','persona.id','=','acciones.persona_id')
+        ->join('caja','caja.id','=','acciones.caja_id')
         ->select(
             'persona.id as persona_id'
         )
         ->whereDate('acciones.fechai','=',$fecha)
         ->where('persona.estado','A')
+        ->where('caja.estado','A')
         ->where('persona.tipo','=','S ')->get();
         $ids = array();
        
