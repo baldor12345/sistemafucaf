@@ -99,7 +99,7 @@ function cargarselect2(entidad){
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarmovimiento', 'onclick' => 'guardarmoviemiento(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarmovim', 'onclick' => 'guardarmoviemiento(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -109,7 +109,7 @@ function cargarselect2(entidad){
 	$(document).ready(function() {
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('400');
+		configurarAnchoModal('450');
 		$("#btnOculto").hide();
 		$(".dni").html('DNI: <sup style="color: blue;">Opcional</sup>');
 		$('#divinfo').html('<div class="alert bg-warning" role="alert"><strong>SALDO EN CAJA (S/.): </strong>{{ $diferencia }}</div>');
@@ -218,14 +218,20 @@ function cargarselect2(entidad){
 		var tipo_id = $('#tipo_id').val();
 		if(fecha_de_caja>fecha_seleccionada){
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha ingresada no puede ser menor que la fecha de apertura de caja, gracias!</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+			$('#divMensajeError{{ $entidad }}').show();
+			$('#btnGuardarmovim').removeClass('disabled');
+			$('#btnGuardarmovim').removeAttr('disabled');
+			$('#btnGuardarmovim').html('<i class="fa fa-check fa-lg"></i>Guardar');
 		}else{
 			if(tipo_id === "E"){
 				if(monto_ingresado>saldo){
 					document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Saldo de caja insuficiente!</span></div>";
 					$('#divMensajeError{{ $entidad }}').show();
+					$('#btnGuardarmovim').removeClass('disabled');
+					$('#btnGuardarmovim').removeAttr('disabled');
+					$('#btnGuardarmovim').html('<i class="fa fa-check fa-lg"></i>Guardar');
 				}else{
-					guardar(entidad);
+					guardar2(entidad);
 				}
 			}
 			if(tipo_id === "I"){
@@ -233,17 +239,56 @@ function cargarselect2(entidad){
 				var persona_id = $('#selectnom').val();
 				if(concepto_id == 22){
 					if(persona_id != 0){
-						guardar(entidad);
+						guardar2(entidad);
 					}else{
 						document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >Seleccione socio o cliente</span></div>";
 						$('#divMensajeError{{ $entidad }}').show();
+						$('#btnGuardarmovim').removeClass('disabled');
+						$('#btnGuardarmovim').removeAttr('disabled');
+						$('#btnGuardarmovim').html('<i class="fa fa-check fa-lg"></i>Guardar');
 					}
 				}else{
-					guardar(entidad);
+					guardar2(entidad);
 				}
 				
 			}
 		}
 	}
+
+	function guardar2 (entidad) {
+		var idformulario = IDFORMMANTENIMIENTO + entidad;
+		var data         = submitForm(idformulario);
+		var respuesta    = '';
+		var listar       = 'NO';
+		if ($(idformulario + ' :input[id = "listar"]').length) {
+			var listar = $(idformulario + ' :input[id = "listar"]').val()
+		};
+		$('#btnGuardarmovim').button('loading');
+		data.done(function(msg) {
+			respuesta = msg;
+		}).fail(function(xhr, textStatus, errorThrown) {
+			respuesta = 'ERROR';
+			$('#btnGuardarmovim').removeClass('disabled');
+			$('#btnGuardarmovim').removeAttr('disabled');
+			$('#btnGuardarmovim').html('<i class="fa fa-check fa-lg"></i>Guardar');
+		}).always(function() {
+			if(respuesta === 'ERROR'){
+			}else{
+				if (respuesta === 'OK') {
+					cerrarModal();
+					if (listar === 'SI') {
+						buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+						
+					}        
+				} else {
+					mostrarErrores(respuesta, idformulario, entidad);
+					$('#btnGuardarmovim').removeClass('disabled');
+					$('#btnGuardarmovim').removeAttr('disabled');
+					$('#btnGuardarmovim').html('<i class="fa fa-check fa-lg"></i>Guardar');
+				}
+			}
+		});
+	}
+
 
 </script>

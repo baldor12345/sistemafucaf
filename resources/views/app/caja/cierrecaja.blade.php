@@ -66,7 +66,7 @@ use Illuminate\Support\Facades\DB;
 
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-	{!! Form::button('Cerrar Caja', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCerrar', 'onclick' => 'CerrarCaja(\''.$entidad.'\', this)')) !!}
+	{!! Form::button('Cerrar Caja', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCerrarCaja', 'onclick' => 'CerrarCaja(\''.$entidad.'\', this)')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -108,16 +108,57 @@ use Illuminate\Support\Facades\DB;
 
 		if(fecharecibida >= fechacierre){
 			if(fecharecibida<=last_day){
-				guardar(entidad);
+				guardarcierre(entidad);
 			}else{
 				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha cierre no puede ser mayor que la fecha "+last_day+" </span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+				$('#divMensajeError{{ $entidad }}').show();
+				$('#btnGuardarCerrarCaja').removeClass('disabled');
+				$('#btnGuardarCerrarCaja').removeAttr('disabled');
+				$('#btnGuardarCerrarCaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}
 		}else{
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >La fecha cierre no puede ser menor que la fecha de apertura  "+fechacierre+"</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+			$('#divMensajeError{{ $entidad }}').show();
+			$('#btnGuardarCerrarCaja').removeClass('disabled');
+			$('#btnGuardarCerrarCaja').removeAttr('disabled');
+			$('#btnGuardarCerrarCaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
 		}
 
+	}
+
+	function guardarcierre (entidad) {
+		var idformulario = IDFORMMANTENIMIENTO + entidad;
+		var data         = submitForm(idformulario);
+		var respuesta    = '';
+		var listar       = 'NO';
+		if ($(idformulario + ' :input[id = "listar"]').length) {
+			var listar = $(idformulario + ' :input[id = "listar"]').val()
+		};
+		$('#btnGuardarCerrarCaja').button('loading');
+		data.done(function(msg) {
+			respuesta = msg;
+		}).fail(function(xhr, textStatus, errorThrown) {
+			respuesta = 'ERROR';
+			$('#btnGuardarCerrarCaja').removeClass('disabled');
+			$('#btnGuardarCerrarCaja').removeAttr('disabled');
+			$('#btnGuardarCerrarCaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
+		}).always(function() {
+			if(respuesta === 'ERROR'){
+			}else{
+				if (respuesta === 'OK') {
+					cerrarModal();
+					if (listar === 'SI') {
+						buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+						
+					}        
+				} else {
+					mostrarErrores(respuesta, idformulario, entidad);
+					$('#btnGuardarCerrarCaja').removeClass('disabled');
+					$('#btnGuardarCerrarCaja').removeAttr('disabled');
+					$('#btnGuardarCerrarCaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
+				}
+			}
+		});
 	}
 
 

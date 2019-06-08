@@ -737,7 +737,7 @@ class AccionesController extends Controller
             $res = null;
 
             //funcion para registrar las acciones del comprador
-            $vendidas = Acciones::where('estado','C')->where('persona_id',$request->input('idpropietario'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'ASC')->get();
+            $vendidas = Acciones::where('estado','C')->where('persona_id',$request->input('idpropietario'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'ASC')->where('deleted_at',null)->get();
 
             $idCaja = DB::table('caja')->where('estado', "A")->value('id');
             $error = DB::transaction(function() use($request, $vendidas, $descripcion_venta, $fechaf, $concepto_id, $idCaja ){
@@ -890,7 +890,7 @@ class AccionesController extends Controller
         $lista           = $detalle->get();
         $persona = DB::table('persona')->where('id', $id)->first();
         $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
-        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->where('deleted_at','=',null)->count();
         $titulo = $persona->nombres.$cant;
 
         $view = \View::make('app.acciones.voucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
@@ -918,7 +918,7 @@ class AccionesController extends Controller
         $comprador = DB::table('persona')->where('id', $id_comprador)->first();
 
         $monto_ahorroComprador = DB::table('ahorros')->where('persona_id', $id_comprador)->where('estado','P')->value('capital');
-        $CantAccioneComprador = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id_comprador)->count();
+        $CantAccioneComprador = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id_comprador)->where('deleted_at','=',null)->count();
         $titulo = $comprador->nombres.$cant;
 
         $view = \View::make('app.acciones.reciboaccionventapdf')->with(compact('lista', 'id', 'vendedor','comprador','cant', 'fecha','CantAccioneComprador','monto_ahorroComprador'));
@@ -941,7 +941,7 @@ class AccionesController extends Controller
         $list        = Acciones::list_acciones_persona();
         $lista           = $list->get();
 
-        $cant = DB::table('acciones')->where('estado', 'C')->where('deleted_at',null)->count();
+        $cant = DB::table('acciones')->where('estado', 'C')->where('deleted_at',null)->where('deleted_at','=',null)->count();
 
         $year = date("Y");
         $month = date("m");

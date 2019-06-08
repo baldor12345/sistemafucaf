@@ -100,17 +100,57 @@
 		var fecha_select = $('#fecha_horaApert').val();
 		if(fecha_select > first_day){
 			if(fecha_select <= last_day){
-				guardar(entidad);
+				guardarapertura(entidad);
 			}else{
 				document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser menor que "+last_day+"</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+				$('#divMensajeError{{ $entidad }}').show();
+				$('#btnGuardarcaja').removeClass('disabled');
+				$('#btnGuardarcaja').removeAttr('disabled');
+				$('#btnGuardarcaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
 			}
 		}else{
 			document.getElementById("divMensajeError{{ $entidad }}").innerHTML = "<div class='alert alert-danger' role='alert'><span >la fecha de apertura debe ser mayor que "+first_day+"</span></div>";
-					$('#divMensajeError{{ $entidad }}').show();
+			$('#divMensajeError{{ $entidad }}').show();
+			$('#btnGuardarcaja').removeClass('disabled');
+			$('#btnGuardarcaja').removeAttr('disabled');
+			$('#btnGuardarcaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
 		}
 
 		
+	}
+	function guardarapertura (entidad) {
+		var idformulario = IDFORMMANTENIMIENTO + entidad;
+		var data         = submitForm(idformulario);
+		var respuesta    = '';
+		var listar       = 'NO';
+		if ($(idformulario + ' :input[id = "listar"]').length) {
+			var listar = $(idformulario + ' :input[id = "listar"]').val()
+		};
+		$('#btnGuardarcaja').button('loading');
+		data.done(function(msg) {
+			respuesta = msg;
+		}).fail(function(xhr, textStatus, errorThrown) {
+			respuesta = 'ERROR';
+			$('#btnGuardarcaja').removeClass('disabled');
+			$('#btnGuardarcaja').removeAttr('disabled');
+			$('#btnGuardarcaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
+		}).always(function() {
+			if(respuesta === 'ERROR'){
+			}else{
+				if (respuesta === 'OK') {
+					cerrarModal();
+					if (listar === 'SI') {
+						buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
+						
+					}        
+				} else {
+					mostrarErrores(respuesta, idformulario, entidad);
+					$('#btnGuardarcaja').removeClass('disabled');
+					$('#btnGuardarcaja').removeAttr('disabled');
+					$('#btnGuardarcaja').html('<i class="fa fa-check fa-lg"></i>Guardar');
+				}
+			}
+		});
 	}
 </script>
 @else
