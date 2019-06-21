@@ -213,6 +213,7 @@ class DistribucionUtilidades extends Model
                 DB::raw("extract( month from fechai) as mes")
             )
             ->where('persona_id','=',$persona_id)
+            ->where('tipo','=','A')
             ->where('deleted_at','=',null)
             ->where(DB::raw('extract( year from fechai)'),'=',$anio)
             ->groupBy(DB::raw('extract( month from fechai)'))
