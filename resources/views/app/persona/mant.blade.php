@@ -330,6 +330,7 @@
 			
 		}
 		if(estado == 'I'){
+			console.log("acciones: "+acciones+" ahorros "+ahorros+" credito "+credito);
 			if((acciones == 0) && (ahorros == 0) && (credito == 0)){
 				$('#info2').hide();
 				guardar(entidad);

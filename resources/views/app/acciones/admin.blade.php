@@ -33,6 +33,7 @@
 						{!! Form::selectRange('filas', 1, 30, 11, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Devolucion Capital', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnDevolucionCapital', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
 					<a target="_blank" href="{{ route('generarnormasaccionPDF') }}" class="btn btn-primary waves-effect waves-light btn-sm" ><i class="glyphicon glyphicon-download-alt" ></i> Normas 20%</a>
 					{!! Form::close() !!}
                 </div>

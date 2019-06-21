@@ -1840,7 +1840,7 @@ class CajaController extends Controller
         if (empty($term)) {
             return \Response::json([]);
         }
-        $tags = Persona::where("nombres",'ILIKE', '%'.$term.'%')->where('id','!=',3)->where('id','!=',4)->where('id','!=',5)->where('id','!=',6)->limit(5)->get();
+        $tags = Persona::where("nombres",'ILIKE', '%'.$term.'%')->where('estado','A')->where('id','!=',3)->where('id','!=',4)->where('id','!=',5)->where('id','!=',6)->limit(5)->get();
         $formatted_tags = [];
         foreach ($tags as $tag) {
             $formatted_tags[] = ['id' => $tag->id, 'text' => $tag->nombres." ".$tag->apellidos];

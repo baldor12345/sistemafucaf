@@ -95,6 +95,7 @@ class Acciones extends Model
                         'acciones.id as accion_id'
                         )
                     ->where('acciones.persona_id', '=', $persona_id)
+                    ->where('acciones.tipo', '=','A')
                     ->where('acciones.deleted_at',null)
                     ->orderBy('acciones.codigo','DSC');
         return $results;
@@ -114,6 +115,7 @@ class Acciones extends Model
                 )
                 ->where('acciones.persona_id', '!=', $persona_id)
                 ->where('acciones.estado', '=', 'C')
+                ->where('acciones.tipo', '=', 'A')
                 ->where('acciones.deleted_at',null)
                 ->groupBy('configuraciones.limite_acciones','persona.tipo', 'persona.nombres','persona.id')->get();
     }
@@ -132,6 +134,7 @@ class Acciones extends Model
                     )
                     ->where('persona.tipo','=','S')
                     ->where('acciones.estado','C')
+                    ->where('acciones.tipo','A')
                     ->where('acciones.deleted_at',null)
                     ->groupBy('persona.nombres','configuraciones.limite_acciones','persona.apellidos')
                     ->orderBy('persona.apellidos','ASC');

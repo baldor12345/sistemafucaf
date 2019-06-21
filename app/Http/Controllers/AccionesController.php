@@ -133,12 +133,24 @@ class AccionesController extends Controller
      */
     public function create(Request $request)
     {
+        $result = DB::table('caja')->where('estado', 'A')->first();
+        $ingresos = $result->monto_iniciado;
+        $egresos = 0;
+        $diferencia = 0;
+        $saldo = Transaccion::getsaldo($result->id)->get();
+        for($i = 0; $i<count( $saldo ); $i++){
+            if(($saldo[$i]->concepto_tipo)=="I"){
+                $ingresos  += $saldo[$i]->monto; 
+            }else if(($saldo[$i]->concepto_tipo)=="E"){
+                $egresos += $saldo[$i]->monto;
+            }
+        }
+
+        $diferencia= round($ingresos-$egresos,1);
+
 
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $cboPersona = array('' => 'Seleccione') + Persona::pluck('nombres', 'id')->all();
-        $cboConfiguraciones = Configuraciones::pluck('precio_accion', 'id')->all();
-        $cboConcepto  =array(1=>'Compra de Acciones');
-        $cboContribucion  =array(11=>'Contribución de Ingreso');
+        $cboConcepto  =array(22=>'Devolucion de Capital');
         $entidad        = 'Acciones';
         $acciones        = null;
         $config = Configuraciones::All()->last();
@@ -152,8 +164,8 @@ class AccionesController extends Controller
         $cboPers = array(0=>'Seleccione...');
         $formData       = array('acciones.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Comprar Acciones'; 
-        return view($this->folderview.'.mant')->with(compact('acciones', 'formData', 'entidad', 'boton', 'id_config','listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion','fecha_caja'));
+        $boton          = 'Devolucion del Capital'; 
+        return view($this->folderview.'.mant')->with(compact('diferencia', 'acciones', 'formData', 'entidad', 'boton', 'id_config','listar','cboConfiguraciones','cboConcepto','ruta','cboContribucion','cboPers','precio_accion','fecha_caja'));
     }
 
     /**
@@ -165,8 +177,6 @@ class AccionesController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        
-        
         //evaluando los datos que vienen del view
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
@@ -177,8 +187,6 @@ class AccionesController extends Controller
                 'selectnom'        => 'required',
                 'cantidad_accion'        => 'required|max:100',
                 'fechai'        => 'required|max:100',
-                'monto_recibido' =>'required',
-                'configuraciones_id'        => 'required|max:100'
             );
 
             $validacion = Validator::make($request->all(),$reglas);
@@ -189,108 +197,42 @@ class AccionesController extends Controller
             $error = DB::transaction(function() use($request){
                 $idCaja = DB::table('caja')->where('estado', "A")->value('id');
                 $cantidad_accion= $request->input('cantidad_accion');
-                if($cantidad_accion !== ''){
 
-                    $can_moment = DB::table('acciones')->where('deleted_at',null)->count();
-                    $codigo = (count($can_moment) ==0)?0:$can_moment;
-                    for($i=0; $i< $cantidad_accion; $i++){
-                        $codigo++;
-                        $acciones               = new Acciones();    
-                        $acciones->estado        = 'C';
-                        $acciones->fechai        = $request->input('fechai').date(" H:i");
-                        if(strlen($codigo) == 1){
-                            $acciones->codigo = "000000".($codigo);
+                if($cantidad_accion !== ''){
+                    $accion_x_persona = DB::table('acciones')->where('persona_id',$request->input('selectnom'))->where('tipo','A')->where('deleted_at',null)->orderBy('id','ASC')->get();
+                    if(count($accion_x_persona)!=0){
+                        $cont =0;
+                        for($i=0; $i<count($accion_x_persona); $i++){
+                            if($cantidad_accion > $cont ){
+                                $acciones               = Acciones::find($accion_x_persona[$i]->id);    
+                                $acciones->tipo        = 'I';
+                                $acciones->fechaf        = $request->input('fechai').date(" H:i");
+                                $acciones->descripcion        = $request->input('descripcion');
+                                $acciones->save();
+                                $cont++;
+                            }
                         }
-                        if(strlen($codigo) == 2){
-                            $acciones->codigo = "00000".($codigo);
-                        }
-                        if(strlen($codigo) == 3){
-                            $acciones->codigo = "0000".($codigo);
-                        }
-                        if(strlen($codigo) == 4){
-                            $acciones->codigo = "000".($codigo);
-                        }
-                        $acciones->descripcion        = $request->input('descripcion');
-                        $acciones->persona_id        = $request->input('selectnom');
-                        $acciones->configuraciones_id        = $request->input('configuraciones_id');
-                        $acciones->caja_id = $idCaja;
-                        $acciones->concepto_id        = $request->input('concepto_id');
-                        $acciones->save();
                     }
                 }
 
-                $buy_last = Acciones::where('estado','C')->where('persona_id',$request->input('selectnom'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'DSC')->get();
-                $descrp = "";
-                foreach($buy_last as $value){
-                    $descrp .= $value->codigo.',';
-                }
-
-                if($cantidad_accion !== ''){
-                    $historial_accion               = new HistorialAccion();    
-                    $historial_accion->cantidad        =  $request->input('cantidad_accion');
-                    $historial_accion->estado        = 'C';
-                    $historial_accion->fecha        = $request->input('fechai').date(" H:i");
-                    $historial_accion->descripcion        = $descrp;
-                    $historial_accion->persona_id        = $request->input('selectnom');
-                    $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
-                    $historial_accion->caja_id = $idCaja;
-                    $historial_accion->concepto_id        = $request->input('concepto_id');
-                    $historial_accion->save();
-                    
-                }
-
-                $cantidad_accion = $request->input('cantidad_accion');
-                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-                $configuracion= Configuraciones::all();
-                $result= $configuracion->last();
-                $precio = $result->precio_accion;
-                $monto_ingreso = ($cantidad_accion*$precio);
-                //datos de la persona
-                $persona_nombre = DB::table('persona')->where('id', $request->input('selectnom'))->value('nombres');
-
-                //comision voucher si esque desea imprimirlo
                 $transaccion = new Transaccion();
-                $transaccion->fecha = $request->input('fechai').date(" H:i");
-                $transaccion->monto = $monto_ingreso;
-                $transaccion->acciones_soles = $monto_ingreso;
-                $transaccion->concepto_id = $request->input('concepto_id');
-                $transaccion->descripcion = " compro ".$cantidad_accion." acciones";
-                $transaccion->persona_id = $request->input('selectnom');
-                $transaccion->inicial_tabla ="AC";
-                $transaccion->usuario_id =Caja::getIdPersona();
-                $transaccion->caja_id =$idCaja;
+                $transaccion->fecha =           $request->input('fechai').date(" H:i");
+                $transaccion->monto =           -$request->get('total');
+                $transaccion->rec_capital =     -$request->get('total');
+                $transaccion->concepto_id =     $request->input('concepto_id');
+                $transaccion->persona_id =      $request->input('selectnom');
+                $transaccion->descripcion =     $request->input('descripcion');
+                $transaccion->usuario_id      = Caja::getIdPersona();
+                $transaccion->caja_id =         $idCaja;
                 $transaccion->save();
 
-                $contribucion = $request->input('monto');
-                $accion_last = Acciones::All()->last();
-                $persona_last = Persona::find($accion_last->persona_id);
-
-                if($contribucion != ''){
-                    $transaccion = new Transaccion();
-                    $transaccion->fecha = $request->input('fechai').date(" H:i");
-                    $transaccion->monto = $contribucion;
-                    $transaccion->concepto_id = $request->input('contribucion_id');
-                    $transaccion->descripcion = $persona_last->nombres;
-                    $transaccion->usuario_id =Caja::getIdPersona();
-                    $transaccion->inicial_tabla ="AC";
-                    $transaccion->caja_id =$idCaja;
-                    $transaccion->save();
-                }
-                
-
-
             });
-            $ultima_accion = Acciones::all()->last();
-            $cant = $request->input('cantidad_accion');
-            $fecha = $request->input('fechai').date(" H:i:s");
             $res = $error;
         }else{
-            $res = "No hay una caja aperturada, por favor aperture una caja ...!";
+            $res = "";
         }
-        $ultima_accion = Acciones::all()->last();
         $res = is_null($res) ? "OK" : $res;
-        $respuesta = array($res, $ultima_accion->persona_id, $cant, $fecha);
-        return $respuesta;
+        return $res;
     }
     /**
      * Display the specified resource.

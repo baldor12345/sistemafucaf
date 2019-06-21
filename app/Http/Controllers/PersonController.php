@@ -273,7 +273,7 @@ class PersonController extends Controller
 
         //evaluar persona
         $ahorros=0;
-        $acciones = Acciones::where('estado','C')->where('persona_id',$id)->where('deleted_at',null)->count();
+        $acciones = Acciones::where('estado','C')->where('tipo','A')->where('persona_id',$id)->where('deleted_at',null)->count();
         $ahorros1 = Ahorros::where('estado','P')->where('persona_id',$id)->where('deleted_at',null)->get();
         foreach ($ahorros1 as $key => $value) {
             $ahorros += $value->capital;
@@ -554,8 +554,8 @@ class PersonController extends Controller
             $interes_ahorro = 0;
         }
 
-        $CantAccionesCompradas = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->count();
-        $CantAccionesVendidas = DB::table('acciones')->where('estado', 'V')->where('persona_id',$id)->count();
+        $CantAccionesCompradas = DB::table('acciones')->where('estado', 'C')->where('tipo','A')->where('persona_id',$id)->count();
+        $CantAccionesVendidas = DB::table('acciones')->where('estado', 'V')->where('tipo','A')->where('persona_id',$id)->count();
 
         //creditos pendientes de la persona
         $credito        = Persona::creditos_por_persona($id);

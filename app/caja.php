@@ -632,7 +632,24 @@ GROUP BY persona.id;
                                 INNER JOIN persona ON (acciones.persona_id = persona.id)
     WHERE acciones.estado = 'C' AND (persona.tipo = 'S' OR persona.tipo ='SC')
     GROUP BY acciones.persona_id, configuraciones.ganancia_accion, acciones.concepto_id,persona.tipo, caja_id;
+
+    consulta para ver la cantidad de acciones en soles en transaccion 
+    de la persona requejo smit luis alberto:
+    
+    select 	persona.nombres as nombres,
+        persona.apellidos as apellidos,
+        transaccion.acciones_soles as acciones,
+        transaccion.fecha as fecha_compra 
+    from transaccion inner join  persona on  (transaccion.persona_id = persona.id)
+    where transaccion.persona_id = 25 and transaccion.inicial_tabla = 'AC';
+
+    select sum(acciones_soles) from transaccion where persona_id = 25 and inicial_tabla = 'AC';
+
+
+    select estado, fechai, descripcion from acciones where persona_id = 25;
+
     */
+
 
 /*
 SELECT 	persona.nombres as persona_nombres,
