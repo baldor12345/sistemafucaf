@@ -153,7 +153,6 @@ use Illuminate\Support\Facades\DB;
 		var saldo_caja = parseFloat('{{ $diferencia }}');
 		var monto_total_ = parseFloat($('#total').val());
 		var cant_ingresada = parseInt($('#cantidad_accion').val());
-		console.log("monto total  "+monto_total_);
 
 		if(cant_ingresada > 0){
 			$('#divMensajeErrorAcciones').hide();
@@ -177,26 +176,20 @@ use Illuminate\Support\Facades\DB;
 						$('#btnGuardarDevolucionC').removeAttr('disabled');
 						$('#btnGuardarDevolucionC').html('<i class="fa fa-check fa-lg"></i>Guardar');
 					}).always(function() {
-						
-						if(respuesta[0] === 'ERROR'){
+						if(respuesta == 'ERROR'){
+							mostrarErrores(respuesta, idformulario, entidad);
+							$('#btnGuardarDevolucionC').removeClass('disabled');
+							$('#btnGuardarDevolucionC').removeAttr('disabled');
+							$('#btnGuardarDevolucionC').html('<i class="fa fa-check fa-lg"></i>Guardar');
 						}else{
-							
-							if (respuesta[0] === 'OK') {
-								cerrarModal();
-								modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3], '100', 'recibo accion');
-								if (listar === 'SI') {
-									if(typeof entidad2 != 'undefined' && entidad2 !== ''){
-										entidad = entidad2;
-									}
+							if(respuesta == 'OK'){
+								if(listar === 'SI'){
+									cerrarModal();
 									buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-								}        
-							} else {
-								mostrarErrores(respuesta, idformulario, entidad);
-								$('#btnGuardarDevolucionC').removeClass('disabled');
-								$('#btnGuardarDevolucionC').removeAttr('disabled');
-								$('#btnGuardarDevolucionC').html('<i class="fa fa-check fa-lg"></i>Guardar');
+								}
 							}
 						}
+						
 					});
 				}else{
 					document.getElementById("divMensajeErrorAcciones").innerHTML = "<div class='alert alert-danger' role='danger'><span >No ay saldo suficiente en caja!</span></div>";
