@@ -48,9 +48,7 @@ class RecibocuotasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-
-    {
+    public function index(){
         $meses = array(
         '01'=>'Enero',
         '02'=>'Febrero',
@@ -67,8 +65,6 @@ class RecibocuotasController extends Controller
 
         $anios = array();
         $anioInicio = 2007;
-     
-      
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
         $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
@@ -109,7 +105,7 @@ class RecibocuotasController extends Controller
         }else{
             $lista = array();
         }
-       
+        
         $cabecera = array();
         $cabecera[] = array('valor' => '#', 'numero' => '1');
         $cabecera[] = array('valor' => 'SOCIO/CLIENTE', 'numero' => '1');
@@ -197,7 +193,7 @@ class RecibocuotasController extends Controller
         $entidad = 'Simulador';
         // $fecha_simulador = $request->input('fecha_simulador');
 
-       $nombre = $request->get('nombres');
+        $nombre = $request->get('nombres');
         $fecha_simulador = $request->input('fecha_simulador').'-01';
         $fecha_actual = $fecha_simulador;
         $anio = date('Y', strtotime( $fecha_simulador ));
@@ -219,21 +215,19 @@ class RecibocuotasController extends Controller
                 }else{
                     $fecha_fin= date("Y-m-d", strtotime($value->fecha_pago));
                 }
-                //******************************************
-
                 $anio_menor= date("Y", strtotime($value->fecha_iniciomora));
                 $mes_menor= date("m", strtotime($value->fecha_iniciomora));
-
                 $anio_mayor= date("Y", strtotime($fecha_fin));
                 $mes_mayor= date("m", strtotime($fecha_fin));
                 $num_meses = 0;
+
                 if($anio_mayor == $anio_menor){
                     $num_meses = $mes_mayor - $mes_menor;
                 }else if($anio_mayor > $anio_menor){
                     $diferencia_anios = $anio_mayor - $anio_menor;
                     $num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
                 }
-                //******************************************
+                
                 if($num_meses>0){
                     $interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
                 }
@@ -242,8 +236,8 @@ class RecibocuotasController extends Controller
             $interes_total +=  round( $value->interes, 1);
             $capital_total +=  round( $value->parte_capital, 1);
             $interes_mora_total +=  round( $interes_ganado, 1);
-            
         }
+
         $Total = $interes_total + $interes_mora_total + $capital_total;
 
         $cabecera = array();
@@ -270,6 +264,5 @@ class RecibocuotasController extends Controller
         }
         return view($this->folderview.'.listsimulador')->with(compact('lista', 'entidad'));
     }
-
 
 }

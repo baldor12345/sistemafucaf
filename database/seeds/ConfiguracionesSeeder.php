@@ -15,6 +15,8 @@ class ConfiguracionesSeeder extends Seeder
         DB::table('configuraciones')->insert(array(
                 'codigo'          => 'C00001',
                 'precio_accion'       => '10',
+                'valor_recibo'       => '0.20',
+                'taza_mora'       => '5.0',
                 'ganancia_accion'       => '0.01',
                 'limite_acciones'       => '0.2',
                 'tasa_interes_credito'       => '0.025',

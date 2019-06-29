@@ -10,9 +10,7 @@
         }
         td{
             font-size: 10px;
-           
         }
-        
         .lineborderleft{
             border: 0.9px solid #3f3f3f;
             text-align : left;;
@@ -68,7 +66,6 @@
 			<tr>
                 <td style="font-size: 8px" colspan="2"><strong>RECIBO PAGO DE CUOTA FUCAF</strong></td>
                 <td style="font-size: 8px" colspan="7"></td>
-                
             </tr>
             
             <tr>
@@ -152,7 +149,7 @@
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2"></td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2"></td>
                 <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2"></td>
-                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">0.2</td>
+                <td style="font-size: 8px" colspan="1" class="line_v_id line_h_b2">{{ $configuraciones->valor_recibo }}</td>
             </tr>
             <tr>
                 <td class="line_v_id line_h_b2"></td>
@@ -203,9 +200,9 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes, 1) }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">0.2</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2,1) }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + 0.2, 1)   }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ $configuraciones->valor_recibo }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + $configuraciones->valor_recibo,1) }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + $configuraciones->valor_recibo, 1)   }}</td>
                 <td class=""></td>
                 <td class=""></td>
             </tr>

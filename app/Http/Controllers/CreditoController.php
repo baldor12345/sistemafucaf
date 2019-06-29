@@ -19,7 +19,7 @@ use Jenssegers\Date\Date;
 use PDF;
 use DateTime;
 class CreditoController extends Controller{
-
+// 0.20
     protected $folderview = 'app.credito';
     protected $tituloAdmin = 'Credito';
     protected $tituloRegistrar = 'Registro de Crédito';
@@ -406,17 +406,17 @@ class CreditoController extends Controller{
         //     $numero_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechapago);
         //     $cuota->interes += $cuota->interes * $numero_meses;
         // }
-   
+        $configuraciones = configuraciones::all()->last();
         $credito2 = Credito::find($cuota->credito_id);
         $persona = Persona::find($credito2->persona_id);
         if($numero == 2){
             $formData = array('creditos.pagarcuotainteres');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
-            return view($this->folderview.'.pagarcuota')->with(compact('cuota','persona', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta','fechapago'));
+            return view($this->folderview.'.pagarcuota')->with(compact('cuota','persona', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta','fechapago','configuraciones'));
         }else{
             $formData = array('creditos.pagarcuota');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad_cuota, 'autocomplete' => 'off');
-            return view($this->folderview.'.pagarcuota')->with(compact('cuota','persona', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta','fechapago'));
+            return view($this->folderview.'.pagarcuota')->with(compact('cuota','persona', 'entidad_cuota', 'entidad_credito','entidad_recibo', 'credito','credito2', 'formData','listar','ruta','fechapago','configuraciones'));
         }
     }
 
@@ -436,8 +436,8 @@ class CreditoController extends Controller{
                 $partecapital = $request->get('partecapital');
                 $cuotainteres = $request->get('cuotainteres');
                 $cuotamora = $request->get('cuotamora');
-              
-                $comision_voucher = 0.2;
+                $configuraciones = configuraciones::all()->last();
+                $comision_voucher = $configuraciones->valor_recibo;//0.2;
                 //Actualiza cuota a estado cancelado
                 $cuota = Cuota::find($id_cuota);
                 $cuota->estado = 1;
@@ -567,7 +567,8 @@ class CreditoController extends Controller{
                 $id_credito = $request->get('id_credito');
                 $fecha_pago = $request->get('fecha_pagoc').date(" H:i:s");
                 $id_cliente = $request->get('id_cliente');
-                $comision_voucher = 0.2;
+                $configuraciones = configuraciones::all()->last();
+                $comision_voucher = $configuraciones->valor_recibo;// 0.2;
 
                 //Actualiza cuota a estado cancelado
                 $cuota = Cuota::find($id_cuota);
@@ -789,10 +790,10 @@ class CreditoController extends Controller{
         $cuota_s1 = ($cuota_s1 == "")? null: $cuota_s1;
         $cuota_s2 = ($cuota_s2 == "")? null: $cuota_s2;
 
-        
+        $configuraciones = configuraciones::all()->last();
         $ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-Pago cuota-'.$persona->codigo;
-        $view = \View::make('app.credito.recibopagocuota')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2'));
+        $view = \View::make('app.credito.recibopagocuota')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2','configuraciones'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
@@ -821,11 +822,11 @@ class CreditoController extends Controller{
         $cuota_s  = ($cuota_s  == "")? null: $cuota_s;
         $cuota_s1 = ($cuota_s1 == "")? null: $cuota_s1;
         $cuota_s2 = ($cuota_s2 == "")? null: $cuota_s2;
-
+        $configuraciones = configuraciones::all()->last();
         
         //$ahorroactual = DB::table('ahorros')->where('persona_id', $persona->id)->where('fechaf','=',null)->value('capital');
         $titulo ='Voucher-Pago cuota-'.$persona->codigo;
-        $view = \View::make('app.credito.recibopagocuotapdf')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2','transaccion'));
+        $view = \View::make('app.credito.recibopagocuotapdf')->with(compact('cuota','credito', 'persona', 'periodocredito','numoperacion', 'cuota_s','cuota_s1', 'cuota_s2','transaccion','configuraciones'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);
@@ -1052,19 +1053,22 @@ public function numero_meses($fecha_inico, $fecha_final){
                 }
                 $credito->estado = 1;
                 $credito->save();
-
+                $configuraciones = configuraciones::all()->last();
                 if($num_cuotas>0){
-                    $concepto_id = 8;
-                    $transaccion2 = new Transaccion();
-                    $transaccion2->fecha = $fecha_pago;
-                    $transaccion2->monto = 0.2;
-                    $transaccion2->concepto_id = $concepto_id;
-                    $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
-                    $transaccion2->persona_id =  $persona->id;
-                    $transaccion2->usuario_id = (new Credito())->idUser();
-                    $transaccion2->caja_id = $caja_id;
-                    $transaccion2->comision_voucher = 0.2;
-                    $transaccion2->save();
+                    if($configuraciones->valor_recibo > 0){
+
+                        $concepto_id = 8;
+                        $transaccion2 = new Transaccion();
+                        $transaccion2->fecha = $fecha_pago;
+                        $transaccion2->monto = $configuraciones->valor_recibo;//0.2;
+                        $transaccion2->concepto_id = $concepto_id;
+                        $transaccion2->descripcion ='Comision por Recibo Pago Cuota';
+                        $transaccion2->persona_id =  $persona->id;
+                        $transaccion2->usuario_id = (new Credito())->idUser();
+                        $transaccion2->caja_id = $caja_id;
+                        $transaccion2->comision_voucher = $configuraciones->valor_recibo;//0.2;
+                        $transaccion2->save();
+                    }
                 }
                 
 
@@ -1143,7 +1147,8 @@ public function numero_meses($fecha_inico, $fecha_final){
                 $parte_capital_total += round($cuotas[$i]->parte_capital,1);
             }
         }
-        $comision_voucher = ($interes_total>0? 0.2: 0);
+        $configuraciones = configuraciones::all()->last();
+        $comision_voucher = ($interes_total>0? $configuraciones->valor_recibo: 0);
         $valor_total += $interes_total + $parte_capital_total + $interes_moratorio + $comision_voucher;
         return  array(round($valor_total, 1), round($parte_capital_total, 1), round($interes_total, 1), round($num_cuotas_pendientes, 1), round($num_cuotas_morosas, 1), round($interes_moratorio, 1));
     }

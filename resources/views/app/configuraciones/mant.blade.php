@@ -24,6 +24,12 @@
 					{!! Form::text('limite_acciones', null, array('class' => 'form-control input-xs', 'id' => 'limite_acciones', 'placeholder' => 'en % del total',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 				</div>
 			</div>
+			<div class="form-group ">
+				{!! Form::label('valor_recibo', 'Comision Recibo:', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+				<div class="col-sm-9 col-xs-12">
+					{!! Form::text('valor_recibo', null, array('class' => 'form-control input-xs', 'id' => 'valor_recibo', 'placeholder' => 'S/.',  'onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
+				</div>
+			</div>
 			
 		</div>
 	</fieldset>	
@@ -52,6 +58,12 @@
 				</div>
 			</div>
 
+			<div class="form-group">
+				{!! Form::label('taza_mora', 'Tasa mora (Crédito)(%):', array('class' => 'col-sm-3 col-xs-12 control-label')) !!}
+				<div class="col-sm-9 col-xs-12">
+					{!! Form::text('taza_mora', null, array('class' => 'form-control input-xs', 'id' => 'taza_mora', 'placeholder' => '%',  'onkeypress'=>'return filterFloat(event,this);')) !!}
+				</div>
+			</div>
 		</div>
 	</fieldset>
 </div>

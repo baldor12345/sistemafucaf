@@ -10,6 +10,8 @@
 			<td colspan="2" align="center">ACCIONES</td>
 			<td colspan ="2" align="center">CREDITO</td>
 			<td colspan ="1" align="center">AHORROS</td>
+			<td rowspan="2" colspan ="1" align="center">COMISIÓN RECIBO</td>
+			<td rowspan="2" colspan ="1" align="center">TASA MORA</td>
 			<td rowspan="2" colspan ="1" align="center">FECHA</td>
 			<td rowspan="2" colspan ="1" align="center">DESCRIPCION</td>
 			<td rowspan="2" colspan="2" align="center">OPERACIONES</td>
@@ -37,6 +39,8 @@
 			<td>{{ number_format($value->tasa_interes_credito,3) }}</td>
 			<td>{{ number_format($value->tasa_interes_multa,3) }}</td>
 			<td>{{ number_format($value->tasa_interes_ahorro,3) }}</td>
+			<td>S/. {{ $value->valor_recibo }}</td>
+			<td>{{ $value->taza_mora }} %</td>
 			<td>{{ $value->fecha }}</td>
 			<td>{{ $value->descripcion }}</td>
 			<td>{!! Form::button('<div class="glyphicon glyphicon-pencil"></div> Editar', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-xs btn-warning')) !!}</td>
