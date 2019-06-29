@@ -127,6 +127,7 @@ class ConfiguracionesController extends Controller
         $reglas = array(
             'precio_accion'         => 'required',
             'limite_acciones'      => 'required',
+            'valor_recibo'      => 'required',
             'fecha'      => 'required',
             );
         $validacion = Validator::make($request->all(),$reglas);
@@ -134,18 +135,20 @@ class ConfiguracionesController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
-            $configuraciones               = new Configuraciones();
-            $configuraciones->codigo        = $request->input('codigo');
-            $configuraciones->precio_accion        = $request->input('precio_accion');
-            $configuraciones->ganancia_accion        = 0.0;
-            $configuraciones->limite_acciones        = $request->input('limite_acciones');
+            $configuraciones = new Configuraciones();
+            $configuraciones->codigo = $request->input('codigo');
+            $configuraciones->precio_accion = $request->input('precio_accion');
+            $configuraciones->valor_recibo = $request->input('valor_recibo');
+            $configuraciones->taza_mora = $request->input('taza_mora');
+            $configuraciones->ganancia_accion = 0.0;
+            $configuraciones->limite_acciones = $request->input('limite_acciones');
 
-            $configuraciones->tasa_interes_credito        = $request->input('tasa_interes_credito');
-            $configuraciones->tasa_interes_multa        = $request->input('tasa_interes_multa');
-            $configuraciones->tasa_interes_ahorro        = $request->input('tasa_interes_ahorro');
+            $configuraciones->tasa_interes_credito = $request->input('tasa_interes_credito');
+            $configuraciones->tasa_interes_multa = $request->input('tasa_interes_multa');
+            $configuraciones->tasa_interes_ahorro = $request->input('tasa_interes_ahorro');
 
-            $configuraciones->fecha        = $request->input('fecha');
-            $configuraciones->descripcion        = $request->input('descripcion');
+            $configuraciones->fecha = $request->input('fecha');
+            $configuraciones->descripcion = $request->input('descripcion');
             $configuraciones->save();
         });
         return is_null($error) ? "OK" : $error;
@@ -206,16 +209,18 @@ class ConfiguracionesController extends Controller
             return $validacion->messages()->toJson();
         } 
         $error = DB::transaction(function() use($request, $id){
-            $configuraciones                 = Configuraciones::find($id);
-            $configuraciones->codigo        = $request->input('codigo');
-            $configuraciones->precio_accion        = $request->input('precio_accion');
-            $configuraciones->ganancia_accion        = 0.0;
-            $configuraciones->limite_acciones        = $request->input('limite_acciones');
-            $configuraciones->tasa_interes_credito        = $request->input('tasa_interes_credito');
-            $configuraciones->tasa_interes_multa        = $request->input('tasa_interes_multa');
-            $configuraciones->tasa_interes_ahorro        = $request->input('tasa_interes_ahorro');
-            $configuraciones->fecha        = $request->input('fecha');
-            $configuraciones->descripcion        = $request->input('descripcion');
+            $configuraciones = Configuraciones::find($id);
+            $configuraciones->codigo = $request->input('codigo');
+            $configuraciones->precio_accion = $request->input('precio_accion');
+            $configuraciones->valor_recibo = $request->input('valor_recibo');
+            $configuraciones->taza_mora = $request->input('taza_mora');
+            $configuraciones->ganancia_accion = 0.0;
+            $configuraciones->limite_acciones = $request->input('limite_acciones');
+            $configuraciones->tasa_interes_credito = $request->input('tasa_interes_credito');
+            $configuraciones->tasa_interes_multa = $request->input('tasa_interes_multa');
+            $configuraciones->tasa_interes_ahorro = $request->input('tasa_interes_ahorro');
+            $configuraciones->fecha = $request->input('fecha');
+            $configuraciones->descripcion = $request->input('descripcion');
             $configuraciones->save();
         });
         return is_null($error) ? "OK" : $error;

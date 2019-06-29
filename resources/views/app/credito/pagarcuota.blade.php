@@ -25,11 +25,11 @@
             
             <li>{!! Form::label('cuotamora', 'Interes Mora: s/.'.$cuota->interes_mora, array('class' => 'morass')) !!}</li>
           
-            <li>{!! Form::label('comision', 'Comision: s/. 0.20', array('class' => 'comisi')) !!}</li>
+            <li>{!! Form::label('comision', 'Comision: s/.'.$configuraciones->valor_recibo, array('class' => 'comisi')) !!}</li>
             {{-- {!! Form::text('cuotamora', $cuota->interes_mora, array('class' => 'form-control input-xs', 'id' => 'cuotamora', 'placeholder' => 's/.')) !!} --}}
         </ul>
         <div class="form-group col-12 col-md-12 col-sm-12">
-            {!! Form::label('total', 'Total: s/.'.($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + 0.2), array('class' => 'tol label-md ','style'=>'color: black;')) !!}
+            {!! Form::label('total', 'Total: s/.'.($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + $configuraciones->valor_recibo), array('class' => 'tol label-md ','style'=>'color: black;')) !!}
         </div>
        
         <div class="form-group col-12 col-md-12 col-sm-12">
@@ -48,7 +48,7 @@
             <div class=" col-4 col-md-4 col-sm-12" >
                 <div class="form-group col-md-12" >
                     {!! Form::label('monto_pago_p', 'Monto Pago s/.:', array('class' => '')) !!}
-                    {!! Form::text('monto_pago_p', ($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + 0.2), array('class' => 'form-control input-sm', 'id' => 'monto_pago_p', 'placeholder' => '', 'readonly')) !!}
+                    {!! Form::text('monto_pago_p', ($cuota->interes + $cuota->parte_capital+ $cuota->interes_mora + $configuraciones->valor_recibo), array('class' => 'form-control input-sm', 'id' => 'monto_pago_p', 'placeholder' => '', 'readonly')) !!}
                 </div>
             </div>
 

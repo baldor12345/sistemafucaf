@@ -17,12 +17,11 @@
 <div class="form-group">
 	{!! Form::label('fechamora', 'Fecha de aplicación:', array('class' => 'input-sm')) !!}
 	{!! Form::date('fechamora', $fecha_mora, array('class' => 'form-control input-xs', 'id' => 'fechamora')) !!}
-	
 </div>
 <div class="form-row">
     <div class="form-group col-md-12 col-sm-12">
 		{!! Form::label('porcentaje_mora', 'Tasa de interes mora (%):', array('class' => '')) !!}
-		{!! Form::text('porcentaje_mora', 5, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora diario %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
+		{!! Form::text('porcentaje_mora', $configuraciones->taza_mora, array('class' => 'form-control input-xs input-number', 'id' => 'porcentaje_mora', 'placeholder' => 'Ingrese porcentaje mora mensual %','onkeypress'=>'return filterFloat(event,this);', 'maxlength' => '8')) !!}
 	</div>
 </div>
 
