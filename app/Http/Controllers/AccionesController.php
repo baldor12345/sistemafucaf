@@ -25,7 +25,7 @@ class AccionesController extends Controller
 {
     protected $folderview      = 'app.acciones';
     protected $tituloAdmin     = 'Compra y Venta de Acciones';
-    protected $tituloRegistrar = 'Compra de Acciones';
+    protected $tituloRegistrar = 'Devolucion de Capital';
     protected $tituloModificar = 'Modificar acciones';
     protected $tituloDetalle = 'Detalle de Acciones';
     protected $tituloResumen = 'Lista de Socios que ya compraron acciones en esta fecha!';
@@ -498,6 +498,7 @@ class AccionesController extends Controller
                         $codigo++;
                         $acciones               = new Acciones();    
                         $acciones->estado        = 'C';
+                        $acciones->tipo        = 'A';
                         $acciones->fechai        = $request->input('fechai').date(" H:i");
                         if(strlen($codigo) == 1){
                             $acciones->codigo = "000000".($codigo);

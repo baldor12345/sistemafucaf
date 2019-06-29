@@ -69,6 +69,7 @@ class caja extends Model
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
+                    //->where('persona.estado','=','A')
                     ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id')
                     ->orderBy('persona.apellidos','ASC');
@@ -96,6 +97,7 @@ class caja extends Model
                     )
                     ->where('transaccion.fecha','<', $fechai)
                     ->where('concepto.tipo','=','I')
+                    //->where('persona.estado','=','A')
                     ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
         return $results;
@@ -377,6 +379,7 @@ GROUP BY persona.id;
                     ->where(DB::raw('extract( month from transaccion.fecha)'),'=',$month)
                     ->where(DB::raw('extract( year from transaccion.fecha)'),'=',$anio)
                     ->where('concepto.tipo','=','I')
+                    ->where('persona.estado','=','A')
                     ->where('transaccion.deleted_at',null)
                     ->groupBy('persona.id');
         return $results;
@@ -595,6 +598,8 @@ GROUP BY persona.id;
                         DB::raw("COUNT(acciones.estado)*10 as acciones")
                     )
                     ->where('acciones.estado','C')
+                    //->where('acciones.tipo','!=','I')
+                    ->where('persona.estado','!=','I')
                     ->where('acciones.deleted_at',null)
                     ->groupBy('persona.id')
                     ->orderBy('persona.apellidos','ASC');
@@ -615,6 +620,7 @@ GROUP BY persona.id;
                         'ahorros.capital as deposito_ahorros'
                     )
                     ->where('ahorros.estado','P')
+                    ->where('persona.estado','A')
                     ->where('ahorros.deleted_at',null);
         return $results;
     }
