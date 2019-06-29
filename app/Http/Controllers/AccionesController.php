@@ -181,7 +181,7 @@ class AccionesController extends Controller
         $caja_id = Caja::where("estado","=","A")->value('id');
         $caja_id = ($caja_id != "")?$caja_id:0;
 
-        $res = null;
+        $error = null;
         if(count($caja_id) != 0){//validamos si existe caja aperturada
             $reglas = array(
                 'selectnom'        => 'required',
@@ -227,12 +227,10 @@ class AccionesController extends Controller
                 $transaccion->save();
 
             });
-            $res = $error;
         }else{
-            $res = "";
+            $error = "Caja no aperturada!";
         }
-        $res = is_null($res) ? "OK" : $res;
-        return $res;
+        return is_null($error) ? "OK" : $error;
     }
     /**
      * Display the specified resource.

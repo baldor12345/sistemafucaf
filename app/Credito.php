@@ -104,7 +104,7 @@ class Credito extends Model
             }
             // echo("ids: ".$ids_creditos);
             $numerocreditos = Credito::where('estado', '=', '0')->where('persona_id','=',$persona_id)->where('deleted_at','=', null)->count();
-            $numeroacciones = Acciones::where('estado','=','C')->where('persona_id','=',$persona_id)->where('deleted_at','=', null)->count();
+            $numeroacciones = Acciones::where('estado','=','C')->where('persona_id','=',$persona_id)->where('deleted_at','=', null)->where('tipo','=','A')->count();
              $num_moras = count(Cuota::where('interes_mora','>',0)->whereIn('credito_id',$ids_creditos)->get());
             
         }
