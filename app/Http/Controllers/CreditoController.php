@@ -776,8 +776,16 @@ class CreditoController extends Controller{
     }
 
 /*************--RECIBO PAGO CUOTA PDF--********** */
+    
+
+
     public function generarecibopagocuotaPDF($cuota_id){
+        $caja = Caja::where("estado","=","A")->get();
+        $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
+        
         $cuota = Cuota::find($cuota_id);
+        $mora_cuota = $this->calcular_mora($cuota,$fecha_actual);
+        $cuota->interes_mora = $mora_cuota;
         $credito = Credito::find($cuota->credito_id);
         $persona = Persona::find($credito->persona_id);
         $periodocredito = $credito->periodo;
@@ -947,6 +955,20 @@ public function numero_meses($fecha_inico, $fecha_final){
     }
     return $num_meses;
 }
+
+public function calcular_mora($cuota, $fechaFinal){
+    $interes_mora =0;
+
+    if($cuota->fecha_iniciomora != null){
+        $num_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechaFinal);
+        if($num_meses > 0){
+            $interes_mora = $num_meses*($cuota->tasa_interes_mora/100) * ($cuota->saldo_restante);
+        }
+    }
+    return $interes_mora;
+
+}
+
 /*************--PAGAR TODO EL CREDITO--************ */
     public function pagarcreditototal(Request $request){
 

@@ -67,7 +67,9 @@ class RecibocuotasController extends Controller
         $anioInicio = 2007;
         $caja = Caja::where("estado","=","A")->get();
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
-        $fecha_actual =count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
+        // $fecha_actual = count($caja) == 0?  date('Y-m-d'): date('Y-m-d',strtotime($caja[0]->fecha_horaapert));
+        $fecha_actual = count($caja)>0?date('Y-m-d',strtotime($caja[0]->fecha_horaapert)): date('Y-m-d');
+        
         $anioactual = date('Y',strtotime($fecha_actual));
         $mesactual = date('m',strtotime($fecha_actual));
         
@@ -164,7 +166,8 @@ class RecibocuotasController extends Controller
         
         $error = DB::transaction(function() use($request, $id_cuota){
             $cuota = Cuota::find($id_cuota);
-            $cuota->fecha_iniciomora =  $request->get('fechamora')." ".date('H:i:s');
+            // $cuota->fecha_iniciomora =  $request->get('fechamora')." ".date('H:i:s');
+            $cuota->fecha_iniciomora =  $cuota->fecha_programada_pago;
             $cuota->estado = 'm';
             $cuota->tasa_interes_mora = $request->get('porcentaje_mora');
             $cuota->save();

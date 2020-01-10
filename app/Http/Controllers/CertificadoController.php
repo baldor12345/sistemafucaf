@@ -5,6 +5,7 @@ use Validator;
 use App\Http\Requests;
 use App\Persona;
 use App\Caja;
+use App\User;
 use App\Certificado;
 use App\Ahorros;
 use App\Transaccion;
@@ -448,7 +449,15 @@ class CertificadoController extends Controller
                         12=>'Diciembre');
 
         $titulo = "Certificado_".$persona->nombres;
-        $view = \View::make('app.certificado.reportecertificadoPDF')->with(compact('lista', 'id', 'fecha','certificado','persona','month'));
+
+        //presidente y secretario
+        $usuario1 = User::where('estado','A')->where('usertype_id',1)->get();
+        $usuario2 = User::where('estado','A')->where('usertype_id',2)->get();
+
+        $presidente = Persona::find($usuario1[0]->persona_id);
+        $tesorero = Persona::find($usuario2[0]->persona_id);
+
+        $view = \View::make('app.certificado.reportecertificadoPDF')->with(compact('lista', 'id', 'fecha','certificado','persona','month','presidente','tesorero'));
         $html_content = $view->render();
 
         PDF::SetTitle($titulo);

@@ -171,7 +171,7 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b"></td>
-                <td class="line_v_id line_h_b">{{ round($transaccion->cuota_interes_mora, 1) }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 8px">{{ round($transaccion->cuota_mora, 1) }}</td>
             </tr>
             <tr><td colspan="9"></td></tr>
             <tr>
@@ -201,8 +201,8 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes, 1) }}</td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ $configuraciones->valor_recibo }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes+ $transaccion->cuota_interes_mora + $configuraciones->valor_recibo,1) }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes+ $transaccion->cuota_interes_mora + $configuraciones->valor_recibo, 1)   }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 12px" colspan="1" class="linebordercenter"><strong>{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes+ $transaccion->cuota_mora + $configuraciones->valor_recibo,1) }}</strong></td>
+                <td class="line_v_id line_h_b" style="font-size: 12px" colspan="1" class="linebordercenter"><strong>{{ round($transaccion->cuota_parte_capital + $transaccion->cuota_interes+ $transaccion->cuota_mora + $configuraciones->valor_recibo, 1)   }}</strong></td>
                 <td class=""></td>
                 <td class=""></td>
             </tr>

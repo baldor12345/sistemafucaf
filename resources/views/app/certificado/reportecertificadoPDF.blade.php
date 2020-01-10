@@ -107,8 +107,8 @@
                 <td rowspan="1" align="rigth"  colspan="3"></td>
             </tr>
             <tr>
-                <td rowspan="1" colspan="3" align="center">Rocio del Pilar Castillo Rojas</td>
-                <td rowspan="1" colspan="3" align="center" >Harold Helbert Lopez Osorio</td>
+                <td rowspan="1" colspan="3" align="center">{{ $tesorero->apellidos.' '.$tesorero->nombres}}</td>
+                <td rowspan="1" colspan="3" align="center" >{{ $presidente->apellidos.' '.$presidente->nombres}}</td>
                 <td rowspan="1" align="rigth"  colspan="3"></td>
             </tr>
             <tr>

@@ -19,7 +19,9 @@
 // Registration routes...
 // Route::get('auth/register', 'Auth\AuthController@getRegister');
 // Route::post('auth/register', ['as' => 'auth/register', 'uses' => 'Auth\AuthController@postRegister']);
-
+if(version_compare(PHP_VERSION, '7.2.0', '>=')) {
+    error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+}
 Auth::routes();
 Route::get('logout', 'Auth\LoginController@logout');
 
