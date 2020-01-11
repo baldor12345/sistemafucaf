@@ -64,7 +64,8 @@
 			 
 		?>
 		<tr>
-			<td>{{ $contador." - ".$value->credito_id }}</td>
+			<!-- <td>{{ $contador." - ".$value->credito_id }}</td> -->
+			<td>{{ $contador}}</td>
 			<td>{{ $value->apellidos.'  '.$value->nombres }}</td>
 			<td>{{ $value->numero_cuota.'/'.$value->periodo }}</td>
 			<td>{{ round($value->parte_capital +  $value->interes, 1) }}</td>
