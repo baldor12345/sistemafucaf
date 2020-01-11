@@ -105,6 +105,29 @@ class Acciones extends Model
     //LISTA DE ACCIONES COMPRADAS POR MES Y POR PERSONA
     public static function listAccionPorMesCompradas($persona_id, $anio, $monthi, $monthf){
 
+        $results = DB::table('historial_accion')
+                    ->join('persona', 'historial_accion.persona_id', '=', 'persona.id')
+                    ->select( 
+                        DB::raw('extract( month from historial_accion.fecha) as mes'),
+                        'historial_accion.cantidad as cantidad_accion'
+                        // DB::raw("COUNT(historial_accion.estado) as cantidad_accion")
+                        )
+                    ->where('historial_accion.persona_id', '=', $persona_id)
+                    // ->where('historial_accion.tipo', '=','A')
+                    ->where('historial_accion.estado', '=','C')
+                    ->where(DB::raw('extract( year from historial_accion.fecha)'),'=',$anio)
+                    ->where(DB::raw('extract( month from historial_accion.fecha)'),'>=',$monthi)
+                    ->where(DB::raw('extract( month from historial_accion.fecha)'),'<=',$monthf)
+                    ->where('historial_accion.deleted_at',null)
+                    ->groupBy('historial_accion.fecha','historial_accion.cantidad')
+                    ->orderBy('historial_accion.fecha');
+        return $results;
+        			
+    }
+
+    /*
+    public static function listAccionPorMesCompradas($persona_id, $anio, $monthi, $monthf){
+
         $results = DB::table('acciones')
                     ->join('persona', 'acciones.persona_id', '=', 'persona.id')
                     ->select( 
@@ -122,7 +145,28 @@ class Acciones extends Model
                     ->orderBy('acciones.fechai');
         return $results;
         			
+    }*/
+    public static function listAccionPorMesVendidas($persona_id, $anio, $monthi, $monthf){
+
+        $results = DB::table('historial_accion')
+                    ->join('persona', 'historial_accion.persona_id', '=', 'persona.id')
+                    ->select( 
+                        DB::raw('extract( month from historial_accion.fecha) as mes'),
+                        'historial_accion.cantidad as cantidad_accion'
+                        // DB::raw("COUNT(historial_accion.estado) as cantidad_accion")
+                        )
+                    ->where('historial_accion.persona_id', '=', $persona_id)
+                    // ->where('historial_accion.tipo', '=','A')
+                    ->where('historial_accion.estado', '=','V')
+                    ->where(DB::raw('extract( year from historial_accion.fecha)'),'=',$anio)
+                    ->where(DB::raw('extract( month from historial_accion.fecha)'),'>=',$monthi)
+                    ->where(DB::raw('extract( month from historial_accion.fecha)'),'<=',$monthf)
+                    ->where('historial_accion.deleted_at',null)
+                    ->groupBy('historial_accion.fecha','historial_accion.cantidad')
+                    ->orderBy('historial_accion.fecha');
+        return $results;   			
     }
+    /*
     public static function listAccionPorMesVendidas($persona_id, $anio, $monthi, $monthf){
 
         $results = DB::table('acciones')
@@ -142,7 +186,7 @@ class Acciones extends Model
                     ->groupBy('persona.nombres','persona.id');
         return $results;
         			
-    }
+    }*/
 
     public static function cant_acciones_acumuladas($persona_id){
         return  DB::table('acciones')

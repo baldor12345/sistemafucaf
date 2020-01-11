@@ -127,7 +127,7 @@
                             <tr>
                                 <td align="center" colspan="1" style="font-size: 11px" class="linebordercenter">{{ $contador }}</td>
                                 <td align="center" colspan="2" style="font-size: 11px" class="linebordercenter" >{{ $meses[$value->mes] }}</td>
-                                <td align="center" colspan="1" style="font-size: 11px" class="linebordercenter" >{{ $value->cantidad_accion}}</td>
+                                <td align="center" colspan="1" style="font-size: 11px" class="linebordercenter" >{{ -$value->cantidad_accion }}</td>
                             </tr>
                             <?php
                             $contador = $contador + 1;
