@@ -55,14 +55,16 @@
 				$num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
 			}
 			//******************************************
+			
 			if($num_meses>0){
-				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
+				// $interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
+				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->saldo_restante);
 			}
 		}
 			 
 		?>
 		<tr>
-			<td>{{ $contador }}</td>
+			<td>{{ $contador." - ".$value->credito_id }}</td>
 			<td>{{ $value->apellidos.'  '.$value->nombres }}</td>
 			<td>{{ $value->numero_cuota.'/'.$value->periodo }}</td>
 			<td>{{ round($value->parte_capital +  $value->interes, 1) }}</td>

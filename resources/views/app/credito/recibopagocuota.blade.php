@@ -201,8 +201,8 @@
                 <td class="line_v_id line_h_b"></td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes, 1) }}</td>
                 <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ $configuraciones->valor_recibo }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + $configuraciones->valor_recibo,1) }}</td>
-                <td class="line_v_id line_h_b" style="font-size: 8px" colspan="1" class="linebordercenter">{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + $configuraciones->valor_recibo, 1)   }}</td>
+                <td class="line_v_id line_h_b" style="font-size: 11px" colspan="1" class="linebordercenter"><strong>{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + $configuraciones->valor_recibo,1) }}</strong></td>
+                <td class="line_v_id line_h_b" style="font-size: 11px" colspan="1" class="linebordercenter"><strong>{{ round($cuota->parte_capital + $cuota->interes+ $cuota->interes_mora + $configuraciones->valor_recibo, 1)   }}</strong></td>
                 <td class=""></td>
                 <td class=""></td>
             </tr>

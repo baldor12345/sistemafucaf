@@ -28,6 +28,7 @@ class Cuota extends Model
         $results = DB::table('cuota')
         ->select(
             'cuota.id as id',
+            'cuota.credito_id as credito_id',
             'cuota.parte_capital as parte_capital',
             'cuota.interes as interes',
             'cuota.interes_mora as interes_mora',
