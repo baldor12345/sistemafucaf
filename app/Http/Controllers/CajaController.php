@@ -531,72 +531,7 @@ class CajaController extends Controller
     }
 
     /*********************************** ACTUALIZA AHORROS ************************************** */
-    /*public function actualizardatosahorrosNuevo(Request $request){
-
-        $configuracion = Configuraciones::all()->last();
-        $tasa_interes_ahorro  = $configuracion->tasa_interes_ahorro;
-        $lista_ahorros = Ahorros::where("estado","=",'P')->get();
-
-        $error1 = null;
-        if(count($lista_ahorros)>0){
-            $fechinit = date('Y-m-d', strtotime($lista_ahorros[0]->fechai));
-            $NumeroMeses = $this->numero_meses($fechinit, $request->input('fecha_horaApert'));
-            $nuevafecha_actual = $request->input('fecha_horaApert').' '.date('H:i:s');
-     
-            $caja = Caja::all()->last();
-            $error1 = DB::transaction(function() use($request, $fechinit, $lista_ahorros, $tasa_interes_ahorro, $NumeroMeses,$caja){
-                $fecha_nueva =$fechinit;
-                if($NumeroMeses >0){
-                    for($j=0; $j < $NumeroMeses; $j++){
-
-                        $fecha_nueva = date("Y-m-d",strtotime($fecha_nueva."+ 1 month"));
-                        $lista_ahorros = Ahorros::where("estado","=",'P')->get();
-
-                        foreach ($lista_ahorros as $key => $value) {
-                            
-                            if($value->id != null){
-                                $ahorro_ant = Ahorros::find($value->id);
-                                $ahorro_ant->fechaf = $fecha_nueva;
-                                $ahorro_ant->estado = 'C';
-                                $ahorro_ant->save();
-
-                                $ahorro = new Ahorros();
-                                $ahorro->fechai = $fecha_nueva;
-                                $ahorro->capital = $value->capital + $tasa_interes_ahorro * $value->capital;
-                                $ahorro->interes = $tasa_interes_ahorro * $value->capital;
-                                $ahorro->persona_id = $value->persona_id;
-                                $ahorro->estado = 'P';
-                                $ahorro->save();
-
-                                $transaccion = new Transaccion();
-                                $transaccion->monto = 0;
-                                $transaccion->concepto_id = 16;
-                                $transaccion->fecha = $fecha_nueva;
-                                $transaccion->interes_ahorro =$tasa_interes_ahorro * $value->capital;
-                                $transaccion->persona_id = $value->persona_id;
-                                $transaccion->caja_id = $caja->id;
-                                $transaccion->usuario_id = Credito::idUser();
-                                $transaccion->save();
-
-                                $transaccion = new Transaccion();
-                                $transaccion->monto = 0;
-                                $transaccion->concepto_id = 17;
-                                $transaccion->fecha = $fecha_nueva;
-                                $transaccion->interes_ahorro =$tasa_interes_ahorro * $value->capital;
-                                $transaccion->persona_id = $value->persona_id;
-                                $transaccion->caja_id = $caja->id;
-                                $transaccion->usuario_id = Credito::idUser();
-                                $transaccion->save();
-                            }
-                        }
-                        
-                    }
-                }
-            });
-        }
-        return $error1;
-    }*/
-
+  
     public function actualizardatosahorros(Request $request){
 
         $configuracion = Configuraciones::all()->last();
