@@ -102,6 +102,48 @@ class Acciones extends Model
         			
     }
 
+    //LISTA DE ACCIONES COMPRADAS POR MES Y POR PERSONA
+    public static function listAccionPorMesCompradas($persona_id, $anio, $monthi, $monthf){
+
+        $results = DB::table('acciones')
+                    ->join('persona', 'acciones.persona_id', '=', 'persona.id')
+                    ->select( 
+                        DB::raw('extract( month from acciones.fechai) as mes'),
+                        DB::raw("COUNT(acciones.estado) as cantidad_accion")
+                        )
+                    ->where('acciones.persona_id', '=', $persona_id)
+                    ->where('acciones.tipo', '=','A')
+                    ->where('acciones.estado', '=','C')
+                    ->where(DB::raw('extract( year from acciones.fechai)'),'=',$anio)
+                    ->where(DB::raw('extract( month from acciones.fechai)'),'>=',$monthi)
+                    ->where(DB::raw('extract( month from acciones.fechai)'),'<=',$monthf)
+                    ->where('acciones.deleted_at',null)
+                    ->groupBy('acciones.fechai')
+                    ->orderBy('acciones.fechai');
+        return $results;
+        			
+    }
+    public static function listAccionPorMesVendidas($persona_id, $anio, $monthi, $monthf){
+
+        $results = DB::table('acciones')
+                    ->join('persona', 'acciones.persona_id', '=', 'persona.id')
+                    ->select( 
+                        'persona.id as persona_id', 
+                        'persona.nombres as persona_nombres',
+                        DB::raw("COUNT(acciones.estado) as cantidad_accion")
+                        )
+                    ->where('acciones.persona_id', '=', $persona_id)
+                    ->where('acciones.tipo', '=','A')
+                    ->where('acciones.estado', '=','V')
+                    ->where(DB::raw('extract( year from acciones.updated_at)'),'=',$anio)
+                    ->where(DB::raw('extract( month from acciones.updated_at)'),'>=',$monthi)
+                    ->where(DB::raw('extract( month from acciones.updated_at)'),'<=',$monthf)
+                    ->where('acciones.deleted_at',null)
+                    ->groupBy('persona.nombres','persona.id');
+        return $results;
+        			
+    }
+
     public static function cant_acciones_acumuladas($persona_id){
         return  DB::table('acciones')
                 ->join('persona', 'acciones.persona_id', '=', 'persona.id')

@@ -162,6 +162,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('acciones/listacciones/{persona_id}', 'AccionesController@listacciones')->name('acciones.listacciones');
     Route::get('acciones/buscaraccion', 'AccionesController@buscaraccion')->name('acciones.buscaraccion');
 
+    Route::get('acciones/generarreport', 'AccionesController@generarreport')->name('acciones.generarreport');
+    Route::get('acciones/modalreporte/{persona_id}', 'AccionesController@modalreporte')->name('acciones.modalreporte');
+    Route::get('acciones/reporteporperiodoPDF/{persona_id?}/{anio?}/{monthi?}/{monthf?}', 'AccionesController@reporteporperiodoPDF')->name('acciones.reporteporperiodoPDF');
+
     Route::get('acciones/cargarcompra/{id}', 'AccionesController@cargarcompra')->name('acciones.cargarcompra');
     Route::post('acciones/guardarcompra/{id}', 'AccionesController@guardarcompra')->name('acciones.guardarcompra');
 

@@ -47,6 +47,12 @@ class AccionesController extends Controller
             'index'  => 'acciones.index',
             'listpersonas' => 'acciones.listpersonas',
             'buscaraccion'=> 'acciones.buscaraccion',
+
+            'generarreport' => 'acciones.generarreport',
+            'modalreporte' => 'acciones.modalreporte',
+            'reporteporperiodoPDF'=> 'acciones.reporteporperiodoPDF',
+
+
             'listresumen' => 'acciones.listresumen',
             'buscarresumen' => 'acciones.buscarresumen'
         );
@@ -88,7 +94,7 @@ class AccionesController extends Controller
         $cabecera[]       = array('valor' => 'CODIGO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NOMBRES', 'numero' => '1');
         $cabecera[]       = array('valor' => 'MOVIMIENTOS', 'numero' => '2');
-        $cabecera[]       = array('valor' => 'OPERACIONES', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'OPERACIONES', 'numero' => '2');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -326,6 +332,44 @@ class AccionesController extends Controller
         return view($this->folderview.'.detalle')->with(compact('lista', 'entidad', 'persona_id', 'ruta','idcaja','titulo_detalle'));
     }
 
+    public function modalreporte($persona_id, Request $request)
+    {
+        $caja = Caja::where("estado","=","A")->get();
+        $idcaja = count($caja) == 0? 0: $caja[0]->id;
+
+        $entidad = "Accion5";
+        $titulo_detalle = $this->tituloDetalle;
+        $ruta             = $this->rutas;
+        $inicio           = 0;
+
+        $anioactual = date('Y');
+        $anios = array();
+        $anioi =2008;
+
+        for($anyo=$anioactual; $anyo >=$anioi;  $anyo --){
+            $anios[$anyo] = $anyo;
+        }
+
+        $mesactual = date('m');
+        $meses = array();
+        $meses['01'] ="Enero";
+        $meses['02'] ="Febrero";
+        $meses['03'] ="Marzo";
+        $meses['04'] ="Abril";
+        $meses['05'] ="Mayo";
+        $meses['06'] ="Junio";
+        $meses['07'] ="Julio";
+        $meses['08'] ="Agosto";
+        $meses['09'] ="Septiembre";
+        $meses['10'] ="Octubre";
+        $meses['11'] ="Noviembre";
+        $meses['12'] ="Diciembre";
+
+    
+        return view($this->folderview.'.modalreporte')->with(compact('anioactual', 'mesactual', 'meses', 'anios', 'lista', 'entidad', 'persona_id', 'ruta','idcaja','titulo_detalle'));
+    }
+
+
     public function buscaraccion(Request $request){
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
@@ -381,7 +425,60 @@ class AccionesController extends Controller
     
     }
 
+    public function generarreport(Request $request)
+    {
+        $res = null;
+        $persona_id = $request->get('persona_id');
+        $anio = $request->get('anio');
+        $monthi = $request->get('monthi');
+        $monthf = $request->get('monthf');
+        $res = is_null($res) ? "OK" : $res;
+        $respuesta = array($res, $persona_id, $anio,$monthi, $monthf);
+        return $respuesta;
+    }
+    
 
+    public function reporteporperiodoPDF($persona_id, $anio, $monthi, $monthf, Request $request)
+    {    
+
+        
+        $accionesC        = Acciones::listAccionPorMesCompradas($persona_id, $anio, $monthi, $monthf);
+        $accionesV        = Acciones::listAccionPorMesVendidas($persona_id, $anio, $monthi, $monthf);
+        $listaC            = $accionesC->get();
+        $listaV            = $accionesV->get();
+
+        $datos_persona  = Persona::find($persona_id);
+        $inicio =0;
+
+        $meses = array();
+        $meses[1] ="Enero";
+        $meses[2] ="Febrero";
+        $meses[3] ="Marzo";
+        $meses[4] ="Abril";
+        $meses[5] ="Mayo";
+        $meses[6] ="Junio";
+        $meses[7] ="Julio";
+        $meses[8] ="Agosto";
+        $meses[9] ="Septiembre";
+        $meses[10] ="Octubre";
+        $meses[11] ="Noviembre";
+        $meses[12] ="Diciembre";
+
+
+        $titulo = "reporte ".$datos_persona->nombres;
+        $view = \View::make('app.acciones.reporteporperiodoPDF')->with(compact('listaC', 'listaV', 'meses', 'anio','inicio','datos_persona','presidente','tesorero'));
+        $html_content = $view->render();      
+ 
+        PDF::SetTitle($titulo);
+        PDF::AddPage('P','A4',0);
+        PDF::SetTopMargin(5);
+        //PDF::SetLeftMargin(40);
+        //PDF::SetRightMargin(40);
+        PDF::SetDisplayMode('fullpage');
+        PDF::writeHTML($html_content, true, false, true, false, '');
+ 
+        PDF::Output($titulo.'.pdf', 'I');
+    }
 
 
     //listar el objeto persona por dni
@@ -694,6 +791,7 @@ class AccionesController extends Controller
 
                     $acciones               = new Acciones();    
                     $acciones->estado        = 'C';
+                    $acciones->tipo        = 'A';
                     $acciones->fechai        = $value->fechai;
                     $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $value->persona_id)->value('nombres');
                     $acciones->persona_id        = $request->input('selectnom');
