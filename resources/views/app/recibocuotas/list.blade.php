@@ -58,17 +58,19 @@
 			
 			if($num_meses>0){
 				// $interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
-				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->saldo_restante);
+				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * intval($saldos_res["".$value->cuota_id]);
 			}
 		}
 			 
 		?>
 		<tr>
-			<!-- <td>{{ $contador." - ".$value->credito_id }}</td> -->
-			<td>{{ $contador}}</td>
+			<td>{{ $contador." - ".$value->credito_id }}</td>
+			<!-- <td>{{ $contador}}</td> -->
 			<td>{{ $value->apellidos.'  '.$value->nombres }}</td>
 			<td>{{ $value->numero_cuota.'/'.$value->periodo }}</td>
 			<td>{{ round($value->parte_capital +  $value->interes, 1) }}</td>
+
+			<td style="color: blue;">{{ round($saldos_res["".$value->cuota_id], 1) }}</td>
 			<td>{{ round($interes_ganado, 1) }}</td>
 			<td>{{ round($value->parte_capital +  $value->interes + $interes_ganado, 1) }}</td>
 			@if($value->estado=='m')
@@ -92,4 +94,13 @@
 		@endforeach
 	</tbody>
 </table>
+<div class="row">
+	<div class="alert bg-primary" role="alert">
+		<p><strong>MONTO S/. = PARTE_CAPITAL + INTERES</strong></p>
+		<p><strong>RESTANTE S/. = CAPITAL TOTAL QUE FALTA CANCELAR</strong></p>
+		<p><strong>MORA S/. = (RESTANTE S/.) * (NUMERO MESES MORATORIOS) * (PORCENTAJE MORA)</strong></p>
+		<p><strong>TOTAL S/. = (MONTO S/.) + (MORA S/.)</strong></p>
+	</div>
+</div>
+
 @endif

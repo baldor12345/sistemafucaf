@@ -663,7 +663,7 @@ class CreditoController extends Controller{
     public function listardetallecuotas(Request $request){
         $credito_id =  $request->input('credito_id');
         $opcion = $request->input('select_opcion');
-
+        $credito = Credito::find($credito_id);
         $pagina = $request->input('page');
         $filas = $request->input('filas');
         $entidad_cuota = 'Cuota';
@@ -680,7 +680,9 @@ class CreditoController extends Controller{
         // if($numero_cuotas_pendientes > 0){
         //     $cuota_siguiente = Cuota::where('credito_id','=', $credito_id)->where(DB::raw('extract( month from fecha_programada_pago)'),'=',$mes)->where(DB::raw('extract( year from fecha_programada_pago)'),'=',$anio)->where('deleted_at','=',null)->get()[0];
         // }
-        $saldo_restante= count($cuotasPendientes) >0?round($cuotasPendientes[0]->parte_capital + $cuotasPendientes[0]->saldo_restante, 1): 0;
+        // $saldo_restante= count($cuotasPendientes) >0?round($cuotasPendientes[0]->parte_capital + $cuotasPendientes[0]->saldo_restante, 1): 0;
+        $saldo_pagado= Cuota::saldo_pagado($credito_id);
+        $saldo_restante = $credito->valor_credito - (count($saldo_pagado)>0?$saldo_pagado[0]->saldo_pagado:0);
         // $saldo_restante = $cuota_siguiente != null? round($cuota_siguiente->parte_capital + $cuota_siguiente->saldo_restante,1): 0;
         
         /*************************** */
@@ -733,7 +735,6 @@ class CreditoController extends Controller{
         $caja_id = count($caja) == 0? 0: $caja[0]->id;
         $fecha_actual = count($caja)>0?$caja[0]->fecha_horaapert: date('Y-m-d');
         $configuraciones = configuraciones::all()->last();
-        $credito = Credito::find($credito_id);
        
         $fechacaducidad = Date::parse($credito->fechai)->format('Y/m/d');
         $fechacaducidad = date("Y-m-d",strtotime($fechacaducidad."+ ".$credito->periodo." month"));
