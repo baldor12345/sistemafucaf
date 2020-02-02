@@ -168,10 +168,13 @@ class CajaController extends Controller
             $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
          
             $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
-            $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
-            $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            // $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
+            $du_anterior= (count($dist_u_anterior)>0)?($dist_u_anterior[0]->intereses + $dist_u_anterior[0]->otros) : 0;
+            // $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $gast_du_anterior=(count($dist_u_anterior)>0)?( $dist_u_anterior[0]->gast_admin_acum +$dist_u_anterior[0]->int_pag_acum +$dist_u_anterior[0]->otros_acum): 0;
             $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
-            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+            // // $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+            $utilidad_dist = $distribucion->utilidad_distribuible;
             $numero_acciones_hasta_enero=  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();
            
             $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
@@ -190,7 +193,9 @@ class CajaController extends Controller
             $anio_actual=$anio+1;
             $fsocial = Persona::personas('11111111')[0];
             $rlegal = Persona::personas('22222222')[0];
-            return view($this->folderview.'.vistadistribucionfaltante')->with(compact('rlegal','fsocial','distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
+            // return view($this->folderview.'.vistadistribucionfaltante')->with(compact('rlegal','fsocial','distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
+
+            return view($this->folderview.'.vistadistribucionfaltante')->with(compact('rlegal','fsocial','distribucion','reporte','existe', 'entidad','ruta', 'listar','du_anterior','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','acciones_mes','numero_acciones_hasta_enero','utilidad_neta'));
         }
 
         public function guardar_distribucion_faltante(Request $request){
