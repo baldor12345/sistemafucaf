@@ -478,6 +478,23 @@ class AccionesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
  
         PDF::Output($titulo.'.pdf', 'I');
+
+            //esta es ===============================================================================================================================>
+            
+        // $accion_vendidas = Acciones::where('estado','V')->where('deleted_at',null)->get();
+        // foreach ($accion_vendidas as $key => $value) {
+        //     $Acciones_com = Acciones::where('estado','C')->where('codigo',$value->codigo)->get()[0];
+        //     $value->fecha_transf = $value->fechai;
+        //     $value->save();
+        //     $Acciones_com->fecha_transf = $value->fechaf;
+        //     $Acciones_com->save();
+        // }
+
+        // $listaf = Acciones::where('estado','C')->where('fecha_transf',null)->get();
+        // foreach ($listaf as $key => $value) {
+        //     $value->fecha_transf = $value->fechai;
+        //     $value->save();
+        // }
     }
 
 
@@ -899,7 +916,7 @@ class AccionesController extends Controller
         PDF::writeHTML($html_content, true, false, true, false, '');
         PDF::Output($titulo.'.pdf', 'I');
     }
-
+ 
     //metodo para generar voucher en pdf
     public function generarvoucheraccionventaPDF($id, $cant, $fecha, Request $request)
     {    
