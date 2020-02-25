@@ -12,7 +12,12 @@
     <div class="col-sm-12">
         <div class="card-box table-responsive">
 
-            <div class="row m-b-30">
+            <div class="row bg-light" style="border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 1px solid #14befc; padding: 20px">
+			<!-- <div class="alert bg-info" role="alert"> -->
+			
                 <div class="col-sm-12">
 					{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 					{!! Form::hidden('page', 1, array('id' => 'page')) !!}
@@ -32,14 +37,15 @@
 
 					<div class="form-group">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
-						{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+						{!! Form::selectRange('filas', 5, 30, 20, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
 					
-					{!! Form::button('<i class="glyphicon glyphicon-list"></i> Simular', array('class' => 'btn btn-info btn-xs', 'id' => 'btnSimulador', 'onclick' => 'modal(\''.URL::route($ruta["vistasimulador"], array('fecha'=>$fecha_actual)).'\', \''."Simulador".'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-list"></i> Simular', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm', 'id' => 'btnSimulador', 'onclick' => 'modal(\''.URL::route($ruta["vistasimulador"], array('fecha'=>$fecha_actual)).'\', \''."Simulador".'\')')) !!}
 			
 					{!! Form::close() !!}
                 </div>
+			<!-- </div> -->
             </div>
 
 			<div id="listado{{ $entidad }}"></div>

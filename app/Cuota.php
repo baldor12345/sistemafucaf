@@ -97,6 +97,7 @@ class Cuota extends Model
             'cuota.estado as estado',
             'cuota.numero_cuota as numero_cuota',
             'credito.id as credito_id',
+            'credito.valor_credito as valor_credito',
             'credito.periodo as periodo',
             'persona.id as persona_id',
             'persona.nombres as nombres',
@@ -111,6 +112,19 @@ class Cuota extends Model
         ->where('cuota.fecha_programada_pago','<=',$fecha_p)
         ->orderBy('persona.apellidos', 'ASC');
         return $results;
+        
+    }
+    public static function saldo_pagado($credito_id){
+        $results = DB::table('credito')
+        ->leftJoin('cuota', 'cuota.credito_id', '=', 'credito.id')
+        ->select(
+            DB::raw("(SUM(cuota.parte_capital)) as saldo_pagado")
+        )
+        ->where('credito.id','=', $credito_id)
+        ->where('cuota.estado','=', 1)
+        ->groupBy('cuota.credito_id')->get();
+        return $results;
+
     }
 
     public static function listarCuotasAlafechaPersona($anio, $mes, $persona_id, $credito_id, $opcion){

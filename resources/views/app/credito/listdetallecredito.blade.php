@@ -44,7 +44,7 @@
                     
                     if($num_meses>0){
                         // $interes_mora = $num_meses*($cuota->tasa_interes_mora/100) * ($cuota->parte_capital + $cuota->saldo_restante);
-                        $interes_mora = $num_meses*($cuota->tasa_interes_mora/100) * ($cuota->saldo_restante);
+                        $interes_mora = $num_meses*($cuota->tasa_interes_mora/100) * ($cuota->parte_capital + $cuota->saldo_restante);
                     }
                 }
                 return $interes_mora;
@@ -83,37 +83,10 @@
         @if($opcion == "vigentes")
         <tr>
             <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>{{  round($saldo_restante,1)}}</td><td>--</td>
-        
         </tr>
             @foreach ($lista as $key => $value)
                 <?php
                  $value->interes_mora = calcular_mora($value, $fecha_actual);
-                    // if($value->estado == 'm'){
-                    //     $fecha_inicio = date("Y-m-d", strtotime($value->fecha_iniciomora));
-                    //     $fecha_fin = date("Y-m-d", strtotime($fecha_actual));
-                    //     $fecha_inicial = new DateTime($fecha_inicio);
-                    //     $fecha_final = new DateTime($fecha_fin);
-                    //     $diferencia = $fecha_inicial->diff( $fecha_final);
-                    //     $numeroDias = $diferencia->format('%R%a días');
-                        
-                    //     if($numeroDias>0){
-                    //         // $interes_ganado = $numeroDias*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->interes);
-                    //         // $value->interes_mora += $interes_ganado;
-                    //         //********************num meses ***************
-                    //         $anio_menor= date("Y", strtotime($fecha_inicio));
-                    //         $mes_menor= date("m", strtotime($fecha_inicio));
-                    //         $anio_mayor= date("Y", strtotime($fecha_fin));
-                    //         $mes_mayor= date("m", strtotime($fecha_fin));
-                    //         $num_meses = 0;
-                    //         if($anio_mayor == $anio_menor){
-                    //             $num_meses = $mes_mayor - $mes_menor;
-                    //         }else if($anio_mayor > $anio_menor){
-                    //             $diferencia_anios = $anio_mayor - $anio_menor;
-                    //             $num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
-                    //         }
-                    //         $value->interes_mora += $value->saldo_restante * $num_meses*($value->tasa_interes_mora/100);
-                    //     }
-                    // }
                 ?>
                 <tr>
                     <td>{{  $nombremes[date('m',strtotime($value->fecha_programada_pago))]."-". date('Y',strtotime($value->fecha_programada_pago)) }}</td>
@@ -144,7 +117,6 @@
                     $saldo_restante -= $value->cuota_parte_capital;
                 ?>
                 <tr>
-                   
                     <td>{{  $contador }}</td>
                     <td>{{  explode(':',$value->descripcion)[1]}}/{{$credito->periodo}}</td>
                     <td>{{  round($value->cuota_interes + $value->cuota_parte_capital,1)}}</td>
@@ -157,7 +129,6 @@
                     <td>{{  round($saldo_restante,1)}}</td>
                     <td>{{ $value->descripcion }}</td>
                     <td >{!! Form::button('<i class="fa fa-check fa-lg"></i> Recibo', array('class' => 'btn btn-warning btn-xs', 'id' => 'btnrecibo', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["generarecibopagocuotaPDF2"], array($value->id)).'\',\''.'1000'.'\',\''.'Voucher de Pago Cuota'.'\')')) !!}</td>
-                  
                 </tr>
                 <?php
                 $contador ++;
@@ -174,33 +145,6 @@
                     $valor_mora = calcular_mora($value, $fecha_actual);
                     $value->interes_mora = $valor_mora;
                 }
-
-                    // if($value->estado == 'm'){
-                    //     $fecha_inicio = date("Y-m-d", strtotime($value->fecha_iniciomora));
-                    //     $fecha_fin = date("Y-m-d", strtotime($fecha_actual));
-                    //     $fecha_inicial = new DateTime($fecha_inicio);
-                    //     $fecha_final = new DateTime($fecha_fin);
-                    //     $diferencia = $fecha_inicial->diff( $fecha_final);
-                    //     $numeroDias = $diferencia->format('%R%a días');
-                        
-                    //     if($numeroDias>0){
-                    //         $interes_ganado = $numeroDias*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->interes);
-                    //         $value->interes_mora += $interes_ganado;
-                    //         //********************num meses ***************
-                    //         $anio_menor= date("Y", strtotime($fecha_inicio));
-                    //         $mes_menor= date("m", strtotime($fecha_inicio));
-                    //         $anio_mayor= date("Y", strtotime($fecha_fin));
-                    //         $mes_mayor= date("m", strtotime($fecha_fin));
-                    //         $num_meses = 0;
-                    //         if($anio_mayor == $anio_menor){
-                    //             $num_meses = $mes_mayor - $mes_menor;
-                    //         }else if($anio_mayor > $anio_menor){
-                    //             $diferencia_anios = $anio_mayor - $anio_menor;
-                    //             $num_meses = 12 - $mes_menor + (12 * ($diferencia_anios - 1)) + $mes_mayor;
-                    //         }
-                    //         $value->interes += $value->interes * $num_meses;
-                    //     }
-                    // }
                 ?>
                 <tr>
                 

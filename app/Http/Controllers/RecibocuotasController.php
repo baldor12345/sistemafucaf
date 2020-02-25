@@ -113,7 +113,8 @@ class RecibocuotasController extends Controller
         $cabecera[] = array('valor' => 'SOCIO/CLIENTE', 'numero' => '1');
         $cabecera[] = array('valor' => 'N° CUOTA', 'numero' => '1');
         $cabecera[] = array('valor' => 'MONTO S/.', 'numero' => '1');
-        $cabecera[] = array('valor' => 'INTERES MORA S/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'RESTANTE S/.', 'numero' => '1');
+        $cabecera[] = array('valor' => 'MORA S/.', 'numero' => '1');
         $cabecera[] = array('valor' => 'TOTAL s/.', 'numero' => '1');
         $cabecera[] = array('valor' => 'ESTADO', 'numero' => '1');
         $cabecera[] = array('valor' => 'FECHA', 'numero' => '1');
@@ -130,7 +131,15 @@ class RecibocuotasController extends Controller
             $paginaactual = $paramPaginacion['nuevapagina'];
             $lista = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'tituloPagoCuota', 'ruta', 'fecha_actual'));
+
+            $saldos_res[] = null;
+            foreach ($lista as $key => $cuota) {
+                $saldo_pagado = Cuota::saldo_pagado($cuota->credito_id);
+              
+                $saldos_res[$cuota->cuota_id] = $cuota->valor_credito - (count($saldo_pagado)>0?$saldo_pagado[0]->saldo_pagado:0);
+            }
+            
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'tituloPagoCuota', 'ruta', 'fecha_actual', 'saldos_res'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad','fecha_actual'));
     }

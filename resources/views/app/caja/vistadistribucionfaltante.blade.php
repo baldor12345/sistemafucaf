@@ -63,8 +63,11 @@ use App\Persona;
 
     $factores_mes=array();
     $f=0;
-    $factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
+	$factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
+	// echo('factor: '.$factor.'-  UtlD: '.$utilidad_dist);
+	// echo('- SUM_T_ACC: '.$sumatotal_acc_mes);
         for ($i=12; $i >0 ; $i--) { 
+			// echo('<td align="center">'.round($i * $factor,4)."</td>");
             $factores_mes[$f] = $i * $factor;
             $f++;
         }
@@ -82,52 +85,65 @@ use App\Persona;
 			<tbody>
 				<?php
 				$socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
-                $is=0;
+				$is=0;
+			
+				//*************************************************************************** */
 				for($i=0; $i< count($socios); $i++){
 					
-					$listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
+					$listaAcciones = DistribucionUtilidades::list_acciones_por_persona_mes($socios[$i]->id, $anio)->get();
 					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
-					
+					$is=0;
 					$utilidades = array();
-					if(count($listaAcciones)>0){
+					 if((count($listaAcciones) + count($num_accionesenero))>0){
+						// echo("<tr><td rowspan='2'  align='center'>".($i+1)."</td><th rowspan='2' colspan='2' align='left'>".$socios[$i]->nombres." ".$socios[$i]->apellidos."</th>");
 						echo('<tr><td>'.($is+1).'</td><td style="text-align: left;">'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>');
+						
 						$l=0;
 						$sumtotalAcciones =0;
 						for($j=1; $j<=12; $j++){
 							$numaccciones = 0;
 							if($j == 1){
-								$numaccciones = count($num_accionesenero)>0?$num_accionesenero[0]->cantidad_total:0;
+								$numaccciones = count($num_accionesenero) >0?$num_accionesenero[0]->cantidad_total:0;
 							}
 								
-							if(((($l)<count($listaAcciones))?$listaAcciones[$l]->mes:"") == $j){
-								$numaccciones += $listaAcciones[$l]->cantidad_mes;
+							if(((($l)< (count($listaAcciones)))?$listaAcciones[$l]->mes:"") == $j){
+								$numaccciones += (count($listaAcciones)>0)?$listaAcciones[$l]->cantidad_mes:0;
 								
+							}
+							if($numaccciones>0){
 								$utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
 								$sumtotalAcciones += $numaccciones;
 								$l++;
+								// echo("<td align='center'>".($numaccciones>0?$numaccciones:"-")."</td>");
 							}else{
+								// echo("<td align='center'>-</td>");
 								$utilidades[$j-1] = 0;
 							}
+							
 						}
+
+						// echo("<td align='center'>0</td><td>".round($sumtotalAcciones,1)."</td><td>-</td><td></td><td></td></tr><tr>");
 							$sumtotal_util = 0;
 						for($j=1; $j<=12; $j++){
+							// echo("<td align='center'>".round($utilidades[$j-1],1)."</td>");
 							$sumtotal_util += $utilidades[$j-1];
-                        }
-                        $total_utilidades_faltante += round(($distribucion->porcentaje_faltante/100)*$sumtotal_util,1);
-                        echo('<td>'.round(($distribucion->porcentaje_faltante/100)*$sumtotal_util,1).'</td>');
-                       ?>
-                       <td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirarf','vr'=>'1','num'=>''.$is ,'id' => 'btnf'.$is, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round(($distribucion->porcentaje_faltante/100)*$sumtotal_util,1))) !!}</td>
+						}
+						$total_utilidades_faltante += round(($distribucion->porcentaje_faltante/100)*$sumtotal_util,1);
+                         echo('<td>'.round($sumtotal_util - ($distribucion->porcentaje_distribuido/100)*$sumtotal_util,1).'</td>');
+                  
+						?>
+						 <td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirarf','vr'=>'1','num'=>''.$is ,'id' => 'btnf'.$is, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round(($distribucion->porcentaje_faltante/100)*$sumtotal_util,1))) !!}</td>
                        <td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrarf','vr'=>'0', 'num'=>''.$is , 'id' => 'btnfa'.$is , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.round(($distribucion->porcentaje_faltante/100)*$sumtotal_util,1))) !!}</td>
-                       <?php
-                       
-                        echo('</tr>');
-                        $is++;
-                    }
-                    
+                      
+						<?php
+						echo("</tr>");
+						$is++;
+					 }
 				}
+
                 ?>
                 <tr>
-                    <td>{{ $is+1 }}</td><td style="text-align: left;">{{  $fsocial->nombres.' '.$fsocial->apellidos }}</td><td>{{ round(($distribucion->porcentaje_faltante/100)*$utilidad_neta*0.1, 1) }}</td>
+                    <td>{{ $is+1 }}</td><td style="text-align: left;">{{  $fsocial->nombres.' '.$fsocial->apellidos }}</td><td>{{ round($utilidad_neta*0.1 - ($distribucion->porcentaje_distribuido/100)*$utilidad_neta*0.1, 1) }}</td>
                     <td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirarf','vr'=>'1','num'=>''.($is) ,'id' => 'btnf'.($is), 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$fsocial->id , 'utilidad'=> ''.round(($distribucion->porcentaje_faltante/100)*$utilidad_neta*0.1, 1))) !!}</td>
                        <td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrarf','vr'=>'0', 'num'=>''.($is) , 'id' => 'btnfa'.($is), 'onclick' => 'btncli(this)',  'persona_id' => ''.$fsocial->id , 'utilidad'=> ''.round(($distribucion->porcentaje_faltante/100)*$utilidad_neta*0.1, 1))) !!}</td>
                 </tr>

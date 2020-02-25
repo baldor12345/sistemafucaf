@@ -34,12 +34,12 @@ class DistribucionUtilidades extends Model
     public function scopelistar($query, $titulo)
     {
         return $query->where(function($subquery) use($titulo)
-                    {
-                        if (!is_null($titulo)) {
-                            $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
-                        }
-                    })
-                    ->orderBy('fechai', 'DSC');
+            {
+                if (!is_null($titulo)) {
+                    $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
+                }
+            })
+            ->orderBy('fechai', 'DSC');
     }
 
     public function persona()
@@ -48,15 +48,13 @@ class DistribucionUtilidades extends Model
     }
     //esto es una prueba
 
-
-
     /**CALCULO DE LOS INGRESOS */
 
     //lista de ingresos por persona del mes actual
     public static function sumUBDacumulado($anio)
     {
         $fechai = date($anio.'-01-01');
-        $fechaf = date(($anio+1).'-01-31');
+        $fechaf = date(($anio+1).'-01-01');
 
         $resultsI1 = DB::table('transaccion')
                     ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
@@ -66,7 +64,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.comision_voucher) as comision_voucher")
                     )
                     //S>where('transaccion.fecha','>=',$fechai)
-                    ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.fecha','<',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','I')
                     ->groupBy('concepto.tipo')->get();
@@ -81,7 +79,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.monto) as mas_otros")
                     )
                     //->where('transaccion.fecha','>=',$fechai)
-                    ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.fecha','<',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','I')
                     ->where('concepto.titulo','!=','Compra de acciones')
@@ -101,7 +99,7 @@ class DistribucionUtilidades extends Model
     public static function gastosDUactual($anio)
     {
         $fechai = date($anio.'-01-01');
-        $fechaf = date(($anio+1).'-01-31');
+        $fechaf = date(($anio+1).'-01-01');
         $results0 = DB::table('transaccion')
         ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
         ->select(
@@ -109,7 +107,7 @@ class DistribucionUtilidades extends Model
        
         )
         //->where('transaccion.fecha','>=',$fechai)
-        ->where('transaccion.fecha','<=',$fechaf)
+        ->where('transaccion.fecha','<',$fechaf)
         ->where('transaccion.deleted_at','=',null)
         ->where('concepto.tipo','=','E')
         ->groupBy('concepto.tipo')->get();
@@ -123,7 +121,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.monto) as otros_egresos")
                     )
                     //->where('transaccion.fecha','>=',$fechai)
-                    ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.fecha','<',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','E')
                     ->where('transaccion.tipo_egreso','=', 0)
@@ -138,7 +136,7 @@ class DistribucionUtilidades extends Model
                         DB::raw("SUM(transaccion.monto) as gastos_adm ")
                     )
                    // ->where('transaccion.fecha','>=',$fechai)
-                    ->where('transaccion.fecha','<=',$fechaf)
+                    ->where('transaccion.fecha','<',$fechaf)
                     ->where('transaccion.deleted_at','=',null)
                     ->where('concepto.tipo','=','E')
                     ->where('concepto.titulo','!=','Retiro de ahorros')
@@ -161,49 +159,83 @@ class DistribucionUtilidades extends Model
         GROUP BY extract( month from fecha) 
         ORDER  BY  extract( month from fecha) ASC;
      */
+
+
     //lista todal de acciones por mes 
-    public static function list_total_acciones_mes($anio)
-    {
-        $results = DB::table('historial_accion')
+    public static function list_total_acciones_mes($anio){
+
+        $results = DB::table('acciones')
                     ->select(
-                        DB::raw("SUM(cantidad) as cantidad_mes"),
-                        DB::raw('extract( month from fecha) as mes')
+                        DB::raw("COUNT(*) as cantidad_mes"),
+                        DB::raw('extract( month from fechai) as mes')
                     )
                     ->where('deleted_at','=', null)
-                    ->where(DB::raw('extract( year from fecha)'),'=',$anio)
-                    ->groupBy(DB::raw('extract( month from fecha)'))
-                    ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
+                    ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+                    ->where('estado','=','C')
+                    ->where('tipo','=','A')
+                    ->groupBy(DB::raw('extract( month from fechai)'))
+                    ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
         return $results;
+
     }
 
+    // public static function list_total_acciones_mes($anio)
+    // {
+    //     $results = DB::table('historial_accion')
+    //                 ->select(
+    //                     DB::raw("SUM(cantidad) as cantidad_mes"),
+    //                     DB::raw('extract( month from fecha) as mes')
+    //                 )
+    //                 ->where('deleted_at','=', null)
+    //                 ->where(DB::raw('extract( year from fecha)'),'=',$anio)
+    //                 ->groupBy(DB::raw('extract( month from fecha)'))
+    //                 ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
+    //     return $results;
+    // }
+
     public static function num_acciones_anio_anterior($anio){
-        $results = DB::table('historial_accion')
+        $results = DB::table('acciones')
         ->select(
-            DB::raw("SUM(cantidad) as cantidad_total")
+            DB::raw("COUNT(*) as cantidad_total")
         )
         ->where('deleted_at','=', null)
-        ->where(DB::raw('extract( year from fecha)'),'<',$anio);
+        ->where('estado','=','C')
+        ->where('tipo','=','A')
+        ->where(DB::raw('extract( year from fechai)'),'<',$anio);
        
     return $results;
     }
+    // public static function num_acciones_anio_anterior($anio){
+    //     $results = DB::table('historial_accion')
+    //     ->select(
+    //         DB::raw("SUM(cantidad) as cantidad_total")
+    //     )
+    //     ->where('deleted_at','=', null)
+    //     ->where(DB::raw('extract( year from fecha)'),'<',$anio);
+       
+    // return $results;
+    // }
 
     //lista total de acciones por persona por mes 
     public static function list_por_persona($persona_id, $anio)
     {
        
-        $results = DB::table('historial_accion')
+        $results = DB::table('acciones')
                     ->select(
-                        DB::raw("SUM(cantidad) as cantidad_mes"),
-                        DB::raw("extract( month from fecha) as mes")
+                        DB::raw("COUNT(*) as cantidad_mes"),
+                        DB::raw("extract( month from fechai) as mes")
                     )
                     ->where('persona_id','=',$persona_id)
                     ->where('deleted_at','=',null)
-                    ->where(DB::raw('extract( year from fecha)'),'=',$anio)
-                    ->groupBy(DB::raw('extract( month from fecha)'))
-                    ->orderBy(DB::raw('extract( month from fecha)'), 'ASC');
+                    ->where('tipo','=','A')
+                    ->where('estado','=','C')
+                    ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+                    ->groupBy(DB::raw('extract( month from fechai)'))
+                    ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
 
         return $results;
     }
+
     public static function list_acciones_por_persona_mes($persona_id, $anio)
     {
        
@@ -214,6 +246,7 @@ class DistribucionUtilidades extends Model
             )
             ->where('persona_id','=',$persona_id)
             ->where('tipo','=','A')
+            ->where('estado','=','C')
             ->where('deleted_at','=',null)
             ->where(DB::raw('extract( year from fechai)'),'=',$anio)
             ->groupBy(DB::raw('extract( month from fechai)'))
@@ -223,17 +256,32 @@ class DistribucionUtilidades extends Model
     }
 
     public static function list_enero($persona_id, $anio_anterior){
-        $results = DB::table('historial_accion')
+        $results = DB::table('acciones')
         ->select(
-            DB::raw("SUM(cantidad) as cantidad_total")
+            DB::raw("COUNT(*) as cantidad_total")
         )
         ->where('persona_id','=',$persona_id)
         ->where('deleted_at','=',null)
-        ->where(DB::raw('extract( year from fecha)'),'<=',$anio_anterior)
+        ->where('tipo','=','A')
+        ->where('estado','=','C')
+        ->where(DB::raw('extract( year from fechai)'),'<=',$anio_anterior)
         ->groupBy(DB::raw('persona_id'));
 
         return $results;
     }
+
+    // public static function list_enero($persona_id, $anio_anterior){
+    //     $results = DB::table('historial_accion')
+    //     ->select(
+    //         DB::raw("SUM(cantidad) as cantidad_total")
+    //     )
+    //     ->where('persona_id','=',$persona_id)
+    //     ->where('deleted_at','=',null)
+    //     ->where(DB::raw('extract( year from fecha)'),'<=',$anio_anterior)
+    //     ->groupBy(DB::raw('persona_id'));
+
+    //     return $results;
+    // }
 
     public static function boot()
     {

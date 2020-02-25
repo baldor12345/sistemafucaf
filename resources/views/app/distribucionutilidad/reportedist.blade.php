@@ -327,7 +327,7 @@
                     }
                     
                     ?>
-                <th>-</th><th>{{ round($sumatotal_utilidades, 1) }}</th>
+                <th>-</th><th>{{ round($suma_total_utilidades, 1) }}</th>
 
             </tr>
             <tr>
