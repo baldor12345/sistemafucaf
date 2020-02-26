@@ -21,13 +21,6 @@
                 if($cuota->fecha_iniciomora != null){
                     $fecha_fin =null;
                     $fecha_fin= date("Y-m-d", strtotime($fechaFinal));
-                    // if($cuota->fecha_pago == null){
-                    //     $fecha_fin= date("Y-m-d", strtotime($fecha_actual));
-                    // }else{
-                    //     $fecha_fin= date("Y-m-d", strtotime($cuota->fecha_pago));
-                    // }
-                    //******************************************
-
                     $anio_menor= date("Y", strtotime($cuota->fecha_iniciomora));
                     $mes_menor= date("m", strtotime($cuota->fecha_iniciomora));
 

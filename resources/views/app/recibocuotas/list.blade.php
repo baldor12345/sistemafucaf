@@ -4,7 +4,6 @@
 @else
 {!! $paginacion or '' !!}
 <table id="example1" class="table table-bordered table-striped table-condensed table-hover">
-
 	<thead>
 		<tr>
 			@foreach($cabecera as $key => $value)
@@ -58,7 +57,8 @@
 			
 			if($num_meses>0){
 				// $interes_ganado = $num_meses*($value->tasa_interes_mora/100) * ($value->parte_capital + $value->saldo_restante);
-				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) * intval($saldos_res["".$value->cuota_id]);
+				// $interes_ganado = $num_meses*($value->tasa_interes_mora/100) *($value->parte_capital + $saldos_res["".$value->cuota_id]);
+				$interes_ganado = $num_meses*($value->tasa_interes_mora/100) *($value->parte_capital + $value->saldo_restante);
 			}
 		}
 			 

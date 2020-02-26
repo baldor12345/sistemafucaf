@@ -33,7 +33,8 @@ class DistribucionUtilidades extends Model
     */
     public function scopelistar($query, $titulo)
     {
-        return $query->where(function($subquery) use($titulo)
+        return $query->where(
+            function($subquery) use($titulo)
             {
                 if (!is_null($titulo)) {
                     $subquery->where('titulo', 'LIKE', '%'.$titulo.'%');
@@ -221,24 +222,23 @@ class DistribucionUtilidades extends Model
     {
        
         $results = DB::table('acciones')
-                    ->select(
-                        DB::raw("COUNT(*) as cantidad_mes"),
-                        DB::raw("extract( month from fechai) as mes")
-                    )
-                    ->where('persona_id','=',$persona_id)
-                    ->where('deleted_at','=',null)
-                    ->where('tipo','=','A')
-                    ->where('estado','=','C')
-                    ->where(DB::raw('extract( year from fechai)'),'=',$anio)
-                    ->groupBy(DB::raw('extract( month from fechai)'))
-                    ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
+            ->select(
+                DB::raw("COUNT(*) as cantidad_mes"),
+                DB::raw("extract( month from fechai) as mes")
+            )
+            ->where('persona_id','=',$persona_id)
+            ->where('deleted_at','=',null)
+            ->where('tipo','=','A')
+            ->where('estado','=','C')
+            ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+            ->groupBy(DB::raw('extract( month from fechai)'))
+            ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
 
         return $results;
     }
 
     public static function list_acciones_por_persona_mes($persona_id, $anio)
     {
-       
         $results = DB::table('acciones')
             ->select(
                 DB::raw("COUNT(*) as cantidad_mes"),
@@ -254,7 +254,7 @@ class DistribucionUtilidades extends Model
 
         return $results;
     }
-
+/*
     public static function list_enero($persona_id, $anio_anterior){
         $results = DB::table('acciones')
         ->select(
@@ -268,7 +268,38 @@ class DistribucionUtilidades extends Model
         ->groupBy(DB::raw('persona_id'));
 
         return $results;
+    }*/
+
+    public static function list_enero($persona_id, $anio_anterior){
+
+        $res = Acciones::where('persona_id',$persona_id )->where('deleted_at',null)->get();
+
+        $results = DB::table('acciones')
+        ->select(
+            DB::raw("COUNT(*) as cantidad_total")
+        )
+        ->where('persona_id','=',$persona_id)
+        ->where('deleted_at','=',null)
+        ->where('tipo','=','A')
+        ->where('estado','=','C')
+        ->where(DB::raw('extract( year from fechai)'),'<=',$anio_anterior)
+        // ->orwhere(
+        //     function($subquery) use($anio_anterior, $persona_id){
+        //         if(!is_null($anio_anterior)){
+        //             $subquery->where('persona_id','=',$persona_id)
+        //             ->where('deleted_at','=',null)
+        //             ->where('tipo','=','A')
+        //             ->where('estado','=','V')
+        //             ->where(DB::raw('extract( year from fechaf)'),'<=',$anio_anterior)
+        //         }
+        //     }
+        // )
+        ->groupBy(DB::raw('persona_id'));
+
+        return $results;
     }
+
+
 
     // public static function list_enero($persona_id, $anio_anterior){
     //     $results = DB::table('historial_accion')

@@ -963,11 +963,10 @@ public function calcular_mora($cuota, $fechaFinal){
     if($cuota->fecha_iniciomora != null){
         $num_meses = $this->numero_meses($cuota->fecha_iniciomora,$fechaFinal);
         if($num_meses > 0){
-            $interes_mora = $num_meses*($cuota->tasa_interes_mora/100) * ($cuota->saldo_restante);
+            $interes_mora = $num_meses*($cuota->tasa_interes_mora/100) * ($cuota->saldo_restante + $cuota->parte_capital);
         }
     }
     return $interes_mora;
-
 }
 
 /*************--PAGAR TODO EL CREDITO--************ */
