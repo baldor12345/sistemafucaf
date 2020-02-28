@@ -89,6 +89,7 @@ class Acciones extends Model
                     ->select( 
                         'acciones.estado as accion_estado',
                         'acciones.fechai as accion_fecha',
+                        'acciones.fechaf as accion_fechaf',
                         'acciones.descripcion as accion_descripcion',
                         'acciones.persona_id as accion_persona_id',
                         'acciones.codigo as accion_codigo',

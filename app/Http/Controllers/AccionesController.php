@@ -384,6 +384,7 @@ class AccionesController extends Controller
         $cabecera[]       = array('valor' => 'Codigo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Fecha', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Estado', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'fv', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Voucher', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Operaciones', 'numero' => '1');
@@ -440,7 +441,6 @@ class AccionesController extends Controller
 
     public function reporteporperiodoPDF($persona_id, $anio, $monthi, $monthf, Request $request)
     {    
-
         
         $accionesC        = Acciones::listAccionPorMesCompradas($persona_id, $anio, $monthi, $monthf);
         $accionesV        = Acciones::listAccionPorMesVendidas($persona_id, $anio, $monthi, $monthf);
@@ -495,6 +495,53 @@ class AccionesController extends Controller
         //     $value->fecha_transf = $value->fechai;
         //     $value->save();
         // }
+
+        // $lista_acciones_enero = Acciones::where('estado','C') ->where(DB::raw('extract( year from fechai)'),'=',2019) ->where(DB::raw('extract( month from fechai)'),'=',1)->get();
+        // $error = DB::transaction(function() use($lista_acciones_enero){
+
+        //     foreach ($lista_acciones_enero as $key => $ac_c) {
+        //         $acc = Acciones::where('codigo', $ac_c->codigo)->where('deleted_at',null)->get();
+        //         if(count($acc)>0){
+        //             $acc_v = $acc[0];
+        //             $acompra = Acciones::find($ac_c->id);
+
+        //             $acompra->fechai = $acc_v->fechai;
+        //             $acompra->save();
+        //             echo("codigo: ".$ac_c->codigo);
+        //         }
+        //     }
+        // });
+
+        // echo($error);
+
+
+        /* consultas posgresql
+        
+        SELECT persona_id, fechai, fecha_transf, fechaf, descripcion FROM acciones where  tipo = 'I' and deleted_at is null
+
+        select * from historial_accion where estado='V'
+
+        SELECT *  FROM historial_accion where  deleted_at is null;
+
+        SELECT SUM(CANTIDAD) as ventas FROM historial_accion where estado = 'V' and deleted_at is null;
+
+        select * from acciones where estado = 'C' and extract( year from fechai) = 2019 and extract( month from fechai) = 1
+        group by extract( month from fechai)
+
+        select * from acciones where codigo = '0000495'
+
+        select * from acciones where updated_at > date('2020-02-27')
+
+        #CONSULTA PRA LAS INACTIVAS
+        select * from acciones where TIPO = 'I' AND DELETED_AT IS NULL ORDER BY FECHAI ASC
+
+        SELECT COUNT(*), acciones.persona_id, extract( year from acciones.fechai), extract( month from acciones.fechai) FROM ACCIONES WHERE PERSONA_ID = 25 AND deleted_at is null group by extract( year from acciones.fechai), extract( month from acciones.fechai), acciones.persona_id order by extract( year from acciones.fechai) 
+
+        SELECT COUNT(*),  extract( month from acciones.fechai) FROM ACCIONES WHERE extract( year from acciones.fechai) = 2018 AND deleted_at is null group by extract( month from acciones.fechai)  order by extract( MONTH from acciones.fechai) 
+
+*/
+
+        
     }
 
 
@@ -614,6 +661,7 @@ class AccionesController extends Controller
                         $acciones->estado        = 'C';
                         $acciones->tipo        = 'A';
                         $acciones->fechai        = $request->input('fechai').date(" H:i");
+                        $acciones->fecha_transf  = $request->input('fechai').date(" H:i");
                         if(strlen($codigo) == 1){
                             $acciones->codigo = "000000".($codigo);
                         }
@@ -765,16 +813,17 @@ class AccionesController extends Controller
             return $existe;
         }
 
-        $caja_id = Caja::where("estado","=","A")->value('id');
-        $caja_id = ($caja_id != "")?$caja_id:0;
+        // $caja_id = Caja::where("estado","=","A")->value('id');
+        $caja = Caja::where("estado","=","A")->get();
+        $caja_id = (count($caja_id) != 0)?$caja[0]->id:0;
 
         $res = null;
-        if(count($caja_id) != 0){//validamos si existe caja aperturada
+        if($caja_id != 0){//validamos si existe caja aperturada
 
             $reglas = array(
-                'selectnom'        => 'required',
-                'cantidad_accion'        => 'required|max:100',
-                'configuraciones_id'        => 'required|max:100'
+                'selectnom'   => 'required',
+                'cantidad_accion' => 'required|max:100',
+                'configuraciones_id'  => 'required|max:100'
             );
 
             $validacion = Validator::make($request->all(),$reglas);
@@ -794,8 +843,8 @@ class AccionesController extends Controller
             //funcion para registrar las acciones del comprador
             $vendidas = Acciones::where('estado','C')->where('persona_id',$request->input('idpropietario'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'ASC')->where('deleted_at',null)->get();
 
-            $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-            $error = DB::transaction(function() use($request, $vendidas, $descripcion_venta, $fechaf, $concepto_id, $idCaja ){
+            // $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+            $error = DB::transaction(function() use($request, $vendidas, $descripcion_venta, $fechaf, $concepto_id, $caja_id ){
                 $cantidad_accion= $request->input('cantidad_accion');
 
                 foreach($vendidas as $value){
@@ -806,17 +855,18 @@ class AccionesController extends Controller
                     $acciones->concepto_id        = $concepto_id;
                     $acciones->save();
 
-                    $acciones               = new Acciones();    
-                    $acciones->estado        = 'C';
-                    $acciones->tipo        = 'A';
-                    $acciones->fechai        = $value->fechai;
-                    $acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $value->persona_id)->value('nombres');
-                    $acciones->persona_id        = $request->input('selectnom');
-                    $acciones->codigo               =$value->codigo;
-                    $acciones->configuraciones_id        = $request->input('configuraciones_id');
-                    $acciones->caja_id =$idCaja;
-                    $acciones->concepto_id        =  1;
-                    $acciones->save();
+                    $new_acciones               = new Acciones();    
+                    $new_acciones->estado        = 'C';
+                    $new_acciones->tipo        = 'A';
+                    $new_acciones->fechai        = $value->fechai;
+                    $new_acciones->fecha_transf        = $caja[0]->fecha_horaapert;
+                    $new_acciones->descripcion        = "comprado del socio: ".DB::table('persona')->where('id', $value->persona_id)->value('nombres');
+                    $new_acciones->persona_id        = $request->input('selectnom');
+                    $new_acciones->codigo               =$value->codigo;
+                    $new_acciones->configuraciones_id        = $request->input('configuraciones_id');
+                    $new_acciones->caja_id =$caja_id;
+                    $new_acciones->concepto_id        =  1;
+                    $new_acciones->save();
                 }
 
                 if($cantidad_accion !== ''){
@@ -827,7 +877,7 @@ class AccionesController extends Controller
                     $historial_accion->descripcion        = $request->input('descripcion');
                     $historial_accion->persona_id        = $request->input('idpropietario');
                     $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
-                    $historial_accion->caja_id = $idCaja;
+                    $historial_accion->caja_id = $caja_id;
                     $historial_accion->concepto_id        = $request->input('concepto_id');
                     $historial_accion->save();
                     
@@ -841,14 +891,14 @@ class AccionesController extends Controller
                     $historial_accion->descripcion        = $request->input('descripcion');
                     $historial_accion->persona_id        = $request->input('selectnom');
                     $historial_accion->configuraciones_id        = $request->input('configuraciones_id');
-                    $historial_accion->caja_id = $idCaja;
+                    $historial_accion->caja_id = $caja_id;
                     $historial_accion->concepto_id        = $request->input('concepto_id');
                     $historial_accion->save();
                     
                 }
 
                 //registrar compra de de la persona que compra 
-                $idCaja = DB::table('caja')->where('estado', "A")->value('id');
+                // $caja_id = DB::table('caja')->where('estado', "A")->value('id');
                 $cant_tranferencia= $request->input('cantidad_accion');
                 //datos de la persona
                 $persona_comprador = DB::table('persona')->where('id', $request->input('selectnom'))->value('nombres');
@@ -862,7 +912,7 @@ class AccionesController extends Controller
                 $transaccion->descripcion =  "transferencia de:  ".$request->input('cantidad_accion')." acciones del Socio ".$persona_vendedor." al Socio  ".$persona_comprador.".";
                 $transaccion->usuario_id =Caja::getIdPersona();
                 $transaccion->inicial_tabla ="AC";
-                $transaccion->caja_id =$idCaja;
+                $transaccion->caja_id =$caja_id;
                 $transaccion->save();
 
                 $contribucion = $request->input('monto');
@@ -875,7 +925,7 @@ class AccionesController extends Controller
                     $transaccion->descripcion = $persona_comprador;
                     $transaccion->usuario_id =Caja::getIdPersona();
                     $transaccion->inicial_tabla ="AC";
-                    $transaccion->caja_id =$idCaja;
+                    $transaccion->caja_id =$caja_id;
                     $transaccion->save();
                 }
                 

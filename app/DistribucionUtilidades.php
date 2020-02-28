@@ -163,6 +163,7 @@ class DistribucionUtilidades extends Model
 
 
     //lista todal de acciones por mes 
+    /*
     public static function list_total_acciones_mes($anio){
 
         $results = DB::table('acciones')
@@ -174,6 +175,55 @@ class DistribucionUtilidades extends Model
                     ->where(DB::raw('extract( year from fechai)'),'=',$anio)
                     ->where('estado','=','C')
                     ->where('tipo','=','A')
+                    ->groupBy(DB::raw('extract( month from fechai)'))
+                    ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
+        return $results;
+
+    }
+    */
+    //lista todal de acciones por mes 
+    public static function list_total_acciones_mes($anio){
+
+        $results = DB::table('acciones')
+                    ->select(
+                        DB::raw("COUNT(*) as cantidad_mes"),
+                        DB::raw('extract( month from fechai) as mes')
+                    )
+                    ->where(
+                        function($subquery) use($anio)
+                        {
+                            if (!is_null($anio)) {
+                                $subquery->where('deleted_at','=', null)
+                                ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+                                ->where('estado','=','C')
+                                ->where('tipo','=','A');
+                            }
+                        }
+                    )
+                    ->orwhere(
+                        function($subquery) use($anio)
+                        {
+                            if (!is_null($anio)) {
+                                $subquery->where('deleted_at','=',null)
+                                ->where('tipo','=','A')
+                                ->where('estado','=','V')
+                                ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+                                ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                            }
+                        }
+                    )
+                    ->orwhere(
+                        function($subquery) use($anio, $persona_id){
+                            if(!is_null($anio)){
+                                $subquery->where('persona_id','=',$persona_id)
+                                ->where('deleted_at','=',null)
+                                ->where('tipo','=','I')
+                                ->where('estado','=','C')
+                                ->where(DB::raw('extract( year from fechai)'),'=',$anio)
+                                ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                            }
+                        }
+                    )
                     ->groupBy(DB::raw('extract( month from fechai)'))
                     ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
         return $results;
@@ -199,10 +249,41 @@ class DistribucionUtilidades extends Model
         ->select(
             DB::raw("COUNT(*) as cantidad_total")
         )
-        ->where('deleted_at','=', null)
-        ->where('estado','=','C')
-        ->where('tipo','=','A')
-        ->where(DB::raw('extract( year from fechai)'),'<',$anio);
+        // ->where('deleted_at','=', null)
+        // ->where('estado','=','C')
+        // ->where('tipo','=','A')
+        // ->where(DB::raw('extract( year from fecha_transf)'),'<',$anio)
+        // ->where(DB::raw('extract( year from fechaf)'),'>',$anio)
+        ->where(
+            function($subquery) use ($anio){
+                $subquery->where('deleted_at','=', null)
+                ->where('estado','=','C')
+                ->where('tipo','=','A')
+                ->where(DB::raw('extract( year from fechai)'),'<',$anio);
+                // ->where(DB::raw('extract( year from fechaf)'),'>',($anio));
+            }
+        )
+        ->orwhere(
+            function($subquery) use ($anio){
+                $subquery->where('deleted_at','=', null)
+                ->where('estado','=','V')
+                ->where('tipo','=','A')
+                ->where(DB::raw('extract( year from fechai)'),'<',$anio)
+                ->where(DB::raw('extract( year from fechaf)'),'>',($anio));
+            }
+        )
+        ->orwhere(
+            function($subquery) use($anio, $persona_id){
+                if(!is_null($anio)){
+                    $subquery->where('persona_id','=',$persona_id)
+                    ->where('deleted_at','=',null)
+                    ->where('tipo','=','I')
+                    ->where('estado','=','C')
+                    ->where(DB::raw('extract( year from fecha_transf)'),'<',$anio)
+                    ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                }
+            }
+        );
        
     return $results;
     }
@@ -218,6 +299,7 @@ class DistribucionUtilidades extends Model
     // }
 
     //lista total de acciones por persona por mes 
+    /*
     public static function list_por_persona($persona_id, $anio)
     {
        
@@ -233,6 +315,51 @@ class DistribucionUtilidades extends Model
             ->where(DB::raw('extract( year from fechai)'),'=',$anio)
             ->groupBy(DB::raw('extract( month from fechai)'))
             ->orderBy(DB::raw('extract( month from fechai)'), 'ASC');
+
+        return $results;
+    }
+    */
+    //lista total de acciones por persona por mes 
+    public static function list_por_persona($persona_id, $anio)
+    {
+       
+        $results = DB::table('acciones')
+            ->select(
+                DB::raw("COUNT(*) as cantidad_mes"),
+                DB::raw("extract( month from fecha_transf) as mes")
+            )
+            ->where('persona_id','=',$persona_id)
+            ->where('deleted_at','=',null)
+            ->where('tipo','=','A')
+            ->where('estado','=','C')
+            ->where(DB::raw('extract( year from fecha_transf)'),'=',$anio)
+            // ->where(DB::raw('extract( year from fechaf)'),'>',$anio)
+            ->orwhere(
+                function($subquery) use($anio, $persona_id)
+                {
+                    if (!is_null($persona_id)) {
+                        $subquery->where('persona_id','=',$persona_id)
+                        ->where('deleted_at','=',null)
+                        ->where('tipo','=','A')
+                        ->where('estado','=','V')
+                        ->where(DB::raw('extract( year from fecha_transf)'),'=',$anio)
+                        ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                    }
+                })
+                ->orwhere(
+                    function($subquery) use($anio, $persona_id){
+                        if(!is_null($anio)){
+                            $subquery->where('persona_id','=',$persona_id)
+                            ->where('deleted_at','=',null)
+                            ->where('tipo','=','I')
+                            // ->where('estado','=','V')
+                            ->where(DB::raw('extract( year from fecha_transf)'),'=',$anio)
+                            ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                        }
+                    }
+                )
+            ->groupBy(DB::raw('extract( month from fecha_transf)'))
+            ->orderBy(DB::raw('extract( month from fecha_transf)'), 'ASC');
 
         return $results;
     }
@@ -254,7 +381,7 @@ class DistribucionUtilidades extends Model
 
         return $results;
     }
-/*
+    /*
     public static function list_enero($persona_id, $anio_anterior){
         $results = DB::table('acciones')
         ->select(
@@ -268,9 +395,10 @@ class DistribucionUtilidades extends Model
         ->groupBy(DB::raw('persona_id'));
 
         return $results;
-    }*/
-
-    public static function list_enero($persona_id, $anio_anterior){
+    }
+    */
+    
+    public static function list_enero($persona_id, $anio){
 
         $res = Acciones::where('persona_id',$persona_id )->where('deleted_at',null)->get();
 
@@ -282,22 +410,37 @@ class DistribucionUtilidades extends Model
         ->where('deleted_at','=',null)
         ->where('tipo','=','A')
         ->where('estado','=','C')
-        ->where(DB::raw('extract( year from fechai)'),'<=',$anio_anterior)
-        // ->orwhere(
-        //     function($subquery) use($anio_anterior, $persona_id){
-        //         if(!is_null($anio_anterior)){
-        //             $subquery->where('persona_id','=',$persona_id)
-        //             ->where('deleted_at','=',null)
-        //             ->where('tipo','=','A')
-        //             ->where('estado','=','V')
-        //             ->where(DB::raw('extract( year from fechaf)'),'<=',$anio_anterior)
-        //         }
-        //     }
-        // )
+        ->where(DB::raw('extract( year from fecha_transf)'),'<',$anio)
+        // ->where(DB::raw('extract( year from fechaf)'),'>',$anio)
+        ->orwhere(
+            function($subquery) use($anio, $persona_id){
+                if(!is_null($anio)){
+                    $subquery->where('persona_id','=',$persona_id)
+                    ->where('deleted_at','=',null)
+                    ->where('tipo','=','A')
+                    ->where('estado','=','V')
+                    ->where(DB::raw('extract( year from fecha_transf)'),'<',$anio)
+                    ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                }
+            }
+        )
+        ->orwhere(
+            function($subquery) use($anio, $persona_id){
+                if(!is_null($anio)){
+                    $subquery->where('persona_id','=',$persona_id)
+                    ->where('deleted_at','=',null)
+                    ->where('tipo','=','I')
+                    // ->where('estado','=','V')
+                    ->where(DB::raw('extract( year from fecha_transf)'),'<',$anio)
+                    ->where(DB::raw('extract( year from fechaf)'),'>',$anio);
+                }
+            }
+        )
         ->groupBy(DB::raw('persona_id'));
 
         return $results;
     }
+    
 
 
 

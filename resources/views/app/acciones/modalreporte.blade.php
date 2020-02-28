@@ -46,7 +46,7 @@ function reporteporperiodo(entidad, rutarecibo) {
             
             if(respuesta[0] === 'ERROR'){
             }else{
-                
+                // console.log(respuesta);
                 if (respuesta[0] === 'OK') {
                     modalrecibopdf(rutarecibo+"/"+respuesta[1]+"/"+respuesta[2]+"/"+respuesta[3]+"/"+respuesta[4], '100', 'recibo credito');    
                 } else {

@@ -41,6 +41,13 @@ use App\Persona;
 	background-color: #f2f6f7;
 	border: 0.9px solid #b4bdc1;
 	}
+	.textleft{
+		text-align : left !important;
+		padding: 0px 0px 0px 20px;
+	}
+	.num-acciones{
+		background-color: #ceeddd;
+	}
 	
 	
 	
@@ -311,16 +318,24 @@ use App\Persona;
 			</thead>
 			<tbody>
 				<?php
-				$socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
+				$contador = 0;
+				$socios = Persona::where('deleted_at','=',null)
+				->where(
+					function($subquery){
+                        $subquery->where('tipo','=','C')->orwhere('tipo','=','S');
+					}
+				)
+				->orderby('apellidos','ASC')	
+				->get();
 			
 				for($i=0; $i< count($socios); $i++){
 					
 					$listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
-					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
+					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio))->get();
 					
 					$utilidades = array();
 					if((count($listaAcciones) + count($num_accionesenero))>0){
-						echo('<tr><td rowspan="2">'.($i+1).'</td><td rowspan="2" colspan="2">'.$socios[$i]->nombres.' '.$socios[$i]->apellidos.'</td>');
+						echo('<tr><td rowspan="2">'.(++ $contador)."</td><td class='textleft' rowspan='2' colspan='2'><p>".$socios[$i]->apellidos.' '.$socios[$i]->nombres.' -'.$socios[$i]->id."</p></td>");
 						$l=0;
 						$sumtotalAcciones =0;
 						for($j=1; $j<=12; $j++){
@@ -336,9 +351,9 @@ use App\Persona;
 								$utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
 								$sumtotalAcciones += $numaccciones;
 								$l++;
-								echo("<td align='center'>".($numaccciones>0?$numaccciones:"-")."</td>");
+								echo("<td class='num-acciones' align='center'>".($numaccciones>0?$numaccciones:"-")."</td>");
 							}else{
-								echo("<td align='center'>-</td>");
+								echo("<td class='num-acciones' align='center'>-</td>");
 								$utilidades[$j-1] = 0;
 							}
 
@@ -351,7 +366,7 @@ use App\Persona;
 							$sumtotal_util += round($utilidades[$j-1], 2);
 						}
 						$suma_total_utilidades += $sumtotal_util;
-						echo('<td >0</td><td >'.round($sumtotal_util,1).'</td>');
+						echo("<td >0</td><td class='num-acciones' >".round($sumtotal_util,1).'</td>');
 						echo('</tr>');
 					}
 				}

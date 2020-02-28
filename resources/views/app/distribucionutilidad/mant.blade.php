@@ -164,7 +164,7 @@ use App\Persona;
 						}
 					}
 					?>
-					<td>0</td>
+					<td>0 ->mostrr: {{ $numero_acciones_hasta_enero[0]->cantidad_total}}</td>
 					<td>{{ ($total_acc_mensual + $numero_acciones_hasta_enero[0]->cantidad_total) }}</td>
 				</tr>
 				<tr>

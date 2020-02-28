@@ -38,6 +38,7 @@
 			@else
 			<td align="center">---</td>
 			@endif
+			<td align="center">{{ $value->accion_fechaf }}</td>
 			@if($value->accion_estado === 'C')
 			<td align="center"><a target="_blank" href="{{ route('generarvoucheraccionPDF', array('id' => $value->accion_persona_id,'cant' => '1', 'fecha' => $value->accion_fecha ) ) }}" class="btn btn-info waves-effect waves-light btn-xs" ><i class="glyphicon glyphicon-download-alt" ></i> descargar</a></td>
 			@else
