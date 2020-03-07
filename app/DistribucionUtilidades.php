@@ -374,7 +374,7 @@ class DistribucionUtilidades extends Model
             )
             ->where('deleted_at', null)
             ->where(DB::raw('extract(year from fechai)'),'<', $anio)
-            ->where(DB::raw('extract(year from fecha_transf)'),'<', $anio)
+            ->where(DB::raw('extract(year from fecha_transf)'),'<=', $anio)
             ->where(
                 function($subquery) use($anio){
                     $subquery->where('estado','C')

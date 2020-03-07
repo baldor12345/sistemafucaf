@@ -108,7 +108,8 @@ class DistUtilidadesController extends Controller
         if(count($distrValidar) < 1){
             $existe = false;
             $mensaje = "¡Aún no está disponible la distribución de utilidades para el año seleccionado..!";
-        }else if(count($ditr) > 0){
+        }
+        else if(count($ditr) > 0){
             $existe = false;
             $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
         }
@@ -180,9 +181,48 @@ class DistUtilidadesController extends Controller
 
             $existe = 0;
             $anio_actual=$anio;
+
+            /******************************************* */
+            
+        $suma_acciones_porMes = array();
+        $sum_acc_mes_multiplicadas = array();
+        $factores_pormes = array();
+        $factor = 0;
+        $suma_total_acciones = 0;
+        $suma_total_acciones_multiplicadas = 0;
+        for($i=1; $i<=12; $i++){
+            $suma_acciones_porMes[$i]=0;
+            $factores_porMes[$i]=0;
+            $sum_acc_mes_multiplicadas[$i]=0;
+        } 
+
+        $lista_num_acciones_paso6 =  DistribucionUtilidades::lista_num_acciones_paso6($anio)->get();
+        $lista_enero_paso6 =  DistribucionUtilidades::listar_num_acciones_hasta_enero($anio)->get();
+
+        $lista_num_enero_paso6 = array();
+        foreach ($lista_enero_paso6 as $key => $value) {
+            $lista_num_enero_paso6[$value->persona_id] = $value->cantidad;
+            $suma_total_acciones += $value->cantidad;
+            $suma_acciones_porMes[1] += $value->cantidad;
+        }
+
+        foreach ($lista_num_acciones_paso6 as $key => $value) {
+            $suma_acciones_porMes[$value->mes] += $value->cantidad;
+            $suma_total_acciones += $value->cantidad;
+        }
+        for($j=1; $j<=12; $j ++){
+            $sum_acc_mes_multiplicadas[$j] += $suma_acciones_porMes[$j] * (12 - ($j-1));
+            $suma_total_acciones_multiplicadas += $suma_acciones_porMes[$j] * (12 - ($j-1));
+        }
+        $factor = round(($suma_total_acciones_multiplicadas>0)?$utilidad_dist/$suma_total_acciones_multiplicadas: 0, 4);
+        for ($i=12; $i >=1 ; $i--) { 
+            $factores_pormes[12 -($i -1)] = round($i * $factor,4);
+        }
+        print_r("factor: ".$factor);
+
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-            return view($this->folderview.'.mant')->with(compact('existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
+            return view($this->folderview.'.mant')->with(compact('lista_num_enero_paso6','lista_enero_paso6','lista_num_acciones_paso6','sum_acc_mes_multiplicadas','suma_total_utilidades','factores_pormes','factor','suma_total_acciones','suma_total_acciones_multiplicadas','suma_acciones_porMes','existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
         }else{
             $existe = 1;
             return view($this->folderview.'.mant')->with(compact('existe','entidad', 'mensaje'));

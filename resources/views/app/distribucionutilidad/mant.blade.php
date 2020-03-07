@@ -49,6 +49,24 @@ use App\Persona;
 </style>
 
 <div class="form-row">
+<?php
+	$id_temp = 0;
+	$persona = null;
+	$contador=0;
+	$mes = 1;
+	$total_acciones_persona = 0;
+	$total_utilidades_persona = 0.0;
+	$suma_total_utilidades = 0.0;
+	// $sum_totales_mes = array();
+	$paso6 = "";
+	$paso6_utilidades = "";
+	$tbody_paso2 = "";
+	$tbody_paso4 = "";
+	$$tbody_paso4_factores = "";
+	$factores_mes=array();
+	$sum_utilidades_mes=array();
+	$total_distr = 0;
+?>
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
@@ -134,10 +152,10 @@ use App\Persona;
 	<div class="table-responsive card-box">
 		<table width="100%" class="table-hover tablesimple">
 			<thead>
-				<tr><th colspan="15">PASO 2: Se multiplica el N° de Acciones de cada me s por los meses que cada accion ha trabajado. Se obtiene las ACCIONES-MES y su total</th><th>{{ $acciones_mes }}</th></tr>
+				<tr><th colspan="15">PASO 2: Se multiplica el N° de Acciones de cada me s por los meses que cada accion ha trabajado. Se obtiene las ACCIONES-MES y su total</th><th>{{ $suma_total_acciones_multiplicadas }}</th></tr>
 			</thead>
 			<tbody>
-				<tr><td colspan="2"></td><td colspan="12">{{ $anio }}</td><td>{{ $anio_actual }}</td><td></td></tr>
+				<tr><td colspan="2"></td><td colspan="12">{{ $anio }}</td><td>{{ $anio_actual+1 }}</td><td></td></tr>
 				<tr>
 					<td colspan="2">Meses</td>
 					<td>E</td><td>F</td><td>M</td><td>A</td><td>M</td><td>J</td><td>J</td><td>A</td><td>S</td><td>O</td><td>N</td><td>D</td><td>E</td>
@@ -146,32 +164,18 @@ use App\Persona;
 				<tr>
 					<td colspan="2">Total mensual de Acc.</td>
 					<?php
-					$total_acc_mensual  = 0;
-					$ind = 0;
-					
 					for($i=1; $i<=12; $i++){
-						if((($ind<count($acciones_mensual))?$acciones_mensual[$ind]->mes: "") == "".$i){
-							if($ind == 0){
-								echo('<td align="center">'.($acciones_mensual[$ind]->cantidad_mes + $numero_acciones_hasta_enero[0]->cantidad_total)."</td>");
-							}else{
-								echo('<td align="center">'.$acciones_mensual[$ind]->cantidad_mes."</td>");
-							}
-							
-							$total_acc_mensual += $acciones_mensual[$ind]->cantidad_mes;
-							$ind ++;
-						}else{
-							echo('<td align="center">-</td>');
-						}
+						echo('<td align="center">'.$suma_acciones_porMes[$i]."</td>");
 					}
 					?>
-					<td>0 ->mostrr: {{ $numero_acciones_hasta_enero[0]->cantidad_total}}</td>
-					<td>{{ ($total_acc_mensual + $numero_acciones_hasta_enero[0]->cantidad_total) }}</td>
+					<td>-</td>
+					<td>{{ ($suma_total_acciones) }}</td>
 				</tr>
 				<tr>
 					<td colspan="2">Meses "trabajados"</td>
 					<?php
-					for($mes=12; $mes>=1;$mes--){
-						echo('<td align="center">'.$mes."</td>");
+					for($m=12; $m>=1;$m--){
+						echo('<td align="center">'.$m."</td>");
 					}
 					?>
 					<td>-</td><td>---</td>
@@ -184,24 +188,11 @@ use App\Persona;
 					$sumatotal_acc_mes = 0;
 					
 					for($i=1; $i<=12; $i++){
-						if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
-							if($indice == 0){
-								$sumatotal_acc_mes += ($numero_acciones_hasta_enero[0]->cantidad_total + $acciones_mensual[$indice]->cantidad_mes) * $j;
-								echo('<td align="center">'.round(( $numero_acciones_hasta_enero[0]->cantidad_total + $acciones_mensual[$indice]->cantidad_mes) * $j, 1)."</td>");
-							}else{
-								$sumatotal_acc_mes += $acciones_mensual[$indice]->cantidad_mes * $j;
-								echo('<td align="center">'.round($acciones_mensual[$indice]->cantidad_mes * $j, 1)."</td>");
-							}
-							
-							$j--;
-							$indice++;
-						}else{
-							echo('<td align="center">-</td>');
-						}
+						echo('<td align="center">'.$sum_acc_mes_multiplicadas[$i]."</td>");
 					}
 					
 					?>
-					<td>-</td><td>{{ $sumatotal_acc_mes }}</td>
+					<td>-</td><td>{{ $suma_total_acciones_multiplicadas }}</td>
 				</tr>
 	
 				<tr><td colspan="17"></td></tr>
@@ -217,9 +208,9 @@ use App\Persona;
 					<th colspan="2" align='center'>Se divide la utilidad Distribuible: </th>
 					<th colspan="2" align='center'>{{ round($utilidad_dist, 1) }}</th>
 					<th colspan="2" align='center'>entre el total de Acciones-Mes: </th>
-					<th colspan="2" align='center'>{{ $sumatotal_acc_mes }}</th>
+					<th colspan="2" align='center'>{{ $suma_total_acciones_multiplicadas }}</th>
 					<th colspan="5" align='center'>El resultado es la UTILIDAD DE UNA ACCION EN UN MES: </th>
-					<th>{{ round((($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0), 4) }}</th>
+					<th>{{ round($factor, 4) }}</th>
 				</tr>
 			</thead>
 		</table>
@@ -231,7 +222,7 @@ use App\Persona;
 				<tr>
 					<th colspan="2" align="center">PASO 4: </th>
 					<th colspan="3" align="center">Se multiplica esta utilidad.</th>
-					<th colspan="2" align="center">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 4) }}</th>
+					<th colspan="2" align="center">{{ round($factor, 4) }}</th>
 					<th colspan="9" align="center">por el N° de meses que ha trabajado cada accion. Los resultados son las diferentes utilidades de una accion en un año.</th>
 				</tr>
 			</thead>
@@ -245,23 +236,13 @@ use App\Persona;
 				<tr>
 					<td rowspan="2">Utilidad de una acción</td>
 					<td>En 1 mes</td>
-					<td align='center' colspan="14">{{ round(($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0, 1) }}</td>
+					<td align='center' colspan="14">{{ round($factor, 1) }}</td>
 				</tr>
 				<tr>
 					<td>En el año</td>
 					<?php
-
-					$factores_mes=array();
-					$sumUtilidades=array();
-					for($u=1; $u<=12; $u++){
-						$sumUtilidades[$u] = 0;
-					}
-					$f=0;
-					$factor = ($sumatotal_acc_mes>0)?$utilidad_dist/$sumatotal_acc_mes: 0;
-						for ($i=12; $i >0 ; $i--) { 
-							echo('<td align="center">'.round($i * $factor,4)."</td>");
-							$factores_mes[$f] = round(($i * $factor),4);
-							$f++;
+						for ($i=1; $i <=12 ; $i++) { 
+							echo('<td align="center">'.round($factores_pormes[$i],4)."</td>");
 						}
 					?>
 					<td align='center'>-</td>
@@ -294,67 +275,89 @@ use App\Persona;
 					<th>{{ $porcentaje_ditribuible."%" }}</th><th>REITRAR</th><th>AHORRAR</th>
 				</tr>
 			</thead>
-			<?php
-			$total_distr = 0;
-			?>
+			
 			<tbody>
 				<?php
-				// $porcentaje_ditribuible = 67.9476;
-				$socios = Persona::where('tipo','=','SC')->orwhere('tipo','=','S')->get();
-				$stutilTotal = 0;
-				for($i=0; $i< count($socios); $i++){
-					
-					// $listaAcciones = DistribucionUtilidades::list_acciones_por_persona_mes($socios[$i]->id, $anio)->get();
-					$listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
-					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
-					
-					$utilidades = array();
-					 if((count($listaAcciones) + count($num_accionesenero))>0){
-						echo("<tr><td rowspan='2'  align='center'>".($i+1)."</td><th rowspan='2' colspan='2' align='left'>".$socios[$i]->nombres." ".$socios[$i]->apellidos."</th>");
-						$l=0;
-						$sumtotalAcciones =0;
-						for($j=1; $j<=12; $j++){
-							$numaccciones = 0;
-							if($j == 1){
-								$numaccciones = count($num_accionesenero) >0?$num_accionesenero[0]->cantidad_total:0;
-							}
-								
-							if(((($l)< (count($listaAcciones)))?$listaAcciones[$l]->mes:"") == $j){
-								$numaccciones += (count($listaAcciones)>0)?$listaAcciones[$l]->cantidad_mes:0;
-							}
+				
+				/************************************************************************************************************** */
+				
+				
+				foreach ($lista_num_acciones_paso6 as $key => $value) {
+					if($id_temp !=  $value->persona_id){
 						
-							if($numaccciones>0){
-								$utilidades[$j-1] = $factores_mes[$j-1] * $numaccciones;
-								$sumtotalAcciones += $numaccciones;
-								$l++;
-								echo("<td align='center'>".($numaccciones>0?$numaccciones:"-")."</td>");
-							}else{
-								echo("<td align='center'>-</td>");
-								$utilidades[$j-1] = 0;
+						if($mes > 1){
+							for($j=$mes; $j<=12; $j ++){
+								$paso6_utilidades .= "<td>0.0</td>";
+								echo("<td class='num-acciones' align='center'>-</td>");
 							}
-							
+							$mes =1;
+							echo("<td>0</td><td>".$total_acciones_persona."</td><td>-</td><td></td><td></td></tr>");
+							$total_acciones_persona = 0;
+							$distr = round(($porcentaje_ditribuible/100)*$total_utilidades_persona, 1);
+							$total_distr += $distr;
+							echo("<tr>".$paso6_utilidades);
+							$paso6_utilidades = "";
+							echo("<td>0</td><td class='num-acciones'>".round($total_utilidades_persona,1)."</td><td>".$distr."</td>");
+							?>
+							<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirar ','vr'=>'1','num'=>''.$contador ,'id' => 'btn'.$contador, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$persona->id , 'utilidad'=> ''.$distr)) !!}</td>
+							<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrar','vr'=>'0', 'num'=>''.$contador , 'id' => 'btna'.$contador , 'onclick' => 'btncli(this)',  'persona_id' => ''.$persona->id , 'utilidad'=> ''.$distr)) !!}</td>
+
+							<?php
+							echo("</tr>");
+							$total_utilidades_persona = 0.0;
 						}
-						echo("<td align='center'>0</td><td>".round($sumtotalAcciones,1)."</td><td>-</td><td></td><td></td></tr><tr>");
-							$sumtotal_util = 0;
-						for($j=1; $j<=12; $j++){
-							echo("<td align='center'>".round($utilidades[$j-1],2)."</td>");
-							$sumtotal_util += round($utilidades[$j-1],2);
-							// $sumUtilidades[$j] += round($utilidades[$j-1],1);
+						$id_temp = $value->persona_id;
+						$persona = Persona::find($value->persona_id);
+						echo("<tr><td rowspan='2'>".(++ $contador)."</td><td class='textleft' rowspan='2' colspan='2'><p>".$persona->apellidos.' '.$persona->nombres.' -'.$persona->id."</p></td>");
+					}
+					if($mes == 1){
+						if($value->mes == 1){
+							$value->cantidad += $lista_num_enero_paso6[$value->persona_id] != null?$lista_num_enero_paso6[$value->persona_id]:0;
 						}
-						$stutilTotal += $sumtotal_util;
-						echo("<td align='center'>-</td><td>".round($sumtotal_util,1)."</td>");
-						$distr = round(($porcentaje_ditribuible/100)*$sumtotal_util, 1);
-						$total_distr = $total_distr + $distr;
+					}
+					for($j=$mes; $j<$value->mes; $j ++){
+						if($mes == 1){
+							$total_acciones_persona += $lista_num_enero_paso6[$value->persona_id] != null?$lista_num_enero_paso6[$value->persona_id]:0;
+							$utilidad = ($lista_num_enero_paso6[$value->persona_id] != null?$lista_num_enero_paso6[$value->persona_id]:0) * round($factores_pormes[1],4);
+							$sum_utilidades_mes[$value->mes] += $utilidad;
+							$total_utilidades_persona += $utilidad;
+							$suma_total_utilidades += $utilidad;
+							$paso6_utilidades .= "<td>".round($utilidad,2)."</td>";
+							echo("<td class='num-acciones' align='center'>".($lista_num_enero_paso6[$value->persona_id])."</td>");
+						}else{
+							echo("<td class='num-acciones' align='center'>-</td>");
+							$paso6_utilidades .= "<td>0</td>";
+						}
+					}
+					$mes = $value->mes;
+					echo("<td class='num-acciones' align='center'>".($value->cantidad>0?$value->cantidad:"-")."</td>");
+			
+					$utilidad = $value->cantidad * round($factores_pormes[$value->mes],4);
+					$sum_utilidades_mes[$value->mes] += $utilidad;
+					$total_utilidades_persona += $utilidad;
+					$suma_total_utilidades += $utilidad;
+					$paso6_utilidades .= "<td> ".round($utilidad,1)." </td>";
+					$total_acciones_persona += $value->cantidad>0?$value->cantidad: 0;
+					if($mes == 12){
+						$mes = 1;
+						echo("<td>0</td><td>".$total_acciones_persona."</td><td>-</td><td></td><td></td></tr>");
+						$total_acciones_persona = 0;
+						$distr = round(($porcentaje_ditribuible/100)*$total_utilidades_persona, 1);
+						$total_distr += $distr;
+						echo("<tr>".$paso6_utilidades);
+						$paso6_utilidades = "";
+						echo("<td>0</td><td class='num-acciones'>".round($total_utilidades_persona,1)."</td><td>".$distr."</td>");
 						?>
-						<td>{{ $distr }}</td>
-						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirar ','vr'=>'1','num'=>''.$i ,'id' => 'btn'.$i, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.$distr)) !!}</td>
-						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrar','vr'=>'0', 'num'=>''.$i , 'id' => 'btna'.$i , 'onclick' => 'btncli(this)',  'persona_id' => ''.$socios[$i]->id , 'utilidad'=> ''.$distr)) !!}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-primary btn-xs btnretirar ','vr'=>'1','num'=>''.$contador ,'id' => 'btn'.$contador, 'onclick' => 'btnclieck(this)',  'persona_id' => ''.$persona->id , 'utilidad'=> ''.$distr)) !!}</td>
+						<td>{!! Form::button('<i class="fa fa-check fa-lg" style="color:white"></i>', array('class' => 'btn btn-light btn-xs btnahorrar','vr'=>'0', 'num'=>''.$contador , 'id' => 'btna'.$contador , 'onclick' => 'btncli(this)',  'persona_id' => ''.$persona->id , 'utilidad'=> ''.$distr)) !!}</td>
 
 						<?php
 						echo("</tr>");
-					 }
+						$total_utilidades_persona = 0.0;
+					}else{
+						$mes ++;
+					}
 				}
-
 				?>
 
 			</tbody>
@@ -364,59 +367,24 @@ use App\Persona;
 					<th rowspan="2" colspan="2">TOTAL</th>
 					<th>Acciones</th>
 					<?php
-						$total_acc_mensual  = 0;
-						$ind = 0;
-						
 						for($i=1; $i<=12; $i++){
-
-							if((($ind<count($acciones_mensual))?$acciones_mensual[$ind]->mes: "") == "".$i){
-								if($ind == 0){
-									
-									echo("<th align='center'>".($acciones_mensual[$ind]->cantidad_mes + $numero_acciones_hasta_enero[0]->cantidad_total)."</th>");
-									$total_acc_mensual += ($acciones_mensual[$ind]->cantidad_mes +  $numero_acciones_hasta_enero[0]->cantidad_total);
-								}else{
-									echo("<th align='center'>".($acciones_mensual[$ind]->cantidad_mes)."</th>");
-									$total_acc_mensual += ($acciones_mensual[$ind]->cantidad_mes);
-								}
-								
-								$ind ++;
-							}else{
-								echo("<th align='center'>0</th>");
-							}
+							echo("<th align='center'>".($suma_acciones_porMes[$i])."</th>");
 						}
 					?>
 					<th>0</th>
-					<th>{{ $total_acc_mensual }}</th>
+					<th>{{ $suma_total_acciones }}</th>
 					<th>-</th>
 					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> RETIRAR TODO', array('class' => 'btn btn-warning btn-xs', 'accion'=>'retirar',  'id' => 'btnrecibo', 'onclick' => 'marcartodo(this)')) !!}</th>
 				</tr>
 				<tr>
 					<th>Utilidades</th>
 						<?php
-						$j=12;
-						$indice=0;
-						$sumatotal_utilidades = 0;
-						
 						for($i=1; $i<=12; $i++){
-							if((($indice<count($acciones_mensual))?$acciones_mensual[$indice]->mes:"") == $i){
-								if($indice == 0){
-									$sumatotal_utilidades += ($acciones_mensual[$indice]->cantidad_mes+$numero_acciones_hasta_enero[0]->cantidad_total ) * $factor*$j;
-									echo("<th align='center'>".round(($acciones_mensual[$indice]->cantidad_mes + $numero_acciones_hasta_enero[0]->cantidad_total) * $factor *$j, 1)."</th>");
-								}else{
-									$sumatotal_utilidades += $acciones_mensual[$indice]->cantidad_mes * $factor*$j;
-								echo("<th align='center'>".round($acciones_mensual[$indice]->cantidad_mes * $factor *$j, 1)."</th>");
-								}
-								
-
-								$j--;
-								$indice++;
-							}else{
-								echo("<th align='center'>0</th>");
-							}
+							echo("<th align='center'>".round($sum_utilidades_mes[$i], 1)."</th>");
 						}
 						
 						?>
-					<th>0</th><th>{{ round($stutilTotal, 2) }}</th>
+					<th>0</th><th>{{ round($suma_total_utilidades, 2) }}</th>
 					<th>{{ round($total_distr, 2) }}</th>
 					<th colspan="2">{!! Form::button('<i class="fa fa-check fa-lg"></i> AHORRAR TODO', array('class' => 'btn btn-success btn-xs','accion'=>'ahorrar', 'id' => 'btnrecibo', 'onclick' => 'marcartodo(this)')) !!}</th>
 
