@@ -516,12 +516,9 @@ class DistUtilidadesController extends Controller
     public function verdistribucion($distribucion_id){
         
         $distribucion = DistribucionUtilidades::find($distribucion_id);
-
         $anio =date('Y',strtotime($distribucion->fechai));
         $entidad = 'Distribucion';
-      
         $ruta = $this->rutas;
-    
         $intereses =$distribucion->intereses; //($sumUBAcumulado[0]==null)?0:$sumUBAcumulado[0];
         $otros = $distribucion->otros;//$sumUBAcumulado[1];
         $gastosDUActual = $distribucion->gastos_duactual;//DistribucionUtilidades::gastosDUactual($anio);
@@ -531,7 +528,6 @@ class DistUtilidadesController extends Controller
         $gastadmacumulado = $distribucion->gast_admin_acum;//$gastosDUActual[2];
         
         $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
-        // $du_anterior= (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
         $interes_anio_anterior = 0;
         $otros_anio_anterior = 0;
         $gast_admin_acum_anio_ant = 0;
@@ -546,27 +542,48 @@ class DistUtilidadesController extends Controller
         }
 
         $du_anterior= $interes_anio_anterior + $otros_anio_anterior;
-        // $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
         $gast_du_anterior=$gast_admin_acum_anio_ant + $int_pag_acum_anio_ant + $otros_acum_anio_ant;
         $utilidad_neta =round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )), 1);
-        $utilidad_dist = $distribucion->utilidad_distribuible;// round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
-        $numero_acciones_hasta_enero =  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();// conteo de acciones hasta el mes de enero
-        $acciones_mensual=  DistribucionUtilidades::list_total_acciones_mes($anio)->get();
-        $acciones_mes  =0;
-        $indice1 = 0;
-        $j1=12;
-        for($i=1; $i<=12; $i++){
-            if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
-                $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
-                $j1--;
-                $indice1++;
-            }
-        }
+        $utilidad_dist = $distribucion->utilidad_distribuible;
+    
         $existe = 0;
         $reporte =0;
-        $anio_actual=$anio+1;
-        return view($this->folderview.'.vistadistribucion')->with(compact('distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero'));
-      
+        $anio_actual = $anio + 1;
+
+        $suma_acciones_porMes = array();
+        $factores_pormes = array();
+        $factor = 0;
+        $suma_total_acciones = 0;
+        $suma_total_acciones_multiplicadas = 0;
+        for($i=1; $i<=12; $i++){
+            $suma_acciones_porMes[$i]=0;
+            $factores_porMes[$i]=0;
+        } 
+
+        $lista_num_acciones_paso6 =  DistribucionUtilidades::lista_num_acciones_paso6($anio)->get();
+        $lista_enero_paso6 =  DistribucionUtilidades::listar_num_acciones_hasta_enero($anio)->get();
+
+        $lista_num_enero_paso6 = array();
+        foreach ($lista_enero_paso6 as $key => $value) {
+            $lista_num_enero_paso6[$value->persona_id] = $value->cantidad;
+            $suma_total_acciones += $value->cantidad;
+            $suma_acciones_porMes[1] += $value->cantidad;
+        }
+
+        foreach ($lista_num_acciones_paso6 as $key => $value) {
+            $suma_acciones_porMes[$value->mes] += $value->cantidad;
+            $suma_total_acciones += $value->cantidad;
+        }
+        for($j=1; $j<=12; $j ++){
+            $suma_total_acciones_multiplicadas += $suma_acciones_porMes[$j] * (12 - ($j-1));
+        }
+        $factor = round(($suma_total_acciones_multiplicadas>0)?$utilidad_dist/$suma_total_acciones_multiplicadas: 0, 4);
+        for ($i=12; $i >=1 ; $i--) { 
+            $factores_pormes[12 -($i -1)] = round($i * $factor,4);
+        }
+        print_r("factor: ".$factor);
+        // $factor = round($factor,4);
+        return view($this->folderview.'.vistadistribucion')->with(compact('suma_total_acciones','suma_acciones_porMes','factor','suma_total_acciones_multiplicadas','factores_pormes','distribucion','reporte','existe','intereses','otros', 'gastadmacumulado', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','anio','anio_actual','gast_du_anterior','utilidad_neta','lista_num_acciones_paso6', 'lista_num_enero_paso6'));
     }
 
     /*

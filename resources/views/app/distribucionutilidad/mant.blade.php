@@ -304,7 +304,8 @@ use App\Persona;
 				$stutilTotal = 0;
 				for($i=0; $i< count($socios); $i++){
 					
-					$listaAcciones = DistribucionUtilidades::list_acciones_por_persona_mes($socios[$i]->id, $anio)->get();
+					// $listaAcciones = DistribucionUtilidades::list_acciones_por_persona_mes($socios[$i]->id, $anio)->get();
+					$listaAcciones = DistribucionUtilidades::list_por_persona($socios[$i]->id, $anio)->get();
 					$num_accionesenero = DistribucionUtilidades::list_enero($socios[$i]->id, ($anio-1))->get();
 					
 					$utilidades = array();
