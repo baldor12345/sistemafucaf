@@ -148,8 +148,6 @@ class DistUtilidadesController extends Controller
                 $int_pag_acum_anio_ant = $dist_u_anterior[0]->int_pag_acum;
                 $otros_acum_anio_ant = $dist_u_anterior[0]->otros_acum;
             }
-    
-            
             // $du_anterior = (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
             $du_anterior =  $interes_anio_anterior + $otros_anio_anterior;
             // $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
@@ -219,7 +217,6 @@ class DistUtilidadesController extends Controller
             $factores_pormes[12 -($i -1)] = round($i * $factor,4);
         }
         print_r("factor: ".$factor);
-
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
             return view($this->folderview.'.mant')->with(compact('lista_num_enero_paso6','lista_enero_paso6','lista_num_acciones_paso6','sum_acc_mes_multiplicadas','suma_total_utilidades','factores_pormes','factor','suma_total_acciones','suma_total_acciones_multiplicadas','suma_acciones_porMes','existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
