@@ -396,7 +396,7 @@ class AccionesController extends Controller
         $caja = Caja::where("estado","=","A")->get();
         $fecha_caja = count($caja) == 0? date('Y-m'): Date::parse( $caja[0]->fecha_horaapert )->format('Y-m') ;
 
-        $cant_acciones = Acciones::where('estado','C')->where('persona_id',$persona_id)->where('deleted_at',null)->count();
+        $cant_acciones = Acciones::where('estado','C')->where('persona_id',$persona_id)->where('deleted_at',null)->where('tipo','A')->count();
 
         $Month = array(1=>'Enero',
                         2=>'Febrero',
@@ -901,7 +901,7 @@ class AccionesController extends Controller
 
         // $caja_id = Caja::where("estado","=","A")->value('id');
         $caja = Caja::where("estado","=","A")->get();
-        $caja_id = (count($caja_id) != 0)?$caja[0]->id:0;
+        $caja_id = (count($caja) != 0)?$caja[0]->id:0;
 
         $res = null;
         if($caja_id != 0){//validamos si existe caja aperturada
@@ -930,7 +930,7 @@ class AccionesController extends Controller
             $vendidas = Acciones::where('estado','C')->where('persona_id',$request->input('idpropietario'))->limit($request->input('cantidad_accion'))->orderBy('fechai', 'ASC')->where('deleted_at',null)->get();
 
             // $idCaja = DB::table('caja')->where('estado', "A")->value('id');
-            $error = DB::transaction(function() use($request, $vendidas, $descripcion_venta, $fechaf, $concepto_id, $caja_id ){
+            $error = DB::transaction(function() use($request, $vendidas, $descripcion_venta, $fechaf, $concepto_id, $caja_id, $caja ){
                 $cantidad_accion= $request->input('cantidad_accion');
 
                 foreach($vendidas as $value){
@@ -1034,11 +1034,11 @@ class AccionesController extends Controller
     public function generarvoucheraccionPDF($id, $cant, $fecha, Request $request)
     {    
 
-        $cantidad =  Acciones::where('estado','C')->where('persona_id',$id)->where('fechai',$fecha)->where('deleted_at','=',null)->count();
+        $cantidad =  Acciones::where('estado','C')->where('persona_id',$id)->where('fechai',$fecha)->where('deleted_at','=',null)->where('tipo','A')->count();
 
         $persona = DB::table('persona')->where('id', $id)->first();
         $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
-        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->where('deleted_at','=',null)->count();
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->where('deleted_at','=',null)->where('tipo','A')->count();
         $titulo = $persona->nombres.$cantidad;
         $view = \View::make('app.acciones.generarvoucheraccionPDF')->with(compact('lista', 'id', 'persona','cantidad', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();      
@@ -1056,11 +1056,11 @@ class AccionesController extends Controller
     //metodo para generar voucher en pdf
     public function generarvoucheraccionventaPDF($id, $cant, $fecha, Request $request)
     {    
-        $cantidad =  Acciones::where('estado','C')->where('persona_id',$id)->where('fechai',$fecha)->where('deleted_at','=',null)->count();
+        $cantidad =  Acciones::where('estado','C')->where('persona_id',$id)->where('fechai',$fecha)->where('deleted_at','=',null)->where('tipo','A')->count();
 
         $persona = DB::table('persona')->where('id', $id)->first();
         $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
-        $CantAcciones = DB::table('acciones')->where('estado', 'V')->where('persona_id',$id)->where('deleted_at','=',null)->count();
+        $CantAcciones = DB::table('acciones')->where('estado', 'V')->where('persona_id',$id)->where('deleted_at','=',null)->where('tipo','A')->count();
         $titulo = $persona->nombres.$cant;
         $view = \View::make('app.acciones.generarvoucheraccionventaPDF')->with(compact('lista', 'id', 'persona','cantidad', 'fecha','CantAcciones','monto_ahorro'));
         $html_content = $view->render();      
@@ -1082,7 +1082,7 @@ class AccionesController extends Controller
         $lista           = $detalle->get();
         $persona = DB::table('persona')->where('id', $id)->first();
         $monto_ahorro = DB::table('ahorros')->where('persona_id', $id)->where('estado','P')->value('capital');
-        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->where('deleted_at','=',null)->count();
+        $CantAcciones = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id)->where('deleted_at','=',null)->where('tipo','A')->count();
         $titulo = $persona->nombres.$cant;
 
         $view = \View::make('app.acciones.voucheraccionPDF')->with(compact('lista', 'id', 'persona','cant', 'fecha','CantAcciones','monto_ahorro'));
@@ -1110,7 +1110,7 @@ class AccionesController extends Controller
         $comprador = DB::table('persona')->where('id', $id_comprador)->first();
 
         $monto_ahorroComprador = DB::table('ahorros')->where('persona_id', $id_comprador)->where('estado','P')->value('capital');
-        $CantAccioneComprador = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id_comprador)->where('deleted_at','=',null)->count();
+        $CantAccioneComprador = DB::table('acciones')->where('estado', 'C')->where('persona_id',$id_comprador)->where('deleted_at','=',null)->where('tipo','A')->count();
         $titulo = $comprador->nombres.$cant;
 
         $view = \View::make('app.acciones.reciboaccionventapdf')->with(compact('lista', 'id', 'vendedor','comprador','cant', 'fecha','CantAccioneComprador','monto_ahorroComprador'));
@@ -1133,7 +1133,7 @@ class AccionesController extends Controller
         $list        = Acciones::list_acciones_persona();
         $lista           = $list->get();
 
-        $cant = DB::table('acciones')->where('estado', 'C')->where('deleted_at',null)->where('deleted_at','=',null)->count();
+        $cant = DB::table('acciones')->where('estado', 'C')->where('deleted_at',null)->where('deleted_at','=',null)->where('tipo','A')->count();
 
         $year = date("Y");
         $month = date("m");

@@ -328,7 +328,7 @@ class DistribucionUtilidades extends Model
             ->select(
                     DB::raw('COUNT(distinct codigo) as cantidad'),
                     DB::raw('extract(month from fechai) as mes'),
-                    'persona_id as persona_id',
+                    'persona_id as persona_id'
 
             )
             ->where(DB::raw('extract(year from fechai)'), '=', $anio)
