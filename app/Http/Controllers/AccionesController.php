@@ -441,7 +441,7 @@ class AccionesController extends Controller
 
     public function reporteporperiodoPDF($persona_id, $anio, $monthi, $monthf, Request $request)
     {    
-        
+       
         $accionesC        = Acciones::listAccionPorMesCompradas($persona_id, $anio, $monthi, $monthf);
         $accionesV        = Acciones::listAccionPorMesVendidas($persona_id, $anio, $monthi, $monthf);
         $listaC            = $accionesC->get();
@@ -480,16 +480,27 @@ class AccionesController extends Controller
         PDF::Output($titulo.'.pdf', 'I');
 
             //esta es ===============================================================================================================================>
-            
+        // $error = null;
+        // $contador = 0;
         // $accion_vendidas = Acciones::where('estado','V')->where('deleted_at',null)->get();
-        // foreach ($accion_vendidas as $key => $value) {
-        //     $Acciones_com = Acciones::where('estado','C')->where('codigo',$value->codigo)->get()[0];
-        //     $value->fecha_transf = $value->fechai;
-        //     $value->save();
-        //     $Acciones_com->fecha_transf = $value->fechaf;
-        //     $Acciones_com->save();
-        // }
+        // $error = DB::transaction(function() use($accion_vendidas, $contador){
+        //     foreach ($accion_vendidas as $key => $value) {
+        //         $Acciones_com = Acciones::where('estado','C')->where('codigo',$value->codigo)->get();
+        //         if(count($Acciones_com) > 0){
+        //             $accione_com = $Acciones_com[0];
+        //             $value->fecha_transf = $value->fechai;
+        //             $value->save();
+        //             $accione_com->fecha_transf = $value->fechaf;
+        //             $accione_com->fechai = $value->fechai;
+        //             $accione_com->save();
 
+        //             $contador ++;
+        //             echo(' - '.$accione_com->codigo);
+        //         }
+        //     }
+        // });
+        // echo("Contador: ".$contador);
+        
         // $listaf = Acciones::where('estado','C')->where('fecha_transf',null)->get();
         // foreach ($listaf as $key => $value) {
         //     $value->fecha_transf = $value->fechai;
@@ -514,6 +525,82 @@ class AccionesController extends Controller
 
         // echo($error);
 
+        /*
+        $accion_vendidas = DB::select("select * from(select  *, count(*) over(partition by codigo) n from acciones) as a where n =3 and persona_id = 16 ");
+    
+                $error = DB::transaction(function() use($accion_vendidas){
+                    $contador=0;
+                foreach ($accion_vendidas as $key => $value) {
+                //    echo(" - ".$value->persona_id);
+                   if($value->n ==3 ){
+
+                       $accion_primero = Acciones::where('codigo', $value->codigo)->where('estado', 'V')->get();
+                       $accion_tercero = Acciones::where('codigo', $value->codigo)->where('estado', 'C')->get();
+                       if(count($accion_tercero)>0){
+                        // echo( " :".$contador++);
+                        
+                            $ac_segundo = Acciones::find($value->id);
+                            $ac_primero = $accion_primero[0];
+                            $ac_tercero = $accion_tercero[0];
+                            echo( " :".$ac_tercero->persona_id."-".$contador++." ");
+                            $ac_primero->fecha_transf = $ac_primero->fechai;
+                            $ac_primero->save();
+    
+                            $ac_segundo->fechai = $ac_primero->fechai;
+                            $ac_segundo->fecha_transf = $ac_primero->fechaf;
+                            $ac_segundo->save();
+    
+                            $ac_tercero->fechai = $ac_primero->fechai;
+                            $ac_tercero->fecha_transf = $ac_segundo->fechaf;
+                            $ac_tercero->save();
+                       }
+                   }
+                //    else if($value->n ==2){
+                //     $acciones = Acciones::where('codigo', $value->codigo)->where('persona_id', 7)->orderby('id',ASC)->get();
+                //         if(count($acciones)>0){
+                //             echo( " :".$contador++);
+                //             $ac_segundo = Acciones::find($value->id);
+                //             $ac_tercero = Acciones::find($acciones[0]->id);
+                            
+                //             $ac_segundo->fecha_transf = $ac_segundo->fechai;
+                //             $ac_segundo->save();
+    
+                //             $ac_tercero->fechai = $ac_segundo->fechai;
+                //             $ac_tercero->fecha_transf = $ac_segundo->fechaf;
+                //             $ac_tercero->save();
+                //         }
+                //    }
+                   
+                }
+            });
+            */
+/*
+            $acciones_vendidas = Acciones::where('estado','V')->where('fecha_transf',null)->where('deleted_at',null)->get();
+            $contador=0;
+            foreach ($acciones_vendidas as $key => $ac_venta) {
+                
+                $ac_comp = Acciones::where('codigo',$ac_venta->codigo)->where('estado','C')->get();
+                if(count($ac_comp)>0){
+                    $ac_venta->fecha_transf = $ac_venta->fechai;
+                    $ac_venta->save();
+
+                    $ac_compra = $ac_comp[0];
+                    $ac_compra->fechai = $ac_venta->fechai;
+                    $ac_compra->fecha_transf = $ac_venta->fechaf;
+                    $ac_compra->save();
+                    echo( " :".$ac_compra->persona_id."-".$contador++." ");
+
+                }
+            }
+            */
+            // $acciones_comp = Acciones::where('estado','C')->where('fecha_transf',null)->where('deleted_at',null)->get();
+            // $contador=0;
+            // foreach ($acciones_comp as $key => $ac_compra) {
+            //     $ac_compra->fecha_transf = $ac_compra->fechai;
+            //     $ac_compra->save();
+            //     echo( " :".$ac_compra->persona_id."-".$contador++." ");
+            // }
+            
 
         /* consultas posgresql
         
@@ -525,8 +612,7 @@ class AccionesController extends Controller
 
         SELECT SUM(CANTIDAD) as ventas FROM historial_accion where estado = 'V' and deleted_at is null;
 
-        select * from acciones where estado = 'C' and extract( year from fechai) = 2019 and extract( month from fechai) = 1
-        group by extract( month from fechai)
+        98
 
         select * from acciones where codigo = '0000495'
 
