@@ -54,7 +54,7 @@
 	$paso6_utilidades = "";
 	$tbody_paso2 = "";
 	$tbody_paso4 = "";
-	$$tbody_paso4_factores = "";
+	$tbody_paso4_factores = "";
 	$factores_mes=array();
 	$sum_utilidades_mes=array();
 	$total_distr = 0;
@@ -147,7 +147,7 @@
 <div>
     <table class="linebordercenter" width ="100%">
         <thead>
-            <tr><th colspan="15" align='center'>PASO 2: Se multiplica el N° de Acciones de cada me s por los meses que cada accion ha trabajado. Se obtiene las ACCIONES-MES y su total</th><th>{{ $acciones_mes }}</th></tr>
+            <tr><th colspan="15" align='center'>PASO 2: Se multiplica el N° de Acciones de cada me s por los meses que cada accion ha trabajado. Se obtiene las ACCIONES-MES y su total</th><th>{{ $suma_total_acciones }}</th></tr>
         </thead>
         <tbody>
 				<tr><td colspan="2"></td><td colspan="12">{{ $anio }}</td><td>{{ $anio_actual+1 }}</td><td></td></tr>

@@ -69,7 +69,7 @@ use App\Persona;
 	$paso6_utilidades = "";
 	$tbody_paso2 = "";
 	$tbody_paso4 = "";
-	$$tbody_paso4_factores = "";
+	$tbody_paso4_factores = "";
 	$factores_mes=array();
 	$sum_utilidades_mes=array();
 	$total_distr = 0;
@@ -429,7 +429,7 @@ use App\Persona;
 <div class="form-row">
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-file-pdf-o"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-xs','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array($anio, $porcentaje_ditribuible)).'\')')) !!}
+		{!! Form::button('<i class="fa fa-file-pdf-o"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-xs','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array($anio, $porcentaje_ditribuible, 0)).'\')')) !!}
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarDist', 'onclick' => 'guardar_distribucion(\''.$entidad.'\', this)')) !!}
 			&nbsp;
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}

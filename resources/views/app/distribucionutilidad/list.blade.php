@@ -35,11 +35,11 @@
 			<td>{{ round($value->utilidad_distribuible, 1) }}</td>
 			@if( $value->porcentaje_distribuido < 100)
 				<td>
-					{!! Form::button('<i class="fa fa-file-pdf-o"></i>'.$value->porcentaje_distribuido.'%', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array(date("Y", strtotime($value->fechai)), $value->porcentaje_distribuido)).'\')')) !!}
+					{!! Form::button('<i class="fa fa-file-pdf-o"></i>'.$value->porcentaje_distribuido.'%', array('class' => 'btn btn-danger btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array(date("Y", strtotime($value->fechai)), $value->porcentaje_distribuido, $value->id)).'\')')) !!}
 				</td>
 			@else
 				<td>
-					{!! Form::button('<i class="fa fa-file-pdf-o"></i>'.$value->porcentaje_distribuido.'%', array('class' => 'btn btn-success btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array(date("Y", strtotime($value->fechai)), $value->porcentaje_distribuido)).'\')')) !!}
+					{!! Form::button('<i class="fa fa-file-pdf-o"></i>'.$value->porcentaje_distribuido.'%', array('class' => 'btn btn-success btn-sm','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array(date("Y", strtotime($value->fechai)), $value->porcentaje_distribuido, $value->id)).'\')')) !!}
 				</td>
 			@endif
 			<td>

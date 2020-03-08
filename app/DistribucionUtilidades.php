@@ -215,10 +215,9 @@ class DistribucionUtilidades extends Model
             }
         )
         ->orwhere(
-            function($subquery) use($anio, $persona_id){
+            function($subquery) use($anio){
                 if(!is_null($anio)){
-                    $subquery->where('persona_id','=',$persona_id)
-                    ->where('deleted_at','=',null)
+                    $subquery->where('deleted_at','=',null)
                     ->where('tipo','=','I')
                     ->where('estado','=','C')
                     ->where(DB::raw('extract( year from fecha_transf)'),'<',$anio)

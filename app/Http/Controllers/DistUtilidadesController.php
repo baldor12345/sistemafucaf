@@ -213,7 +213,6 @@ class DistUtilidadesController extends Controller
         for ($i=12; $i >=1 ; $i--) { 
             $factores_pormes[12 -($i -1)] = round($i * $factor,4);
         }
-        print_r("factor: ".$factor);
         $ruta = $this->rutas;
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
@@ -983,9 +982,15 @@ class DistUtilidadesController extends Controller
         return (round($numero*$factor)/$factor);
     }
 
-    public function distutilcreadoPDF($anio, $porcentaje_ditribuible){
+    public function distutilcreadoPDF($anio, $porcentaje_ditribuible, $id){
 
-
+        $distribucion = null;
+        if($id != 0){
+            $distribucion = DistribucionUtilidades::find($id);
+        }else{
+            $distribucion = new DistribucionUtilidades();
+            $distribucion->titulo = "DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
+        }
         /******************************************************* */
         $caja = Caja::where("estado","=","A")->get();
           ///año actual
@@ -1086,7 +1091,7 @@ class DistUtilidadesController extends Controller
             $factores_pormes[12 -($i -1)] = round($i * $factor,4);
         }
             $view = \View::make('app.distribucionutilidad.distutilcreadoPDF')->with(
-                compact('personas','lista_num_enero_paso6','lista_enero_paso6','lista_num_acciones_paso6','sum_acc_mes_multiplicadas','suma_total_utilidades','factores_pormes','factor','suma_total_acciones','suma_total_acciones_multiplicadas','suma_acciones_porMes','intereses','otros', 'gastadmacumulado', 'otros_acumulados','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','gast_du_anterior','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante')
+                compact('distribucion','personas','lista_num_enero_paso6','lista_enero_paso6','lista_num_acciones_paso6','sum_acc_mes_multiplicadas','suma_total_utilidades','factores_pormes','factor','suma_total_acciones','suma_total_acciones_multiplicadas','suma_acciones_porMes','intereses','otros', 'gastadmacumulado', 'otros_acumulados','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','gast_du_anterior','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante')
             );
             $html_content = $view->render();
     

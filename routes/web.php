@@ -252,7 +252,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('distribucion_utilidades', 'DistUtilidadesController', array('except' => array('show')));
     Route::get('distribucion_utilidades/verdistribucion/{distribucion_id?}', 'DistUtilidadesController@verdistribucion')->name('distribucion_utilidades.verdistribucion');
     Route::get('/reportedistribucionPDF/{distribucion_id?}', 'DistUtilidadesController@reportedistribucionPDF')->name('distribucion_utilidades.reportedistribucionPDF');
-    Route::get('/distutilcreadoPDF/{anio?}/{porcentaje_ditribuible?}', 'DistUtilidadesController@distutilcreadoPDF')->name('distribucion_utilidades.distutilcreadoPDF');
+    Route::get('/distutilcreadoPDF/{anio?}/{porcentaje_ditribuible?}/{id?}', 'DistUtilidadesController@distutilcreadoPDF')->name('distribucion_utilidades.distutilcreadoPDF');
     Route::get('/listaSociosReciboDistribucionPDF/{distribucion_id?}', 'DistUtilidadesController@listaSociosReciboDistribucionPDF')->name('distribucion_utilidades.listaSociosReciboDistribucionPDF');
 
     
