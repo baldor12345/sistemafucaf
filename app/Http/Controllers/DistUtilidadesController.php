@@ -396,7 +396,7 @@ class DistUtilidadesController extends Controller
                 $distribucion->int_pag_acum = $this->rouNumber($request->input('int_pag_acum'), 1);
                 $distribucion->otros_acum = $this->rouNumber($request->input('otros_acum'), 1);
                 $distribucion->ub_duactual = $this->rouNumber($request->input('ub_duactual'), 1);
-                $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: <br> DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
+                $distribucion->titulo = "FINANCIERA UNICA DE CREDITO Y AHORRO FAMILIAR, LAS BRISAS - CHICLAYO: DITRIBUCION DE UTILIDADES EN EL AÑO ".$anio;
                 $distribucion->intereses = $this->rouNumber($request->input('intereses'), 1);
                 $distribucion->utilidad_distribuible = $request->input('utilidad_distr');
                 $distribucion->otros = $this->rouNumber($request->input('otros'), 1);

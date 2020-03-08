@@ -19,6 +19,12 @@
         .num-acciones{
             background-color: #ceeddd;
         }
+        .fsocial {
+            color: #000000;
+            font-weight:bold;
+            background-color: #d5f0d6;
+            
+        }
         table thead {
         color: #000000;
         font-weight:bold;
@@ -340,7 +346,26 @@
                 }
             }
             ?>
-
+                <tr>
+					<td class="fsocial">{{++ $contador}}</td>
+					<td class=" fsocial" colspan="2">
+						F. SOCIAL
+					</td>
+					<td class="fsocial" colspan="13"></td>
+					<td class="fsocial">{{round($utilidad_neta*0.1,1)}}</td>
+					<td class="fsocial">{{round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1)}}</td>
+				
+				</tr>
+				<tr>
+					<td class="fsocial">{{++ $contador}}</td>
+					<td class=" fsocial" colspan="2">
+						R. LEGAL
+					</td>
+					<td class="fsocial" colspan="13"></td>
+					<td class="fsocial">{{round($utilidad_neta*0.1,1)}}</td>
+					<td class="fsocial">{{round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1)}}</td>
+					
+				</tr>
         </tbody>
     
         <tfoot class="linebordercenter">
@@ -362,7 +387,7 @@
                     for($i=1; $i<=12; $i++){
                         echo("<th align='center'>".round($sum_utilidades_mes[$i], 1)."</th>");
                     }
-                    
+                    $total_distr += (($porcentaje_ditribuible/100)*$utilidad_neta*0.1)*2;
                     ?>
                 <th>0</th><th>{{ round($suma_total_utilidades, 2) }}</th>
                 <th>{{ round($total_distr, 2) }}</th>
