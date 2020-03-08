@@ -364,7 +364,6 @@
 					<td class="fsocial" colspan="13"></td>
 					<td class="fsocial">{{round($utilidad_neta*0.1,1)}}</td>
 					<td class="fsocial">{{round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1)}}</td>
-					
 				</tr>
         </tbody>
     
