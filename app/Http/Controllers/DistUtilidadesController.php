@@ -29,6 +29,7 @@ class DistUtilidadesController extends Controller
             'index'  => 'distribucion_utilidades.index',
             'verdistribucion' => 'distribucion_utilidades.verdistribucion',
             'reportedistribucionPDF'=>'distribucion_utilidades.reportedistribucionPDF',
+            'distutilcreadoPDF'=>'distribucion_utilidades.distutilcreadoPDF',
             'listaSociosReciboDistribucionPDF' => 'distribucion_utilidades.listaSociosReciboDistribucionPDF'
         );
 /**
@@ -109,10 +110,10 @@ class DistUtilidadesController extends Controller
             $existe = false;
             $mensaje = "¡Aún no está disponible la distribución de utilidades para el año seleccionado..!";
         }
-        else if(count($ditr) > 0){
-            $existe = false;
-            $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
-        }
+        // else if(count($ditr) > 0){
+        //     $existe = false;
+        //     $mensaje = "¡La distribución de utilidades para el año seleccionado ya se encuentra registrado, puede visualizarlo en la lista de distribuciones..!";
+        // }
         
           if($existe){
             $caja = Caja::where("estado","=","A")->get();
@@ -122,7 +123,7 @@ class DistUtilidadesController extends Controller
             $listar = Libreria::getParam($request->input('listar'), 'NO');
             
             $ruta = $this->rutas;
-          
+          ///año actual
             $fecha = ($anio+1)."-01-01";
             $ingresos =(new DistribucionUtilidades())->ingresos($fecha);
             $egresos =(new DistribucionUtilidades())->egresos($fecha);
@@ -133,25 +134,21 @@ class DistUtilidadesController extends Controller
             $int_pag_acum= $egresos[0];
             $otros_acumulados= $egresos[2];
             $gastadmacumulado = $egresos[1];
+          ///año anterior
+            $fecha_ant = ($anio)."-01-01";
+            $ingresos_anio_ant =(new DistribucionUtilidades())->ingresos($fecha_ant);
+            $egresos_anio_ant =(new DistribucionUtilidades())->egresos($fecha_ant);
+
+            $intereses_anio_ant = $ingresos_anio_ant[0];
+            $otros_anio_ant  = $ingresos_anio_ant[1];
+
+            $int_pag_acum_anio_ant= $egresos_anio_ant[0];
+            $otros_acumulados_anio_ant= $egresos_anio_ant[2];
+            $gastadmacumulado_anio_ant = $egresos_anio_ant[1];
             
-            //$dist_u_anterior = DB::table('transaccion')->where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
-            $dist_u_anterior = DistribucionUtilidades::where(DB::raw('extract( year from fechai)'),'=',($anio-1))->get();
-            $interes_anio_anterior = 0;
-            $otros_anio_anterior = 0;
-            $gast_admin_acum_anio_ant = 0;
-            $int_pag_acum_anio_ant = 0;
-            $otros_acum_anio_ant = 0;
-            if(count($dist_u_anterior)>0){
-                $interes_anio_anterior = $dist_u_anterior[0]->intereses;
-                $otros_anio_anterior =  $dist_u_anterior[0]->otros;
-                $gast_admin_acum_anio_ant = $dist_u_anterior[0]->gast_admin_acum;
-                $int_pag_acum_anio_ant = $dist_u_anterior[0]->int_pag_acum;
-                $otros_acum_anio_ant = $dist_u_anterior[0]->otros_acum;
-            }
-            // $du_anterior = (count($dist_u_anterior)>0)?$dist_u_anterior[0]->ub_duactual: 0;
-            $du_anterior =  $interes_anio_anterior + $otros_anio_anterior;
+            $du_anterior =  $intereses_anio_ant + $otros_anio_ant;
             // $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
-            $gast_du_anterior=$gast_admin_acum_anio_ant + $int_pag_acum_anio_ant + $otros_acum_anio_ant;
+            $gast_du_anterior=$gastadmacumulado_anio_ant + $int_pag_acum_anio_ant + $otros_acumulados_anio_ant;
             $utilidad_neta = round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
             $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
 
@@ -217,6 +214,7 @@ class DistUtilidadesController extends Controller
             $factores_pormes[12 -($i -1)] = round($i * $factor,4);
         }
         print_r("factor: ".$factor);
+        $ruta = $this->rutas;
             $formData = array('distribucion_utilidades.store');
             $formData = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
             return view($this->folderview.'.mant')->with(compact('lista_num_enero_paso6','lista_enero_paso6','lista_num_acciones_paso6','sum_acc_mes_multiplicadas','suma_total_utilidades','factores_pormes','factor','suma_total_acciones','suma_total_acciones_multiplicadas','suma_acciones_porMes','existe','intereses','otros','configuraciones','idcaja', 'gastadmacumulado', 'formData', 'entidad','ruta', 'otros_acumulados', 'listar','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','listasocios','gast_du_anterior','acciones_mes','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante'));
@@ -973,6 +971,124 @@ class DistUtilidadesController extends Controller
     public function rouNumber($numero, $decimales) { 
         $factor = pow(10, $decimales); 
         return (round($numero*$factor)/$factor);
+    }
+
+    public function distutilcreadoPDF($anio){
+
+
+        /******************************************************* */
+        $caja = Caja::where("estado","=","A")->get();
+          ///año actual
+            $fecha = ($anio+1)."-01-01";
+            $ingresos =(new DistribucionUtilidades())->ingresos($fecha);
+            $egresos =(new DistribucionUtilidades())->egresos($fecha);
+
+            $intereses = $ingresos[0];
+            $otros  = $ingresos[1];
+
+            $int_pag_acum= $egresos[0];
+            $otros_acumulados= $egresos[2];
+            $gastadmacumulado = $egresos[1];
+          ///año anterior
+            $fecha_ant = ($anio)."-01-01";
+            $ingresos_anio_ant =(new DistribucionUtilidades())->ingresos($fecha_ant);
+            $egresos_anio_ant =(new DistribucionUtilidades())->egresos($fecha_ant);
+
+            $intereses_anio_ant = $ingresos_anio_ant[0];
+            $otros_anio_ant  = $ingresos_anio_ant[1];
+
+            $int_pag_acum_anio_ant= $egresos_anio_ant[0];
+            $otros_acumulados_anio_ant= $egresos_anio_ant[2];
+            $gastadmacumulado_anio_ant = $egresos_anio_ant[1];
+            
+            $du_anterior =  $intereses_anio_ant + $otros_anio_ant;
+            // $gast_du_anterior=(count($dist_u_anterior)>0)?$dist_u_anterior[0]->gastos_duactual: 0;
+            $gast_du_anterior=$gastadmacumulado_anio_ant + $int_pag_acum_anio_ant + $otros_acumulados_anio_ant;
+            $utilidad_neta = round((($intereses + $otros - $du_anterior) - ($gastadmacumulado + $int_pag_acum + $otros_acumulados - $gast_du_anterior )),1);
+            $utilidad_dist = round($utilidad_neta - 2*0.1*$utilidad_neta, 1);
+
+            $acciones_mensual =  DistribucionUtilidades::list_total_acciones_mes($anio)->get();//Cantidad de acciones por cada mes en el año especificado
+            // echo('AccionesMes: '.$acciones_mensual);
+            $numero_acciones_hasta_enero =  DistribucionUtilidades::num_acciones_anio_anterior($anio)->get();// conteo de acciones hasta el mes de enero
+            $acciones_mes  = 0;
+            $indice1 = 0;
+            $j1 = 12;
+            for($i=1; $i<=12; $i++){
+                if((($indice1<count($acciones_mensual))?$acciones_mensual[$indice1]->mes:"") == $i){
+                    $acciones_mes += $acciones_mensual[$indice1]->cantidad_mes * $j1;
+                    $j1--;
+                    $indice1++;
+                }
+            }
+            $porcentaje_ditribuible = 100;
+            $porcentaje_ditr_faltante = 0;
+             $saldo_caja_distribuible = $this->saldoEnCaja($caja[0]); //$this->getSaldoDistribuible(date('Y-m-d', strtotime(($anio+1)."-01-25")));//round($this->getSaldoCaja($caja[0]) - $this->getInteresPagado_mesactual($caja[0]->fecha_horaapert) - $this->getGastosAdmin_mesactual($caja[0]->fecha_horaapert), 1);
+            // echo("saldo distr: ".$saldo_caja_distribuible);
+            if($saldo_caja_distribuible < $utilidad_neta){
+                $porcentaje_ditribuible = round(($saldo_caja_distribuible/$utilidad_neta)*100, 2);
+                $porcentaje_ditr_faltante  = round(100.00 - $porcentaje_ditribuible, 2);
+            }
+
+            
+            $anio_actual=$anio;
+
+            /******************************************* */
+            
+        $suma_acciones_porMes = array();
+        $sum_acc_mes_multiplicadas = array();
+        $factores_pormes = array();
+        $factor = 0;
+        $suma_total_acciones = 0;
+        $suma_total_acciones_multiplicadas = 0;
+        for($i=1; $i<=12; $i++){
+            $suma_acciones_porMes[$i]=0;
+            $factores_porMes[$i]=0;
+            $sum_acc_mes_multiplicadas[$i]=0;
+        } 
+
+        $lista_num_acciones_paso6 =  DistribucionUtilidades::lista_num_acciones_paso6($anio)->get();
+        $lista_enero_paso6 =  DistribucionUtilidades::listar_num_acciones_hasta_enero($anio)->get();
+
+        $lista_num_enero_paso6 = array();
+        $personas = array();
+
+        foreach ($lista_enero_paso6 as $key => $value) {
+            
+            $lista_num_enero_paso6[$value->persona_id] = $value->cantidad;
+            $suma_total_acciones += $value->cantidad;
+            $suma_acciones_porMes[1] += $value->cantidad;
+        }
+        $person_id=0;
+        foreach ($lista_num_acciones_paso6 as $key => $value) {
+            $suma_acciones_porMes[$value->mes] += $value->cantidad;
+            $suma_total_acciones += $value->cantidad;
+            if($person_id != $value->persona_id){
+                $person_id = $value->persona_id;
+                $personas[$value->persona_id] = Persona::find($value->persona_id);
+            }
+        }
+        for($j=1; $j<=12; $j ++){
+            $sum_acc_mes_multiplicadas[$j] += $suma_acciones_porMes[$j] * (12 - ($j-1));
+            $suma_total_acciones_multiplicadas += $suma_acciones_porMes[$j] * (12 - ($j-1));
+        }
+        $factor = round(($suma_total_acciones_multiplicadas>0)?$utilidad_dist/$suma_total_acciones_multiplicadas: 0, 4);
+        for ($i=12; $i >=1 ; $i--) { 
+            $factores_pormes[12 -($i -1)] = round($i * $factor,4);
+        }
+            $view = \View::make('app.distribucionutilidad.distutilcreadoPDF')->with(
+                compact('personas','lista_num_enero_paso6','lista_enero_paso6','lista_num_acciones_paso6','sum_acc_mes_multiplicadas','suma_total_utilidades','factores_pormes','factor','suma_total_acciones','suma_total_acciones_multiplicadas','suma_acciones_porMes','intereses','otros', 'gastadmacumulado', 'otros_acumulados','du_anterior', 'int_pag_acum','utilidad_dist','acciones_mensual','anio','anio_actual','gast_du_anterior','utilidad_neta','numero_acciones_hasta_enero', 'porcentaje_ditribuible','porcentaje_ditr_faltante')
+            );
+            $html_content = $view->render();
+    
+            PDF::SetTitle($titulo);
+            PDF::AddPage('L', 'A4', 'es');
+            PDF::SetTopMargin(10);
+            PDF::SetLeftMargin(10);
+            PDF::SetRightMargin(10);
+            PDF::SetDisplayMode('fullpage');
+            PDF::writeHTML($html_content, true, false, true, false, '');
+            PDF::Output($titulo.'.pdf', 'I');
+        /******************************************************* */
     }
 
 }

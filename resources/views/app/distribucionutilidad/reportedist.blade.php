@@ -65,14 +65,12 @@
                 <td rowspan="5"></td>
             </tr>
             <tr>
-                    
                 <td>Intereses</td>
                 <td>{{ round($intereses, 1) }}</td>
                 <td  colspan="1" rowspan="1">I. Pag. Acum.</td>
                 <td  colspan="1" rowspan="1">{{ round($int_pag_acum,1) }}</td>
             </tr>
             <tr>
-                    
                 <td>Otros</td>
                 <td>{{ round($otros, 1) }}</td>
                 <td  colspan="1" rowspan="1">Otros Acum.</td>

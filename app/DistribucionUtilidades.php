@@ -448,11 +448,13 @@ class DistribucionUtilidades extends Model
         });
     }
 
-    public function ingresos($fecha)
+    public function ingresos($anio)
     {
      
-        $fecha_completa= $fecha;
+        // $fecha_completa= $fecha;
+        $fecha_completa= $anio;
         $lista_mes_anterior = Caja::listIngresosastamesanterior($fecha_completa)->get();
+        // $lista_mes_anterior = Caja::ingresos_mesanterior($anio)->get();
         $sum_interese_recibidos_asta_mes_anterior=0;
         $sum_otros_asta_mes_anterior=0;
         if(count($lista_mes_anterior) >0 ){
