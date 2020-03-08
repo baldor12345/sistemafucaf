@@ -37,7 +37,7 @@
     </div>
         <table class="linebordercenter" width ="100%">
             <thead class="linebordercenter">
-                <tr><th style="width: 5%;"  height="15">N° {{$suma_total_acc_mensual.' - '.$utilidad_dist}}</th><th height="15" style="width: 45%;">SOCIOS  factor: {{ $factor}}</th><th height="15" style="width: 15%;">Total Acciones</th><th height="15" style="width: 15%;">Utilidad distribuida</th><th height="15" style="width: 20%;">FIRMA</th></tr>
+                <tr><th style="width: 5%;"  height="15">N°</th><th height="15" style="width: 45%;">SOCIOS </th><th height="15" style="width: 15%;">Total Acciones</th><th height="15" style="width: 15%;">Utilidad distribuida</th><th height="15" style="width: 20%;">FIRMA</th></tr>
             </thead>
             <tbody>
                 <?php
@@ -47,8 +47,8 @@
             <tfoot class="linebordercenter">
                 <tr>
                     <th height="20" colspan="2">TOTAL</th>
-                    <th height="20">{{ ($suma_total_acc_mensual > 0?$suma_total_acc_mensual: "-" ) }}</th>
-                    <th height="20">{{ round($sumatotal_utilidades, 1) }}</th>
+                    <th height="20">{{ ($suma_total_acciones > 0?$suma_total_acciones: "-" ) }}</th>
+                    <th height="20">{{ round($suma_total_utilidades, 1) }}</th>
                     <th height="20"></th>
                 </tr>
             </tfoot>
