@@ -46,6 +46,13 @@ use App\Persona;
 		background-color: #f2f6f7;
 		border: 0.9px solid #b4bdc1;
 	}
+
+	.fsocial {
+		color: #000000;
+		font-weight:bold;
+		background-color: #b3e8a0;
+		
+	}
 </style>
 
 <div class="form-row">
@@ -116,7 +123,6 @@ use App\Persona;
 					<td  colspan="1" rowspan="3">{{ (round($utilidad_neta*0.1, 1) == 0?"-":round($utilidad_neta*0.1, 1)) }}</td>
 				</tr>
 				<tr>
-						
 					<td>Total acumulado</td>
 					<td>{{ (round($intereses + $otros, 1) == 0?"-":round($intereses + $otros, 1)) }}</td>
 					<td  rowspan="1" colspan="1">TOTAL ACUMULADO</td>
@@ -358,7 +364,29 @@ use App\Persona;
 						$mes ++;
 					}
 				}
+				
 				?>
+				
+				<tr>
+					<td class="fsocial">{{++ $contador}}</td>
+					<td class='textleft fsocial' colspan='2'>
+						F. SOCIAL
+					</td>
+					<td class="fsocial" colspan="13"></td>
+					<td class="fsocial">{{round($utilidad_neta*0.1,1)}}</td>
+					<td class="fsocial">{{round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1)}}</td>
+					<td class="fsocial" colspan='2'></td>
+				</tr>
+				<tr>
+					<td class="fsocial">{{++ $contador}}</td>
+					<td class='textleft fsocial' colspan='2'>
+						R. LEGAL
+					</td>
+					<td class="fsocial" colspan='13'></td>
+					<td class="fsocial">{{round($utilidad_neta*0.1,1)}}</td>
+					<td class="fsocial">{{round(($porcentaje_ditribuible/100)*$utilidad_neta*0.1,1)}}</td>
+					<td class="fsocial" colspan='2'></td>
+				</tr>
 
 			</tbody>
 		
@@ -382,7 +410,7 @@ use App\Persona;
 						for($i=1; $i<=12; $i++){
 							echo("<th align='center'>".round($sum_utilidades_mes[$i], 1)."</th>");
 						}
-						
+						$total_distr += (($porcentaje_ditribuible/100)*$utilidad_neta*0.1)*2;
 						?>
 					<th>0</th><th>{{ round($suma_total_utilidades, 2) }}</th>
 					<th>{{ round($total_distr, 2) }}</th>
@@ -401,6 +429,7 @@ use App\Persona;
 <div class="form-row">
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+		{!! Form::button('<i class="fa fa-file-pdf-o"></i> Imprimir PDF', array('class' => 'btn btn-warning btn-xs','data-dismiss'=>'modal', 'id' => 'btnreporte', 'onclick' => 'modalrecibopdf(\''.URL::route($ruta["distutilcreadoPDF"], array($anio)).'\')')) !!}
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> Guardar', array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarDist', 'onclick' => 'guardar_distribucion(\''.$entidad.'\', this)')) !!}
 			&nbsp;
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}

@@ -102,6 +102,32 @@ class caja extends Model
                     ->groupBy('persona.id');
         return $results;
     }
+    //lista de ingresos por persona asta el mes anterior
+    public static function ingresos_mesanterior($anio)
+    {
+        // $fechai = date('Y-m-d', strtotime($fecha));
+        $results = DB::table('persona')
+                    ->leftJoin('transaccion', 'transaccion.persona_id', '=', 'persona.id')
+                    ->join('concepto', 'concepto.id', '=', 'transaccion.concepto_id')
+                    ->select(
+                        'persona.nombres as persona_nombres',
+				        'persona.apellidos as persona_apellidos',
+                        DB::raw("SUM(transaccion.interes_ahorro) as deposito_ahorros"),
+                        DB::raw("SUM(transaccion.monto_ahorro) as monto_ahorro"),
+                        DB::raw("SUM(transaccion.cuota_parte_capital) as pagos_de_capital"),
+                        DB::raw("SUM(transaccion.cuota_interes) as intereces_recibidos"),
+                        DB::raw("SUM(transaccion.cuota_mora) as cuota_mora"),
+                        DB::raw("SUM(transaccion.acciones_soles) as acciones"),
+                        DB::raw("SUM(transaccion.comision_voucher) as comision_voucher"),
+                        DB::raw("SUM(transaccion.rec_capital) as rec_capital")
+                    )
+                    ->where(DB::raw("extract(year from transaccion.fecha)"),'<=', $anio)
+                    ->where('concepto.tipo','=','I')
+                    //->where('persona.estado','=','A')
+                    ->where('transaccion.deleted_at',null)
+                    ->groupBy('persona.id');
+        return $results;
+    }
 
     //lista de ingresos por concepto del mes actual
 
