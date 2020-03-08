@@ -213,6 +213,7 @@ class AccionesController extends Controller
                                 $acciones               = Acciones::find($accion_x_persona[$i]->id);    
                                 $acciones->tipo        = 'I';
                                 $acciones->fechaf        = $request->input('fechai').date(" H:i");
+                                $acciones->fecha_transf        = $request->input('fechai').date(" H:i");
                                 $acciones->descripcion        = $request->input('descripcion');
                                 $acciones->save();
                                 $cont++;
